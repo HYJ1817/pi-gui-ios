@@ -1,49 +1,42 @@
 {
   "schemaVersion": 1,
   "kind": "state",
-  "revision": 3,
-  "updatedAt": "2026-11-20T17:28:05.950Z",
+  "revision": 7,
+  "updatedAt": "2026-11-20T17:31:53.483Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "b647e660765133f7d5a5af8309ecc7bc49dcce40b174129a98a339d75d96de3b",
+    "parentDigest": "e09f834d22963bd096ec2a3bc2fb2b6a6b70460b4fccc3344469dcda01e1388d",
     "phase": "M-1",
     "currentTask": "M-1-infrastructure",
     "branch": "agent/m-1-bootstrap",
     "checkpoint": {
-      "id": "2026-11-20T17-28-05-677Z-19100",
-      "note": "Windows首轮检查通过，准备推送M-1原生CI；未验证真机",
-      "at": "2026-11-20T17:28:05.681Z",
+      "id": "2026-11-20T17-31-53-221Z-20476",
+      "note": "保存运行中CI与两个独立审查任务标识；等待实际原生构建证据",
+      "at": "2026-11-20T17:31:53.225Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": null,
+        "commit": "58ec99506e00a35121866580ffb28d09d5078b17",
         "dirty": [
-          "?? .agent/",
-          "?? .gitattributes",
-          "?? .github/",
-          "?? .gitignore",
-          "?? .maestro/",
-          "?? AGENTS.md",
-          "?? PROGRESS.md",
-          "?? README.md",
-          "?? REVIEW.md",
-          "?? ROADMAP.md",
-          "?? THIRD_PARTY_NOTICES.md",
-          "?? app.json",
-          "?? app/",
-          "?? docs/",
-          "?? expo-env.d.ts",
-          "?? package-lock.json",
-          "?? package.json",
-          "?? scripts/",
-          "?? src/",
-          "?? tests/",
-          "?? tsconfig.json"
+          "M .agent/HANDOFF.md",
+          " M .agent/control.json",
+          " M .agent/state.json",
+          " M .agent/tasks.json",
+          " M PROGRESS.md",
+          "?? docs/acceptance/ci-44783585115.json"
         ]
       },
       "sourceFingerprint": "56ba10f1b5782312c81558b38cc15862ebc558a2f3ee65061a7e788d64fd74ce"
     },
     "blockers": [],
-    "ci": [],
+    "ci": [
+      {
+        "id": "44783585115",
+        "head": "58ec99506e00a35121866580ffb28d09d5078b17",
+        "status": "in_progress",
+        "conclusion": "",
+        "url": "https://github.com/HYJ1817/pi-gui-ios/actions/runs/44783585115"
+      }
+    ],
     "desktop": {
       "repo": "HYJ1817/pi-gui",
       "branch": "main",
@@ -54,6 +47,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "129a1d916065c68f06749de049c7bf90d31ce0988b7448cdc7d76588094e948b"
+    "digest": "91a5fbe17d375f56bb92d8b963bc252ab6b7b4b93d45fa21e4bdc1e4032a7005"
   }
 }

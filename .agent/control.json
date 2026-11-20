@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "kind": "control",
-  "revision": 3,
-  "updatedAt": "2026-11-20T17:28:05.950Z",
+  "revision": 7,
+  "updatedAt": "2026-11-20T17:31:53.483Z",
   "data": {
     "phase": "M-1",
     "currentTask": "M-1-infrastructure",
@@ -14,7 +14,15 @@
       "commit": "af0432a0bc3b04c717a63ede3cc457e859401833",
       "protocolVersion": null
     },
-    "ci": [],
+    "ci": [
+      {
+        "id": "44783585115",
+        "head": "58ec99506e00a35121866580ffb28d09d5078b17",
+        "status": "in_progress",
+        "conclusion": "",
+        "url": "https://github.com/HYJ1817/pi-gui-ios/actions/runs/44783585115"
+      }
+    ],
     "blockers": [],
     "tasks": [
       {
@@ -175,42 +183,41 @@
       }
     ],
     "checkpoint": {
-      "id": "2026-11-20T17-28-05-677Z-19100",
-      "note": "Windows首轮检查通过，准备推送M-1原生CI；未验证真机",
-      "at": "2026-11-20T17:28:05.681Z",
+      "id": "2026-11-20T17-31-53-221Z-20476",
+      "note": "保存运行中CI与两个独立审查任务标识；等待实际原生构建证据",
+      "at": "2026-11-20T17:31:53.225Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": null,
+        "commit": "58ec99506e00a35121866580ffb28d09d5078b17",
         "dirty": [
-          "?? .agent/",
-          "?? .gitattributes",
-          "?? .github/",
-          "?? .gitignore",
-          "?? .maestro/",
-          "?? AGENTS.md",
-          "?? PROGRESS.md",
-          "?? README.md",
-          "?? REVIEW.md",
-          "?? ROADMAP.md",
-          "?? THIRD_PARTY_NOTICES.md",
-          "?? app.json",
-          "?? app/",
-          "?? docs/",
-          "?? expo-env.d.ts",
-          "?? package-lock.json",
-          "?? package.json",
-          "?? scripts/",
-          "?? src/",
-          "?? tests/",
-          "?? tsconfig.json"
+          "M .agent/HANDOFF.md",
+          " M .agent/control.json",
+          " M .agent/state.json",
+          " M .agent/tasks.json",
+          " M PROGRESS.md",
+          "?? docs/acceptance/ci-44783585115.json"
         ]
       },
       "sourceFingerprint": "56ba10f1b5782312c81558b38cc15862ebc558a2f3ee65061a7e788d64fd74ce"
     },
-    "nextAction": "完成控制层故障测试与 Expo 58 离线探针；触发并实际分析 macOS CI，之后独立审查/恢复交接。"
+    "nextAction": "CI 44783585115 的 Windows checks 已通过，macOS 正在 CocoaPods 阶段；独立审查任务见 control.delegates，完成后读取结果并修复。原生/IPA/真机未验收。",
+    "delegates": [
+      {
+        "taskId": "node:delegated-task:command%3Amcp%3Ac31b83bb-4e95-4301-8a91-f13f8295d85a%3Adelegate-task%3A4b75cf04-9360-469c-87e1-321a7e4b3149",
+        "role": "functional-review-and-fresh-handoff",
+        "status": "working",
+        "sourceCommit": "58ec99506e00a35121866580ffb28d09d5078b17"
+      },
+      {
+        "taskId": "node:delegated-task:command%3Amcp%3Ac31b83bb-4e95-4301-8a91-f13f8295d85a%3Adelegate-task%3Aff1f8e3d-e43a-47c2-ad8d-14c02bc295d0",
+        "role": "security-review",
+        "status": "working",
+        "sourceCommit": "58ec99506e00a35121866580ffb28d09d5078b17"
+      }
+    ]
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "b647e660765133f7d5a5af8309ecc7bc49dcce40b174129a98a339d75d96de3b"
+    "digest": "e09f834d22963bd096ec2a3bc2fb2b6a6b70460b4fccc3344469dcda01e1388d"
   }
 }

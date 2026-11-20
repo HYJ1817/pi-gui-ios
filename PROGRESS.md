@@ -1,6 +1,6 @@
 # 项目进度（生成文件）
 
-权威：.agent/control.json；revision 3；2026-11-20T17:28:05.950Z
+权威：.agent/control.json；revision 7；2026-11-20T17:31:53.483Z
 
 阶段：M-1；当前：M-1-infrastructure；分支：agent/m-1-bootstrap
 
@@ -18,10 +18,10 @@
 
 阻塞：尚无已记录阻塞
 
-检查点：2026-11-20T17-28-05-677Z-19100；代码 HEAD：未提交
+检查点：2026-11-20T17-31-53-221Z-20476；代码 HEAD：58ec99506e00a35121866580ffb28d09d5078b17
 
-CI：未启动
+CI：44783585115 in_progress/ @ 58ec99506e00a35121866580ffb28d09d5078b17
 
-下一步：完成控制层故障测试与 Expo 58 离线探针；触发并实际分析 macOS CI，之后独立审查/恢复交接。
+下一步：CI 44783585115 的 Windows checks 已通过，macOS 正在 CocoaPods 阶段；独立审查任务见 control.delegates，完成后读取结果并修复。原生/IPA/真机未验收。
 
 测试/审查真实证据见 control 各任务 evidence 与 docs/acceptance/；未登记不视为通过。
