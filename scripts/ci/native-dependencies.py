@@ -1,0 +1,139 @@
+#!/usr/bin/env python3
+"""Reviewed locks + byte-level prebuilt dependency inventory, before any build."""
+import hashlib
+import json
+import os
+import pathlib
+import re
+import shutil
+import subprocess
+import sys
+
+
+class GateError(Exception):
+    pass
+
+
+def check(ok):
+    if not ok:
+        raise GateError()
+
+
+def digest(path):
+    with path.open('rb') as stream:
+        return hashlib.file_digest(stream, 'sha256').hexdigest()
+
+
+def load(path):
+    return json.loads(path.read_text(encoding='utf-8'))
+
+
+def policy(root):
+    value = load(root / 'native/dependency-policy.json')
+    check(value == {'schemaVersion': 1, 'mode': value.get('mode'), 'ruby': '3.3.8',
+                    'bundler': '2.6.9', 'cocoapods': '1.16.2'})
+    check(value['mode'] in ('bootstrap-required', 'locked'))
+    return value['mode']
+
+
+def inventory(root):
+    files = []
+    for label, base in [('pods', root / 'ios/Pods'), ('npm', root / 'node_modules')]:
+        check(base.is_dir())
+        for directory, dirs, names in os.walk(base, followlinks=False):
+            for name in dirs:
+                path = pathlib.Path(directory) / name
+                native = any(p.endswith(('.framework', '.xcframework')) for p in path.relative_to(base).parts)
+                check(not (native and path.is_symlink()))
+            for name in names:
+                path = pathlib.Path(directory) / name
+                relative = path.relative_to(base)
+                native = any(p.endswith(('.framework', '.xcframework')) for p in relative.parts)
+                native |= name.endswith(('.a', '.dylib', '.so', '.dll', '.node', '.wasm', '.metallib', '.tbd',
+                                         '.zip', '.tgz', '.tar.gz', '.tar.xz'))
+                if not native and not path.is_symlink():
+                    with path.open('rb') as stream:
+                        native = stream.read(4) in (b'\xcf\xfa\xed\xfe', b'\xca\xfe\xba\xbe',
+                                                   b'\xca\xfe\xba\xbf', b'\xfe\xed\xfa\xcf')
+                if native:
+                    check(not path.is_symlink() and path.is_file())
+                    safe = label + '/' + relative.as_posix()
+                    check(re.fullmatch(r'[A-Za-z0-9_@./+ ()\-]+', safe) is not None)
+                    files.append({'path': safe, 'sha256': digest(path), 'size': path.stat().st_size})
+    return {'schemaVersion': 1, 'files': sorted(files, key=lambda item: item['path'])}
+
+
+def hashes(root, locks):
+    return {'gemfileSha256': digest(root / 'Gemfile'),
+            'packageLockSha256': digest(root / 'package-lock.json'),
+            'podfileSha256': digest(root / 'ios/Podfile'),
+            'gemLockSha256': digest(locks / 'Gemfile.lock'),
+            'podLockSha256': digest(locks / 'Podfile.lock'),
+            'prebuiltManifestSha256': digest(locks / 'prebuilt-dependencies.json')}
+
+
+def prepare(root, private):
+    mode = policy(root)
+    check((root / 'ios/Podfile').is_file())
+    shutil.copyfile(root / 'Gemfile', private / 'Gemfile')
+    if mode == 'locked':
+        review = load(root / 'native/lock-review.json')
+        check(review.get('schemaVersion') == 1 and review.get('approved') is True)
+        shutil.copyfile(root / 'Gemfile.lock', private / 'Gemfile.lock')
+        shutil.copyfile(root / 'native/Podfile.lock', private / 'Podfile.lock')
+        shutil.copyfile(root / 'native/prebuilt-dependencies.json', private / 'prebuilt-dependencies.json')
+        check(review.get('hashes') == hashes(root, private))
+        shutil.copyfile(private / 'Podfile.lock', root / 'ios/Podfile.lock')
+    else:
+        # A partly committed lock set must not quietly become an unlocked build.
+        check(not any((root / name).exists() for name in ('Gemfile.lock', 'native/Podfile.lock',
+                  'native/lock-review.json', 'native/prebuilt-dependencies.json')))
+    print('NATIVE_DEPENDENCIES_' + ('LOCKED' if mode == 'locked' else 'BOOTSTRAP_REQUIRED'))
+
+
+def verify_locked(root, candidate, manifest):
+    review = load(root / 'native/lock-review.json')
+    check(review.get('schemaVersion') == 1 and review.get('approved') is True
+          and review.get('hashes') == hashes(root, candidate))
+    check(manifest == load(root / 'native/prebuilt-dependencies.json'))
+
+
+def finish(root, private):
+    mode = policy(root)
+    # Work in a PRIVATE candidate directory. Raw lock text is never published.
+    candidate = private / 'candidate'
+    candidate.mkdir()
+    shutil.copyfile(private / 'Gemfile.lock', candidate / 'Gemfile.lock')
+    shutil.copyfile(root / 'ios/Podfile.lock', candidate / 'Podfile.lock')
+    result = subprocess.run(['ruby', str(root / 'scripts/ci/validate-locks.rb'), str(candidate)],
+                            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=60)
+    check(result.returncode == 0)
+    manifest = inventory(root)
+    (candidate / 'prebuilt-dependencies.json').write_text(json.dumps(manifest, sort_keys=True, indent=2) + '\n', encoding='utf-8')
+    expected = hashes(root, candidate)
+    if mode == 'locked':
+        verify_locked(root, candidate, manifest)
+        print('NATIVE_DEPENDENCIES_VERIFIED')
+        return 0
+    report = {'schemaVersion': 1, 'approved': False, 'code': 'NATIVE_LOCK_BOOTSTRAP_REVIEW_REQUIRED',
+              'hashes': expected, 'prebuiltFileCount': len(manifest['files'])}
+    (candidate / 'review.json').write_text(json.dumps(report, sort_keys=True, indent=2) + '\n', encoding='utf-8')
+    output = root / 'artifacts/lock-candidates'
+    output.mkdir(parents=True, exist_ok=True)
+    for name in ('Gemfile.lock', 'Podfile.lock', 'prebuilt-dependencies.json', 'review.json'):
+        shutil.copyfile(candidate / name, output / name)
+    print('NATIVE_LOCK_BOOTSTRAP_REVIEW_REQUIRED')
+    return 78  # Deliberately fails the job: no simulator/device/IPA acceptance.
+
+
+if __name__ == '__main__':
+    try:
+        check(len(sys.argv) == 4 and sys.argv[1] in ('prepare', 'finish'))
+        root, private = map(pathlib.Path, sys.argv[2:])
+        if sys.argv[1] == 'prepare':
+            prepare(root, private)
+            sys.exit(0)
+        sys.exit(finish(root, private))
+    except (GateError, OSError, ValueError, KeyError, subprocess.SubprocessError):
+        print('NATIVE_DEPENDENCIES_REJECTED')
+        sys.exit(1)

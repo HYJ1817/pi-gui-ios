@@ -2,9 +2,9 @@ name: Native infrastructure
 on:
   push:
     branches: ['agent/**']
-    paths: ['app/**', 'src/**', 'modules/**', 'scripts/**', 'tests/**', '.maestro/**', 'package.json', 'package-lock.json', 'app.json', 'tsconfig.json', '.github/workflows/**']
+    paths: ['app/**', 'src/**', 'modules/**', 'scripts/**', 'tests/**', '.maestro/**', 'native/**', 'Gemfile', 'Gemfile.lock', 'package.json', 'package-lock.json', 'app.json', 'tsconfig.json', '.github/workflows/**']
   pull_request:
-    paths: ['app/**', 'src/**', 'modules/**', 'scripts/**', 'tests/**', '.maestro/**', 'package.json', 'package-lock.json', 'app.json', 'tsconfig.json', '.github/workflows/**']
+    paths: ['app/**', 'src/**', 'modules/**', 'scripts/**', 'tests/**', '.maestro/**', 'native/**', 'Gemfile', 'Gemfile.lock', 'package.json', 'package-lock.json', 'app.json', 'tsconfig.json', '.github/workflows/**']
   workflow_dispatch:
 permissions:
   contents: read
@@ -34,9 +34,13 @@ jobs:
     needs: checks
     runs-on: macos-26
     timeout-minutes: 55
+    defaults:
+      run:
+        shell: bash
     env:
       EXPO_NO_TELEMETRY: '1'
       MAESTRO_CLI_NO_ANALYTICS: '1'
+      COCOAPODS_DISABLE_STATS: 'true'
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
@@ -45,45 +49,137 @@ jobs:
         with:
           node-version: '24.22.1'
           cache: npm
-      - name: Record actual native environment
+      - uses: ruby/setup-ruby@be3c7df29b3349ec6bcfc6b4792f1cf9f5237d18
+        with:
+          ruby-version: '3.3.8'
+          bundler: '2.6.9'
+          bundler-cache: false
+      - name: Record private native environment and select simulators
         run: |
-          mkdir -p artifacts
-          sw_vers > artifacts/environment.txt
-          xcodebuild -version >> artifacts/environment.txt
-          xcrun simctl list runtimes >> artifacts/environment.txt
-          node --version >> artifacts/environment.txt
-          npm --version >> artifacts/environment.txt
-          xcrun simctl list devices available --json > artifacts/simulators.json
-          node scripts/ci/select-simulators.mjs > artifacts/selected-simulators.json
-      - run: npm ci --no-audit --no-fund
-      - name: Generate native project
-        run: npx expo prebuild --platform ios --no-install
-      - name: Install CocoaPods
-        run: cd ios && pod install 2>&1 | tee ../artifacts/pods.log
-      - name: Install pinned open source Maestro
+          bash scripts/ci/run-step.sh environment bash -euo pipefail -c '
+            mkdir -p "$RUNNER_TEMP/native-private"
+            sw_vers
+            xcodebuild -version
+            node --version
+            npm --version
+            ruby --version
+            bundle _2.6.9_ --version
+            xcrun simctl list devices available --json > "$RUNNER_TEMP/native-private/simulators.json"
+            node scripts/ci/select-simulators.mjs
+          '
+      - name: Install locked JavaScript dependencies
+        run: bash scripts/ci/run-step.sh npm npm ci --no-audit --no-fund
+      - name: Generate native project and deny template network exemption
         run: |
-          curl -fL --retry 2 https://github.com/mobile-dev-inc/Maestro/releases/download/cli-2.12.1/maestro.zip -o "$RUNNER_TEMP/maestro.zip"
-          echo "54dbb0716425626604973cbb374c585ca30272375d9ce15177a1152765ddd9d7  $RUNNER_TEMP/maestro.zip" | shasum -a 256 -c -
-          unzip -q "$RUNNER_TEMP/maestro.zip" -d "$RUNNER_TEMP/maestro-cli"
-          echo "$RUNNER_TEMP/maestro-cli/maestro/bin" >> "$GITHUB_PATH"
+          bash scripts/ci/run-step.sh prebuild bash -euo pipefail -c '
+            npx expo prebuild --platform ios --no-install
+            python3 scripts/ci/configure-native.py
+          '
+      - name: Restore exact reviewed dependency downloads
+        id: native-cache
+        if: hashFiles('native/lock-review.json') != ''
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          key: native-v1-${{ runner.os }}-${{ runner.arch }}-macos26-ruby3.3.8-pod1.16.2-bundle2.6.9-${{ hashFiles('Gemfile', 'Gemfile.lock', 'package-lock.json', 'ios/Podfile', 'native/dependency-policy.json', 'native/Podfile.lock', 'native/lock-review.json', 'native/prebuilt-dependencies.json') }}
+          path: |
+            ~/Library/Caches/CocoaPods/Pods
+            ~/.cocoapods/repos/trunk
+            ~/Library/Caches/ReactNative
+            ios/Pods/ReactNativeCore-artifacts
+            ios/Pods/ReactNativeDependencies-artifacts
+            ios/Pods/hermes-engine-artifacts
+      - name: Resolve reviewed native dependencies or stop at bootstrap gate
+        id: pods
+        run: bash scripts/ci/run-step.sh pods bash scripts/ci/install-pods.sh
+      - name: Save dependency downloads only after full lock and checksum verification
+        if: steps.pods.outputs.result == 'passed' && steps.native-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          key: native-v1-${{ runner.os }}-${{ runner.arch }}-macos26-ruby3.3.8-pod1.16.2-bundle2.6.9-${{ hashFiles('Gemfile', 'Gemfile.lock', 'package-lock.json', 'ios/Podfile', 'native/dependency-policy.json', 'native/Podfile.lock', 'native/lock-review.json', 'native/prebuilt-dependencies.json') }}
+          path: |
+            ~/Library/Caches/CocoaPods/Pods
+            ~/.cocoapods/repos/trunk
+            ~/Library/Caches/ReactNative
+            ios/Pods/ReactNativeCore-artifacts
+            ios/Pods/ReactNativeDependencies-artifacts
+            ios/Pods/hermes-engine-artifacts
+      - name: Install checksum-pinned open source Maestro
+        run: |
+          bash scripts/ci/run-step.sh maestro bash -euo pipefail -c '
+            curl -fL --retry 2 https://github.com/mobile-dev-inc/Maestro/releases/download/cli-2.12.1/maestro.zip -o "$RUNNER_TEMP/native-private/maestro.zip"
+            echo "54dbb0716425626604973cbb374c585ca30272375d9ce15177a1152765ddd9d7  $RUNNER_TEMP/native-private/maestro.zip" | shasum -a 256 -c -
+            unzip -q "$RUNNER_TEMP/native-private/maestro.zip" -d "$RUNNER_TEMP/native-private/maestro-cli"
+            echo "$RUNNER_TEMP/native-private/maestro-cli/maestro/bin" >> "$GITHUB_PATH"
+          '
       - name: Build self-contained Release simulator app
         run: |
-          set -o pipefail
-          xcodebuild -workspace ios/PiGUIMobile.xcworkspace -scheme PiGUIMobile -configuration Release -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -derivedDataPath build/simulator ARCHS="$(uname -m)" ONLY_ACTIVE_ARCH=YES CODE_SIGNING_ALLOWED=NO build 2>&1 | tee artifacts/build-simulator.log
+          bash scripts/ci/run-step.sh simulator-build xcodebuild -workspace ios/PiGUIMobile.xcworkspace -scheme PiGUIMobile -configuration Release -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -derivedDataPath build/simulator ARCHS="$(uname -m)" ONLY_ACTIVE_ARCH=YES CODE_SIGNING_ALLOWED=NO build
       - name: iPhone native interactions and appearance
-        run: bash scripts/ci/simulator.sh "$IPHONE_UDID" iphone
+        run: bash scripts/ci/run-step.sh iphone bash scripts/ci/simulator.sh "$IPHONE_UDID" iphone
       - name: iPad native interactions and appearance
-        run: bash scripts/ci/simulator.sh "$IPAD_UDID" ipad
+        run: bash scripts/ci/run-step.sh ipad bash scripts/ci/simulator.sh "$IPAD_UDID" ipad
       - name: Build unsigned device app without Apple credentials
         run: |
-          set -o pipefail
-          xcodebuild -workspace ios/PiGUIMobile.xcworkspace -scheme PiGUIMobile -configuration Release -sdk iphoneos -destination 'generic/platform=iOS' -derivedDataPath build/device ARCHS=arm64 ONLY_ACTIVE_ARCH=YES CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO build 2>&1 | tee artifacts/build-device.log
-          bash scripts/ci/package-ipa.sh
-      - name: Upload synthetic test evidence
+          bash scripts/ci/run-step.sh device-build xcodebuild -workspace ios/PiGUIMobile.xcworkspace -scheme PiGUIMobile -configuration Release -sdk iphoneos -destination 'generic/platform=iOS' -derivedDataPath build/device ARCHS=arm64 ONLY_ACTIVE_ARCH=YES CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO build
+      - name: Package and verify final device IPA in private staging
+        id: ipa
+        run: bash scripts/ci/run-step.sh ipa bash scripts/ci/package-ipa.sh
+      - name: Collect only sanitized synthetic evidence
+        id: evidence
         if: always()
+        run: python3 scripts/ci/collect-evidence.py
+      - name: Upload verified final IPA only
+        if: success() && steps.ipa.outputs.result == 'passed'
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        with:
+          name: unsigned-device-ipa-${{ github.run_id }}
+          path: |
+            artifacts/ipa/PiGUIMobile-unsigned.ipa
+            artifacts/ipa/verification.json
+            artifacts/ipa/SHA256SUMS
+          retention-days: 7
+          if-no-files-found: error
+      - name: Upload explicit synthetic evidence whitelist
+        if: always() && steps.evidence.outcome == 'success'
         uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
         with:
           name: m-1-ios-${{ github.run_id }}
-          path: artifacts/
+          path: |
+            artifacts/reports/steps.json
+            artifacts/reports/iphone-native.xml
+            artifacts/reports/iphone-dark.xml
+            artifacts/reports/iphone-accessibility.xml
+            artifacts/reports/ipad-native.xml
+            artifacts/reports/ipad-dark.xml
+            artifacts/reports/ipad-accessibility.xml
+            artifacts/screenshots/iphone/01-native-glass.png
+            artifacts/screenshots/iphone/02-interactions.png
+            artifacts/screenshots/iphone/03-navigation.png
+            artifacts/screenshots/iphone/dark/appearance.png
+            artifacts/screenshots/iphone/accessibility/reduce-transparency.png
+            artifacts/screenshots/iphone/accessibility/dynamic-type.png
+            artifacts/screenshots/iphone/final.png
+            artifacts/screenshots/ipad/01-native-glass.png
+            artifacts/screenshots/ipad/02-interactions.png
+            artifacts/screenshots/ipad/03-navigation.png
+            artifacts/screenshots/ipad/dark/appearance.png
+            artifacts/screenshots/ipad/accessibility/reduce-transparency.png
+            artifacts/screenshots/ipad/accessibility/dynamic-type.png
+            artifacts/screenshots/ipad/final.png
           retention-days: 7
           if-no-files-found: warn
+      - name: Upload safe lock candidates for review only
+        if: always() && steps.pods.outputs.result == 'bootstrap-required'
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        with:
+          name: native-lock-bootstrap-review-required-${{ github.run_id }}
+          path: |
+            artifacts/lock-candidates/Gemfile.lock
+            artifacts/lock-candidates/Podfile.lock
+            artifacts/lock-candidates/prebuilt-dependencies.json
+            artifacts/lock-candidates/review.json
+          retention-days: 7
+          if-no-files-found: ignore
+      - name: Remove private runner material
+        if: always()
+        run: rm -rf -- "$RUNNER_TEMP/native-private"
