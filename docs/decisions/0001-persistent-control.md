@@ -1,6 +1,6 @@
 # ADR 0001 · 单一权威恢复控制层
 
-日期：2026-11-21；状态：采用（实现与门禁待实测）。
+日期：2026-11-21；状态：采用；具体 schema、证据和检查点边界已由 ADR 0004 的 v2 修订，首审 v1 不通过。
 
 control.json 是唯一任务与运行状态权威。state.json/tasks.json/PROGRESS/HANDOFF 是同 revision/digest 的派生投影，不能各自手改。ROADMAP 是静态验收契约，验收记录是不可伪造的外部证据引用，均不抢占任务状态权威。
 

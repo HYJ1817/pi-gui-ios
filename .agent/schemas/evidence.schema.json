@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "kind",
+    "taskId",
+    "commit",
+    "sourceFingerprint",
+    "startedAt",
+    "finishedAt",
+    "passed",
+    "details"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 2
+    },
+    "kind": {
+      "enum": [
+        "unit",
+        "typecheck",
+        "bundle",
+        "doctor",
+        "ci",
+        "ui",
+        "ipa",
+        "independent-review",
+        "independent-security",
+        "independent-handoff",
+        "device-install",
+        "device-upgrade",
+        "integration",
+        "fault-injection",
+        "protocol-contract",
+        "device-network"
+      ]
+    },
+    "taskId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "commit": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{40}$"
+    },
+    "sourceFingerprint": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "startedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "finishedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "passed": {
+      "type": "boolean"
+    },
+    "details": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": false
+}

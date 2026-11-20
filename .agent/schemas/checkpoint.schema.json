@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "allOf": [
+    {
+      "$ref": "envelope.schema.json"
+    }
+  ],
+  "properties": {
+    "kind": {
+      "const": "checkpoint"
+    },
+    "data": {
+      "type": "object",
+      "required": [
+        "id",
+        "note",
+        "control",
+        "git",
+        "sourceFingerprint"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "note": {
+          "type": "string",
+          "minLength": 1
+        },
+        "control": {
+          "$ref": "control.schema.json"
+        },
+        "git": {
+          "$ref": "shared.schema.json#/$defs/git"
+        },
+        "sourceFingerprint": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

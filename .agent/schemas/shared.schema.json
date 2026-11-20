@@ -1,0 +1,373 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$defs": {
+    "sha": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "commit": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{40}$"
+    },
+    "date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "git": {
+      "type": "object",
+      "required": [
+        "branch",
+        "commit",
+        "dirty"
+      ],
+      "properties": {
+        "branch": {
+          "type": "string",
+          "minLength": 1
+        },
+        "commit": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-f0-9]{40}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "dirty": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "desktop": {
+      "type": "object",
+      "required": [
+        "repo",
+        "branch",
+        "commit",
+        "protocolVersion"
+      ],
+      "properties": {
+        "repo": {
+          "const": "HYJ1817/pi-gui"
+        },
+        "branch": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "commit": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{40}$"
+        },
+        "protocolVersion": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "ci": {
+      "type": "object",
+      "required": [
+        "id",
+        "head",
+        "workflow",
+        "attempt",
+        "status",
+        "conclusion",
+        "url"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]*$"
+        },
+        "head": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{40}$"
+        },
+        "workflow": {
+          "const": ".github/workflows/native-infrastructure.yml"
+        },
+        "attempt": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "status": {
+          "enum": [
+            "queued",
+            "in_progress",
+            "completed",
+            "unknown"
+          ]
+        },
+        "conclusion": {
+          "enum": [
+            null,
+            "success",
+            "failure",
+            "cancelled",
+            "skipped",
+            "timed_out",
+            "action_required",
+            "neutral",
+            "stale",
+            "startup_failure"
+          ]
+        },
+        "url": {
+          "type": "string",
+          "pattern": "^https://github\\.com/HYJ1817/pi-gui-ios/actions/runs/[0-9]+$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "evidenceRecord": {
+      "type": "object",
+      "required": [
+        "kind",
+        "path",
+        "sha256",
+        "sourceFingerprint",
+        "commit",
+        "at"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "unit",
+            "typecheck",
+            "bundle",
+            "doctor",
+            "ci",
+            "ui",
+            "ipa",
+            "independent-review",
+            "independent-security",
+            "independent-handoff",
+            "device-install",
+            "device-upgrade",
+            "integration",
+            "fault-injection",
+            "protocol-contract",
+            "device-network"
+          ]
+        },
+        "path": {
+          "type": "string",
+          "pattern": "^(docs/acceptance/|\\.agent/evidence/)[^\\\\]+\\.json$"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "sourceFingerprint": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "commit": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{40}$"
+        },
+        "at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "additionalProperties": false
+    },
+    "delegate": {
+      "type": "object",
+      "required": [
+        "taskId",
+        "role",
+        "status",
+        "sourceCommit"
+      ],
+      "properties": {
+        "taskId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "role": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "enum": [
+            "working",
+            "completed",
+            "failed",
+            "cancelled"
+          ]
+        },
+        "sourceCommit": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{40}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "checkpointRef": {
+      "type": "object",
+      "required": [
+        "id",
+        "path",
+        "sha256",
+        "authorityDigest",
+        "at",
+        "git",
+        "sourceFingerprint",
+        "note"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9_-]+$"
+        },
+        "path": {
+          "type": "string",
+          "pattern": "^\\.agent/checkpoints/[a-zA-Z0-9_-]+\\.json$"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "authorityDigest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "git": {
+          "$ref": "shared.schema.json#/$defs/git"
+        },
+        "sourceFingerprint": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "note": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "task": {
+      "type": "object",
+      "required": [
+        "id",
+        "phase",
+        "title",
+        "status",
+        "dependsOn",
+        "requiredEvidence",
+        "acceptance",
+        "evidence"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "phase": {
+          "enum": [
+            "M-1",
+            "M0",
+            "M1",
+            "M2",
+            "M3",
+            "M4",
+            "M5",
+            "M6"
+          ]
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "enum": [
+            "pending",
+            "in_progress",
+            "testing",
+            "reviewing",
+            "blocked",
+            "accepted",
+            "completed"
+          ]
+        },
+        "dependsOn": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "requiredEvidence": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "unit",
+              "typecheck",
+              "bundle",
+              "doctor",
+              "ci",
+              "ui",
+              "ipa",
+              "independent-review",
+              "independent-security",
+              "independent-handoff",
+              "device-install",
+              "device-upgrade",
+              "integration",
+              "fault-injection",
+              "protocol-contract",
+              "device-network"
+            ]
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "acceptance": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "$ref": "shared.schema.json#/$defs/evidenceRecord"
+          }
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

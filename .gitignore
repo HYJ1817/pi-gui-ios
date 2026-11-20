@@ -12,6 +12,9 @@ coverage/
 *.xcarchive/
 .agent/*.tmp-*
 .agent/lock
+.agent/recovery-backups/
 .agent/checkpoints/*.json
+!.agent/checkpoints/v2-*.json
+build/
 .agent/evidence/*.log
 .DS_Store

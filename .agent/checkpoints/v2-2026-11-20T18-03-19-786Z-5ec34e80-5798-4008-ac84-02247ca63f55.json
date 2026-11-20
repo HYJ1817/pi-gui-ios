@@ -1,0 +1,326 @@
+{
+  "schemaVersion": 2,
+  "kind": "checkpoint",
+  "revision": 15,
+  "updatedAt": "2026-11-20T18:03:19.786Z",
+  "data": {
+    "id": "v2-2026-11-20T18-03-19-786Z-5ec34e80-5798-4008-ac84-02247ca63f55",
+    "note": "控制层v2已覆盖S1/S5/S6/S7并26项回归通过；原生CI已取消且成功Simulator构建历史已记录；等待隔离IPA修复集成",
+    "control": {
+      "schemaVersion": 2,
+      "kind": "control",
+      "revision": 15,
+      "updatedAt": "2026-11-20T17:58:21.426Z",
+      "data": {
+        "phase": "M-1",
+        "currentTask": "M-1-infrastructure",
+        "branch": "agent/m-1-bootstrap",
+        "protocolVersion": 1,
+        "desktop": {
+          "repo": "HYJ1817/pi-gui",
+          "branch": "main",
+          "commit": "af0432a0bc3b04c717a63ede3cc457e859401833",
+          "protocolVersion": null
+        },
+        "ci": [
+          {
+            "id": "44783585115",
+            "head": "58ec99506e00a35121866580ffb28d09d5078b17",
+            "workflow": ".github/workflows/native-infrastructure.yml",
+            "attempt": 1,
+            "status": "completed",
+            "conclusion": "cancelled",
+            "url": "https://github.com/HYJ1817/pi-gui-ios/actions/runs/44783585115"
+          }
+        ],
+        "blockers": [
+          "S1 证据报告未按类型校验且依赖未递归复验",
+          "S2 IPA失败暂存位于公开上传范围",
+          "S3 IPA平台/签名/权限验证不足",
+          "S4 CocoaPods管道与原生锁待修复",
+          "S5 symlink/junction路径边界待修复",
+          "S6 状态schema和CI导入校验不足",
+          "S7 检查点事务顺序和投影修复锁不足"
+        ],
+        "tasks": [
+          {
+            "id": "M-1-infrastructure",
+            "phase": "M-1",
+            "title": "恢复控制层、Windows 原生探针、macOS/Simulator/Maestro/unsigned IPA 验证",
+            "status": "in_progress",
+            "dependsOn": [],
+            "requiredEvidence": [
+              "unit",
+              "typecheck",
+              "bundle",
+              "doctor",
+              "ci",
+              "ui",
+              "ipa",
+              "independent-review",
+              "independent-security",
+              "independent-handoff"
+            ],
+            "acceptance": "所有自动化、真实 UI 及独立审查通过；不包含 SideStore 人工验收",
+            "evidence": []
+          },
+          {
+            "id": "M-1-device",
+            "phase": "M-1",
+            "title": "一次集中 SideStore 免费签名安装与真机验收",
+            "status": "pending",
+            "dependsOn": [
+              "M-1-infrastructure"
+            ],
+            "requiredEvidence": [
+              "device-install",
+              "device-upgrade"
+            ],
+            "acceptance": "真实 iPhone 安装/运行/刷新/覆盖升级及可用 iPad 验证；不以 Simulator 或 IPA 结构代替",
+            "evidence": []
+          },
+          {
+            "id": "M0-architecture",
+            "phase": "M0",
+            "title": "冻结架构、协议和安全模型",
+            "status": "pending",
+            "dependsOn": [
+              "M-1-device"
+            ],
+            "requiredEvidence": [
+              "unit",
+              "independent-review",
+              "independent-security",
+              "protocol-contract"
+            ],
+            "acceptance": "双方源码证据、ADR、权限和兼容契约通过独立安全审查",
+            "evidence": []
+          },
+          {
+            "id": "M1-remote",
+            "phase": "M1",
+            "title": "桌面远程授权、配对、撤销",
+            "status": "pending",
+            "dependsOn": [
+              "M0-architecture"
+            ],
+            "requiredEvidence": [
+              "unit",
+              "integration",
+              "independent-review",
+              "independent-security"
+            ],
+            "acceptance": "隔离入口、TLS、重放、撤销断连、最小权限及桌面 canonical 验证",
+            "evidence": []
+          },
+          {
+            "id": "M2-shell",
+            "phase": "M2",
+            "title": "原生设计系统与 iPad 导航布局",
+            "status": "pending",
+            "dependsOn": [
+              "M1-remote"
+            ],
+            "requiredEvidence": [
+              "unit",
+              "ui",
+              "independent-review"
+            ],
+            "acceptance": "双设备、主题、辅助功能真实渲染验收",
+            "evidence": []
+          },
+          {
+            "id": "M3-core",
+            "phase": "M3",
+            "title": "会话、消息、任务、模型、工具及审批",
+            "status": "pending",
+            "dependsOn": [
+              "M2-shell"
+            ],
+            "requiredEvidence": [
+              "unit",
+              "integration",
+              "ui",
+              "independent-review",
+              "independent-security"
+            ],
+            "acceptance": "桌面/移动完整合成闭环，保持桌面审批",
+            "evidence": []
+          },
+          {
+            "id": "M4-sync",
+            "phase": "M4",
+            "title": "实时同步、断线补发、多设备一致性",
+            "status": "pending",
+            "dependsOn": [
+              "M3-core"
+            ],
+            "requiredEvidence": [
+              "unit",
+              "integration",
+              "fault-injection",
+              "independent-review"
+            ],
+            "acceptance": "乱序、间隙、重启、重复与冲突不破坏状态",
+            "evidence": []
+          },
+          {
+            "id": "M5-tailscale",
+            "phase": "M5",
+            "title": "Tailscale 异地与真机安全兼容",
+            "status": "pending",
+            "dependsOn": [
+              "M4-sync"
+            ],
+            "requiredEvidence": [
+              "integration",
+              "device-network",
+              "independent-review",
+              "independent-security"
+            ],
+            "acceptance": "异地 TLS/私网认证、网络切换、真机兼容通过",
+            "evidence": []
+          },
+          {
+            "id": "M6-distribution",
+            "phase": "M6",
+            "title": "IPA、版本检测、SideStore 源与发布候选",
+            "status": "pending",
+            "dependsOn": [
+              "M5-tailscale"
+            ],
+            "requiredEvidence": [
+              "unit",
+              "ipa",
+              "device-upgrade",
+              "independent-review",
+              "independent-security"
+            ],
+            "acceptance": "更新兼容通过；正式发布和 main 合并另需用户授权",
+            "evidence": []
+          }
+        ],
+        "checkpoint": {
+          "id": "v2-2026-11-20T17-58-21-426Z-9cb1d730-d7e1-47ac-a52a-24fb0d40f28b",
+          "path": ".agent/checkpoints/v2-2026-11-20T17-58-21-426Z-9cb1d730-d7e1-47ac-a52a-24fb0d40f28b.json",
+          "sha256": "e10e38610f592b26810cd8da44d45597c61912864924cc024e1243848c1215a9",
+          "authorityDigest": "8886c8a2006d58b69b2054624be847f4a485f4997e5f825ee992110cedd04c50",
+          "at": "2026-11-20T17:58:21.426Z",
+          "git": {
+            "branch": "agent/m-1-bootstrap",
+            "commit": "26e122a6a7b090e0a850ff9f741b3f7bced896cd",
+            "dirty": [
+              "M .agent/HANDOFF.md",
+              " M .agent/control.json",
+              " M .agent/schemas/control.schema.json",
+              " M .agent/schemas/envelope.schema.json",
+              " M .agent/state.json",
+              " M .agent/tasks.json",
+              " M .gitignore",
+              " M AGENTS.md",
+              " M PROGRESS.md",
+              " M docs/decisions/0001-persistent-control.md",
+              " M docs/testing.md",
+              " M scripts/agent-checkpoint.mjs",
+              " M scripts/agent-init.mjs",
+              " M scripts/agent-resume.mjs",
+              " M scripts/agent-task.mjs",
+              " M scripts/agent-validate.mjs",
+              " M scripts/lib/control.mjs",
+              " M scripts/verify.mjs",
+              " M tests/control.test.mjs",
+              "?? .agent/checkpoints/",
+              "?? .agent/schemas/checkpoint.schema.json",
+              "?? .agent/schemas/ci.schema.json",
+              "?? .agent/schemas/evidence.schema.json",
+              "?? .agent/schemas/shared.schema.json",
+              "?? .agent/schemas/state.schema.json",
+              "?? .agent/schemas/tasks.schema.json",
+              "?? docs/acceptance/M-1-security-review-1.md",
+              "?? docs/acceptance/ci-44783585115-api.json",
+              "?? docs/acceptance/legacy-control-v1-revision-10.json",
+              "?? docs/decisions/0004-verified-control-v2.md",
+              "?? scripts/agent-migrate-v2.mjs",
+              "?? scripts/agent-restore.mjs",
+              "?? scripts/lib/recovery.mjs",
+              "?? scripts/lib/schema.mjs"
+            ]
+          },
+          "sourceFingerprint": "f3848de3601e5ffbc00be0330ad30a2fafd9aa8b9cafd2582da7f97fb058702d",
+          "note": "agent-task ci current"
+        },
+        "nextAction": "按docs/acceptance/M-1-security-review-1.md修复S1-S7；父Agent负责控制层，独立worktree负责CI/IPA。先回归再独立复审，不接受原失败审查。",
+        "delegates": [
+          {
+            "taskId": "node:delegated-task:command%3Amcp%3Ac31b83bb-4e95-4301-8a91-f13f8295d85a%3Adelegate-task%3A4b75cf04-9360-469c-87e1-321a7e4b3149",
+            "role": "functional-review-and-fresh-handoff",
+            "status": "working",
+            "sourceCommit": "58ec99506e00a35121866580ffb28d09d5078b17"
+          },
+          {
+            "taskId": "node:delegated-task:command%3Amcp%3Ac31b83bb-4e95-4301-8a91-f13f8295d85a%3Adelegate-task%3Aff1f8e3d-e43a-47c2-ad8d-14c02bc295d0",
+            "role": "security-review",
+            "status": "completed",
+            "sourceCommit": "58ec99506e00a35121866580ffb28d09d5078b17"
+          },
+          {
+            "taskId": "node:delegated-task:command%3Amcp%3Ac31b83bb-4e95-4301-8a91-f13f8295d85a%3Adelegate-task%3A7af46559-43da-4538-9daa-7eee427ab8c0",
+            "role": "native-ci-ipa-fix-isolated",
+            "status": "working",
+            "sourceCommit": "26e122a6a7b090e0a850ff9f741b3f7bced896cd"
+          }
+        ]
+      },
+      "integrity": {
+        "algorithm": "sha256",
+        "digest": "22b39388682743fead93b5c516d8685f5bef583d274e49f8c680d7b13da1e514"
+      }
+    },
+    "git": {
+      "branch": "agent/m-1-bootstrap",
+      "commit": "26e122a6a7b090e0a850ff9f741b3f7bced896cd",
+      "dirty": [
+        "M .agent/HANDOFF.md",
+        " M .agent/control.json",
+        " M .agent/schemas/control.schema.json",
+        " M .agent/schemas/envelope.schema.json",
+        " M .agent/state.json",
+        " M .agent/tasks.json",
+        " M .gitignore",
+        " M AGENTS.md",
+        " M PROGRESS.md",
+        " M docs/decisions/0001-persistent-control.md",
+        " M docs/testing.md",
+        " M scripts/agent-checkpoint.mjs",
+        " M scripts/agent-init.mjs",
+        " M scripts/agent-resume.mjs",
+        " M scripts/agent-task.mjs",
+        " M scripts/agent-validate.mjs",
+        " M scripts/lib/control.mjs",
+        " M scripts/verify.mjs",
+        " M tests/control.test.mjs",
+        "?? .agent/checkpoints/",
+        "?? .agent/schemas/checkpoint.schema.json",
+        "?? .agent/schemas/ci.schema.json",
+        "?? .agent/schemas/evidence.schema.json",
+        "?? .agent/schemas/shared.schema.json",
+        "?? .agent/schemas/state.schema.json",
+        "?? .agent/schemas/tasks.schema.json",
+        "?? docs/acceptance/M-1-ci-first-run.md",
+        "?? docs/acceptance/M-1-security-review-1.md",
+        "?? docs/acceptance/ci-44783585115-api.json",
+        "?? docs/acceptance/legacy-control-v1-revision-10.json",
+        "?? docs/decisions/0004-verified-control-v2.md",
+        "?? scripts/agent-migrate-v2.mjs",
+        "?? scripts/agent-restore.mjs",
+        "?? scripts/lib/recovery.mjs",
+        "?? scripts/lib/schema.mjs"
+      ]
+    },
+    "sourceFingerprint": "a76a060b3718e6845f528e51400ba880b0f19ae21a161878ed66abc06d8ebd4d"
+  },
+  "integrity": {
+    "algorithm": "sha256",
+    "digest": "1e42676bafa19f5804b2cb7bbed1d5117b61cdce27b5de4778c9d53b80b82513"
+  }
+}

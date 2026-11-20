@@ -1,6 +1,7 @@
 import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { ROOT, envelope, writeEnvelope, renderProjections } from './lib/control.mjs';
+import { ROOT, envelope, writeEnvelope, renderProjections, withLock, createCheckpoint } from './lib/control.mjs';
+withLock(ROOT, () => {
 if (existsSync(resolve(ROOT, '.agent/control.json'))) throw new Error('Control already exists; use resume');
 const make = (id, phase, title, dependsOn, requiredEvidence, acceptance) => ({ id, phase, title, status: 'pending', dependsOn, requiredEvidence, acceptance, evidence: [] });
 const tasks = [
@@ -15,6 +16,8 @@ const tasks = [
   make('M6-distribution', 'M6', 'IPA、版本检测、SideStore 源与发布候选', ['M5-tailscale'], ['unit', 'ipa', 'device-upgrade', 'independent-review', 'independent-security'], '更新兼容通过；正式发布和 main 合并另需用户授权'),
 ];
 tasks[0].status = 'in_progress';
-const data = { phase: 'M-1', currentTask: tasks[0].id, branch: 'agent/m-1-bootstrap', protocolVersion: 1, desktop: { repo: 'HYJ1817/pi-gui', branch: 'main', commit: 'af0432a0bc3b04c717a63ede3cc457e859401833', protocolVersion: null }, ci: [], blockers: [], tasks, checkpoint: null, nextAction: '完成控制层故障测试与 Expo 58 离线探针；触发并实际分析 macOS CI，之后独立审查/恢复交接。' };
+const data = { phase: 'M-1', currentTask: tasks[0].id, branch: 'agent/m-1-bootstrap', protocolVersion: 1, desktop: { repo: 'HYJ1817/pi-gui', branch: 'main', commit: 'af0432a0bc3b04c717a63ede3cc457e859401833', protocolVersion: null }, ci: [], blockers: [], delegates: [], tasks, checkpoint: null, nextAction: '完成控制层故障测试与 Expo 58 离线探针；触发并实际分析 macOS CI，之后独立审查/恢复交接。' };
 const control = envelope('control', 1, data); writeEnvelope(ROOT, '.agent/control.json', control); renderProjections(ROOT, control);
-console.log('Initialized M-1 control revision 1; no acceptance claimed.');
+console.log('Initialized M-1 schema v2 control revision 1; no acceptance claimed.');
+});
+createCheckpoint(ROOT, '初始化项目控制层；尚无通过证据');

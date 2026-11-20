@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "allOf": [
+    {
+      "$ref": "envelope.schema.json"
+    }
+  ],
+  "properties": {
+    "kind": {
+      "const": "state"
+    },
+    "data": {
+      "type": "object",
+      "required": [
+        "authority",
+        "parentDigest",
+        "phase",
+        "currentTask",
+        "branch",
+        "protocolVersion",
+        "desktop",
+        "ci",
+        "blockers",
+        "checkpoint",
+        "delegates"
+      ],
+      "properties": {
+        "authority": {
+          "const": ".agent/control.json"
+        },
+        "parentDigest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "phase": {
+          "enum": [
+            "M-1",
+            "M0",
+            "M1",
+            "M2",
+            "M3",
+            "M4",
+            "M5",
+            "M6"
+          ]
+        },
+        "currentTask": {
+          "type": "string",
+          "minLength": 1
+        },
+        "branch": {
+          "type": "string",
+          "minLength": 1
+        },
+        "protocolVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "desktop": {
+          "$ref": "shared.schema.json#/$defs/desktop"
+        },
+        "ci": {
+          "type": "array",
+          "items": {
+            "$ref": "shared.schema.json#/$defs/ci"
+          }
+        },
+        "blockers": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "checkpoint": {
+          "anyOf": [
+            {
+              "$ref": "shared.schema.json#/$defs/checkpointRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "delegates": {
+          "type": "array",
+          "items": {
+            "$ref": "shared.schema.json#/$defs/delegate"
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

@@ -1,6 +1,6 @@
 # 项目进度（生成文件）
 
-权威：.agent/control.json；revision 7；2026-11-20T17:31:53.483Z
+权威：.agent/control.json；schema v2；revision 17；2026-11-20T18:03:35.501Z
 
 阶段：M-1；当前：M-1-infrastructure；分支：agent/m-1-bootstrap
 
@@ -16,12 +16,12 @@
 | M5-tailscale | pending | Tailscale 异地与真机安全兼容 |
 | M6-distribution | pending | IPA、版本检测、SideStore 源与发布候选 |
 
-阻塞：尚无已记录阻塞
+阻塞：S1 证据报告未按类型校验且依赖未递归复验（v2修复与回归已实现，待独立复审）；S2 IPA失败暂存位于公开上传范围；S3 IPA平台/签名/权限验证不足；S4 CocoaPods管道与原生锁待修复；S5 symlink/junction路径边界待修复（v2修复与回归已实现，待独立复审）；S6 状态schema和CI导入校验不足（v2修复与回归已实现，待独立复审）；S7 检查点事务顺序和投影修复锁不足（v2修复与回归已实现，待独立复审）
 
-检查点：2026-11-20T17-31-53-221Z-20476；代码 HEAD：58ec99506e00a35121866580ffb28d09d5078b17
+检查点：.agent/checkpoints/v2-2026-11-20T18-03-19-786Z-5ec34e80-5798-4008-ac84-02247ca63f55.json；保存时 HEAD：26e122a6a7b090e0a850ff9f741b3f7bced896cd
 
-CI：44783585115 in_progress/ @ 58ec99506e00a35121866580ffb28d09d5078b17
+CI：44783585115/1 completed/cancelled @ 58ec99506e00a35121866580ffb28d09d5078b17
 
-下一步：CI 44783585115 的 Windows checks 已通过，macOS 正在 CocoaPods 阶段；独立审查任务见 control.delegates，完成后读取结果并修复。原生/IPA/真机未验收。
+下一步：父Agent控制层v2已实现，26项回归通过；等待隔离worktree的S2/S3/S4原生CI/IPA修复commit，集成后重跑canonical并发起新独立复审。CI44783585115已主动取消，只有旧源码Simulator构建成功的历史证据。
 
-测试/审查真实证据见 control 各任务 evidence 与 docs/acceptance/；未登记不视为通过。
+证据必须由 agent-validate 解析实际结果、核对提交/源码摘要与依赖后才有效。

@@ -1,28 +1,13 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "type": "object",
-  "required": [
-    "schemaVersion",
-    "kind",
-    "revision",
-    "updatedAt",
-    "data",
-    "integrity"
+  "allOf": [
+    {
+      "$ref": "envelope.schema.json"
+    }
   ],
   "properties": {
-    "schemaVersion": {
-      "const": 1
-    },
     "kind": {
       "const": "control"
-    },
-    "revision": {
-      "type": "integer",
-      "minimum": 1
-    },
-    "updatedAt": {
-      "type": "string",
-      "format": "date-time"
     },
     "data": {
       "type": "object",
@@ -34,195 +19,81 @@
         "desktop",
         "ci",
         "blockers",
+        "checkpoint",
+        "delegates",
         "tasks",
-        "nextAction",
-        "checkpoint"
+        "nextAction"
       ],
       "properties": {
         "phase": {
-          "type": "string"
+          "enum": [
+            "M-1",
+            "M0",
+            "M1",
+            "M2",
+            "M3",
+            "M4",
+            "M5",
+            "M6"
+          ]
         },
         "currentTask": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1
         },
         "branch": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1
         },
         "protocolVersion": {
           "type": "integer",
           "minimum": 1
         },
         "desktop": {
-          "type": "object",
-          "required": [
-            "repo",
-            "branch",
-            "commit",
-            "protocolVersion"
-          ],
-          "properties": {
-            "repo": {
-              "const": "HYJ1817/pi-gui"
-            },
-            "branch": {
-              "type": [
-                "string",
-                "null"
-              ]
-            },
-            "commit": {
-              "type": "string",
-              "pattern": "^[a-f0-9]{40}$"
-            },
-            "protocolVersion": {
-              "type": [
-                "integer",
-                "null"
-              ]
-            }
-          }
+          "$ref": "shared.schema.json#/$defs/desktop"
         },
         "ci": {
-          "type": "array"
+          "type": "array",
+          "items": {
+            "$ref": "shared.schema.json#/$defs/ci"
+          }
         },
         "blockers": {
           "type": "array",
           "items": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "checkpoint": {
+          "anyOf": [
+            {
+              "$ref": "shared.schema.json#/$defs/checkpointRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "delegates": {
+          "type": "array",
+          "items": {
+            "$ref": "shared.schema.json#/$defs/delegate"
           }
         },
         "tasks": {
           "type": "array",
-          "minItems": 1,
           "items": {
-            "type": "object",
-            "required": [
-              "id",
-              "phase",
-              "title",
-              "status",
-              "dependsOn",
-              "requiredEvidence",
-              "acceptance",
-              "evidence"
-            ],
-            "properties": {
-              "id": {
-                "type": "string",
-                "minLength": 1
-              },
-              "phase": {
-                "type": "string"
-              },
-              "title": {
-                "type": "string"
-              },
-              "status": {
-                "enum": [
-                  "pending",
-                  "in_progress",
-                  "testing",
-                  "reviewing",
-                  "blocked",
-                  "accepted",
-                  "completed"
-                ]
-              },
-              "dependsOn": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                },
-                "uniqueItems": true
-              },
-              "requiredEvidence": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                },
-                "uniqueItems": true
-              },
-              "acceptance": {
-                "type": "string"
-              },
-              "evidence": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "required": [
-                    "kind",
-                    "path",
-                    "passed",
-                    "sha256",
-                    "sourceFingerprint",
-                    "commit",
-                    "at"
-                  ],
-                  "properties": {
-                    "kind": {
-                      "type": "string"
-                    },
-                    "path": {
-                      "type": "string"
-                    },
-                    "passed": {
-                      "type": "boolean"
-                    },
-                    "sha256": {
-                      "type": "string",
-                      "pattern": "^[a-f0-9]{64}$"
-                    },
-                    "sourceFingerprint": {
-                      "type": "string",
-                      "pattern": "^[a-f0-9]{64}$"
-                    },
-                    "commit": {
-                      "type": [
-                        "string",
-                        "null"
-                      ]
-                    },
-                    "at": {
-                      "type": "string",
-                      "format": "date-time"
-                    }
-                  }
-                }
-              },
-              "updatedAt": {
-                "type": "string"
-              }
-            }
-          }
+            "$ref": "shared.schema.json#/$defs/task"
+          },
+          "minItems": 1
         },
         "nextAction": {
-          "type": "string"
-        },
-        "checkpoint": {
-          "type": [
-            "object",
-            "null"
-          ]
-        }
-      }
-    },
-    "integrity": {
-      "type": "object",
-      "required": [
-        "algorithm",
-        "digest"
-      ],
-      "properties": {
-        "algorithm": {
-          "const": "sha256"
-        },
-        "digest": {
           "type": "string",
-          "pattern": "^[a-f0-9]{64}$"
+          "minLength": 1
         }
       },
       "additionalProperties": false
     }
-  },
-  "additionalProperties": false
+  }
 }

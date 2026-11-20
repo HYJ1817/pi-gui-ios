@@ -1,39 +1,81 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "kind": "state",
-  "revision": 7,
-  "updatedAt": "2026-11-20T17:31:53.483Z",
+  "revision": 17,
+  "updatedAt": "2026-11-20T18:03:35.501Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "e09f834d22963bd096ec2a3bc2fb2b6a6b70460b4fccc3344469dcda01e1388d",
+    "parentDigest": "ef88926820b0faf1fa31bd0d3fd3d778a527bf1b57e6ea4af461cc8e76762165",
     "phase": "M-1",
     "currentTask": "M-1-infrastructure",
     "branch": "agent/m-1-bootstrap",
     "checkpoint": {
-      "id": "2026-11-20T17-31-53-221Z-20476",
-      "note": "保存运行中CI与两个独立审查任务标识；等待实际原生构建证据",
-      "at": "2026-11-20T17:31:53.225Z",
+      "id": "v2-2026-11-20T18-03-19-786Z-5ec34e80-5798-4008-ac84-02247ca63f55",
+      "path": ".agent/checkpoints/v2-2026-11-20T18-03-19-786Z-5ec34e80-5798-4008-ac84-02247ca63f55.json",
+      "sha256": "46d23e459e1636fb36663cae50a2e47c9c52cc2b0ac76ad563a0074585b4377c",
+      "authorityDigest": "22b39388682743fead93b5c516d8685f5bef583d274e49f8c680d7b13da1e514",
+      "at": "2026-11-20T18:03:19.786Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "58ec99506e00a35121866580ffb28d09d5078b17",
+        "commit": "26e122a6a7b090e0a850ff9f741b3f7bced896cd",
         "dirty": [
           "M .agent/HANDOFF.md",
           " M .agent/control.json",
+          " M .agent/schemas/control.schema.json",
+          " M .agent/schemas/envelope.schema.json",
           " M .agent/state.json",
           " M .agent/tasks.json",
+          " M .gitignore",
+          " M AGENTS.md",
           " M PROGRESS.md",
-          "?? docs/acceptance/ci-44783585115.json"
+          " M docs/decisions/0001-persistent-control.md",
+          " M docs/testing.md",
+          " M scripts/agent-checkpoint.mjs",
+          " M scripts/agent-init.mjs",
+          " M scripts/agent-resume.mjs",
+          " M scripts/agent-task.mjs",
+          " M scripts/agent-validate.mjs",
+          " M scripts/lib/control.mjs",
+          " M scripts/verify.mjs",
+          " M tests/control.test.mjs",
+          "?? .agent/checkpoints/",
+          "?? .agent/schemas/checkpoint.schema.json",
+          "?? .agent/schemas/ci.schema.json",
+          "?? .agent/schemas/evidence.schema.json",
+          "?? .agent/schemas/shared.schema.json",
+          "?? .agent/schemas/state.schema.json",
+          "?? .agent/schemas/tasks.schema.json",
+          "?? docs/acceptance/M-1-ci-first-run.md",
+          "?? docs/acceptance/M-1-security-review-1.md",
+          "?? docs/acceptance/ci-44783585115-api.json",
+          "?? docs/acceptance/legacy-control-v1-revision-10.json",
+          "?? docs/decisions/0004-verified-control-v2.md",
+          "?? scripts/agent-migrate-v2.mjs",
+          "?? scripts/agent-restore.mjs",
+          "?? scripts/lib/recovery.mjs",
+          "?? scripts/lib/schema.mjs"
         ]
       },
-      "sourceFingerprint": "56ba10f1b5782312c81558b38cc15862ebc558a2f3ee65061a7e788d64fd74ce"
+      "sourceFingerprint": "a76a060b3718e6845f528e51400ba880b0f19ae21a161878ed66abc06d8ebd4d",
+      "note": "控制层v2已覆盖S1/S5/S6/S7并26项回归通过；原生CI已取消且成功Simulator构建历史已记录；等待隔离IPA修复集成"
     },
-    "blockers": [],
+    "blockers": [
+      "S1 证据报告未按类型校验且依赖未递归复验（v2修复与回归已实现，待独立复审）",
+      "S2 IPA失败暂存位于公开上传范围",
+      "S3 IPA平台/签名/权限验证不足",
+      "S4 CocoaPods管道与原生锁待修复",
+      "S5 symlink/junction路径边界待修复（v2修复与回归已实现，待独立复审）",
+      "S6 状态schema和CI导入校验不足（v2修复与回归已实现，待独立复审）",
+      "S7 检查点事务顺序和投影修复锁不足（v2修复与回归已实现，待独立复审）"
+    ],
     "ci": [
       {
         "id": "44783585115",
         "head": "58ec99506e00a35121866580ffb28d09d5078b17",
-        "status": "in_progress",
-        "conclusion": "",
+        "workflow": ".github/workflows/native-infrastructure.yml",
+        "attempt": 1,
+        "status": "completed",
+        "conclusion": "cancelled",
         "url": "https://github.com/HYJ1817/pi-gui-ios/actions/runs/44783585115"
       }
     ],
@@ -43,10 +85,30 @@
       "commit": "af0432a0bc3b04c717a63ede3cc457e859401833",
       "protocolVersion": null
     },
-    "protocolVersion": 1
+    "protocolVersion": 1,
+    "delegates": [
+      {
+        "taskId": "node:delegated-task:command%3Amcp%3Ac31b83bb-4e95-4301-8a91-f13f8295d85a%3Adelegate-task%3A4b75cf04-9360-469c-87e1-321a7e4b3149",
+        "role": "functional-review-and-fresh-handoff",
+        "status": "working",
+        "sourceCommit": "58ec99506e00a35121866580ffb28d09d5078b17"
+      },
+      {
+        "taskId": "node:delegated-task:command%3Amcp%3Ac31b83bb-4e95-4301-8a91-f13f8295d85a%3Adelegate-task%3Aff1f8e3d-e43a-47c2-ad8d-14c02bc295d0",
+        "role": "security-review",
+        "status": "completed",
+        "sourceCommit": "58ec99506e00a35121866580ffb28d09d5078b17"
+      },
+      {
+        "taskId": "node:delegated-task:command%3Amcp%3Ac31b83bb-4e95-4301-8a91-f13f8295d85a%3Adelegate-task%3A7af46559-43da-4538-9daa-7eee427ab8c0",
+        "role": "native-ci-ipa-fix-isolated",
+        "status": "working",
+        "sourceCommit": "26e122a6a7b090e0a850ff9f741b3f7bced896cd"
+      }
+    ]
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "91a5fbe17d375f56bb92d8b963bc252ab6b7b4b93d45fa21e4bdc1e4032a7005"
+    "digest": "87d78c2404857c5aac62d6bd57f4628050095ab42a7fa1fe557866065ae70155"
   }
 }

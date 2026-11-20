@@ -1,11 +1,5 @@
-import { resolve } from 'node:path';
-import { ROOT, envelope, writeEnvelope, mutate, snapshot, sourceFingerprint, decode } from './lib/control.mjs';
-import { readFileSync } from 'node:fs';
-const args = process.argv.slice(2); const note = args.includes('--note') ? args[args.indexOf('--note') + 1] : 'incremental checkpoint';
+import { createCheckpoint } from './lib/control.mjs';
+const args = process.argv.slice(2), note = args.includes('--note') ? args[args.indexOf('--note') + 1] : 'incremental checkpoint';
 if (!note) throw new Error('Missing --note value');
-const id = new Date().toISOString().replace(/[:.]/g, '-') + '-' + process.pid;
-const control = mutate(ROOT, d => { d.checkpoint = { id, note, at: new Date().toISOString(), git: snapshot(), sourceFingerprint: sourceFingerprint() }; });
-const checkpoint = envelope('checkpoint', control.revision, { control, git: snapshot(), sourceFingerprint: sourceFingerprint(), note });
-const path = '.agent/checkpoints/' + id + '.json'; writeEnvelope(ROOT, path, checkpoint);
-decode(readFileSync(resolve(ROOT, path), 'utf8'), 'checkpoint');
-console.log(JSON.stringify({ checkpoint: path, revision: control.revision, commit: control.data.checkpoint.git.commit, sourceFingerprint: checkpoint.data.sourceFingerprint }));
+const control = createCheckpoint(undefined, note);
+console.log(JSON.stringify({ checkpoint: control.data.checkpoint.path, revision: control.revision, commit: control.data.checkpoint.git.commit, sourceFingerprint: control.data.checkpoint.sourceFingerprint }));
