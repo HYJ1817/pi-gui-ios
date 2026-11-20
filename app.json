@@ -1,0 +1,18 @@
+{
+  "expo": {
+    "name": "Pi GUI Mobile",
+    "slug": "pi-gui-mobile",
+    "scheme": "piguimobile",
+    "version": "0.0.1",
+    "orientation": "default",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "bundleIdentifier": "io.github.hyj1817.piguimobile",
+      "buildNumber": "1",
+      "supportsTablet": true,
+      "infoPlist": { "ITSAppUsesNonExemptEncryption": false }
+    },
+    "plugins": ["expo-router"],
+    "experiments": { "typedRoutes": true }
+  }
+}

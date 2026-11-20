@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "kind": "typecheck",
+  "command": "node node_modules/typescript/bin/tsc --noEmit",
+  "commit": null,
+  "sourceFingerprint": "95ee80af06215922504263683af7cb9dfe40795f89a30a3968f22e6893b4bb95",
+  "startedAt": "2026-11-20T17:26:57.243Z",
+  "finishedAt": "2026-11-20T17:26:58.484Z",
+  "exitCode": 0,
+  "passed": true,
+  "output": ""
+}

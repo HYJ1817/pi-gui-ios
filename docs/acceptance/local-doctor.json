@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "kind": "doctor",
+  "command": "node node_modules/expo-doctor/build/index.js",
+  "commit": null,
+  "sourceFingerprint": "95ee80af06215922504263683af7cb9dfe40795f89a30a3968f22e6893b4bb95",
+  "startedAt": "2026-11-20T17:26:48.719Z",
+  "finishedAt": "2026-11-20T17:26:52.177Z",
+  "exitCode": 0,
+  "passed": true,
+  "output": "Running 20 checks on your project...\n20/20 checks passed. No issues detected!\n"
+}

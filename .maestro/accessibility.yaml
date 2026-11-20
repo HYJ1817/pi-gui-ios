@@ -1,0 +1,14 @@
+appId: io.github.hyj1817.piguimobile
+name: Native opaque accessibility fallback
+---
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible: "Opaque accessibility fallback"
+    timeout: 30000
+- takeScreenshot: ${SCREENSHOT_DIR}/reduce-transparency
+- scrollUntilVisible:
+    element:
+      id: "open-diagnostics"
+    direction: DOWN
+- takeScreenshot: ${SCREENSHOT_DIR}/dynamic-type

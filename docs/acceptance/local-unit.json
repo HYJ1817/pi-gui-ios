@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "kind": "unit",
+  "command": "node --test tests/control.test.mjs",
+  "commit": null,
+  "sourceFingerprint": "95ee80af06215922504263683af7cb9dfe40795f89a30a3968f22e6893b4bb95",
+  "startedAt": "2026-11-20T17:26:52.351Z",
+  "finishedAt": "2026-11-20T17:26:57.073Z",
+  "exitCode": 0,
+  "passed": true,
+  "output": "✔ normal atomic state save and projection recovery preserve single authority (148.9005ms)\n✔ unexpected process termination leaves previous authority usable and uncommitted code intact (403.952ms)\n✔ writer lock fails closed without deleting another writer lock (123.4457ms)\n✔ corrupt checksum and unknown schema are rejected (128.5736ms)\n✔ dependency cycles and invalid status fail structural validation (116.0973ms)\n✔ cannot skip testing/review or complete without actual proof (851.4793ms)\n✔ source changes invalidate accepted proof and allow explicit revalidation (734.7639ms)\n✔ tampered, missing, escaped evidence never satisfies gate (431.3028ms)\n✔ CI running and failure survive save/recovery, without becoming pass evidence (203.8619ms)\n✔ Git HEAD and branch drift can be detected without reset or losing dirty work (797.8973ms)\n✔ desktop/mobile protocol mismatch blocks post-spike acceptance (321.2511ms)\nℹ tests 11\nℹ suites 0\nℹ pass 11\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 4363.591\n"
+}

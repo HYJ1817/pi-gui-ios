@@ -1,0 +1,89 @@
+name: Native infrastructure
+on:
+  push:
+    branches: ['agent/**']
+    paths: ['app/**', 'src/**', 'modules/**', 'scripts/**', 'tests/**', '.maestro/**', 'package.json', 'package-lock.json', 'app.json', 'tsconfig.json', '.github/workflows/**']
+  pull_request:
+    paths: ['app/**', 'src/**', 'modules/**', 'scripts/**', 'tests/**', '.maestro/**', 'package.json', 'package-lock.json', 'app.json', 'tsconfig.json', '.github/workflows/**']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: native-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  checks:
+    runs-on: windows-latest
+    timeout-minutes: 12
+    env:
+      EXPO_NO_TELEMETRY: '1'
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24.22.1'
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npm test
+      - run: npm run typecheck
+      - run: npx expo install --check
+      - run: npm run export:ios
+  ios:
+    needs: checks
+    runs-on: macos-26
+    timeout-minutes: 55
+    env:
+      EXPO_NO_TELEMETRY: '1'
+      MAESTRO_CLI_NO_ANALYTICS: '1'
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24.22.1'
+          cache: npm
+      - name: Record actual native environment
+        run: |
+          mkdir -p artifacts
+          sw_vers > artifacts/environment.txt
+          xcodebuild -version >> artifacts/environment.txt
+          xcrun simctl list runtimes >> artifacts/environment.txt
+          node --version >> artifacts/environment.txt
+          npm --version >> artifacts/environment.txt
+          xcrun simctl list devices available --json > artifacts/simulators.json
+          node scripts/ci/select-simulators.mjs > artifacts/selected-simulators.json
+      - run: npm ci --no-audit --no-fund
+      - name: Generate native project
+        run: npx expo prebuild --platform ios --no-install
+      - name: Install CocoaPods
+        run: cd ios && pod install 2>&1 | tee ../artifacts/pods.log
+      - name: Install pinned open source Maestro
+        run: |
+          curl -fL --retry 2 https://github.com/mobile-dev-inc/Maestro/releases/download/cli-2.12.1/maestro.zip -o "$RUNNER_TEMP/maestro.zip"
+          echo "54dbb0716425626604973cbb374c585ca30272375d9ce15177a1152765ddd9d7  $RUNNER_TEMP/maestro.zip" | shasum -a 256 -c -
+          unzip -q "$RUNNER_TEMP/maestro.zip" -d "$RUNNER_TEMP/maestro-cli"
+          echo "$RUNNER_TEMP/maestro-cli/maestro/bin" >> "$GITHUB_PATH"
+      - name: Build self-contained Release simulator app
+        run: |
+          set -o pipefail
+          xcodebuild -workspace ios/PiGUIMobile.xcworkspace -scheme PiGUIMobile -configuration Release -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -derivedDataPath build/simulator ARCHS="$(uname -m)" ONLY_ACTIVE_ARCH=YES CODE_SIGNING_ALLOWED=NO build 2>&1 | tee artifacts/build-simulator.log
+      - name: iPhone native interactions and appearance
+        run: bash scripts/ci/simulator.sh "$IPHONE_UDID" iphone
+      - name: iPad native interactions and appearance
+        run: bash scripts/ci/simulator.sh "$IPAD_UDID" ipad
+      - name: Build unsigned device app without Apple credentials
+        run: |
+          set -o pipefail
+          xcodebuild -workspace ios/PiGUIMobile.xcworkspace -scheme PiGUIMobile -configuration Release -sdk iphoneos -destination 'generic/platform=iOS' -derivedDataPath build/device ARCHS=arm64 ONLY_ACTIVE_ARCH=YES CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO build 2>&1 | tee artifacts/build-device.log
+          bash scripts/ci/package-ipa.sh
+      - name: Upload synthetic test evidence
+        if: always()
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        with:
+          name: m-1-ios-${{ github.run_id }}
+          path: artifacts/
+          retention-days: 7
+          if-no-files-found: warn

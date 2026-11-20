@@ -1,0 +1,45 @@
+appId: io.github.hyj1817.piguimobile
+name: Native infrastructure interactions
+---
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible: "Native Liquid Glass"
+    timeout: 30000
+- takeScreenshot: ${SCREENSHOT_DIR}/01-native-glass
+- tapOn: "Open native menu"
+- assertVisible: "Native validation menu"
+- tapOn: "Show diagnostic"
+- scrollUntilVisible:
+    element:
+      id: "device-label"
+    direction: DOWN
+- tapOn:
+    id: "device-label"
+- inputText: "CI synthetic device"
+- hideKeyboard
+- assertVisible: "Preview label: CI synthetic device"
+- scrollUntilVisible:
+    element:
+      id: "demo-toggle"
+    direction: DOWN
+- tapOn:
+    id: "demo-toggle"
+- assertVisible: "Demo preference: on"
+- assertVisible: "Native menu confirmed"
+- takeScreenshot: ${SCREENSHOT_DIR}/02-interactions
+- scrollUntilVisible:
+    element:
+      id: "open-diagnostics"
+    direction: DOWN
+- tapOn:
+    id: "open-diagnostics"
+- assertVisible: "Native navigation works"
+- assertVisible: "Remote access: disabled"
+- takeScreenshot: ${SCREENSHOT_DIR}/03-navigation
+- tapOn: "Back"
+- scrollUntilVisible:
+    element:
+      id: "scroll-end"
+    direction: DOWN
+- assertVisible: "End of native validation screen"

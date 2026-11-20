@@ -1,0 +1,216 @@
+{
+  "schemaVersion": 1,
+  "kind": "control",
+  "revision": 3,
+  "updatedAt": "2026-11-20T17:28:05.950Z",
+  "data": {
+    "phase": "M-1",
+    "currentTask": "M-1-infrastructure",
+    "branch": "agent/m-1-bootstrap",
+    "protocolVersion": 1,
+    "desktop": {
+      "repo": "HYJ1817/pi-gui",
+      "branch": "main",
+      "commit": "af0432a0bc3b04c717a63ede3cc457e859401833",
+      "protocolVersion": null
+    },
+    "ci": [],
+    "blockers": [],
+    "tasks": [
+      {
+        "id": "M-1-infrastructure",
+        "phase": "M-1",
+        "title": "恢复控制层、Windows 原生探针、macOS/Simulator/Maestro/unsigned IPA 验证",
+        "status": "in_progress",
+        "dependsOn": [],
+        "requiredEvidence": [
+          "unit",
+          "typecheck",
+          "bundle",
+          "doctor",
+          "ci",
+          "ui",
+          "ipa",
+          "independent-review",
+          "independent-security",
+          "independent-handoff"
+        ],
+        "acceptance": "所有自动化、真实 UI 及独立审查通过；不包含 SideStore 人工验收",
+        "evidence": []
+      },
+      {
+        "id": "M-1-device",
+        "phase": "M-1",
+        "title": "一次集中 SideStore 免费签名安装与真机验收",
+        "status": "pending",
+        "dependsOn": [
+          "M-1-infrastructure"
+        ],
+        "requiredEvidence": [
+          "device-install",
+          "device-upgrade"
+        ],
+        "acceptance": "真实 iPhone 安装/运行/刷新/覆盖升级及可用 iPad 验证；不以 Simulator 或 IPA 结构代替",
+        "evidence": []
+      },
+      {
+        "id": "M0-architecture",
+        "phase": "M0",
+        "title": "冻结架构、协议和安全模型",
+        "status": "pending",
+        "dependsOn": [
+          "M-1-device"
+        ],
+        "requiredEvidence": [
+          "unit",
+          "independent-review",
+          "independent-security",
+          "protocol-contract"
+        ],
+        "acceptance": "双方源码证据、ADR、权限和兼容契约通过独立安全审查",
+        "evidence": []
+      },
+      {
+        "id": "M1-remote",
+        "phase": "M1",
+        "title": "桌面远程授权、配对、撤销",
+        "status": "pending",
+        "dependsOn": [
+          "M0-architecture"
+        ],
+        "requiredEvidence": [
+          "unit",
+          "integration",
+          "independent-review",
+          "independent-security"
+        ],
+        "acceptance": "隔离入口、TLS、重放、撤销断连、最小权限及桌面 canonical 验证",
+        "evidence": []
+      },
+      {
+        "id": "M2-shell",
+        "phase": "M2",
+        "title": "原生设计系统与 iPad 导航布局",
+        "status": "pending",
+        "dependsOn": [
+          "M1-remote"
+        ],
+        "requiredEvidence": [
+          "unit",
+          "ui",
+          "independent-review"
+        ],
+        "acceptance": "双设备、主题、辅助功能真实渲染验收",
+        "evidence": []
+      },
+      {
+        "id": "M3-core",
+        "phase": "M3",
+        "title": "会话、消息、任务、模型、工具及审批",
+        "status": "pending",
+        "dependsOn": [
+          "M2-shell"
+        ],
+        "requiredEvidence": [
+          "unit",
+          "integration",
+          "ui",
+          "independent-review",
+          "independent-security"
+        ],
+        "acceptance": "桌面/移动完整合成闭环，保持桌面审批",
+        "evidence": []
+      },
+      {
+        "id": "M4-sync",
+        "phase": "M4",
+        "title": "实时同步、断线补发、多设备一致性",
+        "status": "pending",
+        "dependsOn": [
+          "M3-core"
+        ],
+        "requiredEvidence": [
+          "unit",
+          "integration",
+          "fault-injection",
+          "independent-review"
+        ],
+        "acceptance": "乱序、间隙、重启、重复与冲突不破坏状态",
+        "evidence": []
+      },
+      {
+        "id": "M5-tailscale",
+        "phase": "M5",
+        "title": "Tailscale 异地与真机安全兼容",
+        "status": "pending",
+        "dependsOn": [
+          "M4-sync"
+        ],
+        "requiredEvidence": [
+          "integration",
+          "device-network",
+          "independent-review",
+          "independent-security"
+        ],
+        "acceptance": "异地 TLS/私网认证、网络切换、真机兼容通过",
+        "evidence": []
+      },
+      {
+        "id": "M6-distribution",
+        "phase": "M6",
+        "title": "IPA、版本检测、SideStore 源与发布候选",
+        "status": "pending",
+        "dependsOn": [
+          "M5-tailscale"
+        ],
+        "requiredEvidence": [
+          "unit",
+          "ipa",
+          "device-upgrade",
+          "independent-review",
+          "independent-security"
+        ],
+        "acceptance": "更新兼容通过；正式发布和 main 合并另需用户授权",
+        "evidence": []
+      }
+    ],
+    "checkpoint": {
+      "id": "2026-11-20T17-28-05-677Z-19100",
+      "note": "Windows首轮检查通过，准备推送M-1原生CI；未验证真机",
+      "at": "2026-11-20T17:28:05.681Z",
+      "git": {
+        "branch": "agent/m-1-bootstrap",
+        "commit": null,
+        "dirty": [
+          "?? .agent/",
+          "?? .gitattributes",
+          "?? .github/",
+          "?? .gitignore",
+          "?? .maestro/",
+          "?? AGENTS.md",
+          "?? PROGRESS.md",
+          "?? README.md",
+          "?? REVIEW.md",
+          "?? ROADMAP.md",
+          "?? THIRD_PARTY_NOTICES.md",
+          "?? app.json",
+          "?? app/",
+          "?? docs/",
+          "?? expo-env.d.ts",
+          "?? package-lock.json",
+          "?? package.json",
+          "?? scripts/",
+          "?? src/",
+          "?? tests/",
+          "?? tsconfig.json"
+        ]
+      },
+      "sourceFingerprint": "56ba10f1b5782312c81558b38cc15862ebc558a2f3ee65061a7e788d64fd74ce"
+    },
+    "nextAction": "完成控制层故障测试与 Expo 58 离线探针；触发并实际分析 macOS CI，之后独立审查/恢复交接。"
+  },
+  "integrity": {
+    "algorithm": "sha256",
+    "digest": "b647e660765133f7d5a5af8309ecc7bc49dcce40b174129a98a339d75d96de3b"
+  }
+}

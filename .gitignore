@@ -1,0 +1,17 @@
+node_modules/
+.expo/
+ios/
+android/
+dist/
+artifacts/
+coverage/
+*.log
+.env*
+!.env.example
+*.ipa
+*.xcarchive/
+.agent/*.tmp-*
+.agent/lock
+.agent/checkpoints/*.json
+.agent/evidence/*.log
+.DS_Store
