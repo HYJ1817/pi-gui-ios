@@ -1,12 +1,16 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "kind": "typecheck",
-  "command": "node node_modules/typescript/bin/tsc --noEmit",
-  "commit": null,
-  "sourceFingerprint": "95ee80af06215922504263683af7cb9dfe40795f89a30a3968f22e6893b4bb95",
-  "startedAt": "2026-11-20T17:26:57.243Z",
-  "finishedAt": "2026-11-20T17:26:58.484Z",
-  "exitCode": 0,
+  "taskId": "M-1-infrastructure",
+  "commit": "a3acf20eef222e556c5b9de392da51005dfc0238",
+  "sourceFingerprint": "a76a060b3718e6845f528e51400ba880b0f19ae21a161878ed66abc06d8ebd4d",
+  "startedAt": "2026-11-20T18:05:30.625Z",
+  "finishedAt": "2026-11-20T18:05:32.389Z",
   "passed": true,
-  "output": ""
+  "details": {
+    "command": "npm run typecheck",
+    "exitCode": 0,
+    "logPath": "docs/acceptance/local-typecheck-output.txt",
+    "logSha256": "c3fefe23bd7768210a2aaef41e3a7a9441b1536192ed6a18df85563717628607"
+  }
 }

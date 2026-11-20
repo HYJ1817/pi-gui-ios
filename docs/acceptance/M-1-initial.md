@@ -20,7 +20,7 @@
 | npx expo prebuild --platform ios --no-install（Windows） | exit 1：Skipping generating iOS native project files；At least one platform must be enabled | 已识别平台限制；交 macOS CI 执行，不标通过 |
 | bash -n / node --check CI 脚本 | 修复生成脚本字符串换行后通过 | 仅语法检查 |
 
-详细初轮输出在 local-unit/typecheck/bundle/doctor.json，首次代码指纹不同于后续改动时会失效。初始 CI Windows checks 已在 44783585115 完成成功；macOS 尚在运行，实时状态见 control.ci 与 gh run view。
+详细初轮输出保留在提交 58ec995 的 local-unit/typecheck/bundle/doctor.json；当前同名报告会随实际重验更新，以各自 commit/sourceFingerprint 为准。首次代码指纹不同于后续改动时会失效。初始 CI Windows checks 已在 44783585115 完成成功；macOS 尚在运行，实时状态见 control.ci 与 gh run view。
 
 ## 已完成的恢复故障用例
 

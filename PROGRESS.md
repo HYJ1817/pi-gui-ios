@@ -1,6 +1,6 @@
 # 项目进度（生成文件）
 
-权威：.agent/control.json；schema v2；revision 17；2026-11-20T18:03:35.501Z
+权威：.agent/control.json；schema v2；revision 30；2026-11-20T18:05:43.036Z
 
 阶段：M-1；当前：M-1-infrastructure；分支：agent/m-1-bootstrap
 
@@ -18,7 +18,7 @@
 
 阻塞：S1 证据报告未按类型校验且依赖未递归复验（v2修复与回归已实现，待独立复审）；S2 IPA失败暂存位于公开上传范围；S3 IPA平台/签名/权限验证不足；S4 CocoaPods管道与原生锁待修复；S5 symlink/junction路径边界待修复（v2修复与回归已实现，待独立复审）；S6 状态schema和CI导入校验不足（v2修复与回归已实现，待独立复审）；S7 检查点事务顺序和投影修复锁不足（v2修复与回归已实现，待独立复审）
 
-检查点：.agent/checkpoints/v2-2026-11-20T18-03-19-786Z-5ec34e80-5798-4008-ac84-02247ca63f55.json；保存时 HEAD：26e122a6a7b090e0a850ff9f741b3f7bced896cd
+检查点：.agent/checkpoints/v2-2026-11-20T18-05-43-036Z-c9f94c47-9a8b-4636-ae99-3cf3b1702837.json；保存时 HEAD：a3acf20eef222e556c5b9de392da51005dfc0238
 
 CI：44783585115/1 completed/cancelled @ 58ec99506e00a35121866580ffb28d09d5078b17
 

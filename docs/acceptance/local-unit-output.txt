@@ -1,0 +1,38 @@
+
+> pi-gui-mobile@0.0.1 test
+> node --test tests/*.test.mjs
+
+✔ normal atomic state and locked projection recovery preserve single authority (432.2521ms)
+✔ process exit mid-write preserves old authority and dirty source (595.268ms)
+✔ existing writer lock prevents mutation AND projection repair before any writes (323.9007ms)
+✔ checksum tamper and unsupported schema rejected (346.9298ms)
+✔ full runtime schema rejects missing nextAction, zero protocol, malformed checkpoint and CI before commit (395.5712ms)
+✔ dependency cycles, unknown task statuses and phase drift are rejected (363.1711ms)
+✔ cannot skip testing/review or accept missing proof; actual structured proof works (2087.1459ms)
+✔ a failed report or nonzero exit cannot be restamped into pass evidence (1349.2264ms)
+✔ one report cannot satisfy unrelated evidence kinds (1239.2459ms)
+✔ acceptance requires a real committed source tree, not just current HEAD restamping (704.2462ms)
+✔ working tree/source changes invalidate evidence; commit fingerprint matches original tree (2043.8359ms)
+✔ report and log hash tampering are detected (1647.9868ms)
+✔ upstream completed status with expired evidence cannot start or complete a downstream task (3619.7869ms)
+✔ known blockers prevent acceptance despite otherwise valid evidence (1184.0616ms)
+✔ evidence is constrained to canonical dedicated directories (342.7059ms)
+✔ directory symlink or Windows junction cannot escape evidence or state boundaries (406.809ms)
+✔ CI API imports require exact repository, workflow, numeric ID/attempt, commit and conclusion (368.808ms)
+✔ CI running and failed status persist without becoming successful proof (473.8832ms)
+✔ checkpoint is durable and verified before the authority references it (2234.0479ms)
+✔ failed checkpoint persistence leaves authority revision and reference unchanged (1312.8294ms)
+✔ Git branch drift is detected without discarding dirty code (1436.8289ms)
+✔ desktop/mobile protocol mismatch blocks post-spike gates (2138.829ms)
+✔ restore from a verified checkpoint preserves dirty source and backs up corrupt authority (871.3375ms)
+✔ CI success must match the exact imported API receipt, workflow, head and attempt (1134.0622ms)
+✔ a completed independent task with a failing original result cannot become passing review (1101.3787ms)
+✔ manual device and fresh independent review cannot be replaced by local command reports (880.737ms)
+ℹ tests 26
+ℹ suites 0
+ℹ pass 26
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 29152.6708

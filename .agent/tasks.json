@@ -1,11 +1,11 @@
 {
   "schemaVersion": 2,
   "kind": "tasks",
-  "revision": 17,
-  "updatedAt": "2026-11-20T18:03:35.501Z",
+  "revision": 30,
+  "updatedAt": "2026-11-20T18:05:43.036Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "ef88926820b0faf1fa31bd0d3fd3d778a527bf1b57e6ea4af461cc8e76762165",
+    "parentDigest": "0938ee077cd085184e89fb45815b58e1aabd7303edf8b9b2ea07481a2ac7dc9b",
     "tasks": [
       {
         "id": "M-1-infrastructure",
@@ -26,7 +26,40 @@
           "independent-handoff"
         ],
         "acceptance": "所有自动化、真实 UI 及独立审查通过；不包含 SideStore 人工验收",
-        "evidence": []
+        "evidence": [
+          {
+            "kind": "unit",
+            "path": "docs/acceptance/local-unit.json",
+            "sha256": "ffb9d1bf59e5c5b3983dbdad9c68825661c2e815484eba6b36a4a43056b6c0fe",
+            "sourceFingerprint": "a76a060b3718e6845f528e51400ba880b0f19ae21a161878ed66abc06d8ebd4d",
+            "commit": "a3acf20eef222e556c5b9de392da51005dfc0238",
+            "at": "2026-11-20T18:05:04.927Z"
+          },
+          {
+            "kind": "typecheck",
+            "path": "docs/acceptance/local-typecheck.json",
+            "sha256": "50f5f10827284571bf42bea76f5b0f8eea8e941a120bbc254310cd28622c68f8",
+            "sourceFingerprint": "a76a060b3718e6845f528e51400ba880b0f19ae21a161878ed66abc06d8ebd4d",
+            "commit": "a3acf20eef222e556c5b9de392da51005dfc0238",
+            "at": "2026-11-20T18:05:41.533Z"
+          },
+          {
+            "kind": "bundle",
+            "path": "docs/acceptance/local-bundle.json",
+            "sha256": "356efd0b80e0a43f235e4e7367c7ae317bff84b56258635c5a0da1e8b4f7c80c",
+            "sourceFingerprint": "a76a060b3718e6845f528e51400ba880b0f19ae21a161878ed66abc06d8ebd4d",
+            "commit": "a3acf20eef222e556c5b9de392da51005dfc0238",
+            "at": "2026-11-20T18:05:42.260Z"
+          },
+          {
+            "kind": "doctor",
+            "path": "docs/acceptance/local-doctor.json",
+            "sha256": "136f7fb9a8f1862d6996d8d40bb4f6e36ea3bf69e4106703b736d1c2dd7c2937",
+            "sourceFingerprint": "a76a060b3718e6845f528e51400ba880b0f19ae21a161878ed66abc06d8ebd4d",
+            "commit": "a3acf20eef222e556c5b9de392da51005dfc0238",
+            "at": "2026-11-20T18:05:42.999Z"
+          }
+        ]
       },
       {
         "id": "M-1-device",
@@ -167,6 +200,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "c0efc5d232b146a700fb8356f2d35f4ba52a4390aefe9ec99a5c73d91b1882fb"
+    "digest": "f24edaf01b1742d441077505dce2d4b77bd74f3394dd991b3e01fc583d66a6f4"
   }
 }

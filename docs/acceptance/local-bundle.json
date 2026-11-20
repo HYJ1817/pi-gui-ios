@@ -1,12 +1,16 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "kind": "bundle",
-  "command": "node node_modules/expo/bin/cli export --platform ios --output-dir dist/ios --no-bytecode",
-  "commit": null,
-  "sourceFingerprint": "95ee80af06215922504263683af7cb9dfe40795f89a30a3968f22e6893b4bb95",
-  "startedAt": "2026-11-20T17:26:15.045Z",
-  "finishedAt": "2026-11-20T17:26:25.306Z",
-  "exitCode": 0,
+  "taskId": "M-1-infrastructure",
+  "commit": "a3acf20eef222e556c5b9de392da51005dfc0238",
+  "sourceFingerprint": "a76a060b3718e6845f528e51400ba880b0f19ae21a161878ed66abc06d8ebd4d",
+  "startedAt": "2026-11-20T18:05:32.953Z",
+  "finishedAt": "2026-11-20T18:05:36.373Z",
   "passed": true,
-  "output": "Starting Metro Bundler\n\niOS Bundled 8021ms node_modules\\expo-router\\entry.js (1132 modules)\n\n› Assets (23):\nnode_modules\\expo-router\\assets\\arrow_down.png (9.5KB)\nnode_modules\\expo-router\\assets\\error.png (469B)\nnode_modules\\expo-router\\assets\\file.png (138B)\nnode_modules\\expo-router\\assets\\forward.png (188B)\nnode_modules\\expo-router\\assets\\pkg.png (364B)\nnode_modules\\expo-router\\assets\\react-navigation\\elements\\back-icon-mask.png (653B)\nnode_modules\\expo-router\\assets\\react-navigation\\elements\\back-icon.png (4 variations | 566B)\nnode_modules\\expo-router\\assets\\react-navigation\\elements\\clear-icon.png (4 variations | 425B)\nnode_modules\\expo-router\\assets\\react-navigation\\elements\\close-icon.png (4 variations | 235B)\nnode_modules\\expo-router\\assets\\react-navigation\\elements\\search-icon.png (3 variations | 582B)\nnode_modules\\expo-router\\assets\\sitemap.png (465B)\nnode_modules\\expo-router\\assets\\unmatched.png (4.8KB)\n\n› ios bundles (1):\n_expo/static/js/ios/entry-f185269eb8f85354685ae9af04b4262c.js (1.6MB)\n\n› Files (1):\nmetadata.json (1.6KB)\n\nExported: dist/ios\nBytecode makes the app startup faster, disabling bytecode is highly discouraged and should only be used for debugging purposes.\n"
+  "details": {
+    "command": "npm run export:ios",
+    "exitCode": 0,
+    "logPath": "docs/acceptance/local-bundle-output.txt",
+    "logSha256": "2fde2dd0fbfbee1463be49e6f8e49a475068c466ae82963a03d2df8b3017a455"
+  }
 }

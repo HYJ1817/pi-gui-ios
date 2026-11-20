@@ -1,8 +1,8 @@
 {
   "schemaVersion": 2,
   "kind": "control",
-  "revision": 17,
-  "updatedAt": "2026-11-20T18:03:35.501Z",
+  "revision": 30,
+  "updatedAt": "2026-11-20T18:05:43.036Z",
   "data": {
     "phase": "M-1",
     "currentTask": "M-1-infrastructure",
@@ -54,7 +54,40 @@
           "independent-handoff"
         ],
         "acceptance": "所有自动化、真实 UI 及独立审查通过；不包含 SideStore 人工验收",
-        "evidence": []
+        "evidence": [
+          {
+            "kind": "unit",
+            "path": "docs/acceptance/local-unit.json",
+            "sha256": "ffb9d1bf59e5c5b3983dbdad9c68825661c2e815484eba6b36a4a43056b6c0fe",
+            "sourceFingerprint": "a76a060b3718e6845f528e51400ba880b0f19ae21a161878ed66abc06d8ebd4d",
+            "commit": "a3acf20eef222e556c5b9de392da51005dfc0238",
+            "at": "2026-11-20T18:05:04.927Z"
+          },
+          {
+            "kind": "typecheck",
+            "path": "docs/acceptance/local-typecheck.json",
+            "sha256": "50f5f10827284571bf42bea76f5b0f8eea8e941a120bbc254310cd28622c68f8",
+            "sourceFingerprint": "a76a060b3718e6845f528e51400ba880b0f19ae21a161878ed66abc06d8ebd4d",
+            "commit": "a3acf20eef222e556c5b9de392da51005dfc0238",
+            "at": "2026-11-20T18:05:41.533Z"
+          },
+          {
+            "kind": "bundle",
+            "path": "docs/acceptance/local-bundle.json",
+            "sha256": "356efd0b80e0a43f235e4e7367c7ae317bff84b56258635c5a0da1e8b4f7c80c",
+            "sourceFingerprint": "a76a060b3718e6845f528e51400ba880b0f19ae21a161878ed66abc06d8ebd4d",
+            "commit": "a3acf20eef222e556c5b9de392da51005dfc0238",
+            "at": "2026-11-20T18:05:42.260Z"
+          },
+          {
+            "kind": "doctor",
+            "path": "docs/acceptance/local-doctor.json",
+            "sha256": "136f7fb9a8f1862d6996d8d40bb4f6e36ea3bf69e4106703b736d1c2dd7c2937",
+            "sourceFingerprint": "a76a060b3718e6845f528e51400ba880b0f19ae21a161878ed66abc06d8ebd4d",
+            "commit": "a3acf20eef222e556c5b9de392da51005dfc0238",
+            "at": "2026-11-20T18:05:42.999Z"
+          }
+        ]
       },
       {
         "id": "M-1-device",
@@ -193,54 +226,40 @@
       }
     ],
     "checkpoint": {
-      "id": "v2-2026-11-20T18-03-19-786Z-5ec34e80-5798-4008-ac84-02247ca63f55",
-      "path": ".agent/checkpoints/v2-2026-11-20T18-03-19-786Z-5ec34e80-5798-4008-ac84-02247ca63f55.json",
-      "sha256": "46d23e459e1636fb36663cae50a2e47c9c52cc2b0ac76ad563a0074585b4377c",
-      "authorityDigest": "22b39388682743fead93b5c516d8685f5bef583d274e49f8c680d7b13da1e514",
-      "at": "2026-11-20T18:03:19.786Z",
+      "id": "v2-2026-11-20T18-05-43-036Z-c9f94c47-9a8b-4636-ae99-3cf3b1702837",
+      "path": ".agent/checkpoints/v2-2026-11-20T18-05-43-036Z-c9f94c47-9a8b-4636-ae99-3cf3b1702837.json",
+      "sha256": "87cc32294b3d0efc77628142edf0dceb2bf61794d6e7fd836e8ed4107a1fbb8c",
+      "authorityDigest": "85a7936a9c98cd669e8bc7850396192910fb86427ce0a067d37c6d49b7a4c341",
+      "at": "2026-11-20T18:05:43.036Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "26e122a6a7b090e0a850ff9f741b3f7bced896cd",
+        "commit": "a3acf20eef222e556c5b9de392da51005dfc0238",
         "dirty": [
           "M .agent/HANDOFF.md",
           " M .agent/control.json",
-          " M .agent/schemas/control.schema.json",
-          " M .agent/schemas/envelope.schema.json",
           " M .agent/state.json",
           " M .agent/tasks.json",
-          " M .gitignore",
-          " M AGENTS.md",
           " M PROGRESS.md",
-          " M docs/decisions/0001-persistent-control.md",
-          " M docs/testing.md",
-          " M scripts/agent-checkpoint.mjs",
-          " M scripts/agent-init.mjs",
-          " M scripts/agent-resume.mjs",
-          " M scripts/agent-task.mjs",
-          " M scripts/agent-validate.mjs",
-          " M scripts/lib/control.mjs",
-          " M scripts/verify.mjs",
-          " M tests/control.test.mjs",
-          "?? .agent/checkpoints/",
-          "?? .agent/schemas/checkpoint.schema.json",
-          "?? .agent/schemas/ci.schema.json",
-          "?? .agent/schemas/evidence.schema.json",
-          "?? .agent/schemas/shared.schema.json",
-          "?? .agent/schemas/state.schema.json",
-          "?? .agent/schemas/tasks.schema.json",
-          "?? docs/acceptance/M-1-ci-first-run.md",
-          "?? docs/acceptance/M-1-security-review-1.md",
-          "?? docs/acceptance/ci-44783585115-api.json",
-          "?? docs/acceptance/legacy-control-v1-revision-10.json",
-          "?? docs/decisions/0004-verified-control-v2.md",
-          "?? scripts/agent-migrate-v2.mjs",
-          "?? scripts/agent-restore.mjs",
-          "?? scripts/lib/recovery.mjs",
-          "?? scripts/lib/schema.mjs"
+          " M docs/acceptance/local-bundle.json",
+          " M docs/acceptance/local-doctor.json",
+          " M docs/acceptance/local-typecheck.json",
+          " M docs/acceptance/local-unit.json",
+          "?? .agent/checkpoints/v2-2026-11-20T18-03-53-585Z-87cf238c-140f-40ae-9a81-852550c81a88.json",
+          "?? .agent/checkpoints/v2-2026-11-20T18-04-24-155Z-b33e888b-080c-4378-999c-88384a908332.json",
+          "?? .agent/checkpoints/v2-2026-11-20T18-05-04-960Z-ca98bdb5-cebc-417b-8b62-e14622afdd3d.json",
+          "?? .agent/checkpoints/v2-2026-11-20T18-05-32-506Z-eca63e93-e702-45e9-b8a2-ed164bd98bf2.json",
+          "?? .agent/checkpoints/v2-2026-11-20T18-05-36-547Z-9b54dfe7-cd0e-4631-a574-af4d9e0abe04.json",
+          "?? .agent/checkpoints/v2-2026-11-20T18-05-40-767Z-5fbb9a70-eb17-4977-812e-c87959f9bfe5.json",
+          "?? .agent/checkpoints/v2-2026-11-20T18-05-41-570Z-93bad045-1316-4e59-a02e-b2055fc86324.json",
+          "?? .agent/checkpoints/v2-2026-11-20T18-05-42-292Z-a5d29eec-9b2c-4b14-9fab-ca7bd8cf9dac.json",
+          "?? docs/acceptance/local-bundle-output.txt",
+          "?? docs/acceptance/local-doctor-output.txt",
+          "?? docs/acceptance/local-typecheck-output.txt",
+          "?? docs/acceptance/local-unit-output.txt"
         ]
       },
       "sourceFingerprint": "a76a060b3718e6845f528e51400ba880b0f19ae21a161878ed66abc06d8ebd4d",
-      "note": "控制层v2已覆盖S1/S5/S6/S7并26项回归通过；原生CI已取消且成功Simulator构建历史已记录；等待隔离IPA修复集成"
+      "note": "agent-task evidence M-1-infrastructure"
     },
     "nextAction": "父Agent控制层v2已实现，26项回归通过；等待隔离worktree的S2/S3/S4原生CI/IPA修复commit，集成后重跑canonical并发起新独立复审。CI44783585115已主动取消，只有旧源码Simulator构建成功的历史证据。",
     "delegates": [
@@ -266,6 +285,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "ef88926820b0faf1fa31bd0d3fd3d778a527bf1b57e6ea4af461cc8e76762165"
+    "digest": "0938ee077cd085184e89fb45815b58e1aabd7303edf8b9b2ea07481a2ac7dc9b"
   }
 }
