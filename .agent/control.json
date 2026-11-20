@@ -1,8 +1,8 @@
 {
   "schemaVersion": 2,
   "kind": "control",
-  "revision": 30,
-  "updatedAt": "2026-11-20T18:05:43.036Z",
+  "revision": 33,
+  "updatedAt": "2026-11-20T18:23:45.737Z",
   "data": {
     "phase": "M-1",
     "currentTask": "M-1-infrastructure",
@@ -53,7 +53,7 @@
           "independent-security",
           "independent-handoff"
         ],
-        "acceptance": "所有自动化、真实 UI 及独立审查通过；不包含 SideStore 人工验收",
+        "acceptance": "所有自动化、真实UI及独立审查通过；另须完成T3当前main技术栈逐项分析与关键选型实际验证，ExpoRouter非硬约束、优先ReactNavigation；不包含SideStore人工验收",
         "evidence": [
           {
             "kind": "unit",
@@ -226,47 +226,39 @@
       }
     ],
     "checkpoint": {
-      "id": "v2-2026-11-20T18-05-43-036Z-c9f94c47-9a8b-4636-ae99-3cf3b1702837",
-      "path": ".agent/checkpoints/v2-2026-11-20T18-05-43-036Z-c9f94c47-9a8b-4636-ae99-3cf3b1702837.json",
-      "sha256": "87cc32294b3d0efc77628142edf0dceb2bf61794d6e7fd836e8ed4107a1fbb8c",
-      "authorityDigest": "85a7936a9c98cd669e8bc7850396192910fb86427ce0a067d37c6d49b7a4c341",
-      "at": "2026-11-20T18:05:43.036Z",
+      "id": "v2-2026-11-20T18-23-45-737Z-7a71abee-1bde-4f2c-bf17-70cdbff7dc9c",
+      "path": ".agent/checkpoints/v2-2026-11-20T18-23-45-737Z-7a71abee-1bde-4f2c-bf17-70cdbff7dc9c.json",
+      "sha256": "21c19d2f6321dfd50ecdc65b7ffcbb796e5533692741e7d913011654280fc5fc",
+      "authorityDigest": "bb592b48aceca23dbd6d1669da5173c0d21aa9f759d09e55366dc60c14c23662",
+      "at": "2026-11-20T18:23:45.737Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "a3acf20eef222e556c5b9de392da51005dfc0238",
+        "commit": "88dfc96c41035b557648435a22e49afb12b9d3ee",
         "dirty": [
           "M .agent/HANDOFF.md",
           " M .agent/control.json",
           " M .agent/state.json",
           " M .agent/tasks.json",
+          " M AGENTS.md",
           " M PROGRESS.md",
-          " M docs/acceptance/local-bundle.json",
-          " M docs/acceptance/local-doctor.json",
-          " M docs/acceptance/local-typecheck.json",
-          " M docs/acceptance/local-unit.json",
-          "?? .agent/checkpoints/v2-2026-11-20T18-03-53-585Z-87cf238c-140f-40ae-9a81-852550c81a88.json",
-          "?? .agent/checkpoints/v2-2026-11-20T18-04-24-155Z-b33e888b-080c-4378-999c-88384a908332.json",
-          "?? .agent/checkpoints/v2-2026-11-20T18-05-04-960Z-ca98bdb5-cebc-417b-8b62-e14622afdd3d.json",
-          "?? .agent/checkpoints/v2-2026-11-20T18-05-32-506Z-eca63e93-e702-45e9-b8a2-ed164bd98bf2.json",
-          "?? .agent/checkpoints/v2-2026-11-20T18-05-36-547Z-9b54dfe7-cd0e-4631-a574-af4d9e0abe04.json",
-          "?? .agent/checkpoints/v2-2026-11-20T18-05-40-767Z-5fbb9a70-eb17-4977-812e-c87959f9bfe5.json",
-          "?? .agent/checkpoints/v2-2026-11-20T18-05-41-570Z-93bad045-1316-4e59-a02e-b2055fc86324.json",
-          "?? .agent/checkpoints/v2-2026-11-20T18-05-42-292Z-a5d29eec-9b2c-4b14-9fab-ca7bd8cf9dac.json",
-          "?? docs/acceptance/local-bundle-output.txt",
-          "?? docs/acceptance/local-doctor-output.txt",
-          "?? docs/acceptance/local-typecheck-output.txt",
-          "?? docs/acceptance/local-unit-output.txt"
+          " M scripts/agent-resume.mjs",
+          " M scripts/lib/recovery.mjs",
+          " M tests/control.test.mjs",
+          "?? .agent/checkpoints/v2-2026-11-20T18-08-31-396Z-1e886974-b747-46ab-be96-a56ef5684a03.json",
+          "?? docs/acceptance/M-1-handoff-review-1.md",
+          "?? docs/acceptance/handoff-review-1-receipt.json",
+          "?? docs/acceptance/native-fix-implementation-receipt.json"
         ]
       },
-      "sourceFingerprint": "a76a060b3718e6845f528e51400ba880b0f19ae21a161878ed66abc06d8ebd4d",
-      "note": "agent-task evidence M-1-infrastructure"
+      "sourceFingerprint": "fdc9dc25d7fca73f355be23a83f4810efe796a98c79f4f060f627805d4f59438",
+      "note": "两个旧基线独立审查与隔离实现均已回传；保存用户第14条技术栈对齐要求和最新T3 main基线"
     },
-    "nextAction": "父Agent控制层v2已实现，26项回归通过；等待隔离worktree的S2/S3/S4原生CI/IPA修复commit，集成后重跑canonical并发起新独立复审。CI44783585115已主动取消，只有旧源码Simulator构建成功的历史证据。",
+    "nextAction": "用户新增技术对齐原则：当前T3 main已核对为068332c603ce5ca40ad5a96a09cffa34ebd05dff，源码快照已从Git对象只读导出。先完成technology-stack矩阵及ReactNavigation评估/迁移；集成原生安全修复02f160548b0046b742e9d4456fd7428e57749f96，统一回归/独立复审再推送安全CI bootstrap。",
     "delegates": [
       {
         "taskId": "node:delegated-task:command%3Amcp%3Ac31b83bb-4e95-4301-8a91-f13f8295d85a%3Adelegate-task%3A4b75cf04-9360-469c-87e1-321a7e4b3149",
         "role": "functional-review-and-fresh-handoff",
-        "status": "working",
+        "status": "completed",
         "sourceCommit": "58ec99506e00a35121866580ffb28d09d5078b17"
       },
       {
@@ -278,13 +270,13 @@
       {
         "taskId": "node:delegated-task:command%3Amcp%3Ac31b83bb-4e95-4301-8a91-f13f8295d85a%3Adelegate-task%3A7af46559-43da-4538-9daa-7eee427ab8c0",
         "role": "native-ci-ipa-fix-isolated",
-        "status": "working",
+        "status": "completed",
         "sourceCommit": "26e122a6a7b090e0a850ff9f741b3f7bced896cd"
       }
     ]
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "0938ee077cd085184e89fb45815b58e1aabd7303edf8b9b2ea07481a2ac7dc9b"
+    "digest": "7da4cebbef135b81cc839b52f12a7252c5fa07b5d43ff8b0129a30de57ee04b5"
   }
 }

@@ -1,11 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, writeFileSync, readFileSync, existsSync, rmSync, mkdirSync, symlinkSync } from 'node:fs';
+import { mkdtempSync, writeFileSync, readFileSync, existsSync, rmSync, mkdirSync, symlinkSync, cpSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
-import { envelope, decode, digest, writeEnvelope, loadControl, mutate, snapshot, sourceFingerprint, committedFingerprint, gate, transition, renderProjections, repairProjections, git, evidencePath, validateReport, normalizeCi, createCheckpoint, validateCheckpoint, restoreCheckpoint, atomicWrite } from '../scripts/lib/control.mjs';
-import { inspectRecovery } from '../scripts/lib/recovery.mjs';
+import { ROOT, envelope, decode, digest, writeEnvelope, loadControl, mutate, snapshot, sourceFingerprint, committedFingerprint, gate, transition, renderProjections, repairProjections, git, evidencePath, validateReport, normalizeCi, createCheckpoint, validateCheckpoint, restoreCheckpoint, atomicWrite } from '../scripts/lib/control.mjs';
+import { inspectRecovery, listCheckpoints } from '../scripts/lib/recovery.mjs';
 
 function fixture(t, committed = true) {
   const root = mkdtempSync(resolve(tmpdir(), 'piguimobile-control-')); t.after(() => rmSync(root, { recursive: true, force: true }));
@@ -131,6 +131,29 @@ test('Git branch drift is detected without discarding dirty code', t => {
 test('desktop/mobile protocol mismatch blocks post-spike gates', t => {
   const { root, d } = fixture(t); proof(root, d); d.phase = d.tasks[0].phase = 'M0'; assert.ok(gate(d, d.tasks[0], root).some(e => e.includes('protocol')));
   d.desktop.protocolVersion = 2; assert.ok(gate(d, d.tasks[0], root).some(e => e.includes('protocol'))); d.desktop.protocolVersion = 1; assert.deepEqual(gate(d, d.tasks[0], root), []);
+});
+test('checkpoint candidates remain inspectable when authority and newest snapshot are corrupt', t => {
+  const { root } = fixture(t); const older = createCheckpoint(root, 'older usable snapshot'); const newer = createCheckpoint(root, 'newest snapshot');
+  writeFileSync(resolve(root, '.agent/control.json'), '{corrupt authority'); writeFileSync(resolve(root, newer.data.checkpoint.path), '{broken newest checkpoint');
+  const candidates = listCheckpoints(root);
+  assert.ok(candidates.some(c => c.path === newer.data.checkpoint.path && c.valid === false));
+  assert.equal(candidates.find(c => c.valid).path, older.data.checkpoint.path);
+  assert.equal(readFileSync(resolve(root, '.agent/control.json'), 'utf8'), '{corrupt authority');
+});
+test('actual CLI diagnoses corrupt authority and lists verified candidates without changing files', t => {
+  const { root } = fixture(t);
+  for (const path of ['scripts/agent-resume.mjs', 'scripts/lib/control.mjs', 'scripts/lib/schema.mjs', 'scripts/lib/recovery.mjs']) {
+    mkdirSync(resolve(root, path, '..'), { recursive: true }); cpSync(resolve(ROOT, path), resolve(root, path));
+  }
+  cpSync(resolve(ROOT, '.agent/schemas'), resolve(root, '.agent/schemas'), { recursive: true });
+  const point = createCheckpoint(root, 'CLI restore candidate'); writeFileSync(resolve(root, '.agent/control.json'), '{corrupt authority');
+  const result = spawnSync(process.execPath, [resolve(root, 'scripts/agent-resume.mjs')], { cwd: root, encoding: 'utf8' });
+  assert.equal(result.status, 1); const diagnostic = JSON.parse(result.stderr);
+  assert.equal(diagnostic.readOnly, true); assert.ok(diagnostic.checkpointCandidates.some(c => c.valid && c.path === point.data.checkpoint.path));
+  assert.equal(diagnostic.nextCommand, 'node scripts/agent-restore.mjs ' + point.data.checkpoint.path + ' --apply');
+  const list = spawnSync(process.execPath, [resolve(root, 'scripts/agent-resume.mjs'), '--list-checkpoints'], { cwd: root, encoding: 'utf8' });
+  assert.equal(list.status, 0); assert.ok(JSON.parse(list.stdout).checkpointCandidates.some(c => c.valid));
+  assert.equal(readFileSync(resolve(root, '.agent/control.json'), 'utf8'), '{corrupt authority');
 });
 test('restore from a verified checkpoint preserves dirty source and backs up corrupt authority', t => {
   const { root } = fixture(t); const saved = createCheckpoint(root, 'known valid');

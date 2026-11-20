@@ -2,7 +2,7 @@
 
 ## 产品与授权
 
-原生 iPhone/iPad 客户端，React Native + Expo + TypeScript + Expo Router。逻辑应用名 `pi-gui-mobile`；按用户指定在 `HYJ1817/pi-gui-ios` 仓库开发，不擅自创建或重命名远端仓库。Windows 开发，GitHub 标准 macOS Runner 编译/模拟器验证，SideStore 自签，无付费服务、无 Apple 会员依赖、无自建公网中继。参考 T3 源码，不改参考仓库和 Pi Coding Agent 本体。
+原生 iPhone/iPad 客户端，React Native + Expo + TypeScript。按用户追加的技术栈对齐原则，以 T3 Code 当前 main 的实际移动端源码为主要参考；Expo Router 不再是硬约束，优先评估并采用其 React Navigation 方案。逻辑应用名 `pi-gui-mobile`；按用户指定在 `HYJ1817/pi-gui-ios` 仓库开发，不擅自创建或重命名远端仓库。Windows 开发，GitHub 标准 macOS Runner 编译/模拟器验证，SideStore 自签，无付费服务、无 Apple 会员依赖、无自建公网中继。参考 T3 源码，不改参考仓库和 Pi Coding Agent 本体。M-1 必须分析其 package/lockfile、原生模块、导航、状态、消息渲染、动画/手势、键盘、Liquid Glass 和自动化测试；逐项决策唯一记录在 `docs/decisions/technology-stack.md`。UI、导航、动画、手势、原生组件、键盘和消息渲染优先同技术族；差异必须有源码证据、版本/许可证/兼容理由，不机械搬入全部依赖、内部架构或 fork。远程通信、状态和测试可按本项目需要选择，桌面架构与安全边界保持。所有关键选型在实际构建、运行和测试前均为待验证。
 
 用户已授权：研究、安装项目依赖、开发分支提交/推送/开发 PR、触发和读取 CI、下载公开安全的测试产物、独立 Agent 审查、阶段通过后自主继续。**未授权**：合并 main、正式发布/推送发布标签、强推、破坏其他分支、修改已有发布、付费、账户登录授权、代操作真机。首次真机验证合并成一次清单。
 

@@ -1,0 +1,2293 @@
+{
+  "schemaVersion": 1,
+  "kind": "t3-source-technology-inventory",
+  "observedAt": "2026-11-20T18:32:53.547Z",
+  "repository": "pingdotgg/t3code",
+  "branch": "main",
+  "commit": "068332c603ce5ca40ad5a96a09cffa34ebd05dff",
+  "packageManager": "pnpm@12.14.0",
+  "node": "26.13.1",
+  "lockfileVersion": "9.0",
+  "lockDocumentCount": 2,
+  "packageManagerLock": [
+    {
+      "lockfileVersion": "9.0",
+      "importers": {
+        ".": {
+          "configDependencies": {},
+          "packageManagerDependencies": {
+            "pnpm": {
+              "specifier": "12.14.0",
+              "version": "12.14.0"
+            }
+          }
+        }
+      },
+      "packageCount": 15
+    }
+  ],
+  "lockSha256": "5a6297ef45a270d52d79dbab4644368aaa664cb78aeb1f4fe3d897c1c38e9a7b",
+  "mobileDependencies": [
+    {
+      "name": "@clerk/expo",
+      "section": "dependencies",
+      "declared": "catalog:",
+      "catalog": "4.15.1",
+      "lockedVersion": "4.15.1(0a077f3c30474be1f3e6856c2409b170)",
+      "resolution": {
+        "integrity": "sha512-+HxlXXqo5LWTB+kVIqaeuSw8NVe8aEy19Wr+Le5kIshCAfe3WAf9Ai/iCdpFzFy3LUxc20YMNPRM4FJXJYFIkw=="
+      },
+      "registry": {
+        "name": "@clerk/expo",
+        "version": "4.15.1",
+        "license": "MIT",
+        "engines": {
+          "node": ">=20.9.0"
+        },
+        "peerDependencies": {
+          "expo": ">=54 <59",
+          "react": "^18.0.0 || ^19.0.0",
+          "react-dom": "^18.0.0 || ^19.0.0",
+          "expo-crypto": ">=12",
+          "react-native": ">=0.75",
+          "expo-constants": ">=12",
+          "expo-application": ">=5.0.0",
+          "expo-web-browser": ">=12.5.0",
+          "expo-auth-session": ">=5",
+          "expo-secure-store": ">=12.4.0",
+          "@clerk/expo-passkeys": ">=0.0.6",
+          "@clerk/expo-biometrics": ">=0.1.0",
+          "@clerk/expo-google-signin": ">=0.1.0",
+          "expo-apple-authentication": ">=7.0.0",
+          "expo-local-authentication": ">=13.5.0",
+          "@clerk/expo-native-components": ">=0.3.0"
+        },
+        "integrity": "sha512-+HxlXXqo5LWTB+kVIqaeuSw8NVe8aEy19Wr+Le5kIshCAfe3WAf9Ai/iCdpFzFy3LUxc20YMNPRM4FJXJYFIkw=="
+      }
+    },
+    {
+      "name": "@clerk/expo-native-components",
+      "section": "dependencies",
+      "declared": "0.4.4",
+      "catalog": null,
+      "lockedVersion": "0.4.4(patch_hash=7a808b92da8460750b85818552e13be3fb73d111691c7db76965970351e124e4)(expo@58.0.23)(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(@types/react@19.3.0)(bufferutil@4.1.0)(react@19.3.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(react@19.3.0)(supports-color@8.1.1)(typescript@6.0.3)",
+      "resolution": {
+        "integrity": "sha512-N3kuURfZqBsh1ux6/2CJO0w+B80GrZpNf6xx2yfnIZPGcxEYFmuiEuZSZvK/AcqEADkN2NCvqbo5+hipOlMX8Q=="
+      },
+      "registry": {
+        "name": "@clerk/expo-native-components",
+        "version": "0.4.4",
+        "license": "MIT",
+        "engines": {
+          "node": ">=20.9.0"
+        },
+        "peerDependencies": {
+          "expo": ">=54 <59",
+          "react": "^18.0.0 || ^19.0.0",
+          "react-native": ">=0.75"
+        },
+        "integrity": "sha512-N3kuURfZqBsh1ux6/2CJO0w+B80GrZpNf6xx2yfnIZPGcxEYFmuiEuZSZvK/AcqEADkN2NCvqbo5+hipOlMX8Q=="
+      }
+    },
+    {
+      "name": "@effect/atom-react",
+      "section": "dependencies",
+      "declared": "catalog:",
+      "catalog": "4.1.2",
+      "lockedVersion": "4.1.2(effect@4.1.3)(react@19.3.0)(scheduler@0.28.0)",
+      "resolution": {
+        "integrity": "sha512-XRAm4lks2kzNFQIz9QTGKR02CaDTR9VJNRXDjDAR8OzM15ybrK4YkB7OlFZ9U+hxXe3DXJZx7RU1/xI2Em2PGQ=="
+      },
+      "registry": {
+        "name": "@effect/atom-react",
+        "version": "4.1.2",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {
+          "react": ">=19.0.0 <20.0.0",
+          "effect": "^4.1.2",
+          "scheduler": ">=0.25.0 <0.29.0"
+        },
+        "integrity": "sha512-XRAm4lks2kzNFQIz9QTGKR02CaDTR9VJNRXDjDAR8OzM15ybrK4YkB7OlFZ9U+hxXe3DXJZx7RU1/xI2Em2PGQ=="
+      }
+    },
+    {
+      "name": "@expo-google-fonts/dm-sans",
+      "section": "dependencies",
+      "declared": "^0.4.2",
+      "catalog": null,
+      "lockedVersion": "0.4.2",
+      "resolution": {
+        "integrity": "sha512-e/fLH5aCJzkEenz7axvEn8N7IJAKhUwNjIxS75h9j+Ip1M9S7d22M19gJN3A7QW4egVkBJRyQh1hQFhngQn9yA=="
+      },
+      "registry": {
+        "name": "@expo-google-fonts/dm-sans",
+        "version": "0.4.2",
+        "license": "MIT AND OFL-1.1",
+        "engines": null,
+        "peerDependencies": null,
+        "integrity": "sha512-e/fLH5aCJzkEenz7axvEn8N7IJAKhUwNjIxS75h9j+Ip1M9S7d22M19gJN3A7QW4egVkBJRyQh1hQFhngQn9yA=="
+      }
+    },
+    {
+      "name": "@expo/metro-runtime",
+      "section": "dependencies",
+      "declared": "~58.0.17",
+      "catalog": null,
+      "lockedVersion": "58.0.17(@expo/log-box@58.0.15)(expo@58.0.23)(react-dom@19.3.0(react@19.3.0))(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(@types/react@19.3.0)(bufferutil@4.1.0)(react@19.3.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(react@19.3.0)",
+      "resolution": {
+        "integrity": "sha512-onJvBi90uwLj69F1EaVPmPeds/ndxc2/vNc0Z5n8rqcMKToMyLxGaL3Be6yf7OVjPhGvoDj+LWQ/IcbpN1hnoA=="
+      },
+      "registry": {
+        "name": "@expo/metro-runtime",
+        "version": "58.0.17",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {
+          "expo": "*",
+          "react": "*",
+          "react-dom": "*",
+          "react-native": "*",
+          "@expo/log-box": "^58.0.15"
+        },
+        "integrity": "sha512-onJvBi90uwLj69F1EaVPmPeds/ndxc2/vNc0Z5n8rqcMKToMyLxGaL3Be6yf7OVjPhGvoDj+LWQ/IcbpN1hnoA=="
+      }
+    },
+    {
+      "name": "@expo/ui",
+      "section": "dependencies",
+      "declared": "58.0.27",
+      "catalog": null,
+      "lockedVersion": "58.0.27(patch_hash=9f2547678939f4ec78fe45163b6455aad63d3c80353d7e0cc783f6a61a7ccc2f)(@babel/core@7.29.7(supports-color@8.1.1))(expo@58.0.23)(react-dom@19.3.0(react@19.3.0))(react-native-worklets@0.13.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(@types/react@19.3.0)(bufferutil@4.1.0)(react@19.3.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(react@19.3.0)(supports-color@8.1.1))(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(@types/react@19.3.0)(bufferutil@4.1.0)(react@19.3.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(react@19.3.0)",
+      "resolution": {
+        "integrity": "sha512-g2BDAofZBgmDVxQ9PtbrWk6z9aPf5OUH+06Jdw7XPPTIFCNZ7qZQ94umEisAm8Vt4xViiECyWNTkHMKo7Pi2+w=="
+      },
+      "registry": {
+        "name": "@expo/ui",
+        "version": "58.0.27",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {
+          "expo": "*",
+          "react": "*",
+          "react-dom": "*",
+          "@babel/core": "*",
+          "react-native": "*",
+          "react-native-worklets": "*"
+        },
+        "integrity": "sha512-g2BDAofZBgmDVxQ9PtbrWk6z9aPf5OUH+06Jdw7XPPTIFCNZ7qZQ94umEisAm8Vt4xViiECyWNTkHMKo7Pi2+w=="
+      }
+    },
+    {
+      "name": "@formatjs/intl-displaynames",
+      "section": "dependencies",
+      "declared": "6.8.13",
+      "catalog": null,
+      "lockedVersion": "6.8.13",
+      "resolution": {
+        "integrity": "sha512-VbY7BdYJX5eURVKLk2grndUQtnbCLNbcJId/Sb/PsX7fWXiqWvg7qt/mecVHRzqoSEoGCQToKDxzpJj8RC0s3g=="
+      },
+      "registry": {
+        "name": "@formatjs/intl-displaynames",
+        "version": "6.8.13",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": null,
+        "integrity": "sha512-VbY7BdYJX5eURVKLk2grndUQtnbCLNbcJId/Sb/PsX7fWXiqWvg7qt/mecVHRzqoSEoGCQToKDxzpJj8RC0s3g=="
+      }
+    },
+    {
+      "name": "@formatjs/intl-getcanonicallocales",
+      "section": "dependencies",
+      "declared": "2.5.6",
+      "catalog": null,
+      "lockedVersion": "2.5.6",
+      "resolution": {
+        "integrity": "sha512-CnBbc4St61RL06gDXlCZG08Gt41uiySgsdZNBExh8/c0FBONJCrAlQ9FsyalUdq9ze0nCeknJtMmO8JnB9xHgQ=="
+      },
+      "registry": {
+        "name": "@formatjs/intl-getcanonicallocales",
+        "version": "2.5.6",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": null,
+        "integrity": "sha512-CnBbc4St61RL06gDXlCZG08Gt41uiySgsdZNBExh8/c0FBONJCrAlQ9FsyalUdq9ze0nCeknJtMmO8JnB9xHgQ=="
+      }
+    },
+    {
+      "name": "@formatjs/intl-locale",
+      "section": "dependencies",
+      "declared": "4.2.13",
+      "catalog": null,
+      "lockedVersion": "4.2.13",
+      "resolution": {
+        "integrity": "sha512-Qcs0mP9JhEPCinPfpZ5JKzOa+VYDg94TQSFZozYuqG8R+hEGUTKyoyMqB5xi5QZT/hlB0CSgeNc/0fWMGtTFXA=="
+      },
+      "registry": {
+        "name": "@formatjs/intl-locale",
+        "version": "4.2.13",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": null,
+        "integrity": "sha512-Qcs0mP9JhEPCinPfpZ5JKzOa+VYDg94TQSFZozYuqG8R+hEGUTKyoyMqB5xi5QZT/hlB0CSgeNc/0fWMGtTFXA=="
+      }
+    },
+    {
+      "name": "@formatjs/intl-pluralrules",
+      "section": "dependencies",
+      "declared": "5.4.6",
+      "catalog": null,
+      "lockedVersion": "5.4.6",
+      "resolution": {
+        "integrity": "sha512-2HlOq+c7KsSps829SJ3B5987coX5mzKx9NbPcNwQ07eq8FBHgB3HfMoxt5HvLsdk4oQwCjAEnocbtd+wVwZ2Kg=="
+      },
+      "registry": {
+        "name": "@formatjs/intl-pluralrules",
+        "version": "5.4.6",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": null,
+        "integrity": "sha512-2HlOq+c7KsSps829SJ3B5987coX5mzKx9NbPcNwQ07eq8FBHgB3HfMoxt5HvLsdk4oQwCjAEnocbtd+wVwZ2Kg=="
+      }
+    },
+    {
+      "name": "@legendapp/list",
+      "section": "dependencies",
+      "declared": "catalog:",
+      "catalog": "3.7.3",
+      "lockedVersion": "3.7.3(react-dom@19.3.0(react@19.3.0))(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(@types/react@19.3.0)(bufferutil@4.1.0)(react@19.3.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(react@19.3.0)",
+      "resolution": {
+        "integrity": "sha512-trGu1i4xo1+r6gG6GI3qrrZAfYHbB25uVj32/KnxhaQ7/eW4AqzhM5cW21Oye4dpg+180Ts1aejRuI8z6Xc4eg=="
+      },
+      "registry": {
+        "name": "@legendapp/list",
+        "version": "3.7.3",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {
+          "react": "*"
+        },
+        "integrity": "sha512-trGu1i4xo1+r6gG6GI3qrrZAfYHbB25uVj32/KnxhaQ7/eW4AqzhM5cW21Oye4dpg+180Ts1aejRuI8z6Xc4eg=="
+      }
+    },
+    {
+      "name": "@material/material-color-utilities",
+      "section": "dependencies",
+      "declared": "0.3.0",
+      "catalog": null,
+      "lockedVersion": "0.3.0",
+      "resolution": {
+        "integrity": "sha512-ztmtTd6xwnuh2/xu+Vb01btgV8SQWYCaK56CkRK8gEkWe5TuDyBcYJ0wgkMRn+2VcE9KUmhvkz+N9GHrqw/C0g=="
+      },
+      "registry": {
+        "name": "@material/material-color-utilities",
+        "version": "0.3.0",
+        "license": "Apache-2.0",
+        "engines": null,
+        "peerDependencies": null,
+        "integrity": "sha512-ztmtTd6xwnuh2/xu+Vb01btgV8SQWYCaK56CkRK8gEkWe5TuDyBcYJ0wgkMRn+2VcE9KUmhvkz+N9GHrqw/C0g=="
+      }
+    },
+    {
+      "name": "@pierre/diffs",
+      "section": "dependencies",
+      "declared": "catalog:",
+      "catalog": "1.7.0-beta.4",
+      "lockedVersion": "1.7.0-beta.4(patch_hash=7edcdd484a99c7ec0b2667499c4cb21d113ec9bea1f8570c0b0a030d33bbf1cd)(@shikijs/themes@4.2.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)",
+      "resolution": {
+        "integrity": "sha512-QtsUN1eO1hfAie0SUBRZ8xfjzybetaOzq3xFPw7UYl/XLkx9KxQ1uRDXHat4B44S2SW8HBt63yWKCSzQ6OQmEQ=="
+      },
+      "registry": {
+        "name": "@pierre/diffs",
+        "version": "1.7.0-beta.4",
+        "license": "apache-2.0",
+        "engines": null,
+        "peerDependencies": {
+          "react": "^18.3.1 || ^19.0.0",
+          "react-dom": "^18.3.1 || ^19.0.0"
+        },
+        "integrity": "sha512-QtsUN1eO1hfAie0SUBRZ8xfjzybetaOzq3xFPw7UYl/XLkx9KxQ1uRDXHat4B44S2SW8HBt63yWKCSzQ6OQmEQ=="
+      }
+    },
+    {
+      "name": "@pierre/highlights",
+      "section": "dependencies",
+      "declared": "catalog:",
+      "catalog": "0.5.0",
+      "lockedVersion": "0.5.0",
+      "resolution": {
+        "integrity": "sha512-G8gscrHrik3YjKd+tPTcmivJ/W0zRrtg4adVxnfX7+415+0Qplo6qUWuEX5R0UkA1fMhmE2sOSuLBMNGDtLhIw=="
+      },
+      "registry": {
+        "name": "@pierre/highlights",
+        "version": "0.5.0",
+        "license": "apache-2.0",
+        "engines": null,
+        "peerDependencies": null,
+        "integrity": "sha512-G8gscrHrik3YjKd+tPTcmivJ/W0zRrtg4adVxnfX7+415+0Qplo6qUWuEX5R0UkA1fMhmE2sOSuLBMNGDtLhIw=="
+      }
+    },
+    {
+      "name": "@react-native-ai/apple",
+      "section": "dependencies",
+      "declared": "0.12.0",
+      "catalog": null,
+      "lockedVersion": "0.12.0(patch_hash=2d09870c2848d185cb05b53ed823a46e12dba519324d8dd8e584e28731990f9d)(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(@types/react@19.3.0)(bufferutil@4.1.0)(react@19.3.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))",
+      "resolution": {
+        "integrity": "sha512-BC/kEDbCZprv1xcQCWsgapXm/WEsj5lieBDvU1vJXStrN+BG+hWM01zoqDGTD/j71zvt9DEfHcMvEqbrGY2uAA=="
+      },
+      "registry": {
+        "name": "@react-native-ai/apple",
+        "version": "0.12.0",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {
+          "react-native": ">=0.76.0"
+        },
+        "integrity": "sha512-BC/kEDbCZprv1xcQCWsgapXm/WEsj5lieBDvU1vJXStrN+BG+hWM01zoqDGTD/j71zvt9DEfHcMvEqbrGY2uAA=="
+      }
+    },
+    {
+      "name": "@react-native-menu/menu",
+      "section": "dependencies",
+      "declared": "^2.0.0",
+      "catalog": null,
+      "lockedVersion": "2.0.0(patch_hash=6872ba71b9847c5a0210b1b896923dadc3860faedfe28d9f062bcedfe786ef1d)(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(@types/react@19.3.0)(bufferutil@4.1.0)(react@19.3.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(react@19.3.0)",
+      "resolution": {
+        "integrity": "sha512-hb8Mirw6aKPGONhgo52IiNpwHtISVrgCT3rMdFX1qS7eOFNzOcQh8d2UDnaH5zVpxN+QuvWtaaiRMGFpIjzdtA=="
+      },
+      "registry": {
+        "name": "@react-native-menu/menu",
+        "version": "2.0.0",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {
+          "react": "*",
+          "react-native": "*"
+        },
+        "integrity": "sha512-hb8Mirw6aKPGONhgo52IiNpwHtISVrgCT3rMdFX1qS7eOFNzOcQh8d2UDnaH5zVpxN+QuvWtaaiRMGFpIjzdtA=="
+      }
+    },
+    {
+      "name": "@react-navigation/elements",
+      "section": "dependencies",
+      "declared": "2.9.45",
+      "catalog": null,
+      "lockedVersion": "2.9.45(83450c2b8dad8f97d4bec4849f35b99e)",
+      "resolution": {
+        "integrity": "sha512-r64qCgjA6asQo4Zlv2lAl68ARkfPbV+BNRm3n9JlMoFr4Ma2A+92Z+sWT1coJRoSXkAwVNb70+LjpM6fo6/D4A=="
+      },
+      "registry": {
+        "name": "@react-navigation/elements",
+        "version": "2.9.45",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {
+          "react": ">= 18.2.0",
+          "react-native": "*",
+          "@react-navigation/native": "^7.5.1",
+          "react-native-safe-area-context": ">= 4.0.0",
+          "@react-native-masked-view/masked-view": ">= 0.2.0"
+        },
+        "integrity": "sha512-r64qCgjA6asQo4Zlv2lAl68ARkfPbV+BNRm3n9JlMoFr4Ma2A+92Z+sWT1coJRoSXkAwVNb70+LjpM6fo6/D4A=="
+      }
+    },
+    {
+      "name": "@react-navigation/native",
+      "section": "dependencies",
+      "declared": "7.5.1",
+      "catalog": null,
+      "lockedVersion": "7.5.1(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(@types/react@19.3.0)(bufferutil@4.1.0)(react@19.3.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(react@19.3.0)",
+      "resolution": {
+        "integrity": "sha512-p9xOvhG8q8rq0FPAoh0JC22ALbyRZt7U2uH8XrHRDjvqOEFrumME7szM6LaWW2WctolAVeZAfOTV+pUKULI/kQ=="
+      },
+      "registry": {
+        "name": "@react-navigation/native",
+        "version": "7.5.1",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {
+          "react": ">= 18.2.0",
+          "react-native": "*"
+        },
+        "integrity": "sha512-p9xOvhG8q8rq0FPAoh0JC22ALbyRZt7U2uH8XrHRDjvqOEFrumME7szM6LaWW2WctolAVeZAfOTV+pUKULI/kQ=="
+      }
+    },
+    {
+      "name": "@react-navigation/native-stack",
+      "section": "dependencies",
+      "declared": "7.21.0",
+      "catalog": null,
+      "lockedVersion": "7.21.0(patch_hash=990d575444c4af2ce8218b3b7a8280fe244c03abbdb32b822a2e862f791dbf42)(80a27ad2d896d41b044f138b2bcfd285)",
+      "resolution": {
+        "integrity": "sha512-bYrNW87nDtbMXAJsosYwu59xwTqeuaurfCDA+62MQ6hY4+2Iv71+Sik3ulW92fOqg8s2SZinOJosHEWoi9Ayqw=="
+      },
+      "registry": {
+        "name": "@react-navigation/native-stack",
+        "version": "7.21.0",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {
+          "react": ">= 18.2.0",
+          "react-native": "*",
+          "react-native-screens": ">= 4.0.0",
+          "@react-navigation/native": "^7.5.1",
+          "react-native-safe-area-context": ">= 4.0.0"
+        },
+        "integrity": "sha512-bYrNW87nDtbMXAJsosYwu59xwTqeuaurfCDA+62MQ6hY4+2Iv71+Sik3ulW92fOqg8s2SZinOJosHEWoi9Ayqw=="
+      }
+    },
+    {
+      "name": "@t3tools/client-runtime",
+      "section": "dependencies",
+      "declared": "workspace:*",
+      "catalog": null,
+      "lockedVersion": "link:../../packages/client-runtime",
+      "resolution": null,
+      "registry": null
+    },
+    {
+      "name": "@t3tools/contracts",
+      "section": "dependencies",
+      "declared": "workspace:*",
+      "catalog": null,
+      "lockedVersion": "link:../../packages/contracts",
+      "resolution": null,
+      "registry": null
+    },
+    {
+      "name": "@t3tools/mobile-highlights-native",
+      "section": "dependencies",
+      "declared": "file:./modules/t3-highlights",
+      "catalog": null,
+      "lockedVersion": "file:apps/mobile/modules/t3-highlights(react-native-nitro-modules@0.37.2(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(@types/react@19.3.0)(bufferutil@4.1.0)(react@19.3.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(react@19.3.0))",
+      "resolution": {
+        "directory": "apps/mobile/modules/t3-highlights",
+        "type": "directory"
+      },
+      "registry": null
+    },
+    {
+      "name": "@t3tools/mobile-review-diff-native",
+      "section": "dependencies",
+      "declared": "file:./modules/t3-review-diff",
+      "catalog": null,
+      "lockedVersion": "file:apps/mobile/modules/t3-review-diff",
+      "resolution": {
+        "directory": "apps/mobile/modules/t3-review-diff",
+        "type": "directory"
+      },
+      "registry": null
+    },
+    {
+      "name": "@t3tools/mobile-source-text",
+      "section": "dependencies",
+      "declared": "file:./modules/t3-source-text",
+      "catalog": null,
+      "lockedVersion": "file:apps/mobile/modules/t3-source-text(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(@types/react@19.3.0)(bufferutil@4.1.0)(react@19.3.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(react@19.3.0)",
+      "resolution": {
+        "directory": "apps/mobile/modules/t3-source-text",
+        "type": "directory"
+      },
+      "registry": null
+    },
+    {
+      "name": "@t3tools/mobile-terminal-native",
+      "section": "dependencies",
+      "declared": "file:./modules/t3-terminal",
+      "catalog": null,
+      "lockedVersion": "file:apps/mobile/modules/t3-terminal",
+      "resolution": {
+        "directory": "apps/mobile/modules/t3-terminal",
+        "type": "directory"
+      },
+      "registry": null
+    },
+    {
+      "name": "@t3tools/shared",
+      "section": "dependencies",
+      "declared": "workspace:*",
+      "catalog": null,
+      "lockedVersion": "link:../../packages/shared",
+      "resolution": null,
+      "registry": null
+    },
+    {
+      "name": "@tabler/icons-react-native",
+      "section": "dependencies",
+      "declared": "^3.44.0",
+      "catalog": null,
+      "lockedVersion": "3.44.0(react-native-svg@15.16.1(patch_hash=7f94d240fc19418233c96f9a637dfd248846446657476c204f3614fd2847900e)(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(@types/react@19.3.0)(bufferutil@4.1.0)(react@19.3.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(react@19.3.0))(react@19.3.0)",
+      "resolution": {
+        "integrity": "sha512-/Ppp68bpl9vQQsI/c+YiDC9dnLq4JUo0YI5qP72OQMC1WmCaRzdYn3CU79q01M2L3MfXO9a8WctWN8ay1Odkow=="
+      },
+      "registry": {
+        "name": "@tabler/icons-react-native",
+        "version": "3.44.0",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {
+          "react": ">= 16.5.1",
+          "react-native-svg": ">= 13.0.0"
+        },
+        "integrity": "sha512-/Ppp68bpl9vQQsI/c+YiDC9dnLq4JUo0YI5qP72OQMC1WmCaRzdYn3CU79q01M2L3MfXO9a8WctWN8ay1Odkow=="
+      }
+    },
+    {
+      "name": "clsx",
+      "section": "dependencies",
+      "declared": "^2.1.1",
+      "catalog": null,
+      "lockedVersion": "2.1.1",
+      "resolution": {
+        "integrity": "sha512-eYm0QWBtUrBWZWG0d386OGAw16Z995PiOVo2B7bjWSbHedGl5e0ZWaq65kOGgUSNesEIDkB9ISbTg/JK9dhCZA=="
+      },
+      "registry": {
+        "name": "clsx",
+        "version": "2.1.1",
+        "license": "MIT",
+        "engines": {
+          "node": ">=6"
+        },
+        "peerDependencies": null,
+        "integrity": "sha512-eYm0QWBtUrBWZWG0d386OGAw16Z995PiOVo2B7bjWSbHedGl5e0ZWaq65kOGgUSNesEIDkB9ISbTg/JK9dhCZA=="
+      }
+    },
+    {
+      "name": "diff",
+      "section": "dependencies",
+      "declared": "8.0.3",
+      "catalog": null,
+      "lockedVersion": "8.0.3",
+      "resolution": {
+        "integrity": "sha512-qejHi7bcSD4hQAZE0tNAawRK1ZtafHDmMTMkrrIGgSLl7hTnQHmKCeB45xAcbfTqK2zowkM3j3bHt/4b/ARbYQ=="
+      },
+      "registry": {
+        "name": "diff",
+        "version": "8.0.3",
+        "license": "BSD-3-Clause",
+        "engines": {
+          "node": ">=0.3.1"
+        },
+        "peerDependencies": null,
+        "integrity": "sha512-qejHi7bcSD4hQAZE0tNAawRK1ZtafHDmMTMkrrIGgSLl7hTnQHmKCeB45xAcbfTqK2zowkM3j3bHt/4b/ARbYQ=="
+      }
+    },
+    {
+      "name": "effect",
+      "section": "dependencies",
+      "declared": "catalog:",
+      "catalog": "4.1.3",
+      "lockedVersion": "4.1.3",
+      "resolution": {
+        "integrity": "sha512-QWNEu35groH/78Ejq01lZGt8U0sF1P4nrhbcAZz5WffcS27bUUK9C/db+xWWUwNYUvFD5SrSLE0mFGtwyP0PCQ=="
+      },
+      "registry": {
+        "name": "effect",
+        "version": "4.1.3",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": null,
+        "integrity": "sha512-QWNEu35groH/78Ejq01lZGt8U0sF1P4nrhbcAZz5WffcS27bUUK9C/db+xWWUwNYUvFD5SrSLE0mFGtwyP0PCQ=="
+      }
+    },
+    {
+      "name": "expo",
+      "section": "dependencies",
+      "declared": "58.0.23",
+      "catalog": null,
+      "lockedVersion": "58.0.23(d226faf1ca90e630d8c56a2108dee32d)",
+      "resolution": {
+        "integrity": "sha512-FRpmfd1mdjWS9bRSMoZkwpF8ugbN+w6BDtNs+DYEio7rdSguTJ6fs/gaeWSeN60AJAbz80Uj36AMWtpHkShG0g=="
+      },
+      "registry": {
+        "name": "expo",
+        "version": "58.0.23",
+        "license": "MIT",
+        "engines": {
+          "node": "^22.13.0 || ^24.3.0 || ^26.0.0 || >=27.0.0"
+        },
+        "peerDependencies": {
+          "react": "*",
+          "react-dom": "*",
+          "react-native": "*",
+          "react-native-web": "*",
+          "@expo/dom-webview": "*",
+          "@expo/metro-runtime": "*",
+          "react-native-webview": "*"
+        },
+        "integrity": "sha512-FRpmfd1mdjWS9bRSMoZkwpF8ugbN+w6BDtNs+DYEio7rdSguTJ6fs/gaeWSeN60AJAbz80Uj36AMWtpHkShG0g=="
+      }
+    },
+    {
+      "name": "expo-application",
+      "section": "dependencies",
+      "declared": "~58.1.2",
+      "catalog": null,
+      "lockedVersion": "58.1.2(expo@58.0.23)",
+      "resolution": {
+        "integrity": "sha512-WYFdNHGaxe/j69oYREhK0cKsKYszuIuz399WXYCP+M1grfO+FCWB/RbuMgaXJsLWlzqhNjA/zLgfJ+33FwrQvw=="
+      },
+      "registry": {
+        "name": "expo-application",
+        "version": "58.1.2",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {
+          "expo": "*"
+        },
+        "integrity": "sha512-WYFdNHGaxe/j69oYREhK0cKsKYszuIuz399WXYCP+M1grfO+FCWB/RbuMgaXJsLWlzqhNjA/zLgfJ+33FwrQvw=="
+      }
+    },
+    {
+      "name": "expo-asset",
+      "section": "dependencies",
+      "declared": "~58.0.20",
+      "catalog": null,
+      "lockedVersion": "58.0.20(expo@58.0.23)(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(@types/react@19.3.0)(bufferutil@4.1.0)(react@19.3.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(react@19.3.0)(supports-color@8.1.1)(typescript@6.0.3)",
+      "resolution": {
+        "integrity": "sha512-atirOtDsH0l+4zxnByf4WKc7Iw2k5e2bSNAkuu79d4SLOAjAROoDizeP0qNQSMyZNoHPArw7EwTpoc8LuWvg4Q=="
+      },
+      "registry": {
+        "name": "expo-asset",
+        "version": "58.0.20",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {
+          "expo": "*",
+          "react": "*",
+          "react-native": "*"
+        },
+        "integrity": "sha512-atirOtDsH0l+4zxnByf4WKc7Iw2k5e2bSNAkuu79d4SLOAjAROoDizeP0qNQSMyZNoHPArw7EwTpoc8LuWvg4Q=="
+      }
+    },
+    {
+      "name": "expo-audio",
+      "section": "dependencies",
+      "declared": "58.0.11",
+      "catalog": null,
+      "lockedVersion": "58.0.11(patch_hash=93691f7f59edb30a3bb2c23b489e605e7ea35506b1212d4a2ebbd1fd79079483)(expo-asset@58.0.20(expo@58.0.23)(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(@types/react@19.3.0)(bufferutil@4.1.0)(react@19.3.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(react@19.3.0)(supports-color@8.1.1)(typescript@6.0.3))(expo@58.0.23)(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(@types/react@19.3.0)(bufferutil@4.1.0)(react@19.3.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(react@19.3.0)",
+      "resolution": {
+        "integrity": "sha512-r/3QzCZ+rHUrjAFoZpczUaC1N3uuHhjKr9YfsOlT3tnXFF+AC6EVofOc8S4OYPdgveIljLpouFcNps6ynf0U2A=="
+      },
+      "registry": {
+        "name": "expo-audio",
+        "version": "58.0.11",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {
+          "expo": "*",
+          "react": "*",
+          "expo-asset": "*",
+          "react-native": "*"
+        },
+        "integrity": "sha512-r/3QzCZ+rHUrjAFoZpczUaC1N3uuHhjKr9YfsOlT3tnXFF+AC6EVofOc8S4OYPdgveIljLpouFcNps6ynf0U2A=="
+      }
+    },
+    {
+      "name": "expo-auth-session",
+      "section": "dependencies",
+      "declared": "~58.0.17",
+      "catalog": null,
+      "lockedVersion": "58.0.17(expo@58.0.23)(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(@types/react@19.3.0)(bufferutil@4.1.0)(react@19.3.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(react@19.3.0)(supports-color@8.1.1)(typescript@6.0.3)",
+      "resolution": {
+        "integrity": "sha512-eCI9lQetfuCtD1xmiPWWWBqvJ/am2helJbhZyhrVtx7qjjTN8yAX6vE2TWLXSGjDRtBYFWy9H6jZBU1VRIlK2g=="
+      },
+      "registry": {
+        "name": "expo-auth-session",
+        "version": "58.0.17",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {
+          "react": "*",
+          "react-native": "*"
+        },
+        "integrity": "sha512-eCI9lQetfuCtD1xmiPWWWBqvJ/am2helJbhZyhrVtx7qjjTN8yAX6vE2TWLXSGjDRtBYFWy9H6jZBU1VRIlK2g=="
+      }
+    },
+    {
+      "name": "expo-blur",
+      "section": "dependencies",
+      "declared": "58.0.5",
+      "catalog": null,
+      "lockedVersion": "58.0.5(expo@58.0.23)(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(@types/react@19.3.0)(bufferutil@4.1.0)(react@19.3.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(react@19.3.0)",
+      "resolution": {
+        "integrity": "sha512-l8MEObIh0opwIUf+SD9MfqD0JnOirGuetAW/V3phXQRJaTPKLtb0IukgyLmnOsfWMAWTdJrcl5l/2ezcDHrkHQ=="
+      },
+      "registry": {
+        "name": "expo-blur",
+        "version": "58.0.5",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {
+          "expo": "*",
+          "react": "*",
+          "react-native": "*"
+        },
+        "integrity": "sha512-l8MEObIh0opwIUf+SD9MfqD0JnOirGuetAW/V3phXQRJaTPKLtb0IukgyLmnOsfWMAWTdJrcl5l/2ezcDHrkHQ=="
+      }
+    },
+    {
+      "name": "expo-build-properties",
+      "section": "dependencies",
+      "declared": "~58.0.12",
+      "catalog": null,
+      "lockedVersion": "58.0.12(expo@58.0.23)",
+      "resolution": {
+        "integrity": "sha512-Wrs1X1iz0kigrBBDs3qILxvXmANccvbsjpR937KqX0Qq7ON6ISk2uJyfz7Tb7/GFhDuJ6MAfW0jR+oryYdOhcg=="
+      },
+      "registry": {
+        "name": "expo-build-properties",
+        "version": "58.0.12",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {
+          "expo": "*"
+        },
+        "integrity": "sha512-Wrs1X1iz0kigrBBDs3qILxvXmANccvbsjpR937KqX0Qq7ON6ISk2uJyfz7Tb7/GFhDuJ6MAfW0jR+oryYdOhcg=="
+      }
+    },
+    {
+      "name": "expo-camera",
+      "section": "dependencies",
+      "declared": "~58.0.14",
+      "catalog": null,
+      "lockedVersion": "58.0.14(@types/emscripten@1.41.5)(expo@58.0.23)(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(@types/react@19.3.0)(bufferutil@4.1.0)(react@19.3.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(react@19.3.0)",
+      "resolution": {
+        "integrity": "sha512-yEiMuJ2d7A+EqsP8rlGIvgaUzdk/rW9CXR6R7WKqludxU3H+JcSUbPC3ldr3ZpmaYlgXP3x+oOO9BfQy7yKK2A=="
+      },
+      "registry": {
+        "name": "expo-camera",
+        "version": "58.0.14",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {
+          "expo": "*",
+          "react": "*",
+          "react-native": "*",
+          "react-native-web": "*"
+        },
+        "integrity": "sha512-yEiMuJ2d7A+EqsP8rlGIvgaUzdk/rW9CXR6R7WKqludxU3H+JcSUbPC3ldr3ZpmaYlgXP3x+oOO9BfQy7yKK2A=="
+      }
+    },
+    {
+      "name": "expo-clipboard",
+      "section": "dependencies",
+      "declared": "~58.0.4",
+      "catalog": null,
+      "lockedVersion": "58.0.4(expo@58.0.23)(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(@types/react@19.3.0)(bufferutil@4.1.0)(react@19.3.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(react@19.3.0)",
+      "resolution": {
+        "integrity": "sha512-b2eEJMwdWXLTrmrkg/otsmL2OV6s9D90tytSNBsY87UswrWf6JwxcB2OaWegyUWD9XnvtBVNeVK7lej0zZh+5A=="
+      },
+      "registry": {
+        "name": "expo-clipboard",
+        "version": "58.0.4",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {
+          "expo": "*",
+          "react": "*",
+          "react-native": "*"
+        },
+        "integrity": "sha512-b2eEJMwdWXLTrmrkg/otsmL2OV6s9D90tytSNBsY87UswrWf6JwxcB2OaWegyUWD9XnvtBVNeVK7lej0zZh+5A=="
+      }
+    },
+    {
+      "name": "expo-constants",
+      "section": "dependencies",
+      "declared": "~58.0.15",
+      "catalog": null,
+      "lockedVersion": "58.0.15(expo@58.0.23)(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(@types/react@19.3.0)(bufferutil@4.1.0)(react@19.3.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(supports-color@8.1.1)(typescript@6.0.3)",
+      "resolution": {
+        "integrity": "sha512-uokwzsYdjM/ZTEvQJCANhP4eJ4XGGR6keJy/Ac9HntLsQART8o+Y8nTVAXdMaRv6T5wuzJOliJmKUYJlDlamdg=="
+      },
+      "registry": {
+        "name": "expo-constants",
+        "version": "58.0.15",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {
+          "expo": "*",
+          "react-native": "*"
+        },
+        "integrity": "sha512-uokwzsYdjM/ZTEvQJCANhP4eJ4XGGR6keJy/Ac9HntLsQART8o+Y8nTVAXdMaRv6T5wuzJOliJmKUYJlDlamdg=="
+      }
+    },
+    {
+      "name": "expo-crypto",
+      "section": "dependencies",
+      "declared": "~58.0.7",
+      "catalog": null,
+      "lockedVersion": "58.0.7(expo@58.0.23)",
+      "resolution": {
+        "integrity": "sha512-g+4i4UpqQ5jNy1VPRvVVvr9aIdh8WwvxbpwL2ntiSESDRsXyVSeb8JM6tHVdC3b9J2nGxjtrhrsaWOo0jbSxlA=="
+      },
+      "registry": {
+        "name": "expo-crypto",
+        "version": "58.0.7",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {
+          "expo": "*"
+        },
+        "integrity": "sha512-g+4i4UpqQ5jNy1VPRvVVvr9aIdh8WwvxbpwL2ntiSESDRsXyVSeb8JM6tHVdC3b9J2nGxjtrhrsaWOo0jbSxlA=="
+      }
+    },
+    {
+      "name": "expo-dev-client",
+      "section": "dependencies",
+      "declared": "~58.0.18",
+      "catalog": null,
+      "lockedVersion": "58.0.18(expo@58.0.23)(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(@types/react@19.3.0)(bufferutil@4.1.0)(react@19.3.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))",
+      "resolution": {
+        "integrity": "sha512-1oTxhWiZAdFK1zXDWE047cjSw0S3xOATMso8fxXnjK9YvpaG1mGQpCMUVanXvXmiwmqDCHlVXW0myAKBSRzATQ=="
+      },
+      "registry": {
+        "name": "expo-dev-client",
+        "version": "58.0.18",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {
+          "expo": "*"
+        },
+        "integrity": "sha512-1oTxhWiZAdFK1zXDWE047cjSw0S3xOATMso8fxXnjK9YvpaG1mGQpCMUVanXvXmiwmqDCHlVXW0myAKBSRzATQ=="
+      }
+    },
+    {
+      "name": "expo-device",
+      "section": "dependencies",
+      "declared": "~58.0.5",
+      "catalog": null,
+      "lockedVersion": "58.0.5(expo@58.0.23)",
+      "resolution": {
+        "integrity": "sha512-GNyaHPwoiI/z2SGR14R6d9J7hFSW2JabZieJtC3l6/LO2mJYVCbhEsQ7/1ljGBeTUnFFWHcFLccdaWEhOWtaQQ=="
+      },
+      "registry": {
+        "name": "expo-device",
+        "version": "58.0.5",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {
+          "expo": "*"
+        },
+        "integrity": "sha512-GNyaHPwoiI/z2SGR14R6d9J7hFSW2JabZieJtC3l6/LO2mJYVCbhEsQ7/1ljGBeTUnFFWHcFLccdaWEhOWtaQQ=="
+      }
+    },
+    {
+      "name": "expo-document-picker",
+      "section": "dependencies",
+      "declared": "~58.0.4",
+      "catalog": null,
+      "lockedVersion": "58.0.4(expo@58.0.23)",
+      "resolution": {
+        "integrity": "sha512-rxs+9RrpI55/BEGNB/3sXjoBG6yZDLyn6Z7KzjbbBLdX8bE2cZT4IozQ3Q5wufaEEeaHQn48EgPiuMoTsAidpg=="
+      },
+      "registry": {
+        "name": "expo-document-picker",
+        "version": "58.0.4",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {
+          "expo": "*"
+        },
+        "integrity": "sha512-rxs+9RrpI55/BEGNB/3sXjoBG6yZDLyn6Z7KzjbbBLdX8bE2cZT4IozQ3Q5wufaEEeaHQn48EgPiuMoTsAidpg=="
+      }
+    },
+    {
+      "name": "expo-file-system",
+      "section": "dependencies",
+      "declared": "~58.0.13",
+      "catalog": null,
+      "lockedVersion": "58.0.13(expo@58.0.23)(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(@types/react@19.3.0)(bufferutil@4.1.0)(react@19.3.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))",
+      "resolution": {
+        "integrity": "sha512-+/1aFErkawyky5UdWI06zYeO2DeHUnfaWnYHeiI8M8Z/sB6L66gI3WUxqtvUvKJoaM0Ti1CximD3x3JwteLYIg=="
+      },
+      "registry": {
+        "name": "expo-file-system",
+        "version": "58.0.13",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {
+          "expo": "*",
+          "react-native": "*"
+        },
+        "integrity": "sha512-+/1aFErkawyky5UdWI06zYeO2DeHUnfaWnYHeiI8M8Z/sB6L66gI3WUxqtvUvKJoaM0Ti1CximD3x3JwteLYIg=="
+      }
+    },
+    {
+      "name": "expo-font",
+      "section": "dependencies",
+      "declared": "~58.0.11",
+      "catalog": null,
+      "lockedVersion": "58.0.11(expo@58.0.23)(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(@types/react@19.3.0)(bufferutil@4.1.0)(react@19.3.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(react@19.3.0)",
+      "resolution": {
+        "integrity": "sha512-6r7s6xk2L2orvum+x+TY1fzEcMtuCBRQTLgC/Su2uLzNPpT4L+E+S4IAGy8ZIjeVvwk2j2pj+HiZ23O7eh1PGQ=="
+      },
+      "registry": {
+        "name": "expo-font",
+        "version": "58.0.11",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {
+          "expo": "*",
+          "react": "*",
+          "react-native": "*"
+        },
+        "integrity": "sha512-6r7s6xk2L2orvum+x+TY1fzEcMtuCBRQTLgC/Su2uLzNPpT4L+E+S4IAGy8ZIjeVvwk2j2pj+HiZ23O7eh1PGQ=="
+      }
+    },
+    {
+      "name": "expo-glass-effect",
+      "section": "dependencies",
+      "declared": "58.0.5",
+      "catalog": null,
+      "lockedVersion": "58.0.5(expo@58.0.23)(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(@types/react@19.3.0)(bufferutil@4.1.0)(react@19.3.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(react@19.3.0)",
+      "resolution": {
+        "integrity": "sha512-PkL1X/r0cTs6NG47Xp3TxRvtqSeRmPYhPOHp3GDmZB2oOxpjXge6qLi/bSSv0asFWqf+MLOlXZ+hq2Imuh0Z1g=="
+      },
+      "registry": {
+        "name": "expo-glass-effect",
+        "version": "58.0.5",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {
+          "expo": "*",
+          "react": "*",
+          "react-native": "*"
+        },
+        "integrity": "sha512-PkL1X/r0cTs6NG47Xp3TxRvtqSeRmPYhPOHp3GDmZB2oOxpjXge6qLi/bSSv0asFWqf+MLOlXZ+hq2Imuh0Z1g=="
+      }
+    },
+    {
+      "name": "expo-haptics",
+      "section": "dependencies",
+      "declared": "~58.0.7",
+      "catalog": null,
+      "lockedVersion": "58.0.7(expo@58.0.23)",
+      "resolution": {
+        "integrity": "sha512-mAY3rbng6EuYysq9wnJKhKwYYlDjqnPYcS5OXe3zj4TlAaOFMl/EfiSOuAMawc2nsXCAnwJ5U0E11nq5zQO0mg=="
+      },
+      "registry": {
+        "name": "expo-haptics",
+        "version": "58.0.7",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {
+          "expo": "*"
+        },
+        "integrity": "sha512-mAY3rbng6EuYysq9wnJKhKwYYlDjqnPYcS5OXe3zj4TlAaOFMl/EfiSOuAMawc2nsXCAnwJ5U0E11nq5zQO0mg=="
+      }
+    },
+    {
+      "name": "expo-image",
+      "section": "dependencies",
+      "declared": "~58.0.18",
+      "catalog": null,
+      "lockedVersion": "58.0.18(expo@58.0.23)(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(@types/react@19.3.0)(bufferutil@4.1.0)(react@19.3.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(react@19.3.0)",
+      "resolution": {
+        "integrity": "sha512-bWbFD8eBbZywr1WssV6KtcglRlpD5WpzVj+oA3hfjX1MJBN43IeB7A6EQAGXE0eGBVG93Mf2dRBmCRJ/e/Hw6g=="
+      },
+      "registry": {
+        "name": "expo-image",
+        "version": "58.0.18",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {
+          "expo": "*",
+          "react": "*",
+          "react-native": "*",
+          "react-native-web": "*"
+        },
+        "integrity": "sha512-bWbFD8eBbZywr1WssV6KtcglRlpD5WpzVj+oA3hfjX1MJBN43IeB7A6EQAGXE0eGBVG93Mf2dRBmCRJ/e/Hw6g=="
+      }
+    },
+    {
+      "name": "expo-image-manipulator",
+      "section": "dependencies",
+      "declared": "~58.0.16",
+      "catalog": null,
+      "lockedVersion": "58.0.16(expo@58.0.23)(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(@types/react@19.3.0)(bufferutil@4.1.0)(react@19.3.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(react@19.3.0)",
+      "resolution": {
+        "integrity": "sha512-KY4Y4GjyaPuvRrZWQ2qDDPC0+q4xOpz9rydrK8/jexU+zwCMHsQGalOPjFwZrC0QhvGxfvvG9H/Qwv6Yh9vlOg=="
+      },
+      "registry": {
+        "name": "expo-image-manipulator",
+        "version": "58.0.16",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {
+          "expo": "*",
+          "react": "*",
+          "react-native": "*"
+        },
+        "integrity": "sha512-KY4Y4GjyaPuvRrZWQ2qDDPC0+q4xOpz9rydrK8/jexU+zwCMHsQGalOPjFwZrC0QhvGxfvvG9H/Qwv6Yh9vlOg=="
+      }
+    },
+    {
+      "name": "expo-image-picker",
+      "section": "dependencies",
+      "declared": "~58.0.10",
+      "catalog": null,
+      "lockedVersion": "58.0.10(expo@58.0.23)",
+      "resolution": {
+        "integrity": "sha512-yqQC9UYMWSUxk6U0jaS1vE1w+b9Ru0FJmQ3KjUf9Q9oVg5xBxmg8+Ts+usazMAuPoskNIXJ++VZ+uK6br9yUGQ=="
+      },
+      "registry": {
+        "name": "expo-image-picker",
+        "version": "58.0.10",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {
+          "expo": "*"
+        },
+        "integrity": "sha512-yqQC9UYMWSUxk6U0jaS1vE1w+b9Ru0FJmQ3KjUf9Q9oVg5xBxmg8+Ts+usazMAuPoskNIXJ++VZ+uK6br9yUGQ=="
+      }
+    },
+    {
+      "name": "expo-keep-awake",
+      "section": "dependencies",
+      "declared": "~58.0.3",
+      "catalog": null,
+      "lockedVersion": "58.0.3(expo@58.0.23)(react@19.3.0)",
+      "resolution": {
+        "integrity": "sha512-wLRF+XeVsD/Rt/ZyX+A0mk1brdf8vefWizNAPzqV5eOCgkj23LCRZdN8gUi5X8UwyR8UJ7Y7Dzdz4YDGB/4c9Q=="
+      },
+      "registry": {
+        "name": "expo-keep-awake",
+        "version": "58.0.3",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {
+          "expo": "*",
+          "react": "*"
+        },
+        "integrity": "sha512-wLRF+XeVsD/Rt/ZyX+A0mk1brdf8vefWizNAPzqV5eOCgkj23LCRZdN8gUi5X8UwyR8UJ7Y7Dzdz4YDGB/4c9Q=="
+      }
+    },
+    {
+      "name": "expo-linking",
+      "section": "dependencies",
+      "declared": "~58.0.16",
+      "catalog": null,
+      "lockedVersion": "58.0.16(expo@58.0.23)(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(@types/react@19.3.0)(bufferutil@4.1.0)(react@19.3.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(react@19.3.0)(supports-color@8.1.1)(typescript@6.0.3)",
+      "resolution": {
+        "integrity": "sha512-yGz7w4nySktoOba7fS08DzzQXfEgLd60248Sz3u4m/Vzi8SKhC5xBXWmP4scGh0Ele89I350k/uvo2moVmmZJw=="
+      },
+      "registry": {
+        "name": "expo-linking",
+        "version": "58.0.16",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {
+          "expo": "*",
+          "react": "*",
+          "react-native": "*"
+        },
+        "integrity": "sha512-yGz7w4nySktoOba7fS08DzzQXfEgLd60248Sz3u4m/Vzi8SKhC5xBXWmP4scGh0Ele89I350k/uvo2moVmmZJw=="
+      }
+    },
+    {
+      "name": "expo-network",
+      "section": "dependencies",
+      "declared": "~58.0.4",
+      "catalog": null,
+      "lockedVersion": "58.0.4(patch_hash=159c2d760d1cd5102e95df51c20600111e7a72096ef0daea8215d50cae48bd98)(expo@58.0.23)(react@19.3.0)",
+      "resolution": {
+        "integrity": "sha512-E3dYtnku+LDal+4OtKdxGotX7DLjaq+GOvrtN0RiYDTNum8lhMB7dK4GqGgBqHjwsC0awEds5DhTkm+w7O1TtQ=="
+      },
+      "registry": {
+        "name": "expo-network",
+        "version": "58.0.4",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {
+          "expo": "*",
+          "react": "*"
+        },
+        "integrity": "sha512-E3dYtnku+LDal+4OtKdxGotX7DLjaq+GOvrtN0RiYDTNum8lhMB7dK4GqGgBqHjwsC0awEds5DhTkm+w7O1TtQ=="
+      }
+    },
+    {
+      "name": "expo-notifications",
+      "section": "dependencies",
+      "declared": "~58.1.8",
+      "catalog": null,
+      "lockedVersion": "58.1.8(expo@58.0.23)(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(@types/react@19.3.0)(bufferutil@4.1.0)(react@19.3.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(react@19.3.0)(supports-color@8.1.1)(typescript@6.0.3)",
+      "resolution": {
+        "integrity": "sha512-TbYuNpD+1WKi02PHVI22o5W+FAsVMUfVyeW6YfubmZNM2fwcijoYuiagVj1E2ca6WEi0AxgorUX6TpZ6u4lIXA=="
+      },
+      "registry": {
+        "name": "expo-notifications",
+        "version": "58.1.8",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {
+          "expo": "*",
+          "react": "*",
+          "react-native": "*"
+        },
+        "integrity": "sha512-TbYuNpD+1WKi02PHVI22o5W+FAsVMUfVyeW6YfubmZNM2fwcijoYuiagVj1E2ca6WEi0AxgorUX6TpZ6u4lIXA=="
+      }
+    },
+    {
+      "name": "expo-observe",
+      "section": "dependencies",
+      "declared": "~58.0.18",
+      "catalog": null,
+      "lockedVersion": "58.0.18(44167fcbb622a1246dd06560eb01ad42)",
+      "resolution": {
+        "integrity": "sha512-kjTziC0QBkroLWj0PWeEWkLrLh6X6jAXM/23ocoHb4iCq122iESWhHD+WMrWR5A80b1f4nYCUniIdqdAAMEDVg=="
+      },
+      "registry": {
+        "name": "expo-observe",
+        "version": "58.0.18",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {
+          "expo": "*",
+          "react": "*",
+          "expo-router": "*",
+          "react-native": "*",
+          "react-native-reanimated": ">=4.7.0",
+          "@react-navigation/native": "^7.0.0"
+        },
+        "integrity": "sha512-kjTziC0QBkroLWj0PWeEWkLrLh6X6jAXM/23ocoHb4iCq122iESWhHD+WMrWR5A80b1f4nYCUniIdqdAAMEDVg=="
+      }
+    },
+    {
+      "name": "expo-paste-input",
+      "section": "dependencies",
+      "declared": "^0.2.2",
+      "catalog": null,
+      "lockedVersion": "0.2.2(expo@58.0.23)(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(@types/react@19.3.0)(bufferutil@4.1.0)(react@19.3.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(react@19.3.0)",
+      "resolution": {
+        "integrity": "sha512-uDv5qi+/FRsEYwVF0Y9MJE7k9pxTNpI77jOnNqS1TQDQlqSfj11O5yvd+G8e7Hi8fDVBZx/BhyImG0b9sK/zIQ=="
+      },
+      "registry": {
+        "name": "expo-paste-input",
+        "version": "0.2.2",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {
+          "expo": "*",
+          "react": "*",
+          "react-native": "*"
+        },
+        "integrity": "sha512-uDv5qi+/FRsEYwVF0Y9MJE7k9pxTNpI77jOnNqS1TQDQlqSfj11O5yvd+G8e7Hi8fDVBZx/BhyImG0b9sK/zIQ=="
+      }
+    },
+    {
+      "name": "expo-quick-actions",
+      "section": "dependencies",
+      "declared": "^6.0.2",
+      "catalog": null,
+      "lockedVersion": "6.0.2(expo@58.0.23)(supports-color@8.1.1)(typescript@6.0.3)",
+      "resolution": {
+        "integrity": "sha512-IVoTMCx55MjSnPqUEb5jhePpOAUdOTonifY3QXM/DBFxc6qMzBy5iJWEkfDZcFAzFzahK1ZW9tFaNv4pi2AAvQ=="
+      },
+      "registry": {
+        "name": "expo-quick-actions",
+        "version": "6.0.2",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {
+          "expo": "*"
+        },
+        "integrity": "sha512-IVoTMCx55MjSnPqUEb5jhePpOAUdOTonifY3QXM/DBFxc6qMzBy5iJWEkfDZcFAzFzahK1ZW9tFaNv4pi2AAvQ=="
+      }
+    },
+    {
+      "name": "expo-secure-store",
+      "section": "dependencies",
+      "declared": "~58.0.2",
+      "catalog": null,
+      "lockedVersion": "58.0.2(expo@58.0.23)",
+      "resolution": {
+        "integrity": "sha512-VupWWEuQF6IiQ06McSymtn7/tehs8ifThhFwAU4UK8poomZcaa2S0UVt/y7G2XozBdkI3xpiPSx+r0pS2zsuYQ=="
+      },
+      "registry": {
+        "name": "expo-secure-store",
+        "version": "58.0.2",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {
+          "expo": "*"
+        },
+        "integrity": "sha512-VupWWEuQF6IiQ06McSymtn7/tehs8ifThhFwAU4UK8poomZcaa2S0UVt/y7G2XozBdkI3xpiPSx+r0pS2zsuYQ=="
+      }
+    },
+    {
+      "name": "expo-sensors",
+      "section": "dependencies",
+      "declared": "~58.0.4",
+      "catalog": null,
+      "lockedVersion": "58.0.4(expo@58.0.23)(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(@types/react@19.3.0)(bufferutil@4.1.0)(react@19.3.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))",
+      "resolution": {
+        "integrity": "sha512-79NsIcP1MabiTxC78Ebj0TNez0dhHirNfbTRkrtZjUeNkh0eyC0ihPJur6NEIzeCiD+hIaCWY3nF3jyY9PLM+g=="
+      },
+      "registry": {
+        "name": "expo-sensors",
+        "version": "58.0.4",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {
+          "expo": "*",
+          "react-native": "*"
+        },
+        "integrity": "sha512-79NsIcP1MabiTxC78Ebj0TNez0dhHirNfbTRkrtZjUeNkh0eyC0ihPJur6NEIzeCiD+hIaCWY3nF3jyY9PLM+g=="
+      }
+    },
+    {
+      "name": "expo-sharing",
+      "section": "dependencies",
+      "declared": "58.0.22",
+      "catalog": null,
+      "lockedVersion": "58.0.22(patch_hash=321a86e1471e34c53f1f2937fbb4304ea3f7b7a78ad9e4d35febc2b9e73e9688)(expo@58.0.23)(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(@types/react@19.3.0)(bufferutil@4.1.0)(react@19.3.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(react@19.3.0)(supports-color@8.1.1)(typescript@6.0.3)",
+      "resolution": {
+        "integrity": "sha512-s9/hFsGIZR+M8xRicKKKdV5/+TVSvEHze58yu3x9962lLvxkGY1aJ4vojg1RszSTesPJaNiCg7DRA2H8f47/9w=="
+      },
+      "registry": {
+        "name": "expo-sharing",
+        "version": "58.0.22",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {
+          "expo": "*",
+          "react": "*",
+          "react-native": "*"
+        },
+        "integrity": "sha512-s9/hFsGIZR+M8xRicKKKdV5/+TVSvEHze58yu3x9962lLvxkGY1aJ4vojg1RszSTesPJaNiCg7DRA2H8f47/9w=="
+      }
+    },
+    {
+      "name": "expo-splash-screen",
+      "section": "dependencies",
+      "declared": "~58.0.13",
+      "catalog": null,
+      "lockedVersion": "58.0.13(expo@58.0.23)(supports-color@8.1.1)(typescript@6.0.3)",
+      "resolution": {
+        "integrity": "sha512-RsvDF13tU1wQIy2blzmdbZoWpPWNTYks2A0CUq2AENR7i7u8elSSEfQOdh5TeC0lrrFVbiWfPj2JiM7y/m08Ig=="
+      },
+      "registry": {
+        "name": "expo-splash-screen",
+        "version": "58.0.13",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {
+          "expo": "*"
+        },
+        "integrity": "sha512-RsvDF13tU1wQIy2blzmdbZoWpPWNTYks2A0CUq2AENR7i7u8elSSEfQOdh5TeC0lrrFVbiWfPj2JiM7y/m08Ig=="
+      }
+    },
+    {
+      "name": "expo-sqlite",
+      "section": "dependencies",
+      "declared": "~58.0.15",
+      "catalog": null,
+      "lockedVersion": "58.0.15(expo@58.0.23)(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(@types/react@19.3.0)(bufferutil@4.1.0)(react@19.3.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(react@19.3.0)",
+      "resolution": {
+        "integrity": "sha512-jokbgUHPD1zvpFT/LeJaCoOTsd0QXXWzbthVPCMyMMn+/IZAMqQu79OxYzck5G5wlc+t+vTuEESGMY8r1n3VTA=="
+      },
+      "registry": {
+        "name": "expo-sqlite",
+        "version": "58.0.15",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {
+          "expo": "*",
+          "react": "*",
+          "react-native": "*"
+        },
+        "integrity": "sha512-jokbgUHPD1zvpFT/LeJaCoOTsd0QXXWzbthVPCMyMMn+/IZAMqQu79OxYzck5G5wlc+t+vTuEESGMY8r1n3VTA=="
+      }
+    },
+    {
+      "name": "expo-symbols",
+      "section": "dependencies",
+      "declared": "~58.0.4",
+      "catalog": null,
+      "lockedVersion": "58.0.4(expo-font@58.0.11(expo@58.0.23)(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(@types/react@19.3.0)(bufferutil@4.1.0)(react@19.3.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(react@19.3.0))(expo@58.0.23)(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(@types/react@19.3.0)(bufferutil@4.1.0)(react@19.3.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(react@19.3.0)",
+      "resolution": {
+        "integrity": "sha512-cZeIh4bf4uUI5GhI0BK88dV1BCoWlgp1fmbPuUY/bZnonmyGS881Yvy8MkbM+R+ozo7W9TdZFpbFRWjUA+spcA=="
+      },
+      "registry": {
+        "name": "expo-symbols",
+        "version": "58.0.4",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {
+          "expo": "*",
+          "react": "*",
+          "expo-font": "*",
+          "react-native": "*"
+        },
+        "integrity": "sha512-cZeIh4bf4uUI5GhI0BK88dV1BCoWlgp1fmbPuUY/bZnonmyGS881Yvy8MkbM+R+ozo7W9TdZFpbFRWjUA+spcA=="
+      }
+    },
+    {
+      "name": "expo-updates",
+      "section": "dependencies",
+      "declared": "~58.0.21",
+      "catalog": null,
+      "lockedVersion": "58.0.21(expo-dev-client@58.0.18(expo@58.0.23)(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(@types/react@19.3.0)(bufferutil@4.1.0)(react@19.3.0)(supports-color@8.1.1)(utf-8-validate@6.0.6)))(expo@58.0.23)(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(@types/react@19.3.0)(bufferutil@4.1.0)(react@19.3.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(react@19.3.0)(supports-color@8.1.1)",
+      "resolution": {
+        "integrity": "sha512-shc/i52aoFcvweKoOVjTZMo+WSokHeJjVdzpOkpiPkzJP642exytEBQQPG5cO1QBgfGHzaPN+yzVm6CRao4LzQ=="
+      },
+      "registry": {
+        "name": "expo-updates",
+        "version": "58.0.21",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {
+          "expo": "*",
+          "react": "*",
+          "react-native": "*",
+          "expo-dev-client": "*"
+        },
+        "integrity": "sha512-shc/i52aoFcvweKoOVjTZMo+WSokHeJjVdzpOkpiPkzJP642exytEBQQPG5cO1QBgfGHzaPN+yzVm6CRao4LzQ=="
+      }
+    },
+    {
+      "name": "expo-video",
+      "section": "dependencies",
+      "declared": "58.0.13",
+      "catalog": null,
+      "lockedVersion": "58.0.13(patch_hash=e80ec3ef8c4af50a607beea1c0917e71ba679844efdb702b45d17a5f03cf466c)(expo@58.0.23)(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(@types/react@19.3.0)(bufferutil@4.1.0)(react@19.3.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(react@19.3.0)",
+      "resolution": {
+        "integrity": "sha512-3+ubjwi3L1QwCjGB39SOqhPy3hEtB5iWsd99k4jhBATB5UL0/qW5jfPnempJr6fGGL/2MBQy9NNFNL5OGwvV4w=="
+      },
+      "registry": {
+        "name": "expo-video",
+        "version": "58.0.13",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {
+          "expo": "*",
+          "react": "*",
+          "react-native": "*"
+        },
+        "integrity": "sha512-3+ubjwi3L1QwCjGB39SOqhPy3hEtB5iWsd99k4jhBATB5UL0/qW5jfPnempJr6fGGL/2MBQy9NNFNL5OGwvV4w=="
+      }
+    },
+    {
+      "name": "expo-web-browser",
+      "section": "dependencies",
+      "declared": "~58.0.7",
+      "catalog": null,
+      "lockedVersion": "58.0.7(expo@58.0.23)(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(@types/react@19.3.0)(bufferutil@4.1.0)(react@19.3.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))",
+      "resolution": {
+        "integrity": "sha512-dQ2/lkw+GR0+5xG6L2cixH+Zk7tY0IeWGhS2PRw+JIPDbqU+8eAb3F0twB7vMFBls4B/DdaLYoEj/hhq7msLHQ=="
+      },
+      "registry": {
+        "name": "expo-web-browser",
+        "version": "58.0.7",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {
+          "expo": "*",
+          "react-native": "*"
+        },
+        "integrity": "sha512-dQ2/lkw+GR0+5xG6L2cixH+Zk7tY0IeWGhS2PRw+JIPDbqU+8eAb3F0twB7vMFBls4B/DdaLYoEj/hhq7msLHQ=="
+      }
+    },
+    {
+      "name": "expo-widgets",
+      "section": "dependencies",
+      "declared": "58.0.27",
+      "catalog": null,
+      "lockedVersion": "58.0.27(patch_hash=0e26817ca487a5156bcc9499f7db2e99a7d102f4a53b6b738f00552958774c86)(@babel/core@7.29.7(supports-color@8.1.1))(expo@58.0.23)(react-dom@19.3.0(react@19.3.0))(react-native-worklets@0.13.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(@types/react@19.3.0)(bufferutil@4.1.0)(react@19.3.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(react@19.3.0)(supports-color@8.1.1))(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(@types/react@19.3.0)(bufferutil@4.1.0)(react@19.3.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(react@19.3.0)",
+      "resolution": {
+        "integrity": "sha512-hgSfR8IpMYt3NTmjsAx2PAoC4q2fySE6N+2H2IysKTNxrRPxTmAO1EoRtcC1ibyTP3yOuIjlhOOLjvexHsbMyw=="
+      },
+      "registry": {
+        "name": "expo-widgets",
+        "version": "58.0.27",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {
+          "expo": "*",
+          "react": "*",
+          "react-native": "*"
+        },
+        "integrity": "sha512-hgSfR8IpMYt3NTmjsAx2PAoC4q2fySE6N+2H2IysKTNxrRPxTmAO1EoRtcC1ibyTP3yOuIjlhOOLjvexHsbMyw=="
+      }
+    },
+    {
+      "name": "gt-react-native",
+      "section": "dependencies",
+      "declared": "11.4.18",
+      "catalog": null,
+      "lockedVersion": "11.4.18(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(@types/react@19.3.0)(bufferutil@4.1.0)(react@19.3.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(react@19.3.0)",
+      "resolution": {
+        "integrity": "sha512-juASbGUn0R4fFZdr8qR7wovAXliH5RD3djZwkGL5x4ALp8/1J6fR1t8q0uF1Iq0GrsIcuE4oKjVgROCyMiXudA=="
+      },
+      "registry": {
+        "name": "gt-react-native",
+        "version": "11.4.18",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {
+          "react": ">=19.0.0",
+          "react-native": ">=0.78.0"
+        },
+        "integrity": "sha512-juASbGUn0R4fFZdr8qR7wovAXliH5RD3djZwkGL5x4ALp8/1J6fR1t8q0uF1Iq0GrsIcuE4oKjVgROCyMiXudA=="
+      }
+    },
+    {
+      "name": "pele",
+      "section": "dependencies",
+      "declared": "catalog:",
+      "catalog": "^1.8.0",
+      "lockedVersion": "1.8.0",
+      "resolution": {
+        "integrity": "sha512-AYmHttE70cwNJVXdfPMCANGivFlmc3bGGpMG0GqH5S5vE3RgtEuLlkqbhRfe94Csv/ZEd1TUbv2dMUHpw4p1Bg=="
+      },
+      "registry": {
+        "name": "pele",
+        "version": "1.8.0",
+        "license": "MIT",
+        "engines": {
+          "node": ">=20"
+        },
+        "peerDependencies": null,
+        "integrity": "sha512-AYmHttE70cwNJVXdfPMCANGivFlmc3bGGpMG0GqH5S5vE3RgtEuLlkqbhRfe94Csv/ZEd1TUbv2dMUHpw4p1Bg=="
+      }
+    },
+    {
+      "name": "react",
+      "section": "dependencies",
+      "declared": "catalog:",
+      "catalog": "19.3.0",
+      "lockedVersion": "19.3.0",
+      "resolution": {
+        "integrity": "sha512-E8LUcbtBWt20bbl2YoHfx4ZDBdxVTfOKtCZn9cDSJ4l6/nuoApcpIBcj47t2wZoVX8g2ZHuMHbiShgCR1T5Sog=="
+      },
+      "registry": {
+        "name": "react",
+        "version": "19.3.0",
+        "license": "MIT",
+        "engines": {
+          "node": ">=0.10.0"
+        },
+        "peerDependencies": null,
+        "integrity": "sha512-E8LUcbtBWt20bbl2YoHfx4ZDBdxVTfOKtCZn9cDSJ4l6/nuoApcpIBcj47t2wZoVX8g2ZHuMHbiShgCR1T5Sog=="
+      }
+    },
+    {
+      "name": "react-dom",
+      "section": "dependencies",
+      "declared": "catalog:",
+      "catalog": "19.3.0",
+      "lockedVersion": "19.3.0(react@19.3.0)",
+      "resolution": {
+        "integrity": "sha512-JDk8dgif51OjFoDE70+OT9ICyYr+69HlmihNwp1+Nsfbna3t5sIiCa9ZJktDmQ4/1b/rn26hIAR2uYXDMr5r0Q=="
+      },
+      "registry": {
+        "name": "react-dom",
+        "version": "19.3.0",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {
+          "react": "^19.3.0"
+        },
+        "integrity": "sha512-JDk8dgif51OjFoDE70+OT9ICyYr+69HlmihNwp1+Nsfbna3t5sIiCa9ZJktDmQ4/1b/rn26hIAR2uYXDMr5r0Q=="
+      }
+    },
+    {
+      "name": "react-native",
+      "section": "dependencies",
+      "declared": "0.88.1",
+      "catalog": null,
+      "lockedVersion": "0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(@types/react@19.3.0)(bufferutil@4.1.0)(react@19.3.0)(supports-color@8.1.1)(utf-8-validate@6.0.6)",
+      "resolution": {
+        "integrity": "sha512-wajWcLZ93GCN7k4Uwh4CS4L2Ah8ohcvkOXnvIYmh4Yvuqho5j3APZ9qozK+nQrHWSgauq4h8D3HN5DKK84SrHA=="
+      },
+      "registry": {
+        "name": "react-native",
+        "version": "0.88.1",
+        "license": "MIT",
+        "engines": {
+          "node": "^22.13.0 || ^24.3.0 || >= 26.0.0"
+        },
+        "peerDependencies": {
+          "react": "^19.3.0",
+          "@types/react": "^19.1.1"
+        },
+        "integrity": "sha512-wajWcLZ93GCN7k4Uwh4CS4L2Ah8ohcvkOXnvIYmh4Yvuqho5j3APZ9qozK+nQrHWSgauq4h8D3HN5DKK84SrHA=="
+      }
+    },
+    {
+      "name": "react-native-enriched-markdown",
+      "section": "dependencies",
+      "declared": "file:deps/react-native-enriched-markdown-1.2.0-t3.18-16db4c75.tgz",
+      "catalog": null,
+      "lockedVersion": "file:apps/mobile/deps/react-native-enriched-markdown-1.2.0-t3.18-16db4c75.tgz(katex@0.16.47)(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(@types/react@19.3.0)(bufferutil@4.1.0)(react@19.3.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(react@19.3.0)",
+      "resolution": {
+        "integrity": "sha512-TdP2nTxn8W4jPJ5EU+9Ctgf6aOncENP/kMa9aEZpJDmWNLXkxPpcugHMWyZJt2o5WDYE4SPi0V6zV6mOl3+8cA==",
+        "tarball": "file:apps/mobile/deps/react-native-enriched-markdown-1.2.0-t3.18-16db4c75.tgz"
+      },
+      "registry": null
+    },
+    {
+      "name": "react-native-gesture-handler",
+      "section": "dependencies",
+      "declared": "~3.5.0",
+      "catalog": null,
+      "lockedVersion": "3.5.0(patch_hash=171379dd378f8f11e9187876dec2116e5cbf5f21cef6576cdde6956518324f98)(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(@types/react@19.3.0)(bufferutil@4.1.0)(react@19.3.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(react@19.3.0)",
+      "resolution": {
+        "integrity": "sha512-bm8yepwMBUhEOSeU7WQbNNrstD0Hbv6i+XsApARBJSlb+WlRvyaQsobi+tZ5Uyr5kDVgXzg6kPb+CWY9zvyfEw=="
+      },
+      "registry": {
+        "name": "react-native-gesture-handler",
+        "version": "3.5.0",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {
+          "react": "*",
+          "react-native": "*"
+        },
+        "integrity": "sha512-bm8yepwMBUhEOSeU7WQbNNrstD0Hbv6i+XsApARBJSlb+WlRvyaQsobi+tZ5Uyr5kDVgXzg6kPb+CWY9zvyfEw=="
+      }
+    },
+    {
+      "name": "react-native-image-viewing",
+      "section": "dependencies",
+      "declared": "^0.2.2",
+      "catalog": null,
+      "lockedVersion": "0.2.2(patch_hash=4aa038d541c7ddcc8f1437eb3e7b4f769f61de78e7f91b53f9805dfca608474d)(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(@types/react@19.3.0)(bufferutil@4.1.0)(react@19.3.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(react@19.3.0)",
+      "resolution": {
+        "integrity": "sha512-osWieG+p/d2NPbAyonOMubttajtYEYiRGQaJA54slFxZ69j1V4/dCmcrVQry47ktVKy8/qpFwCpW1eT6MH5T2Q=="
+      },
+      "registry": {
+        "name": "react-native-image-viewing",
+        "version": "0.2.2",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {
+          "react": ">=16.11.0",
+          "react-native": ">=0.61.3"
+        },
+        "integrity": "sha512-osWieG+p/d2NPbAyonOMubttajtYEYiRGQaJA54slFxZ69j1V4/dCmcrVQry47ktVKy8/qpFwCpW1eT6MH5T2Q=="
+      }
+    },
+    {
+      "name": "react-native-keyboard-controller",
+      "section": "dependencies",
+      "declared": "1.23.0",
+      "catalog": null,
+      "lockedVersion": "1.23.0(patch_hash=1c7c80317ef050e08d4aabe034a0813d03b497dff2dc8b37fb5f4a6e3b20fddb)(3ba24c675da40640708746e9087ede39)",
+      "resolution": {
+        "integrity": "sha512-UqHOiGeVQnUj1NBggzQ9LD9rqHf7k4u81hqDpIyS2k3r1noOp9w5/lLiSajipH88BsMO7J43E3N/L+bfKEiuZA=="
+      },
+      "registry": {
+        "name": "react-native-keyboard-controller",
+        "version": "1.23.0",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {
+          "react": "*",
+          "react-native": "*",
+          "react-native-reanimated": ">=3.0.0"
+        },
+        "integrity": "sha512-UqHOiGeVQnUj1NBggzQ9LD9rqHf7k4u81hqDpIyS2k3r1noOp9w5/lLiSajipH88BsMO7J43E3N/L+bfKEiuZA=="
+      }
+    },
+    {
+      "name": "react-native-nitro-modules",
+      "section": "dependencies",
+      "declared": "0.37.2",
+      "catalog": null,
+      "lockedVersion": "0.37.2(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(@types/react@19.3.0)(bufferutil@4.1.0)(react@19.3.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(react@19.3.0)",
+      "resolution": {
+        "integrity": "sha512-Odnrq/p6/q0R01qZlkqeXu9VHHMuGEnZZmyxMvehEu6QiACNHhBCmAHgyBDqOSo9Lb3G0TscFAT+HG0uxsR/GA=="
+      },
+      "registry": {
+        "name": "react-native-nitro-modules",
+        "version": "0.37.2",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {
+          "react": "*",
+          "react-native": "*"
+        },
+        "integrity": "sha512-Odnrq/p6/q0R01qZlkqeXu9VHHMuGEnZZmyxMvehEu6QiACNHhBCmAHgyBDqOSo9Lb3G0TscFAT+HG0uxsR/GA=="
+      }
+    },
+    {
+      "name": "react-native-pdf-jsi",
+      "section": "dependencies",
+      "declared": "6.1.0",
+      "catalog": null,
+      "lockedVersion": "6.1.0(patch_hash=d29e6b69813548de641a09db705dd94823d3f96832821ae9c3f6a196dd15cb68)(expo@58.0.23)(react-native-nitro-modules@0.37.2(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(@types/react@19.3.0)(bufferutil@4.1.0)(react@19.3.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(react@19.3.0))(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(@types/react@19.3.0)(bufferutil@4.1.0)(react@19.3.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(react@19.3.0)",
+      "resolution": {
+        "integrity": "sha512-bB8nuJkTypWssAasAlSe3ye3h9PTCyttBPQuzVgMNpMmEWR9I/J1Gpkmz1fxqHa7GXAChlYCSUXa5jDFKZnx4Q=="
+      },
+      "registry": {
+        "name": "react-native-pdf-jsi",
+        "version": "6.1.0",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {
+          "expo": ">=52.0.0",
+          "react": "*",
+          "react-native": ">=0.76.0",
+          "react-native-nitro-modules": "^0.37.1"
+        },
+        "integrity": "sha512-bB8nuJkTypWssAasAlSe3ye3h9PTCyttBPQuzVgMNpMmEWR9I/J1Gpkmz1fxqHa7GXAChlYCSUXa5jDFKZnx4Q=="
+      }
+    },
+    {
+      "name": "react-native-reanimated",
+      "section": "dependencies",
+      "declared": "4.7.1",
+      "catalog": null,
+      "lockedVersion": "4.7.1(patch_hash=95ee26e5fcab5f50bc4b4c47b3f7e6278a0b20850205efb9f6ee7e70a22d2b59)(react-native-worklets@0.13.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(@types/react@19.3.0)(bufferutil@4.1.0)(react@19.3.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(react@19.3.0)(supports-color@8.1.1))(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(@types/react@19.3.0)(bufferutil@4.1.0)(react@19.3.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(react@19.3.0)",
+      "resolution": {
+        "integrity": "sha512-HviDFSZ6V4KTRsrLS6hRbBJ4j63l/L8a5az0EoWdJwaMLYnBNyYISTDxwXpEYkMbAbLzCMCviIdiOxXHYQWcNA=="
+      },
+      "registry": {
+        "name": "react-native-reanimated",
+        "version": "4.7.1",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {
+          "react": "*",
+          "react-native": "0.86 - 0.88",
+          "react-native-worklets": "0.13.x"
+        },
+        "integrity": "sha512-HviDFSZ6V4KTRsrLS6hRbBJ4j63l/L8a5az0EoWdJwaMLYnBNyYISTDxwXpEYkMbAbLzCMCviIdiOxXHYQWcNA=="
+      }
+    },
+    {
+      "name": "react-native-safe-area-context",
+      "section": "dependencies",
+      "declared": "~5.11.1",
+      "catalog": null,
+      "lockedVersion": "5.11.1(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(@types/react@19.3.0)(bufferutil@4.1.0)(react@19.3.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(react@19.3.0)",
+      "resolution": {
+        "integrity": "sha512-yCltXXwhwp42vMqfhAsH5BWgAysbLNgwfn3PDwNpOn/CgwfM+eMWgScZIbHbMzJYNLi5bKJEOIUEG4RwKNiECA=="
+      },
+      "registry": {
+        "name": "react-native-safe-area-context",
+        "version": "5.11.1",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {
+          "react": "*",
+          "react-native": "*"
+        },
+        "integrity": "sha512-yCltXXwhwp42vMqfhAsH5BWgAysbLNgwfn3PDwNpOn/CgwfM+eMWgScZIbHbMzJYNLi5bKJEOIUEG4RwKNiECA=="
+      }
+    },
+    {
+      "name": "react-native-screens",
+      "section": "dependencies",
+      "declared": "file:deps/react-native-screens-5.0.0-t3.61.tgz",
+      "catalog": null,
+      "lockedVersion": "file:apps/mobile/deps/react-native-screens-5.0.0-t3.61.tgz(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(@types/react@19.3.0)(bufferutil@4.1.0)(react@19.3.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(react@19.3.0)",
+      "resolution": {
+        "integrity": "sha512-uPb+53SUMB4B30JIqonBTGY3GyKrFpA98FnWYJUDzEDzV2V8pb+f5kSnu9TPpO2jU89znSNYpzABqRRHMZ+KDw==",
+        "tarball": "file:apps/mobile/deps/react-native-screens-5.0.0-t3.61.tgz"
+      },
+      "registry": null
+    },
+    {
+      "name": "react-native-svg",
+      "section": "dependencies",
+      "declared": "15.16.1",
+      "catalog": null,
+      "lockedVersion": "15.16.1(patch_hash=7f94d240fc19418233c96f9a637dfd248846446657476c204f3614fd2847900e)(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(@types/react@19.3.0)(bufferutil@4.1.0)(react@19.3.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(react@19.3.0)",
+      "resolution": {
+        "integrity": "sha512-Y4hCfg0o9ovGJYnNIySph5xWGqzawhW7MB2AjMUTpqJkrtPAx5XCeSk+jRMux2hanUvi9KvdVf2aZu0OFWtjgw=="
+      },
+      "registry": {
+        "name": "react-native-svg",
+        "version": "15.16.1",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {
+          "react": "*",
+          "react-native": "*"
+        },
+        "integrity": "sha512-Y4hCfg0o9ovGJYnNIySph5xWGqzawhW7MB2AjMUTpqJkrtPAx5XCeSk+jRMux2hanUvi9KvdVf2aZu0OFWtjgw=="
+      }
+    },
+    {
+      "name": "react-native-webview",
+      "section": "dependencies",
+      "declared": "14.0.1",
+      "catalog": null,
+      "lockedVersion": "14.0.1(patch_hash=71009983c76818bd5e73d4ca597f76efd04101600c84cd4b4c5d920781c048ae)(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(@types/react@19.3.0)(bufferutil@4.1.0)(react@19.3.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(react@19.3.0)",
+      "resolution": {
+        "integrity": "sha512-lBUuvFk459Mo+5vUNqwzGvn+I8rDJE6zvOulG2hWWudeEOJfWTsQwOfuYnRu+27djUIXrESFfC+EQE3PGu+FWA=="
+      },
+      "registry": {
+        "name": "react-native-webview",
+        "version": "14.0.1",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {
+          "react": "*",
+          "react-native": "*"
+        },
+        "integrity": "sha512-lBUuvFk459Mo+5vUNqwzGvn+I8rDJE6zvOulG2hWWudeEOJfWTsQwOfuYnRu+27djUIXrESFfC+EQE3PGu+FWA=="
+      }
+    },
+    {
+      "name": "react-native-worklets",
+      "section": "dependencies",
+      "declared": "0.13.1",
+      "catalog": null,
+      "lockedVersion": "0.13.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(@types/react@19.3.0)(bufferutil@4.1.0)(react@19.3.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(react@19.3.0)(supports-color@8.1.1)",
+      "resolution": {
+        "integrity": "sha512-sX55Vx89/Y9uJmvAbAGoHXBZvCWXtYPGWPJ9Z9yl0h76mP9A10ULlSrixzGqBFLXeQMBpIpyJEhWpzXP7GG6YA=="
+      },
+      "registry": {
+        "name": "react-native-worklets",
+        "version": "0.13.1",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {
+          "react": "*",
+          "@babel/core": "*",
+          "react-native": "0.86 - 0.88",
+          "@react-native/metro-config": "*"
+        },
+        "integrity": "sha512-sX55Vx89/Y9uJmvAbAGoHXBZvCWXtYPGWPJ9Z9yl0h76mP9A10ULlSrixzGqBFLXeQMBpIpyJEhWpzXP7GG6YA=="
+      }
+    },
+    {
+      "name": "remark-gfm",
+      "section": "dependencies",
+      "declared": "catalog:",
+      "catalog": "4.0.1",
+      "lockedVersion": "4.0.1(supports-color@8.1.1)",
+      "resolution": {
+        "integrity": "sha512-1quofZ2RQ9EWdeN34S79+KExV1764+wCUGop5CPL1WGdD0ocPpu91lzPGbwWMECpEpd42kJGQwzRfyov9j4yNg=="
+      },
+      "registry": {
+        "name": "remark-gfm",
+        "version": "4.0.1",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": null,
+        "integrity": "sha512-1quofZ2RQ9EWdeN34S79+KExV1764+wCUGop5CPL1WGdD0ocPpu91lzPGbwWMECpEpd42kJGQwzRfyov9j4yNg=="
+      }
+    },
+    {
+      "name": "remark-parse",
+      "section": "dependencies",
+      "declared": "catalog:",
+      "catalog": "11.0.0",
+      "lockedVersion": "11.0.0(supports-color@8.1.1)",
+      "resolution": {
+        "integrity": "sha512-FCxlKLNGknS5ba/1lmpYijMUzX2esxW5xQqjWxw2eHFfS2MSdaHVINFmhjo+qN1WhZhNimq0dZATN9pH0IDrpA=="
+      },
+      "registry": {
+        "name": "remark-parse",
+        "version": "11.0.0",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": null,
+        "integrity": "sha512-FCxlKLNGknS5ba/1lmpYijMUzX2esxW5xQqjWxw2eHFfS2MSdaHVINFmhjo+qN1WhZhNimq0dZATN9pH0IDrpA=="
+      }
+    },
+    {
+      "name": "tailwind-merge",
+      "section": "dependencies",
+      "declared": "^3.5.0",
+      "catalog": null,
+      "lockedVersion": "3.6.0",
+      "resolution": {
+        "integrity": "sha512-uxL7qAVQriqRQPAyK3pj66VqskWqoZ37PW94jwOTwNfq/z9oyu1V+eqrZqtR2+fCiXdYOZe/Modt8GtvqNzu+w=="
+      },
+      "registry": {
+        "name": "tailwind-merge",
+        "version": "3.6.0",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": null,
+        "integrity": "sha512-uxL7qAVQriqRQPAyK3pj66VqskWqoZ37PW94jwOTwNfq/z9oyu1V+eqrZqtR2+fCiXdYOZe/Modt8GtvqNzu+w=="
+      }
+    },
+    {
+      "name": "unified",
+      "section": "dependencies",
+      "declared": "catalog:",
+      "catalog": "11.0.5",
+      "lockedVersion": "11.0.5",
+      "resolution": {
+        "integrity": "sha512-xKvGhPWw3k84Qjh8bI3ZeJjqnyadK+GEFtazSfZv/rKeTkTjOJho6mFqh2SM96iIcZokxiOpg78GazTSg8+KHA=="
+      },
+      "registry": {
+        "name": "unified",
+        "version": "11.0.5",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": null,
+        "integrity": "sha512-xKvGhPWw3k84Qjh8bI3ZeJjqnyadK+GEFtazSfZv/rKeTkTjOJho6mFqh2SM96iIcZokxiOpg78GazTSg8+KHA=="
+      }
+    },
+    {
+      "name": "uniwind",
+      "section": "dependencies",
+      "declared": "1.13.2",
+      "catalog": null,
+      "lockedVersion": "1.13.2(@expo/metro-config@58.0.21(bufferutil@4.1.0)(expo@58.0.23)(supports-color@8.1.1)(typescript@6.0.3)(utf-8-validate@6.0.6))(metro-cache@0.87.1(supports-color@8.1.1))(metro-transform-worker@0.87.1(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(metro@0.87.1(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(@types/react@19.3.0)(bufferutil@4.1.0)(react@19.3.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(react@19.3.0)(tailwindcss@4.3.3)",
+      "resolution": {
+        "integrity": "sha512-9huLBRBtZkVbKG8UZoJEo6ubX/R7oVj8zTORdq8c+lfOpjWlEjAS04FaqShuaecgEfO+oqSraxQ+mWgtsu6BqQ=="
+      },
+      "registry": {
+        "name": "uniwind",
+        "version": "1.13.2",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {
+          "metro": "*",
+          "react": ">=19.0.0",
+          "metro-cache": "*",
+          "tailwindcss": ">=4",
+          "react-native": ">=0.81.0",
+          "@expo/metro-config": "*",
+          "metro-transform-worker": "*"
+        },
+        "integrity": "sha512-9huLBRBtZkVbKG8UZoJEo6ubX/R7oVj8zTORdq8c+lfOpjWlEjAS04FaqShuaecgEfO+oqSraxQ+mWgtsu6BqQ=="
+      }
+    },
+    {
+      "name": "@babel/core",
+      "section": "devDependencies",
+      "declared": "^7.29.7",
+      "catalog": null,
+      "lockedVersion": "7.29.7(supports-color@8.1.1)",
+      "resolution": {
+        "integrity": "sha512-RgHBCvtjbOK2gXSNBNIkNoEc9qoVEtau3hj8gEqKQuL3HZAibKarWFEI3Lfm6EYKkLalOh8eSrj9b+ch9H/VBA=="
+      },
+      "registry": {
+        "name": "@babel/core",
+        "version": "7.29.7",
+        "license": "MIT",
+        "engines": {
+          "node": ">=6.9.0"
+        },
+        "peerDependencies": null,
+        "integrity": "sha512-RgHBCvtjbOK2gXSNBNIkNoEc9qoVEtau3hj8gEqKQuL3HZAibKarWFEI3Lfm6EYKkLalOh8eSrj9b+ch9H/VBA=="
+      }
+    },
+    {
+      "name": "@effect/platform-node",
+      "section": "devDependencies",
+      "declared": "catalog:",
+      "catalog": "4.1.2",
+      "lockedVersion": "4.1.2(bufferutil@4.1.0)(effect@4.1.3)(redis@6.2.1)(utf-8-validate@6.0.6)",
+      "resolution": {
+        "integrity": "sha512-ye0UjxORdd5Qu3paZ1LljgGOALWHt7muP9VTpjUSCNfcesiB/Hm7wPJIvZeu4gnwpTe5BtEnO1VHngWqjJp8mA=="
+      },
+      "registry": {
+        "name": "@effect/platform-node",
+        "version": "4.1.2",
+        "license": "MIT",
+        "engines": {
+          "node": ">=22.19.0"
+        },
+        "peerDependencies": {
+          "redis": ">=5.1.0 <7.0.0",
+          "effect": "^4.1.2"
+        },
+        "integrity": "sha512-ye0UjxORdd5Qu3paZ1LljgGOALWHt7muP9VTpjUSCNfcesiB/Hm7wPJIvZeu4gnwpTe5BtEnO1VHngWqjJp8mA=="
+      }
+    },
+    {
+      "name": "@effect/vitest",
+      "section": "devDependencies",
+      "declared": "catalog:",
+      "catalog": "4.1.2",
+      "lockedVersion": "4.1.2(patch_hash=299510b71c36537a832a67e9d160a5f112a5f326a29e95c41cb45fc8234e47c7)(@astrojs/compiler-rs@0.5.1)(@types/node@24.12.4)(@vitest/browser-playwright@5.0.5)(@vitest/ui@5.0.5)(@volar/typescript@2.4.28(typescript@6.0.3))(bufferutil@4.1.0)(effect@4.1.3)(esbuild@0.28.2)(jiti@2.7.0)(jsdom@30.1.0(@noble/hashes@1.8.0))(playwright@1.64.1)(terser@5.48.0)(typescript@6.0.3)(unrun@0.2.39)(utf-8-validate@6.0.6)(yaml@2.9.0)",
+      "resolution": {
+        "integrity": "sha512-JJPwAHkJHxvM/woW9mMW/khjasAHcmwWdOMAgMy16rfqsxcVhFDnrRsvN9VI2+kMv8zDCCyBE2q1n5hzZlfE0w=="
+      },
+      "registry": {
+        "name": "@effect/vitest",
+        "version": "4.1.2",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {
+          "effect": "^4.1.2",
+          "vitest": ">=5.0.0 <6.0.0"
+        },
+        "integrity": "sha512-JJPwAHkJHxvM/woW9mMW/khjasAHcmwWdOMAgMy16rfqsxcVhFDnrRsvN9VI2+kMv8zDCCyBE2q1n5hzZlfE0w=="
+      }
+    },
+    {
+      "name": "@pierre/trees",
+      "section": "devDependencies",
+      "declared": "1.0.0-beta.6",
+      "catalog": null,
+      "lockedVersion": "1.0.0-beta.6(@pierre/theme@2.0.0)(@shikijs/themes@4.2.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(shiki@4.2.0)",
+      "resolution": {
+        "integrity": "sha512-zxeuSFM9TveM7b5XofweJALCtm/tGYV9HZzdbf7Uf+kBxIlUyz24/EHaGRjB0dsmmfDQl2ETz7AWwJ15lhSnpw=="
+      },
+      "registry": {
+        "name": "@pierre/trees",
+        "version": "1.0.0-beta.6",
+        "license": "apache-2.0",
+        "engines": null,
+        "peerDependencies": {
+          "react": "^18.3.1 || ^19.0.0",
+          "react-dom": "^18.3.1 || ^19.0.0"
+        },
+        "integrity": "sha512-zxeuSFM9TveM7b5XofweJALCtm/tGYV9HZzdbf7Uf+kBxIlUyz24/EHaGRjB0dsmmfDQl2ETz7AWwJ15lhSnpw=="
+      }
+    },
+    {
+      "name": "@types/mdast",
+      "section": "devDependencies",
+      "declared": "^4.0.4",
+      "catalog": null,
+      "lockedVersion": "4.0.4",
+      "resolution": {
+        "integrity": "sha512-kGaNbPh1k7AFzgpud/gMdvIm5xuECykRR+JnWKQno9TAXVa6WIVCGTPvYGekIDL4uwCZQSYbUxNBSb1aUo79oA=="
+      },
+      "registry": {
+        "name": "@types/mdast",
+        "version": "4.0.4",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": null,
+        "integrity": "sha512-kGaNbPh1k7AFzgpud/gMdvIm5xuECykRR+JnWKQno9TAXVa6WIVCGTPvYGekIDL4uwCZQSYbUxNBSb1aUo79oA=="
+      }
+    },
+    {
+      "name": "@types/react",
+      "section": "devDependencies",
+      "declared": "catalog:",
+      "catalog": "~19.3.0",
+      "lockedVersion": "19.3.0",
+      "resolution": {
+        "integrity": "sha512-N0rFCuH9YoxG9/m61l9MfpJKfmLOVU0em7ipIz6TRgSSkvReLB9vL85GB+yr8Bs5leqpvg96JSwF4ZS1s4viQg=="
+      },
+      "registry": {
+        "name": "@types/react",
+        "version": "19.3.0",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {},
+        "integrity": "sha512-N0rFCuH9YoxG9/m61l9MfpJKfmLOVU0em7ipIz6TRgSSkvReLB9vL85GB+yr8Bs5leqpvg96JSwF4ZS1s4viQg=="
+      }
+    },
+    {
+      "name": "@types/react-dom",
+      "section": "devDependencies",
+      "declared": "catalog:",
+      "catalog": "~19.3.0",
+      "lockedVersion": "19.3.0(@types/react@19.3.0)",
+      "resolution": {
+        "integrity": "sha512-ZI7bU42mZXXKHn/qNLEw2IrbiINU7X5+vfgdixBHkCNpYWXjKgfQ/P+uyGb5CjOLB9UcnTeg3rylQtV2hym44Q=="
+      },
+      "registry": {
+        "name": "@types/react-dom",
+        "version": "19.3.0",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {
+          "@types/react": "^19.3.0"
+        },
+        "integrity": "sha512-ZI7bU42mZXXKHn/qNLEw2IrbiINU7X5+vfgdixBHkCNpYWXjKgfQ/P+uyGb5CjOLB9UcnTeg3rylQtV2hym44Q=="
+      }
+    },
+    {
+      "name": "aws4fetch",
+      "section": "devDependencies",
+      "declared": "1.0.20",
+      "catalog": null,
+      "lockedVersion": "1.0.20",
+      "resolution": {
+        "integrity": "sha512-/djoAN709iY65ETD6LKCtyyEI04XIBP5xVvfmNxsEP0uJB5tyaGBztSryRr4HqMStr9R06PisQE7m9zDTXKu6g=="
+      },
+      "registry": {
+        "name": "aws4fetch",
+        "version": "1.0.20",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": null,
+        "integrity": "sha512-/djoAN709iY65ETD6LKCtyyEI04XIBP5xVvfmNxsEP0uJB5tyaGBztSryRr4HqMStr9R06PisQE7m9zDTXKu6g=="
+      }
+    },
+    {
+      "name": "babel-preset-expo",
+      "section": "devDependencies",
+      "declared": "~58.0.24",
+      "catalog": null,
+      "lockedVersion": "58.0.24(@babel/core@7.29.7(supports-color@8.1.1))(@babel/runtime@7.29.7)(expo-widgets@58.0.27)(expo@58.0.23)(react-refresh@0.14.2)(supports-color@8.1.1)",
+      "resolution": {
+        "integrity": "sha512-weiIlSNOAs9q54nA2JLvXbFQW/8oUVUHiwHsfZaaZzZCBw8zoKz8hCjIYSCcixxQm+4vLzGKbsD1aF9pDwY3lQ=="
+      },
+      "registry": {
+        "name": "babel-preset-expo",
+        "version": "58.0.24",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": {
+          "expo": "*",
+          "expo-widgets": "^58.0.27",
+          "react-refresh": ">=0.14.0 <1.0.0",
+          "@babel/runtime": "^7.20.0"
+        },
+        "integrity": "sha512-weiIlSNOAs9q54nA2JLvXbFQW/8oUVUHiwHsfZaaZzZCBw8zoKz8hCjIYSCcixxQm+4vLzGKbsD1aF9pDwY3lQ=="
+      }
+    },
+    {
+      "name": "gt",
+      "section": "devDependencies",
+      "declared": "2.27.0",
+      "catalog": null,
+      "lockedVersion": "2.27.0(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1)",
+      "resolution": {
+        "integrity": "sha512-VV0hxuHPZ5+BdTQBThIAwHuXK3ax8/OT3bcSXci/6Ch6ersbkENWanYZw5C3wjHEhNH9jMhkvYyzpOMH/GsGtg=="
+      },
+      "registry": {
+        "name": "gt",
+        "version": "2.27.0",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": null,
+        "integrity": "sha512-VV0hxuHPZ5+BdTQBThIAwHuXK3ax8/OT3bcSXci/6Ch6ersbkENWanYZw5C3wjHEhNH9jMhkvYyzpOMH/GsGtg=="
+      }
+    },
+    {
+      "name": "jsdom",
+      "section": "devDependencies",
+      "declared": "^30.0.1",
+      "catalog": null,
+      "lockedVersion": "30.1.0(@noble/hashes@1.8.0)",
+      "resolution": {
+        "integrity": "sha512-h/Q+H+KmlGf49ITw3TrykSVbg04S75S2O7ZtJc9gMGOWBrQRZmx5AJIKLtJ01e6Kszl+/tpFthCVqxNifxhoqg=="
+      },
+      "registry": {
+        "name": "jsdom",
+        "version": "30.1.0",
+        "license": "MIT",
+        "engines": {
+          "node": "^22.22.2 || ^24.15.0 || >=26.0.0"
+        },
+        "peerDependencies": {
+          "canvas": "^3.2.3"
+        },
+        "integrity": "sha512-h/Q+H+KmlGf49ITw3TrykSVbg04S75S2O7ZtJc9gMGOWBrQRZmx5AJIKLtJ01e6Kszl+/tpFthCVqxNifxhoqg=="
+      }
+    },
+    {
+      "name": "nitrogen",
+      "section": "devDependencies",
+      "declared": "0.37.2",
+      "catalog": null,
+      "lockedVersion": "0.37.2",
+      "resolution": {
+        "integrity": "sha512-dqQIrtU9EmFgUa+FLnUeITQRjQGsq3K1rH+fvgRflA64Xmy04oJGXl6arerzsKIocg8nZoWZiq7z803iw+4gNg=="
+      },
+      "registry": {
+        "name": "nitrogen",
+        "version": "0.37.2",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": null,
+        "integrity": "sha512-dqQIrtU9EmFgUa+FLnUeITQRjQGsq3K1rH+fvgRflA64Xmy04oJGXl6arerzsKIocg8nZoWZiq7z803iw+4gNg=="
+      }
+    },
+    {
+      "name": "tailwindcss",
+      "section": "devDependencies",
+      "declared": "^4.0.0",
+      "catalog": null,
+      "lockedVersion": "4.3.3",
+      "resolution": {
+        "integrity": "sha512-gOhV3P7ufE62QDGg1zVaTgCR+EtPv92k2nIhVcVKcLmxT1sUBsQGhnZj175j+MqRt4zLF7ic+sCYjfhxMxj7YQ=="
+      },
+      "registry": {
+        "name": "tailwindcss",
+        "version": "4.3.3",
+        "license": "MIT",
+        "engines": null,
+        "peerDependencies": null,
+        "integrity": "sha512-gOhV3P7ufE62QDGg1zVaTgCR+EtPv92k2nIhVcVKcLmxT1sUBsQGhnZj175j+MqRt4zLF7ic+sCYjfhxMxj7YQ=="
+      }
+    }
+  ],
+  "patches": [
+    {
+      "name": "@clerk/expo-native-components@0.4.4",
+      "hash": "7a808b92da8460750b85818552e13be3fb73d111691c7db76965970351e124e4",
+      "path": "patches/@clerk__expo-native-components@0.4.4.patch",
+      "sourceSha256": "7a808b92da8460750b85818552e13be3fb73d111691c7db76965970351e124e4"
+    },
+    {
+      "name": "@effect/vitest@4.1.2",
+      "hash": "299510b71c36537a832a67e9d160a5f112a5f326a29e95c41cb45fc8234e47c7",
+      "path": "patches/@effect__vitest@4.1.2.patch",
+      "sourceSha256": "299510b71c36537a832a67e9d160a5f112a5f326a29e95c41cb45fc8234e47c7"
+    },
+    {
+      "name": "@expo/ui@58.0.27",
+      "hash": "9f2547678939f4ec78fe45163b6455aad63d3c80353d7e0cc783f6a61a7ccc2f",
+      "path": "patches/@expo__ui@58.0.27.patch",
+      "sourceSha256": "9f2547678939f4ec78fe45163b6455aad63d3c80353d7e0cc783f6a61a7ccc2f"
+    },
+    {
+      "name": "@pierre/diffs@1.7.0-beta.4",
+      "hash": "7edcdd484a99c7ec0b2667499c4cb21d113ec9bea1f8570c0b0a030d33bbf1cd",
+      "path": "patches/@pierre__diffs@1.7.0-beta.4.patch",
+      "sourceSha256": "7edcdd484a99c7ec0b2667499c4cb21d113ec9bea1f8570c0b0a030d33bbf1cd"
+    },
+    {
+      "name": "@react-native-ai/apple@0.12.0",
+      "hash": "2d09870c2848d185cb05b53ed823a46e12dba519324d8dd8e584e28731990f9d",
+      "path": "patches/@react-native-ai__apple@0.12.0.patch",
+      "sourceSha256": "2d09870c2848d185cb05b53ed823a46e12dba519324d8dd8e584e28731990f9d"
+    },
+    {
+      "name": "@react-native-menu/menu@2.0.0",
+      "hash": "6872ba71b9847c5a0210b1b896923dadc3860faedfe28d9f062bcedfe786ef1d",
+      "path": "patches/@react-native-menu__menu@2.0.0.patch",
+      "sourceSha256": "6872ba71b9847c5a0210b1b896923dadc3860faedfe28d9f062bcedfe786ef1d"
+    },
+    {
+      "name": "@react-navigation/native-stack@7.21.0",
+      "hash": "990d575444c4af2ce8218b3b7a8280fe244c03abbdb32b822a2e862f791dbf42",
+      "path": "patches/@react-navigation%2Fnative-stack@7.21.0.patch",
+      "sourceSha256": "990d575444c4af2ce8218b3b7a8280fe244c03abbdb32b822a2e862f791dbf42"
+    },
+    {
+      "name": "expo-audio@58.0.11",
+      "hash": "93691f7f59edb30a3bb2c23b489e605e7ea35506b1212d4a2ebbd1fd79079483",
+      "path": "patches/expo-audio@58.0.11.patch",
+      "sourceSha256": "93691f7f59edb30a3bb2c23b489e605e7ea35506b1212d4a2ebbd1fd79079483"
+    },
+    {
+      "name": "expo-modules-core@58.0.30",
+      "hash": "f0b0fd100550ed76e5c25b4d13eb7c9ff62825f8f197c53edf7bf447c50c9fb7",
+      "path": "patches/expo-modules-core@58.0.30.patch",
+      "sourceSha256": "f0b0fd100550ed76e5c25b4d13eb7c9ff62825f8f197c53edf7bf447c50c9fb7"
+    },
+    {
+      "name": "expo-network@58.0.4",
+      "hash": "159c2d760d1cd5102e95df51c20600111e7a72096ef0daea8215d50cae48bd98",
+      "path": "patches/expo-network@58.0.4.patch",
+      "sourceSha256": "159c2d760d1cd5102e95df51c20600111e7a72096ef0daea8215d50cae48bd98"
+    },
+    {
+      "name": "expo-sharing@58.0.22",
+      "hash": "321a86e1471e34c53f1f2937fbb4304ea3f7b7a78ad9e4d35febc2b9e73e9688",
+      "path": "patches/expo-sharing@58.0.22.patch",
+      "sourceSha256": "321a86e1471e34c53f1f2937fbb4304ea3f7b7a78ad9e4d35febc2b9e73e9688"
+    },
+    {
+      "name": "expo-video@58.0.13",
+      "hash": "e80ec3ef8c4af50a607beea1c0917e71ba679844efdb702b45d17a5f03cf466c",
+      "path": "patches/expo-video@58.0.13.patch",
+      "sourceSha256": "e80ec3ef8c4af50a607beea1c0917e71ba679844efdb702b45d17a5f03cf466c"
+    },
+    {
+      "name": "expo-widgets@58.0.27",
+      "hash": "0e26817ca487a5156bcc9499f7db2e99a7d102f4a53b6b738f00552958774c86",
+      "path": "patches/expo-widgets@58.0.27.patch",
+      "sourceSha256": "0e26817ca487a5156bcc9499f7db2e99a7d102f4a53b6b738f00552958774c86"
+    },
+    {
+      "name": "react-native-gesture-handler@3.5.0",
+      "hash": "171379dd378f8f11e9187876dec2116e5cbf5f21cef6576cdde6956518324f98",
+      "path": "patches/react-native-gesture-handler@3.5.0.patch",
+      "sourceSha256": "171379dd378f8f11e9187876dec2116e5cbf5f21cef6576cdde6956518324f98"
+    },
+    {
+      "name": "react-native-image-viewing@0.2.2",
+      "hash": "4aa038d541c7ddcc8f1437eb3e7b4f769f61de78e7f91b53f9805dfca608474d",
+      "path": "patches/react-native-image-viewing@0.2.2.patch",
+      "sourceSha256": "4aa038d541c7ddcc8f1437eb3e7b4f769f61de78e7f91b53f9805dfca608474d"
+    },
+    {
+      "name": "react-native-keyboard-controller@1.23.0",
+      "hash": "1c7c80317ef050e08d4aabe034a0813d03b497dff2dc8b37fb5f4a6e3b20fddb",
+      "path": "patches/react-native-keyboard-controller@1.23.0.patch",
+      "sourceSha256": "1c7c80317ef050e08d4aabe034a0813d03b497dff2dc8b37fb5f4a6e3b20fddb"
+    },
+    {
+      "name": "react-native-pdf-jsi@6.1.0",
+      "hash": "d29e6b69813548de641a09db705dd94823d3f96832821ae9c3f6a196dd15cb68",
+      "path": "patches/react-native-pdf-jsi@6.1.0.patch",
+      "sourceSha256": "d29e6b69813548de641a09db705dd94823d3f96832821ae9c3f6a196dd15cb68"
+    },
+    {
+      "name": "react-native-reanimated@4.7.1",
+      "hash": "95ee26e5fcab5f50bc4b4c47b3f7e6278a0b20850205efb9f6ee7e70a22d2b59",
+      "path": "patches/react-native-reanimated@4.7.1.patch",
+      "sourceSha256": "95ee26e5fcab5f50bc4b4c47b3f7e6278a0b20850205efb9f6ee7e70a22d2b59"
+    },
+    {
+      "name": "react-native-svg@15.16.1",
+      "hash": "7f94d240fc19418233c96f9a637dfd248846446657476c204f3614fd2847900e",
+      "path": "patches/react-native-svg@15.16.1.patch",
+      "sourceSha256": "7f94d240fc19418233c96f9a637dfd248846446657476c204f3614fd2847900e"
+    },
+    {
+      "name": "react-native-webview@14.0.1",
+      "hash": "71009983c76818bd5e73d4ca597f76efd04101600c84cd4b4c5d920781c048ae",
+      "path": "patches/react-native-webview@14.0.1.patch",
+      "sourceSha256": "71009983c76818bd5e73d4ca597f76efd04101600c84cd4b4c5d920781c048ae"
+    }
+  ],
+  "sourceFiles": [
+    {
+      "path": "apps/mobile/package.json",
+      "sha256": "b4d671714e783ba8e802745fb28d02714b1a21fc05cd5b99ae3a85458c6eafe0"
+    },
+    {
+      "path": "pnpm-workspace.yaml",
+      "sha256": "f78daf1e61d97d5e829a07b92277f5f791bd938b01072624ba1812faa9bf0c40"
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "sha256": "5a6297ef45a270d52d79dbab4644368aaa664cb78aeb1f4fe3d897c1c38e9a7b"
+    },
+    {
+      "path": "apps/mobile/index.ts",
+      "sha256": "c704377fbc2aa8d31a1f75e68870b654183d853760badb34e6cac506ba619862"
+    },
+    {
+      "path": "apps/mobile/src/App.tsx",
+      "sha256": "80363393e5d56238c0837ea2879419c6f35aa9335f83f4dbf74955999102599d"
+    },
+    {
+      "path": "apps/mobile/src/Stack.tsx",
+      "sha256": "1d118e2ce0592656b966caaeabea9c7122bc6e8dbf0890a2deb16446e456c6cc"
+    },
+    {
+      "path": "apps/mobile/metro.config.js",
+      "sha256": "1156ce9900c8d9a7a365173f1db645e081f3a6d6c8d33662fdd6109bee0dbca0"
+    },
+    {
+      "path": "apps/mobile/vite.config.ts",
+      "sha256": "9ca6de5388bd4a7b0ca0056c1b0088860cb2a204257a1ee9bdcae50d5092f473"
+    },
+    {
+      "path": "apps/mobile/src/native/EnrichedMarkdownText.tsx",
+      "sha256": "16bb79a5c2cba132c5973df00a993ad5e6ae0bcec2270987fc18cb8e5cc96de9"
+    },
+    {
+      "path": "apps/mobile/src/components/ui/GlassSurface.tsx",
+      "sha256": "787ee1fa9eaabc5917058252184e956bb586711947da9917129d6ad4c0887cd9"
+    },
+    {
+      "path": "apps/mobile/src/connection/runtime.ts",
+      "sha256": "891150d37858fe9d1984e5ba9582ff8125afefc7a0ebdafa4226130c0e125ad2"
+    },
+    {
+      "path": "scripts/mobile-e2e/device.ts",
+      "sha256": "818c79a787b434b8fab2ad8a7f6190265520617b5d112d7970a0f3af5034da23"
+    },
+    {
+      "path": "scripts/mobile-behavior/device.ts",
+      "sha256": "b68594c82a13a501533509a4de0abf13d86d35445b7bd5c90676c18111ebb227"
+    }
+  ],
+  "registryFailures": []
+}

@@ -1,6 +1,6 @@
 # 项目进度（生成文件）
 
-权威：.agent/control.json；schema v2；revision 30；2026-11-20T18:05:43.036Z
+权威：.agent/control.json；schema v2；revision 33；2026-11-20T18:23:45.737Z
 
 阶段：M-1；当前：M-1-infrastructure；分支：agent/m-1-bootstrap
 
@@ -18,10 +18,10 @@
 
 阻塞：S1 证据报告未按类型校验且依赖未递归复验（v2修复与回归已实现，待独立复审）；S2 IPA失败暂存位于公开上传范围；S3 IPA平台/签名/权限验证不足；S4 CocoaPods管道与原生锁待修复；S5 symlink/junction路径边界待修复（v2修复与回归已实现，待独立复审）；S6 状态schema和CI导入校验不足（v2修复与回归已实现，待独立复审）；S7 检查点事务顺序和投影修复锁不足（v2修复与回归已实现，待独立复审）
 
-检查点：.agent/checkpoints/v2-2026-11-20T18-05-43-036Z-c9f94c47-9a8b-4636-ae99-3cf3b1702837.json；保存时 HEAD：a3acf20eef222e556c5b9de392da51005dfc0238
+检查点：.agent/checkpoints/v2-2026-11-20T18-23-45-737Z-7a71abee-1bde-4f2c-bf17-70cdbff7dc9c.json；保存时 HEAD：88dfc96c41035b557648435a22e49afb12b9d3ee
 
 CI：44783585115/1 completed/cancelled @ 58ec99506e00a35121866580ffb28d09d5078b17
 
-下一步：父Agent控制层v2已实现，26项回归通过；等待隔离worktree的S2/S3/S4原生CI/IPA修复commit，集成后重跑canonical并发起新独立复审。CI44783585115已主动取消，只有旧源码Simulator构建成功的历史证据。
+下一步：用户新增技术对齐原则：当前T3 main已核对为068332c603ce5ca40ad5a96a09cffa34ebd05dff，源码快照已从Git对象只读导出。先完成technology-stack矩阵及ReactNavigation评估/迁移；集成原生安全修复02f160548b0046b742e9d4456fd7428e57749f96，统一回归/独立复审再推送安全CI bootstrap。
 
 证据必须由 agent-validate 解析实际结果、核对提交/源码摘要与依赖后才有效。

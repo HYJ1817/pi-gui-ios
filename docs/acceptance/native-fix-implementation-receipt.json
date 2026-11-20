@@ -1,0 +1,28 @@
+{
+  "taskId": "node:delegated-task:command%3Amcp%3Ac31b83bb-4e95-4301-8a91-f13f8295d85a%3Adelegate-task%3A7af46559-43da-4538-9daa-7eee427ab8c0",
+  "childThreadId": "thread:delegated-task:command%3Amcp%3Ac31b83bb-4e95-4301-8a91-f13f8295d85a%3Adelegate-task%3A7af46559-43da-4538-9daa-7eee427ab8c0",
+  "link": "[修复M-1原生产物验证与CI上传边界](t3-thread://v2/54c2be41-16aa-490a-8cc2-bfd447f6c2a5/thread:delegated-task:command%3Amcp%3Ac31b83bb-4e95-4301-8a91-f13f8295d85a%3Adelegate-task%3A7af46559-43da-4538-9daa-7eee427ab8c0)",
+  "childRunId": "run:thread:thread%3Adelegated-task%3Acommand%253Amcp%253Ac31b83bb-4e95-4301-8a91-f13f8295d85a%253Adelegate-task%253A7af46559-43da-4538-9daa-7eee427ab8c0:ordinal:1",
+  "childNodeId": "node:delegated-task:command%3Amcp%3Ac31b83bb-4e95-4301-8a91-f13f8295d85a%3Adelegate-task%3A7af46559-43da-4538-9daa-7eee427ab8c0",
+  "status": "completed",
+  "workState": "result_available",
+  "hasPendingChildRuns": false,
+  "latestTerminalRunId": "run:thread:thread%3Adelegated-task%3Acommand%253Amcp%253Ac31b83bb-4e95-4301-8a91-f13f8295d85a%253Adelegate-task%253A7af46559-43da-4538-9daa-7eee427ab8c0:ordinal:1",
+  "latestTerminalStatus": "completed",
+  "latestTerminalSummary": null,
+  "latestTerminalResultContextTransferId": null,
+  "providerInstanceId": "pi",
+  "model": "magpie/xingchiapi/gpt-6.1-sol",
+  "executedModel": "magpie/xingchiapi/gpt-6.1-sol",
+  "options": [
+    {
+      "id": "thinking",
+      "value": "max"
+    }
+  ],
+  "summary": "已单独提交，工作区干净：\n\n`02f160548b0046b742e9d4456fd7428e57749f96`  \n提交：`修复IPA上传边界并加强MachO验证与原生依赖锁门禁`\n\n已实现：\n\n- IPA 在 `RUNNER_TEMP` 暂存并 trap 清理；验证最终 ZIP 后才发布，失败会清除旧 IPA 和部分发布文件。\n- Python stdlib 直接解析每个 Mach-O，检查 iOS device 平台、唯一 arm64、最低系统、签名及 framework executable；权限、entitlement 和 ATS 默认拒绝未知项。\n- 上传改为逐文件白名单，并分别要求 IPA 验证、证据脱敏或候选锁 bootstrap 成功。原始日志和 simctl 清单不上传。\n- 固定 Ruby/Bundler/CocoaPods；保留 pipefail。当前明确为 `bootstrap-required`，生成安全候选锁后返回 **78**，停止构建，不冒充已锁定。\n- 增加固定 SHA、精确审核锁 key 的依赖缓存，无宽泛恢复；命中后仍检查全部锁和预编译 SHA-256。\n\n修改共 **17 文件**，仅涉及指定 workflow、`scripts/ci/**`、两个 `tests/ipa*.test.mjs`、ADR 0003、`Gemfile` 和 `native/dependency-policy.json`。未修改控制层、app、package 文件或 Maestro 断言。\n\n实际验证：\n\n- **100/100 tests 通过，0 fail、0 skipped**：新增 IPA/CI 89 项，加本 worktree 基线 11 项。\n- 4 个 shell 文件、18 个 workflow 命令块通过 `bash -n`。\n- 5 个 Python 文件 compile、3 个 JS 文件语法检查及 `git diff --check` 通过。\n\n剩余门禁：真实 macOS Ruby/候选锁解析、缓存恢复、framework 去签、device IPA、Maestro 图审及独立复审。**未伪造 Gemfile.lock/Podfile.lock，未宣称 SideStore 成功。** 旧 CI 的 Simulator Release 成功及随后取消已准确记录。\n\n未推送、未开 PR、未触发新 CI；父 Agent 可集成此提交后统一复审和 bootstrap。",
+  "resultContextTransferId": "context-transfer:type:subagent_result:source-thread:thread%3Adelegated-task%3Acommand%253Amcp%253Ac31b83bb-4e95-4301-8a91-f13f8295d85a%253Adelegate-task%253A7af46559-43da-4538-9daa-7eee427ab8c0:target-thread:90d0360c-bfd4-4f7b-80bf-73555b7f92ee:87ce16de-3d5e-4bf4-baa1-12e938318468",
+  "hasPendingQuestion": false,
+  "pendingApproval": null,
+  "waitTimedOut": false
+}

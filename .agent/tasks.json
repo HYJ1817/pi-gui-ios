@@ -1,11 +1,11 @@
 {
   "schemaVersion": 2,
   "kind": "tasks",
-  "revision": 30,
-  "updatedAt": "2026-11-20T18:05:43.036Z",
+  "revision": 33,
+  "updatedAt": "2026-11-20T18:23:45.737Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "0938ee077cd085184e89fb45815b58e1aabd7303edf8b9b2ea07481a2ac7dc9b",
+    "parentDigest": "7da4cebbef135b81cc839b52f12a7252c5fa07b5d43ff8b0129a30de57ee04b5",
     "tasks": [
       {
         "id": "M-1-infrastructure",
@@ -25,7 +25,7 @@
           "independent-security",
           "independent-handoff"
         ],
-        "acceptance": "所有自动化、真实 UI 及独立审查通过；不包含 SideStore 人工验收",
+        "acceptance": "所有自动化、真实UI及独立审查通过；另须完成T3当前main技术栈逐项分析与关键选型实际验证，ExpoRouter非硬约束、优先ReactNavigation；不包含SideStore人工验收",
         "evidence": [
           {
             "kind": "unit",
@@ -200,6 +200,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "f24edaf01b1742d441077505dce2d4b77bd74f3394dd991b3e01fc583d66a6f4"
+    "digest": "43da601c79faaa58df4c7c7abab320b619aac040e73f66b8b0cb1693336dc5f2"
   }
 }

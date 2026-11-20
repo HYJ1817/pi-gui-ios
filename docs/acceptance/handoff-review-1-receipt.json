@@ -1,0 +1,28 @@
+{
+  "taskId": "node:delegated-task:command%3Amcp%3Ac31b83bb-4e95-4301-8a91-f13f8295d85a%3Adelegate-task%3A4b75cf04-9360-469c-87e1-321a7e4b3149",
+  "childThreadId": "thread:delegated-task:command%3Amcp%3Ac31b83bb-4e95-4301-8a91-f13f8295d85a%3Adelegate-task%3A4b75cf04-9360-469c-87e1-321a7e4b3149",
+  "link": "[M-1 无历史恢复交接与功能审查](t3-thread://v2/54c2be41-16aa-490a-8cc2-bfd447f6c2a5/thread:delegated-task:command%3Amcp%3Ac31b83bb-4e95-4301-8a91-f13f8295d85a%3Adelegate-task%3A4b75cf04-9360-469c-87e1-321a7e4b3149)",
+  "childRunId": "run:thread:thread%3Adelegated-task%3Acommand%253Amcp%253Ac31b83bb-4e95-4301-8a91-f13f8295d85a%253Adelegate-task%253A4b75cf04-9360-469c-87e1-321a7e4b3149:ordinal:1",
+  "childNodeId": "node:delegated-task:command%3Amcp%3Ac31b83bb-4e95-4301-8a91-f13f8295d85a%3Adelegate-task%3A4b75cf04-9360-469c-87e1-321a7e4b3149",
+  "status": "completed",
+  "workState": "result_available",
+  "hasPendingChildRuns": false,
+  "latestTerminalRunId": "run:thread:thread%3Adelegated-task%3Acommand%253Amcp%253Ac31b83bb-4e95-4301-8a91-f13f8295d85a%253Adelegate-task%253A4b75cf04-9360-469c-87e1-321a7e4b3149:ordinal:1",
+  "latestTerminalStatus": "completed",
+  "latestTerminalSummary": null,
+  "latestTerminalResultContextTransferId": null,
+  "providerInstanceId": "pi",
+  "model": "magpie/xingchiapi/gpt-6.1-sol",
+  "executedModel": "magpie/xingchiapi/gpt-6.1-sol",
+  "options": [
+    {
+      "id": "thinking",
+      "value": "max"
+    }
+  ],
+  "summary": "## 恢复与验证\n\n- 恢复到 **M-1 / `M-1-infrastructure` / `agent/m-1-bootstrap`**，任务仍为 `in_progress`。\n- 开始审查时源码 HEAD 为 `58ec99506e00a35121866580ffb28d09d5078b17`。审查过程中分支前进到 `26e122a6a7b090e0a850ff9f741b3f7bced896cd`，远端也指向该提交；两者之间的提交只涉及状态和验收文档，源码指纹仍为 `56ba10f1…d64fd74ce`。工作区目前仍有 `.agent/` 与 `PROGRESS.md` 状态投影的未提交修改；未清理或覆盖。\n- 实际运行 `npm test`：**11 passed，0 failed，0 skipped**，耗时约 4.3 秒。\n- 实际运行 `node scripts/agent-validate.mjs`：**未通过**，缺少全部 10 类必需证据。当前验收记录中的本地报告指纹为 `95ee80af…93b4bb95`，与当前源码指纹不符，不能计作有效证据。\n- `gh run view 44783585115`：Windows `checks` job 成功（含测试、类型检查、Expo 依赖检查和 iOS bundle export）；macOS `ios` job仍在 **CocoaPods 安装**，后续步骤尚未执行。\n- **未验证**：macOS/Xcode 原生构建、iPhone/iPad Simulator 与 Maestro 交互、真实渲染截图、arm64 device app/unsigned IPA 结构、SideStore 真机安装。SideStore 安装不是本任务的已完成事项。\n\n## Important 发现\n\n1. **验收门禁不验证证据报告的实际结果**  \n   `scripts/agent-task.mjs:9-10` 在传入 `--passed` 后无条件登记 `passed: true`，并写入当前源码指纹；`scripts/lib/control.mjs:101-105` 只检查该标记、指纹和报告文件哈希，不解析报告内容，也不核对提交或 CI 状态。  \n   **复现：**提供报告 `{\"status\":\"in_progress\",\"conclusion\":\"\",\"headSha\":\"wrong-head\",\"passed\":false}`，再登记为 `passed:true` 的 `ci` 证据，门禁返回空错误列表。我用临时 fixture 实测得到 `gateErrors: []`。  \n   **影响：**失败、运行中或与当前 HEAD 不符的报告也可能满足证据类型要求。建议按证据类型校验报告字段：例如 CI 必须已完成且成功、目标 HEAD 匹配；本地测试必须 `exitCode === 0` 且报告指纹与当前指纹一致。\n\n2. **权威状态损坏时没有可操作的检查点恢复路径**  \n   `scripts/lib/control.mjs:69` 直接加载并校验 `control.json`；`scripts/agent-resume.mjs:4` 在读取权威文件时没有恢复分支，也没有枚举或校验 `.agent/checkpoints/`。  \n   **复现：**权威文件 JSON 或校验和损坏、同时保留有效检查点时，resume 会在加载权威文件处失败，不会列出可供人工核验的检查点。现有中断测试 `tests/control.test.mjs:30-35` 只验证遗留临时文件不影响旧权威文件，没有覆盖权威损坏后的恢复流程。  \n   **影响：**状态层虽有检查点文件，但权威损坏后的恢复只能在脚本外手动操作；建议提供只读诊断，列出并校验候选检查点，再由人工核验后恢复。\n\n3. **运行时校验未实际执行声明的 JSON Schema**  \n   `scripts/lib/control.mjs:24-30` 的 `decode()` 只调用手写的 `validateControl()`；该校验没有覆盖 schema 要求的若干字段，例如 `nextAction`、`checkpoint`（对照 `.agent/schemas/control.schema.json:27-40`）。  \n   **复现：**构造一个重新计算了有效 SHA-256、但缺少 `nextAction` 的 control envelope，当前 `validateControl()` 仍可通过；恢复输出或重建投影随后可能缺少下一步信息。  \n   **影响：**schema 和实际接受状态的规则可能漂移。建议让 `decode()` 执行 schema 校验，并增加“有效摘要但结构不符合 schema”的拒绝测试。\n\n未发现需要报告的 Blocker。静态审查了 `app/`：原生玻璃视图与不支持/低透明度时的实色回退均有实现；但在原生 CI 完成前，不能据此认定实际设备渲染通过。\n\n## 可续做的下一步\n\n先查看 run `44783585115` 的 CocoaPods 阶段日志，等该 run 结束后再据结果处理；不要把当前 macOS job 记作成功。之后为证据门禁补充报告语义校验及失败报告回归测试，并完成原生 UI/IPA 验证与独立审查。",
+  "resultContextTransferId": "context-transfer:type:subagent_result:source-thread:thread%3Adelegated-task%3Acommand%253Amcp%253Ac31b83bb-4e95-4301-8a91-f13f8295d85a%253Adelegate-task%253A4b75cf04-9360-469c-87e1-321a7e4b3149:target-thread:90d0360c-bfd4-4f7b-80bf-73555b7f92ee:902d3950-096e-4fc9-8b2b-af8246e36301",
+  "hasPendingQuestion": false,
+  "pendingApproval": null,
+  "waitTimedOut": false
+}

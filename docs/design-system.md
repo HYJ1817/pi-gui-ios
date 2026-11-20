@@ -1,6 +1,6 @@
 # 原生设计系统
 
-iPhone 单列 UIKit 导航栈；iPad 宽度驱动双栏（M2）；系统深浅色、安全区、Dynamic Type、最小 44pt 操作目标，正文可读优先。原生导航/系统菜单不重画为网页；M-1 用 Expo Router Stack 与 iOS ActionSheet 验证。
+iPhone 单列 UIKit 导航栈；iPad 宽度驱动双栏（M2）；系统深浅色、安全区、Dynamic Type、最小 44pt 操作目标，正文可读优先。原生导航/系统菜单不重画为网页；初版 M-1 探针使用 Expo Router Stack / iOS ActionSheet；用户第14条后优先对齐 React Navigation 与成熟原生菜单/Uniwind等方案，具体选择与差异见 decisions/technology-stack.md，新组合完成实际运行前不视为验收。
 
 GlassView 来自 expo-glass-effect，使用原生 UIVisualEffectView。须同时检查 isLiquidGlassAvailable/isGlassEffectAPIAvailable；Reduce Transparency 使用清晰标注的实色表面，不用 CSS blur、半透明底或 WebView 冒充。变化监听系统辅助功能；控件有 label/role/state，文本不封顶字体缩放。
 

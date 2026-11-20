@@ -1,0 +1,173 @@
+{
+  "schemaVersion": 1,
+  "kind": "t3-vendor-source-inspection",
+  "referenceCommit": "068332c603ce5ca40ad5a96a09cffa34ebd05dff",
+  "packages": [
+    {
+      "name": "react-native-enriched-markdown",
+      "version": "1.2.0-t3.18",
+      "license": "MIT",
+      "integrityVerified": true,
+      "sha512": "sha512-TdP2nTxn8W4jPJ5EU+9Ctgf6aOncENP/kMa9aEZpJDmWNLXkxPpcugHMWyZJt2o5WDYE4SPi0V6zV6mOl3+8cA==",
+      "archiveSha256": "8383ce9d60afbe3ef036376449b69884cc5c2bb6f6120716fb54f30e6c636a3d",
+      "peerDependencies": {
+        "katex": ">=0.16.0",
+        "react": "*",
+        "react-native": "*"
+      },
+      "dependencies": null,
+      "codegenConfig": {
+        "name": "EnrichedMarkdownTextSpec",
+        "type": "all",
+        "jsSrcsDir": "src",
+        "android": {
+          "javaPackageName": "com.swmansion.enriched.markdown"
+        },
+        "ios": {
+          "components": {
+            "EnrichedMarkdownText": {
+              "className": "EnrichedMarkdownText"
+            },
+            "EnrichedMarkdown": {
+              "className": "EnrichedMarkdown"
+            },
+            "EnrichedMarkdownTextInput": {
+              "className": "EnrichedMarkdownTextInput"
+            },
+            "EnrichedMarkdownBlockSlot": {
+              "className": "EnrichedMarkdownBlockSlot"
+            }
+          },
+          "modulesProvider": {
+            "EnrichedMarkdownParser": "EnrichedMarkdownParserProvider"
+          }
+        }
+      },
+      "licenses": [
+        {
+          "path": "package/LICENSE",
+          "sha256": "42430f8ede032f5a42494728ada2712e1f2794d1c8b2e4b3d24551a12b06badf",
+          "text": "MIT License\n\nCopyright (c) 2025 Software Mansion\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n"
+        }
+      ],
+      "fileCount": 1193
+    },
+    {
+      "name": "react-native-screens",
+      "version": "5.0.0-t3.61",
+      "license": "MIT",
+      "integrityVerified": true,
+      "sha512": "sha512-uPb+53SUMB4B30JIqonBTGY3GyKrFpA98FnWYJUDzEDzV2V8pb+f5kSnu9TPpO2jU89znSNYpzABqRRHMZ+KDw==",
+      "archiveSha256": "0516636f91ca55f3d656c31a466c2e3050c97fa06093288c887838b1ee0b3960",
+      "peerDependencies": {
+        "react": "*",
+        "react-native": "*"
+      },
+      "dependencies": {
+        "react-freeze": "^1.0.0",
+        "warn-once": "^0.1.0"
+      },
+      "codegenConfig": {
+        "name": "rnscreens",
+        "type": "all",
+        "jsSrcsDir": "./src/fabric",
+        "android": {
+          "javaPackageName": "com.swmansion.rnscreens"
+        },
+        "ios": {
+          "components": {
+            "RNSFullWindowOverlay": {
+              "className": "RNSFullWindowOverlay"
+            },
+            "RNSModalScreen": {
+              "className": "RNSModalScreen"
+            },
+            "RNSScreenContainer": {
+              "className": "RNSScreenContainerView"
+            },
+            "RNSScreenContentWrapper": {
+              "className": "RNSScreenContentWrapper"
+            },
+            "RNSScreenFooter": {
+              "className": "RNSScreenFooter"
+            },
+            "RNSScrollToTopGuard": {
+              "className": "RNSScrollToTopGuard"
+            },
+            "RNSScreen": {
+              "className": "RNSScreenView"
+            },
+            "RNSScreenNavigationContainer": {
+              "className": "RNSScreenNavigationContainerView"
+            },
+            "RNSScreenStackHeaderConfig": {
+              "className": "RNSScreenStackHeaderConfig"
+            },
+            "RNSScreenStackHeaderSubview": {
+              "className": "RNSScreenStackHeaderSubview"
+            },
+            "RNSScreenStack": {
+              "className": "RNSScreenStackView"
+            },
+            "RNSSearchBar": {
+              "className": "RNSSearchBar"
+            },
+            "RNSStackScreen": {
+              "className": "RNSStackScreenComponentView"
+            },
+            "RNSStackHost": {
+              "className": "RNSStackHostComponentView"
+            },
+            "RNSHeaderConfigIOS": {
+              "className": "RNSHeaderConfigComponentView"
+            },
+            "RNSHeaderItemIOS": {
+              "className": "RNSHeaderItemComponentView"
+            },
+            "RNSHeaderItemSpacerIOS": {
+              "className": "RNSHeaderItemSpacerComponentView"
+            },
+            "RNSTabsScreenIOS": {
+              "className": "RNSTabsScreenComponentView"
+            },
+            "RNSTabsHostIOS": {
+              "className": "RNSTabsHostComponentView"
+            },
+            "RNSTabsBottomAccessory": {
+              "className": "RNSTabsBottomAccessoryComponentView"
+            },
+            "RNSTabsBottomAccessoryContent": {
+              "className": "RNSTabsBottomAccessoryContentComponentView"
+            },
+            "RNSSplitHost": {
+              "className": "RNSSplitHostComponentView"
+            },
+            "RNSSplitScreen": {
+              "className": "RNSSplitScreenComponentView"
+            },
+            "RNSSafeAreaView": {
+              "className": "RNSSafeAreaViewComponentView"
+            },
+            "RNSScrollViewMarker": {
+              "className": "RNSScrollViewMarkerComponentView"
+            },
+            "RNSFormSheetHost": {
+              "className": "RNSFormSheetHostComponentView"
+            },
+            "RNSFormSheetContentWrapper": {
+              "className": "RNSFormSheetContentWrapperComponentView"
+            }
+          }
+        }
+      },
+      "licenses": [
+        {
+          "path": "package/LICENSE",
+          "sha256": "95b52e497653b738fd50e4bd3a8197dc41593c63129acb4f8069dbf49530ef82",
+          "text": "The MIT License (MIT)\n\nCopyright (c) 2018 Software Mansion <swmansion.com>\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n"
+        }
+      ],
+      "fileCount": 1918
+    }
+  ]
+}
