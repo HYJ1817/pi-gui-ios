@@ -2,15 +2,15 @@
   "schemaVersion": 2,
   "kind": "bundle",
   "taskId": "M-1-infrastructure",
-  "commit": "a8b8360fb0c814a612b07302273a7338e1c112d5",
-  "sourceFingerprint": "30ef203a01cec72eb524df2b8313f2c0941acb1e15d2e524e826d40bb92a2f1e",
-  "startedAt": "2026-11-21T08:16:38.329Z",
-  "finishedAt": "2026-11-21T08:16:42.486Z",
+  "commit": "13b85849942f69abf83d3bb0fc570e2052a476f1",
+  "sourceFingerprint": "b31ec8eeab625f6aedcabf3de3121593f54b75ea3d0698a1444fc3aab5f320e1",
+  "startedAt": "2026-11-21T09:29:42.607Z",
+  "finishedAt": "2026-11-21T09:29:46.753Z",
   "passed": true,
   "details": {
     "command": "npm run export:ios",
     "exitCode": 0,
     "logPath": "docs/acceptance/local-bundle-output.txt",
-    "logSha256": "325764023e974b4e2e71e5dd243f0692181ae51c24b44497a314a5f02b47f10b"
+    "logSha256": "bb294b02d411bb60c4e4c2c9fd598abfaa56e953a91e7485e391b6ed714e094e"
   }
 }
