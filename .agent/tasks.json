@@ -1,11 +1,11 @@
 {
   "schemaVersion": 2,
   "kind": "tasks",
-  "revision": 135,
-  "updatedAt": "2026-11-21T06:32:20.540Z",
+  "revision": 160,
+  "updatedAt": "2026-11-21T06:54:08.360Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "a91a0b05a431e0919d16c3c6747e7f2b288cfcf061307a0776432a253d05e3ab",
+    "parentDigest": "6cf9390f4ef2f00938e11811621fe7dc1d1f4df7a2b954b340650fd3a3d3dc16",
     "tasks": [
       {
         "id": "M-1-infrastructure",
@@ -186,6 +186,62 @@
             "sourceFingerprint": "67ce26168524f725741ecece27b1cbe4f63e75f09e2e09e89a004e5120061f2e",
             "commit": "2b16a1ae71f67d953fd7f1956b163843d9a4385f",
             "at": "2026-11-21T06:12:10.272Z"
+          },
+          {
+            "kind": "unit",
+            "path": "docs/acceptance/local-unit.json",
+            "sha256": "226d6ad403fa24df5783a4633b70edf77aec3c65ccb3b8116bbbb970a7ab52c2",
+            "sourceFingerprint": "6e34173f27c8ed05355263a0e724a042d25d3a9a7b6c1561cb4266da0858edc8",
+            "commit": "bd20d0169d3e14994fc30788ee5ee7c416c621fa",
+            "at": "2026-11-21T06:34:29.276Z"
+          },
+          {
+            "kind": "typecheck",
+            "path": "docs/acceptance/local-typecheck.json",
+            "sha256": "7132c98245f7a12f7e4cd7128c48eda1652af8449c25368eeed13a3ed91446e5",
+            "sourceFingerprint": "6e34173f27c8ed05355263a0e724a042d25d3a9a7b6c1561cb4266da0858edc8",
+            "commit": "bd20d0169d3e14994fc30788ee5ee7c416c621fa",
+            "at": "2026-11-21T06:34:33.654Z"
+          },
+          {
+            "kind": "bundle",
+            "path": "docs/acceptance/local-bundle.json",
+            "sha256": "110344b4a9c731b79632109a9fe8365462258db04a28a373ffdbdacdd69fc0a7",
+            "sourceFingerprint": "6e34173f27c8ed05355263a0e724a042d25d3a9a7b6c1561cb4266da0858edc8",
+            "commit": "bd20d0169d3e14994fc30788ee5ee7c416c621fa",
+            "at": "2026-11-21T06:34:41.076Z"
+          },
+          {
+            "kind": "doctor",
+            "path": "docs/acceptance/local-doctor.json",
+            "sha256": "61c1ce95feebbb30dd9c06da51f112289ba74f85c3bd01c1087ec82171d00ab1",
+            "sourceFingerprint": "6e34173f27c8ed05355263a0e724a042d25d3a9a7b6c1561cb4266da0858edc8",
+            "commit": "bd20d0169d3e14994fc30788ee5ee7c416c621fa",
+            "at": "2026-11-21T06:34:47.190Z"
+          },
+          {
+            "kind": "independent-security",
+            "path": "docs/acceptance/review-bd20d01-security.json",
+            "sha256": "ccfe471e2bd52aae2761133622acb4dedad8556218646ac8a394e4e5a9b44ee3",
+            "sourceFingerprint": "6e34173f27c8ed05355263a0e724a042d25d3a9a7b6c1561cb4266da0858edc8",
+            "commit": "bd20d0169d3e14994fc30788ee5ee7c416c621fa",
+            "at": "2026-11-21T06:53:37.214Z"
+          },
+          {
+            "kind": "independent-review",
+            "path": "docs/acceptance/review-bd20d01-review.json",
+            "sha256": "b77808689fe152d9d7d7ff07dc84fe94748a3723c7c5abc4f6a97f7902077aa6",
+            "sourceFingerprint": "6e34173f27c8ed05355263a0e724a042d25d3a9a7b6c1561cb4266da0858edc8",
+            "commit": "bd20d0169d3e14994fc30788ee5ee7c416c621fa",
+            "at": "2026-11-21T06:53:38.297Z"
+          },
+          {
+            "kind": "independent-handoff",
+            "path": "docs/acceptance/review-bd20d01-handoff.json",
+            "sha256": "df86b7c328e109a6deb05563ff6bc3a0348232ac84d9d630ae15f8375be6f5a4",
+            "sourceFingerprint": "6e34173f27c8ed05355263a0e724a042d25d3a9a7b6c1561cb4266da0858edc8",
+            "commit": "bd20d0169d3e14994fc30788ee5ee7c416c621fa",
+            "at": "2026-11-21T06:53:39.344Z"
           }
         ],
         "updatedAt": "2026-11-21T06:32:00.976Z"
@@ -329,6 +385,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "516d41e2fffc27bad3c7ded2baf2a175758e1e93e814ff736ee47f0a386776d4"
+    "digest": "88cfc435cc343374d6cb063baf68c4cd49daa77248c81fcf238d3ea34bc7630f"
   }
 }

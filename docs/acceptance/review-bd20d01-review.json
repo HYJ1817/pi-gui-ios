@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 2,
+  "kind": "independent-review",
+  "taskId": "M-1-infrastructure",
+  "commit": "bd20d0169d3e14994fc30788ee5ee7c416c621fa",
+  "sourceFingerprint": "6e34173f27c8ed05355263a0e724a042d25d3a9a7b6c1561cb4266da0858edc8",
+  "startedAt": "2026-11-21T06:33:02.170Z",
+  "finishedAt": "2026-11-21T06:42:30.105Z",
+  "passed": true,
+  "details": {
+    "receiptPath": "docs/acceptance/review-bd20d01-receipt.json",
+    "receiptSha256": "4d135ed794028e5d7ee4ca3c9e9d4684a6d4344225fda6e1ab3c12b1642fd84f",
+    "scope": "Exact-source functional review and source-derived bootstrap assessment, not native-lock approval or M-1 acceptance."
+  }
+}
