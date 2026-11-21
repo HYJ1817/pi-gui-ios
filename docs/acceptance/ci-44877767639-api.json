@@ -1,0 +1,12 @@
+{
+  "conclusion": "failure",
+  "head_sha": "86cadda377fc1fdf3c483478b03215a3d6b96c32",
+  "html_url": "https://github.com/HYJ1817/pi-gui-ios/actions/runs/44877767639",
+  "id": 44877767639,
+  "path": ".github/workflows/native-infrastructure.yml",
+  "repository": {
+    "full_name": "HYJ1817/pi-gui-ios"
+  },
+  "run_attempt": 1,
+  "status": "completed"
+}

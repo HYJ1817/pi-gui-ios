@@ -7,6 +7,7 @@ import os
 import pathlib
 import re
 import shutil
+import stat
 import subprocess
 import sys
 
@@ -37,6 +38,42 @@ def policy(root):
     return value['mode']
 
 
+# Only these six aliases were observed in BOTH pinned Hermes 260318099.0.5
+# Debug/Release archives (RN 0.88.1). This dependency-inventory exception does
+# not change the final IPA's no-link policy. Never traverse an alias to hash it.
+HERMES_FRAMEWORK_ROOTS = (
+    'pods/hermes-engine/destroot/Library/Frameworks/macosx/hermesvm.framework',
+    'pods/hermes-engine/destroot/Library/Frameworks/universal/hermesvm.xcframework/'
+    'ios-arm64_x86_64-maccatalyst/hermesvm.framework',
+)
+HERMES_ALIASES = {
+    prefix + '/' + alias: {'target': target, 'physical': prefix + '/' + physical, 'directory': directory}
+    for prefix in HERMES_FRAMEWORK_ROOTS
+    for alias, target, physical, directory in (
+        ('Versions/Current', '1', 'Versions/1', True),
+        ('Resources', 'Versions/Current/Resources', 'Versions/1/Resources', True),
+        ('hermesvm', 'Versions/Current/hermesvm', 'Versions/1/hermesvm', False),
+    )
+}
+
+
+def checked_hermes_alias(path, base, safe, checked):
+    code = 'NATIVE_PREBUILT_LINK_REJECTED'
+    check(safe in HERMES_ALIASES, code)
+    rule = HERMES_ALIASES[safe]
+    info = path.lstat()
+    # Reject all Windows reparse points/junctions, including at reviewed names.
+    check(stat.S_ISLNK(info.st_mode) and not (getattr(info, 'st_file_attributes', 0) & 0x400), code)
+    checked(path.parent, base)
+    check(os.readlink(path) == rule['target'], code)
+    # Resolve by the finite physical mapping, NOT Path.resolve(alias), so a
+    # malicious Current/ancestor/target can never redirect a read outside Pods.
+    physical = base.joinpath(*pathlib.PurePosixPath(rule['physical']).parts[1:])
+    target = checked(physical, base)
+    check(stat.S_ISDIR(target.st_mode) if rule['directory'] else stat.S_ISREG(target.st_mode), code)
+    return {'path': safe, 'target': rule['target']}
+
+
 def inventory(root):
     spec = importlib.util.spec_from_file_location('native_fs_policy', pathlib.Path(__file__).with_name('verify-ipa.py'))
     fs_policy = importlib.util.module_from_spec(spec)
@@ -44,17 +81,23 @@ def inventory(root):
     def checked(path, base=None):
         try:
             return fs_policy.checked_filesystem_path(path, base)
-        except fs_policy.Invalid:
+        except (fs_policy.Invalid, OSError):
             raise GateError('NATIVE_PREBUILT_LINK_REJECTED') from None
-    files = []
+    files, links = [], []
     for label, base in [('pods', root / 'ios/Pods'), ('npm', root / 'node_modules')]:
         check(base.is_dir(), 'NATIVE_DEPENDENCY_TREE_MISSING')
         checked(base)
         for directory, dirs, names in os.walk(base, followlinks=False):
-            for name in dirs:
+            for name in list(dirs):
                 path = pathlib.Path(directory) / name
-                native = any(p.endswith(('.framework', '.xcframework')) for p in path.relative_to(base).parts)
-                if native or getattr(path.lstat(), 'st_file_attributes', 0) & 0x400:
+                relative = path.relative_to(base)
+                native = any(p.endswith(('.framework', '.xcframework')) for p in relative.parts)
+                info = path.lstat()
+                linked = stat.S_ISLNK(info.st_mode) or bool(getattr(info, 'st_file_attributes', 0) & 0x400)
+                if native and linked:
+                    links.append(checked_hermes_alias(path, base, label + '/' + relative.as_posix(), checked))
+                    dirs.remove(name)  # Explicitly prune even though followlinks=False.
+                elif native or getattr(info, 'st_file_attributes', 0) & 0x400:
                     checked(path, base)
             for name in names:
                 path = pathlib.Path(directory) / name
@@ -62,18 +105,27 @@ def inventory(root):
                 native = any(p.endswith(('.framework', '.xcframework')) for p in relative.parts)
                 native |= name.endswith(('.a', '.dylib', '.so', '.dll', '.node', '.wasm', '.metallib', '.tbd',
                                          '.zip', '.tgz', '.tar.gz', '.tar.xz'))
-                linked = path.is_symlink() or bool(getattr(path.lstat(), 'st_file_attributes', 0) & 0x400)
+                info = path.lstat()
+                linked = stat.S_ISLNK(info.st_mode) or bool(getattr(info, 'st_file_attributes', 0) & 0x400)
                 if not native and not linked:
                     with path.open('rb') as stream:
                         native = stream.read(4) in (b'\xcf\xfa\xed\xfe', b'\xca\xfe\xba\xbe',
                                                    b'\xca\xfe\xba\xbf', b'\xfe\xed\xfa\xcf')
                 if native:
-                    checked(path, base)
-                    check(path.is_file(), 'NATIVE_PREBUILT_LINK_REJECTED')
                     safe = label + '/' + relative.as_posix()
                     check(re.fullmatch(r'[A-Za-z0-9_@./+ ()\-]+', safe) is not None, 'NATIVE_PREBUILT_PATH_REJECTED')
-                    files.append({'path': safe, 'sha256': digest(path), 'size': path.stat().st_size})
-    return {'schemaVersion': 1, 'files': sorted(files, key=lambda item: item['path'])}
+                    if linked:
+                        links.append(checked_hermes_alias(path, base, safe, checked))
+                        continue
+                    info = checked(path, base)
+                    check(stat.S_ISREG(info.st_mode), 'NATIVE_PREBUILT_LINK_REJECTED')
+                    files.append({'path': safe, 'sha256': digest(path), 'size': info.st_size})
+    seen = {row['path'] for row in links}
+    for prefix in HERMES_FRAMEWORK_ROOTS:
+        group = {path for path in HERMES_ALIASES if path.startswith(prefix + '/')}
+        check(not seen.intersection(group) or group.issubset(seen), 'NATIVE_PREBUILT_LINK_REJECTED')
+    return {'schemaVersion': 2, 'files': sorted(files, key=lambda item: item['path']),
+            'links': sorted(links, key=lambda item: item['path'])}
 
 
 def hashes(root, locks):

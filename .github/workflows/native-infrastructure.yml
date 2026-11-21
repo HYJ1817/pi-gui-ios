@@ -74,6 +74,8 @@ jobs:
           '
       - name: Install locked JavaScript dependencies
         run: bash scripts/ci/run-step.sh npm npm ci --no-audit --no-fund
+      - name: Run canonical tests including real POSIX dependency aliases
+        run: npm test
       - name: Generate native project and deny template network exemption
         run: |
           bash scripts/ci/run-step.sh prebuild bash -euo pipefail -c '

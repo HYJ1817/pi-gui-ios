@@ -98,6 +98,16 @@ CI44872870220 随后推进到 `POD_STRUCTURE` 后失败。原单一阶段还包�
 
 仅加入固定14项 root pod 到精确路径的绑定；允许已有 subspec 使用其 root pod 路径，未知名称/错配家族/目录子项/跳转或其他 `build/` 路径均继续拒绝；这两类目录只能用于 `:path`，不能伪装为 `:podspec`。旧 node_modules/codegen、来源 URL、Symbol/对象/别名、权限和公开上传边界不变。测试实际调用锁定RN的路径方法而非只匹配正则；RN升级或facade集变化须显式复核。本机真实Ruby差分与55项定向回归已做，仍须独立审查后才恢复有源码依据的macOS bootstrap；当前不批准任何锁集。
 
+## Hermes 预编译依赖中的六条 versioned alias
+
+CI44877767639（86cadda）在环境/npm/prebuild后推进到 `NATIVE_PREBUILT_LINK_REJECTED`，没有候选锁；不将此固定码解释为已经观测某个具体路径。随后按锁定RN0.88.1的podspec与hermes-utils.rb来源公式，下载公开Hermes260318099.0.5的Debug/Release归档，仅只读成员表、不提取或执行归档。两份107项成员表均有同样六条相对symlink：macosx/hermesvm.framework与universal/hermesvm.xcframework/ios-arm64_x86_64-maccatalyst/hermesvm.framework各三条：`Versions/Current -> 1`、`Resources -> Versions/Current/Resources`、`hermesvm -> Versions/Current/hermesvm`。RNCore与RNDependencies0.88.1的Debug公开归档没有链接。URL/本机SHA256/成员观测见tests/fixtures/hermes-versioned-aliases.json与本次验收记录；这些研究字节不等于真实CI候选批准。
+
+只在**依赖字节清单**中为 `pods/hermes-engine/destroot/Library/Frameworks/` 下上述两个精确framework加入六条有限别名。要求实际POSIX symlink、文本target逐字匹配、父链无链接、固定物理 `Versions/1` 目标及其祖先均为真实目录/普通文件且类型匹配；一个framework若出现别名就必须具备全部三条。不会对别名做resolve或跟随它哈希，不遍历别名目录；完整哈希物理Versions/1文件。Windows重解析点/junction（即使同名）、任意新路径/目标/版本、跨framework/逃逸/嵌套链接/悬空/错误目标类型继续拒绝。
+
+清单升schemaVersion2，增加排序的 `links:[{path,target}]`；其与全部物理文件SHA256/大小一起由候选清单摘要、review.hashes及locked精确比较绑定。未知结构不从旧清单自动迁移，当前仍无批准锁集。**最终IPA及其暂存树仍全面拒绝链接/重解析点，verify-ipa.py与package-ipa.sh未改**；不能把macOS依赖布局例外带入最终iOS归档。
+
+本机Windows不具备POSIX symlink权限（实际探针返回1314），不伪造positive；canonical运行元数据合同与真正junction拒绝。在macOS的npm ci之后、任何prebuild之前新增同一入口 `npm test`，必须实际执行POSIX六别名positive、逃逸/错误类型等negative和锁摘要漂移检查；测试失败不得进入prebuild。当前此POSIX执行及真实macOS候选仍待CI验证，须完成精确提交独立复审后才触发一次；本变更不授予M-1/native/UI/IPA通过。
+
 ## 回滚
 
-如发现兼容问题，在开发分支 revert 本实现提交，保留 bootstrap 未验收状态；不得通过放宽权限/签名/平台断言或忽略锁差异来让 job 变绿。对合法新键、新依赖来源或生成结构的支持应有真实 macOS fixture 和独立复审后再加入显式表。
+如发现兼容问题，在开发分支 revert 本实现提交，保留 bootstrap 未验收状态；不得通过放宽权限/签名/平台断言或忽略锁差异来让 job 变绿。对合法新键、新依赖来源或生成结构的支持应有真实公开归档或macOS fixture、精确边界差分和独立复审后再加入显式表；仍须真实macOS验证，不继承本机通过。

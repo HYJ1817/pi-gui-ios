@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "reactNativeVersion": "0.88.1",
+  "hermesVersion": "260318099.0.5",
+  "archives": [
+    {
+      "configuration": "debug",
+      "url": "https://repo.reactnative.dev/maven2/com/facebook/hermes/hermes-ios/260318099.0.5/hermes-ios-260318099.0.5-hermes-ios-debug.tar.gz",
+      "size": 31849331,
+      "sha256": "c92c147a668e3349b041f27e457859e80d50512dc0aa4d9241987b4c64675625",
+      "members": 107
+    },
+    {
+      "configuration": "release",
+      "url": "https://repo.reactnative.dev/maven2/com/facebook/hermes/hermes-ios/260318099.0.5/hermes-ios-260318099.0.5-hermes-ios-release.tar.gz",
+      "size": 25383472,
+      "sha256": "4e137490ffdf5b145bd629c5cabdfe9aee54573308d7c357bc3300ac78d64507",
+      "members": 107
+    }
+  ],
+  "links": [
+    { "path": "destroot/Library/Frameworks/macosx/hermesvm.framework/Resources", "target": "Versions/Current/Resources" },
+    { "path": "destroot/Library/Frameworks/macosx/hermesvm.framework/hermesvm", "target": "Versions/Current/hermesvm" },
+    { "path": "destroot/Library/Frameworks/macosx/hermesvm.framework/Versions/Current", "target": "1" },
+    { "path": "destroot/Library/Frameworks/universal/hermesvm.xcframework/ios-arm64_x86_64-maccatalyst/hermesvm.framework/Resources", "target": "Versions/Current/Resources" },
+    { "path": "destroot/Library/Frameworks/universal/hermesvm.xcframework/ios-arm64_x86_64-maccatalyst/hermesvm.framework/hermesvm", "target": "Versions/Current/hermesvm" },
+    { "path": "destroot/Library/Frameworks/universal/hermesvm.xcframework/ios-arm64_x86_64-maccatalyst/hermesvm.framework/Versions/Current", "target": "1" }
+  ],
+  "observation": "Both public archive member tables inspected without extraction or execution. Local SHA256 identifies downloaded research bytes, not approval of a CI candidate."
+}

@@ -1,6 +1,6 @@
 # 项目进度（生成文件）
 
-权威：.agent/control.json；schema v2；revision 160；2026-11-21T06:54:08.360Z
+权威：.agent/control.json；schema v2；revision 176；2026-11-21T07:19:54.937Z
 
 阶段：M-1；当前：M-1-infrastructure；分支：agent/m-1-bootstrap
 
@@ -16,12 +16,12 @@
 | M5-tailscale | pending | Tailscale 异地与真机安全兼容 |
 | M6-distribution | pending | IPA、版本检测、SideStore 源与发布候选 |
 
-阻塞：NATIVE-LOCK 尚未生成真实macOS Gemfile/Podfile/预编译候选锁并独立核验
+阻塞：NATIVE-LOCK 尚未生成真实macOS Gemfile/Podfile/预编译候选锁并独立核验；NATIVE-PREBUILT-LINK：CI44877767639完成失败，锁校验后在字节清单NATIVE_PREBUILT_LINK_REJECTED停止，无候选；先研究锁定公开RN/Hermes归档链接结构并本地复现，不重复CI或直接放宽链接策略
 
-检查点：.agent/checkpoints/v2-2026-11-21T06-54-08-360Z-6ddcd6b7-af6b-4937-a246-e1d1e6b2e923.json；保存时 HEAD：bd20d0169d3e14994fc30788ee5ee7c416c621fa
+检查点：.agent/checkpoints/v2-2026-11-21T07-19-54-937Z-f79803a7-4709-4989-9477-4d44c4a6d549.json；保存时 HEAD：86cadda377fc1fdf3c483478b03215a3d6b96c32
 
-CI：44783585115/1 completed/cancelled @ 58ec99506e00a35121866580ffb28d09d5078b17；44864063976/1 completed/failure @ d46d6a5f84ad569f42a727fe29b0e2ed7b6f4afd；44868846710/1 completed/failure @ 86822196c84ee01baf5b8dec41256abdfd04ddeb；44872870220/1 completed/failure @ 0148a3fc0058e6db17a803e1946c2a88a3aab85a；44874304419/1 completed/failure @ 2b16a1ae71f67d953fd7f1956b163843d9a4385f
+CI：44783585115/1 completed/cancelled @ 58ec99506e00a35121866580ffb28d09d5078b17；44864063976/1 completed/failure @ d46d6a5f84ad569f42a727fe29b0e2ed7b6f4afd；44868846710/1 completed/failure @ 86822196c84ee01baf5b8dec41256abdfd04ddeb；44872870220/1 completed/failure @ 0148a3fc0058e6db17a803e1946c2a88a3aab85a；44874304419/1 completed/failure @ 2b16a1ae71f67d953fd7f1956b163843d9a4385f；44877767639/1 completed/failure @ 86cadda377fc1fdf3c483478b03215a3d6b96c32
 
-下一步：bd20d01源码与197项本地回归及三类独立审查证据已核验导入。三轮停止后的锁定源码差分/窄修复/独立复核完成，仅解除调查前置阻塞；保留真实native锁门禁。提交证据/控制投影后git push origin agent/m-1-bootstrap，只触发一次候选bootstrap并登记实际head/run/attempt；不dispatch重复CI，不计exit78为成功，候选仍待独立批准。
+下一步：公开固定Hermes Debug/Release归档均实测六条versioned alias；依赖清单仅精确六别名、物理目标无链接、schema2绑定links，最终IPA策略未改。本机canonical202/202和typecheck通过，但Windows1314无POSIXpositive。先仅本地提交不推送，生成4规范报告并对新精确commit独立安全/功能/恢复复核；通过后才一次CI，macOS必须在prebuild前执行canonical真实POSIX正负向。CI44877767639真实failure与无候选门禁保留。
 
 证据必须由 agent-validate 解析实际结果、核对提交/源码摘要与依赖后才有效。
