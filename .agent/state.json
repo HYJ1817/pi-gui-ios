@@ -1,30 +1,42 @@
 {
   "schemaVersion": 2,
   "kind": "state",
-  "revision": 425,
-  "updatedAt": "2026-11-21T13:34:47.661Z",
+  "revision": 428,
+  "updatedAt": "2026-11-21T13:52:39.455Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "a2ffe38fd4200640d68edee1e84f84bcc79f11612c321d98890ce95b51b6f7ca",
-    "phase": "M-1",
-    "currentTask": "M-1-infrastructure",
+    "parentDigest": "15db53d22369d8827022b1ca9cb30e98bf9d8a7fadfe05a093a23b72464bc327",
+    "phase": "M0",
+    "currentTask": "M0-architecture",
     "branch": "agent/m-1-bootstrap",
     "checkpoint": {
-      "id": "v2-2026-11-21T13-34-47-661Z-fb23f6e9-fd7c-4bea-9312-457f9c4a0436",
-      "path": ".agent/checkpoints/v2-2026-11-21T13-34-47-661Z-fb23f6e9-fd7c-4bea-9312-457f9c4a0436.json",
-      "sha256": "d3aa98195c164661736a44ea8459980d7019a1bb79da9cfe8e85e39800665847",
-      "authorityDigest": "cc5d2b79398f2b2db2c57d4827e03acaa43b5b322aa0f2a4ecadc974df7a1017",
-      "at": "2026-11-21T13:34:47.661Z",
+      "id": "v2-2026-11-21T13-52-39-455Z-0857837b-a11a-4ed7-bfcc-bde590cb26b1",
+      "path": ".agent/checkpoints/v2-2026-11-21T13-52-39-455Z-0857837b-a11a-4ed7-bfcc-bde590cb26b1.json",
+      "sha256": "486fa19f8c763a082a3e66f94f416faf8837975d11a5b01ac65f93f2b52e6a35",
+      "authorityDigest": "7455dfd793df450f5f863f46dec2613af8f2f8e18eae9309164131c8b0cc3e10",
+      "at": "2026-11-21T13:52:39.455Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "b3d927df9a2918f09c25b7d4b8601269bab55d1d",
-        "dirty": []
+        "commit": "298b9d431b23907f20b633f7ffec7555f0af827d",
+        "dirty": [
+          "M .agent/HANDOFF.md",
+          " M .agent/control.json",
+          " M .agent/state.json",
+          " M .agent/tasks.json",
+          " M PROGRESS.md",
+          " M ROADMAP.md",
+          " M docs/architecture.md",
+          " M docs/decisions/0005-remote-protocol-v1-proposal.md",
+          "?? .agent/checkpoints/v2-2026-11-21T13-47-29-529Z-4e459391-eccd-44fa-b1bf-24455a727172.json",
+          "?? docs/acceptance/owner-waiver-m0-design-progression.md"
+        ]
       },
-      "sourceFingerprint": "23c56e3a921d49ab379e44d6df9de1e20c65daa7cbe4fb144021346dddcf4b64",
-      "note": "M0 proposal source references verified against fixed desktop baseline af0432a; M1 blocked per owner direction, architecture draft only, no desktop edits or CI retries"
+      "sourceFingerprint": "2d6c48fa134857096278ef3bf05744be4a7a7a6ade8df8d78ad016ec8d99558d",
+      "note": "M0 design-only authorized progression: refined fixed-source mapping, threat model and narrow Runtime-first v1 candidate; no M1 implementation or CI retry; M1 gates remain blocked"
     },
     "blockers": [
-      "M-1 owner-waiver locked run 44906133898/1 failed before Pods install (NATIVE_DEPENDENCIES_REJECTED); a malformed local Gemfile hash was found and corrected, but the owner directed us not to retry. Candidate lock set is removed from the active repo and remains available only as ignored local artifact. M-1 remains blocked; no Simulator/UI/IPA result."
+      "M-1 owner-waiver locked run 44906133898/1 failed before Pods install (NATIVE_DEPENDENCIES_REJECTED); a malformed local Gemfile hash was found and corrected, but the owner directed us not to retry. Candidate lock set is removed from the active repo and remains available only as ignored local artifact. M-1 remains blocked; no Simulator/UI/IPA result.",
+      "Owner waiver permits M0 design work only while M-1-infrastructure remains blocked and M-1-device pending. M0 cannot be accepted and M1 remote implementation cannot start until its protocol/unit/independent functional/security gates pass; this is not an M-1 completion waiver."
     ],
     "ci": [
       {
@@ -196,6 +208,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "1faec0169c17d0ea3f5ef09ecf8a57618a26ea16f48a526240095520c6d90ad2"
+    "digest": "4cc3810d24f6630d41114477f9059af110b2c88d22ef8a9e3cde2f516c2590b1"
   }
 }

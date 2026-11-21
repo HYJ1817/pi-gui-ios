@@ -13,4 +13,8 @@
 | M5 | M4 | Tailscale 异地 HTTPS、真机性能/权限/兼容、安全审计 | 免费方案实际验证；网络切换/后台恢复；跨网真机一次清单；独立安全审查 | 需要付费/账户/设备操作 |
 | M6 | M5 | unsigned IPA、版本检测、Release 草案/SideStore source、升级兼容 | IPA/隐私/权限/来源校验；升级/降级/撤销兼容、SideStore 自签重装保留；正式发布待明确授权 | 发布、main 合并均需用户批准 |
 
+### 当前已授权的非阻断例外
+
+2026-11-21，负责人要求不要因 M-1 锁定构建受阻而停止所有进展，授权 **M0 设计工作**并行推进；记录见 `docs/acceptance/owner-waiver-m0-design-progression.md`。该例外仅允许源码勘察、架构/协议/威胁模型草案和 synthetic 合同设计，不将 M-1 或 M-1-device 标为通过，不允许 M1 远程业务实现，不改变 M0 的独立安全审查、协议证据和其他验收门槛。ROADMAP 中的原始依赖仍是默认正式验收顺序；只有此次 M0 design-only 工作范围按 owner waiver 提前。
+
 不缩减最终范围。技术栈以 T3 当前 main 为主要参考，逐项见 docs/decisions/technology-stack.md；Expo Router 不再是硬约束，优先 React Navigation。云账户/公网 relay 不移植；定制 fork 先查明依赖/许可证/调用前提并实际验证，不能机械搬入或无理由换掉成熟方案。M-1 必须完成 package/lock/native/导航/状态/消息/动画/玻璃/测试的完整分析与必要技术探针。桌面与移动各自独立 PR；协议先兼容再升级，合并顺序和发布依赖写入每次集成验收。

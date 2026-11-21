@@ -1,11 +1,11 @@
 {
   "schemaVersion": 2,
   "kind": "control",
-  "revision": 425,
-  "updatedAt": "2026-11-21T13:34:47.661Z",
+  "revision": 428,
+  "updatedAt": "2026-11-21T13:52:39.455Z",
   "data": {
-    "phase": "M-1",
-    "currentTask": "M-1-infrastructure",
+    "phase": "M0",
+    "currentTask": "M0-architecture",
     "branch": "agent/m-1-bootstrap",
     "protocolVersion": 1,
     "desktop": {
@@ -107,7 +107,8 @@
       }
     ],
     "blockers": [
-      "M-1 owner-waiver locked run 44906133898/1 failed before Pods install (NATIVE_DEPENDENCIES_REJECTED); a malformed local Gemfile hash was found and corrected, but the owner directed us not to retry. Candidate lock set is removed from the active repo and remains available only as ignored local artifact. M-1 remains blocked; no Simulator/UI/IPA result."
+      "M-1 owner-waiver locked run 44906133898/1 failed before Pods install (NATIVE_DEPENDENCIES_REJECTED); a malformed local Gemfile hash was found and corrected, but the owner directed us not to retry. Candidate lock set is removed from the active repo and remains available only as ignored local artifact. M-1 remains blocked; no Simulator/UI/IPA result.",
+      "Owner waiver permits M0 design work only while M-1-infrastructure remains blocked and M-1-device pending. M0 cannot be accepted and M1 remote implementation cannot start until its protocol/unit/independent functional/security gates pass; this is not an M-1 completion waiver."
     ],
     "tasks": [
       {
@@ -664,18 +665,17 @@
         "id": "M0-architecture",
         "phase": "M0",
         "title": "冻结架构、协议和安全模型",
-        "status": "pending",
-        "dependsOn": [
-          "M-1-device"
-        ],
+        "status": "in_progress",
+        "dependsOn": [],
         "requiredEvidence": [
           "unit",
           "independent-review",
           "independent-security",
           "protocol-contract"
         ],
-        "acceptance": "双方源码证据、ADR、权限和兼容契约通过独立安全审查",
-        "evidence": []
+        "acceptance": "Owner-waived design-only progression while M-1 remains blocked. Draft architecture/protocol/threat model only; M0 acceptance still requires source evidence, protocol contract, unit tests and independent functional/security reviews. No M1 remote implementation or completion credit until all M0 gates pass.",
+        "evidence": [],
+        "updatedAt": "2026-11-21T13:47:29.393Z"
       },
       {
         "id": "M1-remote",
@@ -782,20 +782,31 @@
       }
     ],
     "checkpoint": {
-      "id": "v2-2026-11-21T13-34-47-661Z-fb23f6e9-fd7c-4bea-9312-457f9c4a0436",
-      "path": ".agent/checkpoints/v2-2026-11-21T13-34-47-661Z-fb23f6e9-fd7c-4bea-9312-457f9c4a0436.json",
-      "sha256": "d3aa98195c164661736a44ea8459980d7019a1bb79da9cfe8e85e39800665847",
-      "authorityDigest": "cc5d2b79398f2b2db2c57d4827e03acaa43b5b322aa0f2a4ecadc974df7a1017",
-      "at": "2026-11-21T13:34:47.661Z",
+      "id": "v2-2026-11-21T13-52-39-455Z-0857837b-a11a-4ed7-bfcc-bde590cb26b1",
+      "path": ".agent/checkpoints/v2-2026-11-21T13-52-39-455Z-0857837b-a11a-4ed7-bfcc-bde590cb26b1.json",
+      "sha256": "486fa19f8c763a082a3e66f94f416faf8837975d11a5b01ac65f93f2b52e6a35",
+      "authorityDigest": "7455dfd793df450f5f863f46dec2613af8f2f8e18eae9309164131c8b0cc3e10",
+      "at": "2026-11-21T13:52:39.455Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "b3d927df9a2918f09c25b7d4b8601269bab55d1d",
-        "dirty": []
+        "commit": "298b9d431b23907f20b633f7ffec7555f0af827d",
+        "dirty": [
+          "M .agent/HANDOFF.md",
+          " M .agent/control.json",
+          " M .agent/state.json",
+          " M .agent/tasks.json",
+          " M PROGRESS.md",
+          " M ROADMAP.md",
+          " M docs/architecture.md",
+          " M docs/decisions/0005-remote-protocol-v1-proposal.md",
+          "?? .agent/checkpoints/v2-2026-11-21T13-47-29-529Z-4e459391-eccd-44fa-b1bf-24455a727172.json",
+          "?? docs/acceptance/owner-waiver-m0-design-progression.md"
+        ]
       },
-      "sourceFingerprint": "23c56e3a921d49ab379e44d6df9de1e20c65daa7cbe4fb144021346dddcf4b64",
-      "note": "M0 proposal source references verified against fixed desktop baseline af0432a; M1 blocked per owner direction, architecture draft only, no desktop edits or CI retries"
+      "sourceFingerprint": "2d6c48fa134857096278ef3bf05744be4a7a7a6ade8df8d78ad016ec8d99558d",
+      "note": "M0 design-only authorized progression: refined fixed-source mapping, threat model and narrow Runtime-first v1 candidate; no M1 implementation or CI retry; M1 gates remain blocked"
     },
-    "nextAction": "M-1-infrastructure remains blocked and M-1-device/M0 formal tasks remain pending. Owner explicitly requested not to stay stuck on M-1; proceed only with non-gating M0 architecture research. Draft 0005 is a proposal, not frozen API/security model and not M0 acceptance. Do not implement desktop remote server or mobile remote business until prerequisites and security contract are approved. Desktop workspace C:/pi-GUI is dirty; do not modify it.",
+    "nextAction": "M0-architecture is active under the owner-approved design-only sequence waiver. Read fixed desktop baseline af0432a0bc3b04c717a63ede3cc457e859401833 and mobile sources; refine docs/decisions/0005 proposal into a versioned protocol/security contract, add synthetic contract tests only after schema is agreed, and obtain independent functional/security reviews before M0 acceptance. Do not modify desktop dirty checkout or implement remote service yet. M-1 remains blocked and its candidate native locks are returned to bootstrap-required.",
     "delegates": [
       {
         "taskId": "node:delegated-task:command%3Amcp%3Ac31b83bb-4e95-4301-8a91-f13f8295d85a%3Adelegate-task%3A4b75cf04-9360-469c-87e1-321a7e4b3149",
@@ -867,6 +878,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "a2ffe38fd4200640d68edee1e84f84bcc79f11612c321d98890ce95b51b6f7ca"
+    "digest": "15db53d22369d8827022b1ca9cb30e98bf9d8a7fadfe05a093a23b72464bc327"
   }
 }

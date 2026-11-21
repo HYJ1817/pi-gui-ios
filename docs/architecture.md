@@ -4,6 +4,6 @@
 
 目标：移动视图 → 类型化 remote client → TLS/独立远程网关 → 桌面现有领域服务 → Pi RPC（不改本体）。网关必须按操作/字段白名单投影，不能通用代理现有 HTTP、shell、文件系统、凭据服务。
 
-T3 完整研究基线 068332c603ce5ca40ad5a96a09cffa34ebd05dff，继续时已复核当前main 285558eb1053d17f59ea8ecdf7c57999e92381f8，13项核心选型未变，差异见 technology-stack.md 与增量证据；早期 ccc1feb15572c422fbdce26ba6077b91459cfd47 仅保留为历史证据；桌面基线 af0432a0bc3b04c717a63ede3cc457e859401833。研究记录见 source-research.md。M0 冻结前安全和协议细节均是 proposal，不能声称已经实现。当前非阻断预研草案见 `docs/decisions/0005-remote-protocol-v1-proposal.md`；它不是冻结 ADR、实现计划许可或 M0 验收。
+T3 完整研究基线 068332c603ce5ca40ad5a96a09cffa34ebd05dff，继续时已复核当前main 285558eb1053d17f59ea8ecdf7c57999e92381f8，13项核心选型未变，差异见 technology-stack.md 与增量证据；早期 ccc1feb15572c422fbdce26ba6077b91459cfd47 仅保留为历史证据；桌面基线 af0432a0bc3b04c717a63ede3cc457e859401833。研究记录见 source-research.md。M0 冻结前安全和协议细节均是 proposal，不能声称已经实现。当前负责人只授权 M0 design-only 预研越过 M-1 排程；不代表 M-1 完成、M0 已验收或可开始远程业务实现。草案见 `docs/decisions/0005-remote-protocol-v1-proposal.md`；范围例外见 `docs/acceptance/owner-waiver-m0-design-progression.md`。
 
 状态/恢复层：control.json 单一权威、SHA256 完整性信封、版本化 schema、原子写入、派生投影、Git/源码指纹、证据/检查点关联。见 decisions/0001-persistent-control.md。

@@ -1,11 +1,11 @@
 {
   "schemaVersion": 2,
   "kind": "tasks",
-  "revision": 425,
-  "updatedAt": "2026-11-21T13:34:47.661Z",
+  "revision": 428,
+  "updatedAt": "2026-11-21T13:52:39.455Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "a2ffe38fd4200640d68edee1e84f84bcc79f11612c321d98890ce95b51b6f7ca",
+    "parentDigest": "15db53d22369d8827022b1ca9cb30e98bf9d8a7fadfe05a093a23b72464bc327",
     "tasks": [
       {
         "id": "M-1-infrastructure",
@@ -561,18 +561,17 @@
         "id": "M0-architecture",
         "phase": "M0",
         "title": "冻结架构、协议和安全模型",
-        "status": "pending",
-        "dependsOn": [
-          "M-1-device"
-        ],
+        "status": "in_progress",
+        "dependsOn": [],
         "requiredEvidence": [
           "unit",
           "independent-review",
           "independent-security",
           "protocol-contract"
         ],
-        "acceptance": "双方源码证据、ADR、权限和兼容契约通过独立安全审查",
-        "evidence": []
+        "acceptance": "Owner-waived design-only progression while M-1 remains blocked. Draft architecture/protocol/threat model only; M0 acceptance still requires source evidence, protocol contract, unit tests and independent functional/security reviews. No M1 remote implementation or completion credit until all M0 gates pass.",
+        "evidence": [],
+        "updatedAt": "2026-11-21T13:47:29.393Z"
       },
       {
         "id": "M1-remote",
@@ -681,6 +680,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "b37553e4586dbae7cca3345b1449702c68c5f48c19f101405809f719add6a9d1"
+    "digest": "b87abab4124084659cba67c784fb3e211f787ba7fb79d0b425e506d2c29b26fd"
   }
 }

@@ -1,17 +1,26 @@
 # Agent 交接（生成文件）
 
-revision 425；权威摘要 a2ffe38fd4200640d68edee1e84f84bcc79f11612c321d98890ce95b51b6f7ca
+revision 428；权威摘要 15db53d22369d8827022b1ca9cb30e98bf9d8a7fadfe05a093a23b72464bc327
 
 先读 AGENTS.md / REVIEW.md，执行 node scripts/agent-resume.mjs --remote。
 
-当前 M-1-infrastructure（M-1），预期分支 agent/m-1-bootstrap。
+当前 M0-architecture（M0），预期分支 agent/m-1-bootstrap。
 
-下一步：M-1-infrastructure remains blocked and M-1-device/M0 formal tasks remain pending. Owner explicitly requested not to stay stuck on M-1; proceed only with non-gating M0 architecture research. Draft 0005 is a proposal, not frozen API/security model and not M0 acceptance. Do not implement desktop remote server or mobile remote business until prerequisites and security contract are approved. Desktop workspace C:/pi-GUI is dirty; do not modify it.
+下一步：M0-architecture is active under the owner-approved design-only sequence waiver. Read fixed desktop baseline af0432a0bc3b04c717a63ede3cc457e859401833 and mobile sources; refine docs/decisions/0005 proposal into a versioned protocol/security contract, add synthetic contract tests only after schema is agreed, and obtain independent functional/security reviews before M0 acceptance. Do not modify desktop dirty checkout or implement remote service yet. M-1 remains blocked and its candidate native locks are returned to bootstrap-required.
 
-阻塞：M-1 owner-waiver locked run 44906133898/1 failed before Pods install (NATIVE_DEPENDENCIES_REJECTED); a malformed local Gemfile hash was found and corrected, but the owner directed us not to retry. Candidate lock set is removed from the active repo and remains available only as ignored local artifact. M-1 remains blocked; no Simulator/UI/IPA result.
+阻塞：M-1 owner-waiver locked run 44906133898/1 failed before Pods install (NATIVE_DEPENDENCIES_REJECTED); a malformed local Gemfile hash was found and corrected, but the owner directed us not to retry. Candidate lock set is removed from the active repo and remains available only as ignored local artifact. M-1 remains blocked; no Simulator/UI/IPA result.；Owner waiver permits M0 design work only while M-1-infrastructure remains blocked and M-1-device pending. M0 cannot be accepted and M1 remote implementation cannot start until its protocol/unit/independent functional/security gates pass; this is not an M-1 completion waiver.
 
-检查点 .agent/checkpoints/v2-2026-11-21T13-34-47-661Z-fb23f6e9-fd7c-4bea-9312-457f9c4a0436.json；HEAD b3d927df9a2918f09c25b7d4b8601269bab55d1d。dirty（保存时）：
-无
+检查点 .agent/checkpoints/v2-2026-11-21T13-52-39-455Z-0857837b-a11a-4ed7-bfcc-bde590cb26b1.json；HEAD 298b9d431b23907f20b633f7ffec7555f0af827d。dirty（保存时）：
+- M .agent/HANDOFF.md
+-  M .agent/control.json
+-  M .agent/state.json
+-  M .agent/tasks.json
+-  M PROGRESS.md
+-  M ROADMAP.md
+-  M docs/architecture.md
+-  M docs/decisions/0005-remote-protocol-v1-proposal.md
+- ?? .agent/checkpoints/v2-2026-11-21T13-47-29-529Z-4e459391-eccd-44fa-b1bf-24455a727172.json
+- ?? docs/acceptance/owner-waiver-m0-design-progression.md
 
 CI：[{"id":"44783585115","head":"58ec99506e00a35121866580ffb28d09d5078b17","workflow":".github/workflows/native-infrastructure.yml","attempt":1,"status":"completed","conclusion":"cancelled","url":"https://github.com/HYJ1817/pi-gui-ios/actions/runs/44783585115"},{"id":"44864063976","head":"d46d6a5f84ad569f42a727fe29b0e2ed7b6f4afd","workflow":".github/workflows/native-infrastructure.yml","attempt":1,"status":"completed","conclusion":"failure","url":"https://github.com/HYJ1817/pi-gui-ios/actions/runs/44864063976"},{"id":"44868846710","head":"86822196c84ee01baf5b8dec41256abdfd04ddeb","workflow":".github/workflows/native-infrastructure.yml","attempt":1,"status":"completed","conclusion":"failure","url":"https://github.com/HYJ1817/pi-gui-ios/actions/runs/44868846710"},{"id":"44872870220","head":"0148a3fc0058e6db17a803e1946c2a88a3aab85a","workflow":".github/workflows/native-infrastructure.yml","attempt":1,"status":"completed","conclusion":"failure","url":"https://github.com/HYJ1817/pi-gui-ios/actions/runs/44872870220"},{"id":"44874304419","head":"2b16a1ae71f67d953fd7f1956b163843d9a4385f","workflow":".github/workflows/native-infrastructure.yml","attempt":1,"status":"completed","conclusion":"failure","url":"https://github.com/HYJ1817/pi-gui-ios/actions/runs/44874304419"},{"id":"44877767639","head":"86cadda377fc1fdf3c483478b03215a3d6b96c32","workflow":".github/workflows/native-infrastructure.yml","attempt":1,"status":"completed","conclusion":"failure","url":"https://github.com/HYJ1817/pi-gui-ios/actions/runs/44877767639"},{"id":"44891582412","head":"a3420973d4dff86b7def48c26eddad0c0501692b","workflow":".github/workflows/native-infrastructure.yml","attempt":1,"status":"completed","conclusion":"failure","url":"https://github.com/HYJ1817/pi-gui-ios/actions/runs/44891582412"},{"id":"44894722354","head":"b6d52004cd4fb95f9a96c1cc39ed83570d0ed322","workflow":".github/workflows/native-infrastructure.yml","attempt":1,"status":"completed","conclusion":"failure","url":"https://github.com/HYJ1817/pi-gui-ios/actions/runs/44894722354"},{"id":"44901616612","head":"9503ae3932fa707e00f509a8bb6d884745283feb","workflow":".github/workflows/native-infrastructure.yml","attempt":1,"status":"completed","conclusion":"failure","url":"https://github.com/HYJ1817/pi-gui-ios/actions/runs/44901616612"},{"id":"44906133898","head":"0e62f613cc69d41d6064c26a251e355c2a299efd","workflow":".github/workflows/native-infrastructure.yml","attempt":1,"status":"completed","conclusion":"failure","url":"https://github.com/HYJ1817/pi-gui-ios/actions/runs/44906133898"}]
 
