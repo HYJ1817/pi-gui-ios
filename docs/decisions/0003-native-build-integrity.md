@@ -92,6 +92,12 @@ CI44868846710（8682219）已实际通过固定模板及发布策略配置，随
 
 CI44872870220 随后推进到 `POD_STRUCTURE` 后失败。原单一阶段还包含依赖条目及 spec repository 检查，公开代码不能判定具体失败谓词。下一轮仅细分固定阶段码：根类型、顶层键、版本、依赖数组/条目键/引用格式/本地路径/值类型和仓库白名单；不回显任何字段内容，不改允许列表，不把本次失败写成通过。
 
+## RN 0.88.1 生成 facade 路径的窄兼容
+
+第三轮 CI44874304419 固定拒绝为 `POD_ENTRY_LOCAL_PATH`，已停止机械重跑并登记阻塞。随后检查 package-lock 固定的 RN0.88.1 源码：`rncore_facades.rb` 的7个 root pod 位于 `build/rncore-facades/<pod>`，`rndeps_facades.rb` 的7个 root pod 位于 `build/rndeps-facades/<pod>`；`react_native_pods.rb` 通过 `:path` 安装它们，不是第三方源码下载或任意 build 路径。真实 Ruby 直接调用这两个已锁模块的 `facade_path(name)`，得到14个路径；旧策略对14个合成锁都以同一码拒绝。CI诊断未公开原始锁，以上是锁定源码与独立合成复现，不声称已观测CI中逐条路径。
+
+仅加入固定14项 root pod 到精确路径的绑定；允许已有 subspec 使用其 root pod 路径，未知名称/错配家族/目录子项/跳转或其他 `build/` 路径均继续拒绝；这两类目录只能用于 `:path`，不能伪装为 `:podspec`。旧 node_modules/codegen、来源 URL、Symbol/对象/别名、权限和公开上传边界不变。测试实际调用锁定RN的路径方法而非只匹配正则；RN升级或facade集变化须显式复核。本机真实Ruby差分与55项定向回归已做，仍须独立审查后才恢复有源码依据的macOS bootstrap；当前不批准任何锁集。
+
 ## 回滚
 
 如发现兼容问题，在开发分支 revert 本实现提交，保留 bootstrap 未验收状态；不得通过放宽权限/签名/平台断言或忽略锁差异来让 job 变绿。对合法新键、新依赖来源或生成结构的支持应有真实 macOS fixture 和独立复审后再加入显式表。

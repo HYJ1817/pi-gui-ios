@@ -13,6 +13,18 @@ const runtime = spawnSync(RUBY, ['-e', "gem 'bundler', '= 2.6.9'; require 'bundl
 assert.equal(runtime.status, 0, 'Ruby 3.3.8 + Bundler 2.6.9 required for native lock security tests; set RUBY/GEM_HOME/GEM_PATH for a portable installation. ' + (runtime.stderr || runtime.error?.message || ''));
 assert.deepEqual(runtime.stdout.trim().split(/\r?\n/), ['3.3.8', '2.6.9']);
 const marker = 'SYNTHETIC_PRIVATE_LOCK_MARKER';
+// Exercise the installed, package-lock-pinned RN helper methods. Reading its
+// documented paths alone would miss changes to facade_path(name)'s behavior.
+const facadeRuntime = spawnSync(RUBY, ['-e', `require 'json'
+require File.join(ARGV[0], 'scripts/cocoapods/rncore_facades.rb')
+require File.join(ARGV[0], 'scripts/cocoapods/rndeps_facades.rb')
+paths = {}
+[RNCoreFacades, RNDepsFacades].each do |family|
+  family::FACADE_PODS.each_key { |name| paths[name] = family.facade_path(name) }
+end
+puts JSON.generate(paths)`, join(ROOT, 'node_modules/react-native')], { encoding: 'utf8' });
+assert.equal(facadeRuntime.status, 0, facadeRuntime.stderr);
+const facadePaths = JSON.parse(facadeRuntime.stdout);
 // Deliberately synthetic locks, not macOS candidates or evidence of a real pod
 // resolution. They exercise the same Bundler/Psych code used on the runner.
 const GEM = `GEM
@@ -89,6 +101,37 @@ for (const [option, value] of [
 ]) test(`allow only generated dependency locations for ${option}: ${value}`, t => {
   const f = fixture(t, POD.replace(':path: "../node_modules/synthetic"', `:${option}: "${value}"`));
   const result = validate(f); assert.equal(result.status, 0, result.stdout + result.stderr);
+});
+test('locked React Native facade helpers expose only the reviewed 14 generated pod locations', () => {
+  assert.equal(JSON.parse(readFileSync(join(ROOT, 'node_modules/react-native/package.json'))).version, '0.88.1');
+  const core = ['FBLazyVector', 'RCTDeprecation', 'RCTRequired', 'React-Core', 'React-RCTFabric', 'React-RCTRuntime', 'Yoga'];
+  const deps = ['DoubleConversion', 'RCT-Folly', 'SocketRocket', 'boost', 'fast_float', 'fmt', 'glog'];
+  assert.deepEqual(facadePaths, Object.fromEntries([
+    ...core.map(name => [name, 'build/rncore-facades/' + name]),
+    ...deps.map(name => [name, 'build/rndeps-facades/' + name]),
+  ]));
+});
+for (const [name, path] of Object.entries(facadePaths)) test(`locked React Native facade source is accepted only for its real pod: ${name}`, t => {
+  const pod = POD.replaceAll('Synthetic', name).replaceAll('../node_modules/synthetic', path);
+  const f = fixture(t, pod); const first = validate(f); assert.equal(first.status, 0, first.stdout + first.stderr);
+  const before = readFileSync(join(f.root, 'Podfile.lock'));
+  const second = validate(f); assert.equal(second.status, 0, second.stdout + second.stderr);
+  assert.deepEqual(readFileSync(join(f.root, 'Podfile.lock')), before);
+});
+for (const [description, pod, phase] of [
+  ['unknown facade pod', POD.replaceAll('../node_modules/synthetic', 'build/rncore-facades/Synthetic'), 'POD_ENTRY_LOCAL_PATH'],
+  ['known directory bound to another pod', POD.replaceAll('../node_modules/synthetic', facadePaths['React-Core']), 'POD_ENTRY_LOCAL_PATH'],
+  ['core pod bound to deps directory', POD.replaceAll('Synthetic', 'React-Core').replaceAll('../node_modules/synthetic', 'build/rndeps-facades/React-Core'), 'POD_ENTRY_LOCAL_PATH'],
+  ['facade path child', POD.replaceAll('Synthetic', 'React-Core').replaceAll('../node_modules/synthetic', facadePaths['React-Core'] + '/Headers'), 'POD_ENTRY_LOCAL_PATH'],
+  ['facade path traversal', POD.replaceAll('Synthetic', 'React-Core').replaceAll('../node_modules/synthetic', facadePaths['React-Core'] + '/../React-Core'), 'POD_ENTRY_LOCAL_PATH'],
+  ['arbitrary build path', POD.replaceAll('../node_modules/synthetic', 'build/arbitrary/Synthetic'), 'POD_ENTRY_LOCAL_PATH'],
+  ['source option wrong pod binding', POD.replace(':path: "../node_modules/synthetic"', ':path: "' + facadePaths['React-Core'] + '"'), 'POD_SOURCES'],
+  ['facade directory as podspec', POD.replace(':path: "../node_modules/synthetic"', ':podspec: "' + facadePaths['React-Core'] + '"').replaceAll('Synthetic', 'React-Core'), 'POD_SOURCES'],
+]) test(`reject ${description} without allowing arbitrary generated paths`, t => reject(t, pod, phase));
+test('reviewed core subspec uses the same root facade path', t => {
+  const pod = POD.replaceAll('Synthetic', 'React-Core').replaceAll('../node_modules/synthetic', facadePaths['React-Core'])
+    .replace('  - React-Core (from ', '  - React-Core/RCTWebSocket (from ');
+  const f = fixture(t, pod); const result = validate(f); assert.equal(result.status, 0, result.stdout + result.stderr);
 });
 test('finite Symbol vocabulary supports HTTPS checkout options without converting keys', t => {
   const source = `:git: https://github.com/synthetic/native.git\n    :commit: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa`;

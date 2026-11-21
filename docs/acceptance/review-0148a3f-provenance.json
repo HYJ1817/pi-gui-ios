@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "kind": "historical-independent-review-transcript",
+  "taskId": "node:delegated-task:command%3Amcp%3A29600ade-642e-4b34-9a46-eb0e685480ef%3Adelegate-task%3A7da88775-0818-4401-b41e-ba036de8f61d",
+  "childThreadId": "thread:delegated-task:command%3Amcp%3A29600ade-642e-4b34-9a46-eb0e685480ef%3Adelegate-task%3A7da88775-0818-4401-b41e-ba036de8f61d",
+  "link": "[独立复核恢复、IPA边界与CocoaPods锁解析](t3-thread://v2/54c2be41-16aa-490a-8cc2-bfd447f6c2a5/thread:delegated-task:command%3Amcp%3A29600ade-642e-4b34-9a46-eb0e685480ef%3Adelegate-task%3A7da88775-0818-4401-b41e-ba036de8f61d)",
+  "latestTerminalStatus": "completed",
+  "providerInstanceId": "claudeAgent",
+  "executedModel": "xingchiapi/gpt-6.1-sol",
+  "reviewedCommit": "0148a3fc0058e6db17a803e1946c2a88a3aab85a",
+  "sourceFingerprint": "ca015d26724cdc7d7e89cfd6001f76373b302f85f9275ff79fb75bd3666df526",
+  "rawTranscriptSegments": [
+    {"position": 55, "path": "docs/acceptance/review-0148a3f-message-prefix.txt"},
+    {"position": 56, "path": "docs/acceptance/review-0148a3f-message-suffix.txt"}
+  ],
+  "taskStatusSummarySegment": 56,
+  "registration": "not-imported",
+  "reason": "The tool summary contains only the last streamed message fragment and is not complete JSON. Both original message fragments were read from the child thread and retained without inventing a new summary. The reviewed source is also older than current HEAD. Historical R2 fix conclusions are recorded, but none of these fragments satisfies current independent evidence gates.",
+  "observedConclusions": [
+    {"kind": "independent-security", "decision": "pass", "unresolvedBlockers": 0, "unresolvedImportant": 0},
+    {"kind": "independent-review", "decision": "pass", "unresolvedBlockers": 0, "unresolvedImportant": 0},
+    {"kind": "independent-handoff", "decision": "pass", "unresolvedBlockers": 0, "unresolvedImportant": 0}
+  ],
+  "notVerified": ["native-lock approval", "native build", "UI visual acceptance", "device IPA", "SideStore"]
+}

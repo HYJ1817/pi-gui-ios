@@ -1,0 +1,85 @@
+{
+  "reports": [
+    {
+      "schemaVersion": 1,
+      "kind": "independent-security",
+      "decision": "pass",
+      "reviewedCommit": "0148a3fc0058e6db17a803e1946c2a88a3aab85a",
+      "sourceFingerprint": "ca015d26724cdc7d7e89cfd6001f76373b302f85f9275ff79fb75bd3666df526",
+      "unresolvedBlockers": 0,
+      "unresolvedImportant": 0,
+      "scope": "仅覆盖指定提交中的恢复、IPA路径隔离、固定Expo模板策略及CocoaPods安全解析修复；不代表native、UI、IPA或M-1阶段验收通过。",
+      "findings": [],
+      "verifiedFixes": [
+        {
+          "id": "R2-1",
+          "severity": "Important",
+          "file": "scripts/ci/verify-ipa.py",
+          "line": 56,
+          "trigger": "Windows应用资源目录、应用根或祖先包含junction或重解析点。",
+          "evidence": "审查实际Git diff及Tree调用链。canonical测试覆盖资源junction、应用根和祖先链接。另将d46d6a5与指定提交从Git对象导出至临时目录，使用同一合成junction独立差分复验：旧Tree接受，新Tree及package均以ARCHIVE_LINK拒绝，且拒绝发生在创建Payload和发布目录之前；树外合成字节未被复制。",
+          "impact": "旧归档边界可以读取应用树外文件；本次静态链接及重解析点绕过已关闭。",
+          "disposition": "resolved；逐级lstat检查链接及重解析点，并检查真实路径归属。未将其解释为抵御同一OS用户恶意并发替换目录的保证。"
+        },
+        {
+          "id": "R2-2",
+          "severity": "Important",
+          "file": "scripts/lib/control.mjs",
+          "line": 258,
+          "trigger": "存在有效v2检查点，但唯一权威control.json缺失。",
+          "evidence": "独立合成Git fixture中，旧实现返回ENOENT；指定提交恢复成功，authorityWasMissing=true、backup=null。dirty源码、分支、HEAD、running及failed CI状态均保留，失效completed任务回到testing。另验证已有损坏权威仍逐字节备份、非ENOENT错误不被吞掉、损坏检查点在写权威前被拒绝。",
+          "impact": "缺失权威可由显式有效检查点恢复，不虚构原文字节备份，也不绕过证据失效门禁。",
+          "disposition": "resolved"
+        },
+        {
+          "id": "R2-3",
+          "severity": "Important",
+          "file": "scripts/ci/verify-ipa.py",
+          "line": 156,
+          "trigger": "固定Expo模板的合法单场景manifest进入prebuild策略。",
+          "evidence": "独立差分复验确认旧策略拒绝提交中的模板fixture；新策略在prebuild模式接受严格单场景结构，最终策略仍拒绝未展开的PRODUCT_MODULE_NAME宏，仅接受PiGUIMobile.SceneDelegate。额外场景字段、未知权限及放开ATS仍被拒绝。canonical同时覆盖模板篡改、场景类型和数量、未知角色、delegate及网络例外负向用例。",
+          "impact": "关闭原先对正常单场景结构的误拒绝，同时未扩大权限及网络允许表。",
+          "disposition": "resolved；实际CI历史记录也表明8682219已通过prebuild，但不据此推定后续native成功。"
+        }
+      ],
+      "commands": [
+        {
+          "command": "git diff d46d6a5f84ad569f42a727fe29b0e2ed7b6f4afd 86822196c84ee01baf5b8dec41256abdfd04ddeb -- scripts tests .github/workflows/native-infrastructure.yml",
+          "exitCode": 0,
+          "result": "读取实际diff、生产代码及新增测试，并对照旧安全审查原始JSON中的三项Important；未仅依赖实现总结。"
+        },
+        {
+          "command": "node C:/Users/21022/AppData/Local/Temp/pi-review-0148-independent-20261121.mjs",
+          "exitCode": 0,
+          "result": "6项独立合成复验通过：缺失权威差分、非ENOENT拒绝、损坏权威原字节备份、坏检查点拒绝、IPA junction差分、Expo场景差分。生产脚本从精确Git对象导出；临时fixture已清理。"
+        },
+        {
+          "command": "npm test",
+          "exitCode": 0,
+          "result": "指定提交隔离clone中165 tests、165 pass、0 fail、0 skipped；technology-stack-contract passed=true。运行前后源码指纹均为指定值。"
+        }
+      ],
+      "notExecuted": [
+        "真实macOS候选锁及预编译清单审查；未下载任何新bootstrap候选。",
+        "locked原生构建及真实缓存命中、污染验证。",
+        "真实framework codesign去签、device Release IPA、iPhone/iPad原生交互及截图视觉验收。",
+        "SideStore真机安装、刷新和覆盖升级。"
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "kind": "independent-review",
+      "decision": "pass",
+      "reviewedCommit": "0148a3fc0058e6db17a803e1946c2a88a3aab85a",
+      "sourceFingerprint": "ca015d26724cdc7d7e89cfd6001f76373b302f85f9275ff79fb75bd3666df526",
+      "unresolvedBlockers": 0,
+      "unresolvedImportant": 0,
+      "scope": "指定提交的CocoaPods/Psych Symbol兼容、安全来源和路径检查、序列化往返及Windows真实Ruby回归。",
+      "findings": [],
+      "verifiedFixes": [
+        {
+          "id": "COCOAPODS-SYMBOL",
+          "severity": "Important",
+          "file": "scripts/ci/validate-locks.rb",
+          "line": 45,
+          "

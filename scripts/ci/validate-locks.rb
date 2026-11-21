@@ -55,8 +55,21 @@ begin
   phase = 'POD_STRUCTURE_VERSION'
   raise unless pods['COCOAPODS'] == '1.16.2'
   token = /\A[A-Za-z0-9_.+\/() ,=<>!~\-]+\z/
-  local_path = lambda do |value|
-    value.match?(%r{\A(?:\.\./node_modules/[A-Za-z0-9_@./+\-]+|build/generated/ios(?:/[A-Za-z0-9_./+\-]+)?)\z}) && !value.delete_prefix('../').split('/').include?('..')
+  # RN 0.88.1 prebuilt helpers install dependency-only facades at these exact
+  # relative paths. Bind each path to its real root pod; do not allow build/**.
+  # The test calls both locked RN helper modules to verify this finite mapping.
+  facade_paths = {}
+  ['FBLazyVector', 'RCTDeprecation', 'RCTRequired', 'React-Core', 'React-RCTFabric', 'React-RCTRuntime', 'Yoga'].each do |name|
+    facade_paths[name] = "build/rncore-facades/#{name}"
+  end
+  ['DoubleConversion', 'RCT-Folly', 'SocketRocket', 'boost', 'fast_float', 'fmt', 'glog'].each do |name|
+    facade_paths[name] = "build/rndeps-facades/#{name}"
+  end
+  facade_paths.freeze
+  local_path = lambda do |value, pod_name = nil|
+    next false if value.delete_prefix('../').split('/').include?('..')
+    value.match?(%r{\A(?:\.\./node_modules/[A-Za-z0-9_@./+\-]+|build/generated/ios(?:/[A-Za-z0-9_./+\-]+)?)\z}) ||
+      (pod_name.is_a?(String) && facade_paths[pod_name.split('/').first] == value)
   end
   visit = lambda do |value|
     case value
@@ -70,10 +83,10 @@ begin
     when String
       unless value.match?(token)
         phase = 'POD_ENTRY_REFERENCE'
-        from = value.match(/\A[A-Za-z0-9_.+\/\-]+ \(from [`'\"]([^`'\"]+)[`'\"]\)\z/)
+        from = value.match(/\A([A-Za-z0-9_.+\/\-]+) \(from [`'\"]([^`'\"]+)[`'\"]\)\z/)
         raise unless from
         phase = 'POD_ENTRY_LOCAL_PATH'
-        raise unless local_path.call(from[1])
+        raise unless local_path.call(from[2], from[1])
       end
     else
       phase = 'POD_ENTRY_TYPE'
@@ -97,7 +110,9 @@ begin
       options.each do |key, value|
         raise unless value.is_a?(String)
         case key
-        when :path, :podspec
+        when :path
+          raise unless local_path.call(value, name)
+        when :podspec
           raise unless local_path.call(value)
         when :git, :http
           uri = URI.parse(value)

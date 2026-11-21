@@ -1,0 +1,217 @@
+          "trigger": "CocoaPods锁文件使用:path、:podspec等真实Symbol来源选项键。",
+          "evidence": "使用用户指定便携Ruby实际确认Ruby/Bundler/Psych版本为3.3.8/2.6.9/5.1.2。对8682219与指定提交导出的校验器进行同一合成锁差分复验：旧实现返回NATIVE_LOCKS_REJECTED_POD_FORMAT，新实现返回NATIVE_LOCKS_SAFE；回读后external_source仍为Symbol键，第二次规范化输出逐字节不变。",
+          "impact": "修复合法CocoaPods来源选项被拒绝的问题，且没有把Symbol键转为会改变deployment比较语义的字符串键。",
+          "disposition": "resolved；仅允许八个固定Symbol，未知Symbol、Ruby对象、别名及错误位置的Symbol仍被拒绝。"
+        },
+        {
+          "id": "LOCK-SOURCE-PATH-ROUNDTRIP",
+          "severity": "Important",
+          "file": "scripts/ci/validate-locks.rb",
+          "line": 75,
+          "trigger": "来源选项、URL、本地路径或校验和名称包含不批准的类型或内容。",
+          "evidence": "canonical中的23项真实Ruby测试全部通过。另独立运行21项负向变体，覆盖Symbol值和名称、字符串伪装选项键、未知Symbol、Ruby对象、YAML日期类、别名、目录逃逸、Windows盘符及UNC路径、generated路径逃逸、URL凭据/query/fragment/非443端口/伪装host/http/编码路径。全部拒绝，输出仅固定阶段码，两个输入锁均逐字节保持不变。另确认注释不进入重建锁。",
+          "impact": "本次Symbol兼容没有放开未知类、任意来源、越界路径或未解析原文发布。",
+          "disposition": "resolved；未发现本次范围内新增的未解决Blocker或Important。"
+        }
+      ],
+      "commands": [
+        {
+          "command": "git diff 86822196c84ee01baf5b8dec41256abdfd04ddeb 0148a3fc0058e6db17a803e1946c2a88a3aab85a -- scripts/ci/validate-locks.rb tests/native-locks.test.mjs .github/workflows/native-infrastructure.yml",
+          "exitCode": 0,
+          "result": "检查实际生产解析器、真实Ruby测试及Windows固定Ruby/Bundler配置；未安装CocoaPods或运行未知产物代码。"
+        },
+        {
+          "command": "node C:/Users/21022/AppData/Local/Temp/pi-review-0148-ruby-20261121.mjs",
+          "exitCode": 0,
+          "environment": {
+            "RUBY": "C:/pi-gui-ios/artifacts/ruby-extract-20261121-a/rubyinstaller-3.3.8-1-x64/bin/ruby.exe",
+            "GEM_HOME": "C:/pi-gui-ios/artifacts/ruby-gems-20261121-a",
+            "GEM_PATH": "C:/pi-gui-ios/artifacts/ruby-gems-20261121-a",
+            "shell": "Git Bash"
+          },
+          "result": {
+            "runtime": "3.3.8/2.6.9/5.1.2",
+            "syntheticIndependentChecks": 24,
+            "stdout": [
+              "PASS RUBY_SYMBOL_DIFFERENTIAL OLD_POD_FORMAT_REJECTED NEW_ACCEPTED SYMBOL_SEMANTICS_AND_IDEMPOTENCE_PRESERVED",
+              "PASS ADDITIONAL_21_ADVERSARIAL_SYMBOL_CLASS_SOURCE_AND_PATH_CASES_REJECTED_WITHOUT_MUTATION_OR_DISCLOSURE",
+              "PASS Syntax OK"
+            ],
+            "temporaryFixturesCleaned": true
+          }
+        },
+        {
+          "command": "npm run typecheck",
+          "exitCode": 0,
+          "result": "在父工作区源码指纹仍匹配指定提交时执行，tsc --noEmit通过。"
+        },
+        {
+          "command": "git diff --check",
+          "exitCode": 0,
+          "result": "通过。"
+        },
+        {
+          "command": "npm test",
+          "exitCode": 0,
+          "result": "精确提交隔离clone中165/165通过，0 fail、0 skipped，包含23项真实Ruby测试及技术栈版本合同。"
+        }
+      ],
+      "historicalFailureVerification": {
+        "reviewedFiles": [
+          "docs/acceptance/security-review-d46d6a5-receipt.json",
+          "docs/acceptance/ci-44868846710-analysis.md",
+          "docs/acceptance/ci-44868846710-api.json",
+          "artifacts/run-44868846710/reports/diagnostics.json",
+          "artifacts/run-44868846710/reports/steps.json",
+          "artifacts/run-44868846710/reports/environment.json"
+        ],
+        "result": "原始API记录为8682219对应run44868846710、attempt1、completed/failure；脱敏步骤记录显示prebuild通过、pods失败，诊断含NATIVE_LOCKS_REJECTED_POD_FORMAT，后续Maestro、Simulator、iPhone、iPad、device及IPA均not-run。公开材料没有原始Podfile.lock，不能声称已直接观测该次锁的具体字段。"
+      },
+      "notExecuted": [
+        "未审查或批准任何新的真实macOS候选锁、预编译清单或其输入绑定。",
+        "未将Windows合成解析器测试解释为真实pod install --deployment成功。",
+        "未执行本提交的真实native、视觉、device IPA或SideStore验收。"
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "kind": "independent-handoff",
+      "decision": "pass",
+      "reviewedCommit": "0148a3fc0058e6db17a803e1946c2a88a3aab85a",
+      "sourceFingerprint": "ca015d26724cdc7d7e89cfd6001f76373b302f85f9275ff79fb75bd3666df526",
+      "restoredTask": "M-1-infrastructure",
+      "unresolvedBlockers": 0,
+      "unresolvedImportant": 0,
+      "scope": "已从仓库文档实际恢复任务并继续执行canonical测试、代码检查和独立合成故障复验。pass仅针对指定提交的本次代码及恢复范围，不授予阶段完成、合并或发布权限。",
+      "findings": [],
+      "commands": [
+        {
+          "command": "node scripts/agent-resume.mjs --remote",
+          "exitCode": 0,
+          "result": {
+            "schemaVersion": 2,
+            "authorityRevision": 94,
+            "phase": "M-1",
+            "currentTask": "M-1-infrastructure",
+            "taskStatus": "testing",
+            "actualBranch": "agent/m-1-bootstrap",
+            "actualCommit": "0148a3fc0058e6db17a803e1946c2a88a3aab85a",
+            "checkpoint": ".agent/checkpoints/v2-2026-11-21T05-54-33-385Z-f0b74993-2172-4fb4-9dbd-0a36a58dcf35.json",
+            "checkpointSourceFingerprint": "ca015d26724cdc7d7e89cfd6001f76373b302f85f9275ff79fb75bd3666df526",
+            "warnings": [],
+            "failures": [],
+            "remoteFetch": "ok",
+            "remoteBranchMatchedReviewedCommit": true,
+            "ciObservedAtResume": {
+              "id": 44872870220,
+              "head": "0148a3fc0058e6db17a803e1946c2a88a3aab85a",
+              "status": "in_progress",
+              "conclusion": ""
+            },
+            "unmetGatesRetained": [
+              "R2三项仍在父权威中等待新提交复核",
+              "NATIVE-LOCK尚未生成并独立批准",
+              "ci",
+              "ui",
+              "ipa",
+              "independent-review",
+              "independent-security",
+              "independent-handoff"
+            ]
+          }
+        },
+        {
+          "command": "npm test",
+          "exitCode": 0,
+          "environment": {
+            "RUBY": "C:/pi-gui-ios/artifacts/ruby-extract-20261121-a/rubyinstaller-3.3.8-1-x64/bin/ruby.exe",
+            "GEM_HOME": "C:/pi-gui-ios/artifacts/ruby-gems-20261121-a",
+            "GEM_PATH": "C:/pi-gui-ios/artifacts/ruby-gems-20261121-a",
+            "shell": "Git Bash"
+          },
+          "result": {
+            "execution": "resume之后在父工作区首次执行；随后确认当时工作源码及提交源码指纹均匹配指定值。",
+            "stdoutSummary": {
+              "tests": 165,
+              "suites": 0,
+              "pass": 165,
+              "fail": 0,
+              "cancelled": 0,
+              "skipped": 0,
+              "todo": 0,
+              "duration_ms": 37235.2805
+            },
+            "technologyStackContract": {
+              "passed": true,
+              "referenceCommit": "285558eb1053d17f59ea8ecdf7c57999e92381f8"
+            }
+          }
+        },
+        {
+          "command": "node C:/Users/21022/AppData/Local/Temp/pi-review-0148-canonical-20261121.mjs",
+          "exitCode": 0,
+          "result": {
+            "execution": "发现父工作区随后出现真实源码修改后，另建本地隔离clone、detach到指定提交，并再次实际执行npm test。复用既有node_modules，未重新安装依赖。",
+            "canonicalCommand": "npm test",
+            "canonicalExitCode": 0,
+            "beforeSourceFingerprint": "ca015d26724cdc7d7e89cfd6001f76373b302f85f9275ff79fb75bd3666df526",
+            "afterSourceFingerprint": "ca015d26724cdc7d7e89cfd6001f76373b302f85f9275ff79fb75bd3666df526",
+            "stdoutSummary": {
+              "tests": 165,
+              "suites": 0,
+              "pass": 165,
+              "fail": 0,
+              "cancelled": 0,
+              "skipped": 0,
+              "todo": 0,
+              "duration_ms": 43294.4819
+            },
+            "technologyStackContractPassed": true,
+            "temporaryCloneCleaned": true,
+            "stderrNote": "Node对测试包装器使用shell:true发出DEP0190警告；实际命令为固定npm test，测试退出0。"
+          }
+        },
+        {
+          "command": "node C:/Users/21022/AppData/Local/Temp/pi-review-0148-independent-20261121.mjs",
+          "exitCode": 0,
+          "result": "恢复后继续完成6项独立故障检查；不是仅阅读文档或沿用父报告。"
+        },
+        {
+          "command": "node C:/Users/21022/AppData/Local/Temp/pi-review-0148-ruby-20261121.mjs",
+          "exitCode": 0,
+          "result": "继续完成24项真实Ruby合成检查；不是使用JavaScript模拟Psych或Bundler。"
+        }
+      ],
+      "concurrentSourceChanges": {
+        "observed": true,
+        "actualHeadAtObservation": "0148a3fc0058e6db17a803e1946c2a88a3aab85a",
+        "files": [
+          "scripts/ci/validate-locks.rb",
+          "tests/native-locks.test.mjs"
+        ],
+        "workingFingerprintAtObservation": "8520b8850bf784596c7e41c89632a6dd47084bd9a26ac8fcad9d6bc4c056a4fb",
+        "committedFingerprint": "ca015d26724cdc7d7e89cfd6001f76373b302f85f9275ff79fb75bd3666df526",
+        "disposition": "这些并非仅.agent或验收报告变化，因此未将当前工作区冒充指定提交。后续canonical改在精确提交隔离clone运行；本报告不覆盖上述未提交修改。未覆盖或撤销父修改。"
+      },
+      "executionNotes": [
+        "已读取AGENTS.md、REVIEW.md、ROADMAP.md、PROGRESS.md、HANDOFF.md、相关架构与ADR、旧审查原结果及失败CI原始脱敏记录。",
+        "未修改父源码、权威或投影，未在父仓库提交或推送，未触发、取消、重跑、等待或监控CI；仅resume执行了文档规定的fetch和只读CI查询。",
+        "一次内联合成探针包装命令因Git Bash引号解析错误退出2，未执行到探针；改为独立临时脚本后6项检查全部通过，未将失败尝试记为通过。",
+        "误调用code-review skill；工具报告自动fork并以HTTP429失败。该调用未取得可用审查结果，也未被用于任何结论；此后所有实质审查及复验均由当前上下文直接执行，没有进一步委派。",
+        "所有故障fixture均使用合成数据并已清理；未读取真实会话、凭据或设备数据，未下载或执行未知产物代码。"
+      ],
+      "notExecuted": [
+        "新bootstrap候选锁的下载、来源、完整字段、预编译字节及输入绑定专门审查。",
+        "macOS真实pod解析成功及批准锁后的locked CI。",
+        "iPhone/iPad真实渲染、原生玻璃、导航、键盘、动画、手势及无障碍视觉验收。",
+        "真实arm64 device Release IPA与SideStore安装、刷新、覆盖升级。",
+        "main合并或正式发布。"
+      ],
+      "remainingGates": [
+        "父Agent需保留native锁未批准状态，并对后续源码修改使用新的提交和指纹重新生成证据。",
+        "真实候选锁须经后续专门独立审查；即使bootstrap生成候选并按设计退出78，也不是CI/native/UI/IPA验收通过。",
+        "M-1仍不得仅凭本次代码审查和Windows测试标为accepted或completed。"
+      ]
+    }
+  ]
+}
