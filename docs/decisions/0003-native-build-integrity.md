@@ -140,6 +140,14 @@ npm 命令链接的有限路径与相对 target 从 package-lock v3 的 bin 声�
 
 新增回归先在修复前执行4个无后缀目录/文件链接模拟差分，4/4失败；修复后这4项及20个锁声明/真实Windowsjunction用例通过。模拟仅覆盖 Windows 无法创建 POSIX 链接的遗漏代码路径，不冒充真实POSIX验收。macOS canonical npm test 仍须在 prebuild 前运行新增真实无后缀链接负向、scoped/nested npm 命令链接与所有者/字节漂移、CocoaPods头文件/modulemap及拒绝矩阵。全部规范回归、精确提交独立审查、实际macOS安装树与候选锁审核继续由各自证据门禁判定。
 
+## CI44891582412后的固定来源差分与无路径诊断
+
+该运行在精确复审通过的源码上实际完成macOS298项canonical测试（包含真实POSIX条件分支）与prebuild，随后仍以NATIVE_PREBUILT_LINK_REJECTED失败，没有候选；不能把源码审查通过写成实际安装树兼容。先停止重跑，核对公开工具源码。
+
+CocoaPods1.16.2 `sandbox/file_accessor.rb`直接引用Xcodeproj的HEADER_FILES_EXTENSIONS；固定公开Xcodeproj1.27.0的常量为`.h .hh .hpp .ipp .tpp .hxx .def .inl .inc`。来源URL、原文摘要和精确集合记录在tests/fixtures/cocoapods-header-extensions.json。将原来不完整的手写集合对齐为这9种头文件加已有generated modulemap，移除缺少该来源依据的`.h++`。修前9项生产分类差分中5通过、4失败，修后通过。真实macOS已解析的Xcodeproj版本和具体拒绝路径仍未观测，不把上述版本/差分宣称为实际CI根因。
+
+新增固定上下文/谓词诊断，保持主拒绝码及退出1：Hermes/npm-bin/Pods-header/未知Pods/未知npm上下文，以及祖先链接、边界、文件系统错误、目标类型、多链接、alias target、header语法/规范化/basename/物理根等有限源码字面量。`GateError`只携带固定code/reason/context；CLI不携带实际path、target、环境或原始异常值。既有safe-diagnostics继续从Git HEAD的AST提取这些有限常量，无须扩大公开报告字段。生产CLI合成失败测试验证固定输出及private marker不泄漏；后续unknown仍拒绝，候选仍不产生，最终IPA与权限边界不改。
+
 ## 回滚
 
 如发现兼容问题，在开发分支 revert 本实现提交，保留 bootstrap 未验收状态；不得通过放宽权限/签名/平台断言或忽略锁差异来让 job 变绿。对合法新键、新依赖来源或生成结构的支持应有真实公开归档或macOS fixture、精确边界差分和独立复审后再加入显式表；仍须真实macOS验证，不继承本机通过。

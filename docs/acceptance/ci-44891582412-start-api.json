@@ -1,0 +1,12 @@
+{
+  "conclusion": null,
+  "head_sha": "a3420973d4dff86b7def48c26eddad0c0501692b",
+  "html_url": "https://github.com/HYJ1817/pi-gui-ios/actions/runs/44891582412",
+  "id": 44891582412,
+  "path": ".github/workflows/native-infrastructure.yml",
+  "repository": {
+    "full_name": "HYJ1817/pi-gui-ios"
+  },
+  "run_attempt": 1,
+  "status": "in_progress"
+}

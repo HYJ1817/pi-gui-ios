@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "cocoapodsVersion": "1.16.2",
+  "xcodeprojSourceVersion": "1.27.0",
+  "sources": [
+    {
+      "url": "https://raw.githubusercontent.com/CocoaPods/Xcodeproj/1.27.0/lib/xcodeproj/constants.rb",
+      "sha256": "b80a95182266aeffd0a4f57082b10f92e0733cd67341b21dc1b83bacbdf27983",
+      "expression": "HEADER_FILES_EXTENSIONS = %w(.h .hh .hpp .ipp .tpp .hxx .def .inl .inc).freeze"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/CocoaPods/CocoaPods/1.16.2/lib/cocoapods/sandbox/file_accessor.rb",
+      "sha256": "b102f7934bd8ac6685ba4680d067b79a1da3be7bf29ebcf2b44e51727c2b8c2f",
+      "expression": "HEADER_EXTENSIONS = Xcodeproj::Constants::HEADER_FILES_EXTENSIONS"
+    }
+  ],
+  "extensions": [".h", ".hh", ".hpp", ".ipp", ".tpp", ".hxx", ".def", ".inl", ".inc"],
+  "additionalGeneratedExtension": ".modulemap",
+  "license": "MIT",
+  "limitation": "This records fixed public tool source, not the resolved Xcodeproj version or rejected path in CI44891582412. Physical target and ancestry checks remain mandatory for every eligible file alias."
+}

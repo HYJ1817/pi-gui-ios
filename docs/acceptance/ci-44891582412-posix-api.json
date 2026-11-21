@@ -1,0 +1,241 @@
+{
+  "runId": 44891582412,
+  "head": "a3420973d4dff86b7def48c26eddad0c0501692b",
+  "status": "in_progress",
+  "conclusion": "",
+  "observedAt": "2026-11-21T09:57:22.217Z",
+  "jobs": [
+    {
+      "id": 136808345527,
+      "name": "checks",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": [
+        {
+          "number": 1,
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 2,
+          "name": "Run actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 3,
+          "name": "Run actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 4,
+          "name": "Run ruby/setup-ruby@be3c7df29b3349ec6bcfc6b4792f1cf9f5237d18",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 5,
+          "name": "Run npm ci --no-audit --no-fund",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 6,
+          "name": "Run npm test",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 7,
+          "name": "Run npm run typecheck",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 8,
+          "name": "Run npx expo install --check",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 9,
+          "name": "Run npm run export:ios",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 17,
+          "name": "Post Run actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 18,
+          "name": "Post Run actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 19,
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 136808970483,
+      "name": "ios",
+      "status": "in_progress",
+      "conclusion": "",
+      "steps": [
+        {
+          "number": 1,
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 2,
+          "name": "Run actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 3,
+          "name": "Run actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 4,
+          "name": "Run ruby/setup-ruby@be3c7df29b3349ec6bcfc6b4792f1cf9f5237d18",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 5,
+          "name": "Record private native environment and select simulators",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 6,
+          "name": "Install locked JavaScript dependencies",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 7,
+          "name": "Run canonical tests including real POSIX dependency aliases",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 8,
+          "name": "Generate native project and deny template network exemption",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 9,
+          "name": "Restore exact reviewed dependency downloads",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "number": 10,
+          "name": "Resolve reviewed native dependencies or stop at bootstrap gate",
+          "status": "in_progress",
+          "conclusion": ""
+        },
+        {
+          "number": 11,
+          "name": "Save dependency downloads only after full lock and checksum verification",
+          "status": "pending",
+          "conclusion": ""
+        },
+        {
+          "number": 12,
+          "name": "Install checksum-pinned open source Maestro",
+          "status": "pending",
+          "conclusion": ""
+        },
+        {
+          "number": 13,
+          "name": "Build self-contained Release simulator app",
+          "status": "pending",
+          "conclusion": ""
+        },
+        {
+          "number": 14,
+          "name": "iPhone native interactions and appearance",
+          "status": "pending",
+          "conclusion": ""
+        },
+        {
+          "number": 15,
+          "name": "iPad native interactions and appearance",
+          "status": "pending",
+          "conclusion": ""
+        },
+        {
+          "number": 16,
+          "name": "Build unsigned device app without Apple credentials",
+          "status": "pending",
+          "conclusion": ""
+        },
+        {
+          "number": 17,
+          "name": "Package and verify final device IPA in private staging",
+          "status": "pending",
+          "conclusion": ""
+        },
+        {
+          "number": 18,
+          "name": "Collect only sanitized synthetic evidence",
+          "status": "pending",
+          "conclusion": ""
+        },
+        {
+          "number": 19,
+          "name": "Upload verified final IPA only",
+          "status": "pending",
+          "conclusion": ""
+        },
+        {
+          "number": 20,
+          "name": "Upload explicit synthetic evidence whitelist",
+          "status": "pending",
+          "conclusion": ""
+        },
+        {
+          "number": 21,
+          "name": "Upload safe lock candidates for review only",
+          "status": "pending",
+          "conclusion": ""
+        },
+        {
+          "number": 22,
+          "name": "Remove private runner material",
+          "status": "pending",
+          "conclusion": ""
+        },
+        {
+          "number": 43,
+          "name": "Post Run actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38",
+          "status": "pending",
+          "conclusion": ""
+        },
+        {
+          "number": 44,
+          "name": "Post Run actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09",
+          "status": "pending",
+          "conclusion": ""
+        }
+      ]
+    }
+  ]
+}

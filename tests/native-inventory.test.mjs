@@ -108,6 +108,67 @@ else: raise AssertionError('duplicate lock keys accepted')
 print('DUPLICATE_LOCK_KEYS_REJECTED')`), 'DUPLICATE_LOCK_KEYS_REJECTED');
 });
 
+const headers = JSON.parse(readFileSync(join(ROOT, 'tests/fixtures/cocoapods-header-extensions.json')));
+for (const suffix of headers.extensions) test(`CocoaPods header extension ${suffix} from fixed upstream source maps only to its physical file`, t => {
+  passed(py(fixture(t), `
+path=pods/('Headers/Public/Synthetic/Synthetic'+${JSON.stringify(suffix)})
+safe='pods/'+path.relative_to(pods).as_posix()
+row=m.checked_header_link(path,safe,'../../../Synthetic/include/Synthetic'+${JSON.stringify(suffix)})
+assert row == {'kind':'cocoapods-header','path':safe,'target':'../../../Synthetic/include/Synthetic'+${JSON.stringify(suffix)},'physical':'pods/Synthetic/include/Synthetic'+${JSON.stringify(suffix)}}
+print('UPSTREAM_HEADER_SUFFIX_CLASSIFIED')`), 'UPSTREAM_HEADER_SUFFIX_CLASSIFIED');
+});
+
+test('tool header suffix policy exactly matches reviewed upstream source and generated modulemap', t => {
+  passed(py(fixture(t), `
+import sys
+fixture=json.loads(pathlib.Path(sys.argv[1]).read_text())
+assert m.HEADER_SUFFIXES == set(fixture['extensions'])|{fixture['additionalGeneratedExtension']}
+path=pods/'Headers/Public/Synthetic/Synthetic.h++'
+try: m.checked_header_link(path,'pods/'+path.relative_to(pods).as_posix(),'../../../Synthetic/Synthetic.h++')
+except m.GateError as error: assert str(error) == 'NATIVE_PREBUILT_LINK_REJECTED'
+else: raise AssertionError('extension not in upstream header vocabulary accepted')
+print('EXACT_UPSTREAM_HEADER_VOCABULARY')`, join(ROOT, 'tests/fixtures/cocoapods-header-extensions.json')), 'EXACT_UPSTREAM_HEADER_VOCABULARY');
+});
+
+for (const [target, expectedReason] of [
+  ['/SYNTHETIC-PRIVATE/header.h', 'NATIVE_LINK_HEADER_SYNTAX_REJECTED'],
+  ['../../../Synthetic/include/../include/Synthetic.h', 'NATIVE_LINK_HEADER_CANONICAL_REJECTED'],
+  ['../../../Synthetic/Other.h', 'NATIVE_LINK_HEADER_BASENAME_REJECTED'],
+  ['../../../../../outside/Synthetic.h', 'NATIVE_LINK_HEADER_ROOT_REJECTED'],
+]) test(`header failure diagnostics are fixed predicate codes: ${expectedReason}`, t => {
+  passed(py(fixture(t), `
+path=pods/'Headers/Public/Synthetic/Synthetic.h'
+try: m.checked_header_link(path,'pods/'+path.relative_to(pods).as_posix(),${JSON.stringify(target)})
+except m.GateError as error:
+ assert str(error) == 'NATIVE_PREBUILT_LINK_REJECTED' and error.reason == ${JSON.stringify(expectedReason)}
+ assert not error.context and 'PRIVATE' not in str(error)
+else: raise AssertionError('unsafe header alias accepted')
+print('FIXED_HEADER_PREDICATE_DIAGNOSTIC')`), 'FIXED_HEADER_PREDICATE_DIAGNOSTIC');
+});
+
+test('production CLI publishes only fixed link context and predicate without private path or target', t => {
+  const root = fixture(t); const privateMarker = 'SYNTHETIC-PRIVATE-DO-NOT-PUBLISH';
+  const link = join(root, 'ios/Pods/Headers/Public', privateMarker, 'Header.h');
+  const outside = join(root, 'ios/Pods', privateMarker, 'Header.h'); mkdirSync(join(link, '..'), { recursive: true }); mkdirSync(outside, { recursive: true });
+  symlinkSync(process.platform === 'win32' ? outside : '../../../' + privateMarker + '/Header.h', link, process.platform === 'win32' ? 'junction' : 'dir');
+  const result = py(root, `
+import runpy,sys,types,contextlib,io
+original=pathlib.Path.cwd(); private=root/'private'; (root/'ios/Podfile.lock').write_text('synthetic pod lock')
+(root/'native/dependency-policy.json').write_text(json.dumps({'schemaVersion':1,'mode':'bootstrap-required','ruby':'3.3.8','bundler':'2.6.9','cocoapods':'1.16.2'}))
+sys.argv=['native-dependencies.py','finish',str(root),str(private)]
+from unittest.mock import patch
+with patch('subprocess.run',return_value=types.SimpleNamespace(returncode=0)),contextlib.redirect_stdout(io.StringIO()) as output:
+ try: runpy.run_path('scripts/ci/native-dependencies.py',run_name='__main__')
+ except SystemExit as error: assert error.code == 1
+ else: raise AssertionError('unsafe candidate finish did not exit')
+lines=output.getvalue().splitlines()
+assert lines == ['NATIVE_PREBUILT_LINK_REJECTED','NATIVE_LINK_CONTEXT_PODS_HEADER','NATIVE_LINK_ALIAS_TYPE_REJECTED' if sys.platform=='win32' else 'NATIVE_LINK_TARGET_TYPE_REJECTED']
+assert ${JSON.stringify(privateMarker)} not in output.getvalue() and str(root) not in output.getvalue()
+assert not (root/'artifacts/lock-candidates').exists()
+print('PRODUCTION_FIXED_DIAGNOSTICS_ONLY')`);
+  passed(result, 'PRODUCTION_FIXED_DIAGNOSTICS_ONLY');
+});
+
 if (process.platform === 'win32') {
   for (const tree of ['ios/Pods', 'node_modules']) for (const name of ['ordinary', '.bin/tool', 'Headers/Public/Synthetic/header.h']) test(`reject actual Windows directory junction in ${tree}/${name}`, t => {
     const root = fixture(t); const link = join(root, tree, name); const outside = join(root, 'outside');
@@ -115,6 +176,16 @@ if (process.platform === 'win32') {
     symlinkSync(outside, link, 'junction'); passed(py(root, reject), 'UNAPPROVED_LINK_REJECTED');
   });
 } else {
+  for (const suffix of headers.extensions) test(`real POSIX upstream ${suffix} header link hashes every target byte`, t => {
+    passed(py(fixture(t), `
+physical=pods/('Synthetic/Synthetic'+${JSON.stringify(suffix)}); physical.parent.mkdir(); physical.write_bytes(b'synthetic header')
+link=pods/('Headers/Public/Synthetic/Synthetic'+${JSON.stringify(suffix)}); link.parent.mkdir(parents=True)
+os.symlink('../../../Synthetic/Synthetic'+${JSON.stringify(suffix)},link)
+manifest=m.inventory(root); assert len(manifest['links']) == len(manifest['files']) == 1
+physical.write_bytes(b'changed header')
+assert m.inventory(root)['files'] != manifest['files']
+print('REAL_POSIX_UPSTREAM_HEADER_SUFFIX_BOUND')`), 'REAL_POSIX_UPSTREAM_HEADER_SUFFIX_BOUND');
+  });
   for (const tree of ['ios/Pods', 'node_modules']) for (const kind of ['directory', 'file', 'dangling']) test(`real POSIX ${kind} link without native suffix is rejected in ${tree}`, t => {
     passed(py(fixture(t), `
 base=root/${JSON.stringify(tree)}; outside=root/'outside'; outside.mkdir(); (outside/'hidden-native.a').write_bytes(b'synthetic native')
