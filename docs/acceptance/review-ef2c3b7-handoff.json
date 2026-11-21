@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 2,
+  "kind": "independent-handoff",
+  "taskId": "M-1-infrastructure",
+  "commit": "ef2c3b77f2de2860e286a03c617d884537c344df",
+  "sourceFingerprint": "346c5097e03fd2f3f49dd6b973992fe6eff59c6997b7dec9c4153395ea626109",
+  "startedAt": "2026-11-21T10:13:07.220Z",
+  "finishedAt": "2026-11-21T10:29:22.252Z",
+  "passed": true,
+  "details": {
+    "receiptPath": "docs/acceptance/review-ef2c3b7-receipt.json",
+    "receiptSha256": "a0bc64798b29638c4fc8f62a93928f3325db982bab386dcb948cc1bb00f9e5bc",
+    "scope": "Exact-source independent recovery, one POSIX-test-gated bootstrap only; not stage acceptance."
+  }
+}

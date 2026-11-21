@@ -1,0 +1,261 @@
+{
+  "schemaVersion": 1,
+  "reviewedCommit": "ef2c3b77f2de2860e286a03c617d884537c344df",
+  "sourceFingerprint": "346c5097e03fd2f3f49dd6b973992fe6eff59c6997b7dec9c4153395ea626109",
+  "fingerprintVerification": {
+    "passed": true,
+    "diffBase": "a3420973d4dff86b7def48c26eddad0c0501692b",
+    "expected": "346c5097e03fd2f3f49dd6b973992fe6eff59c6997b7dec9c4153395ea626109",
+    "working": "346c5097e03fd2f3f49dd6b973992fe6eff59c6997b7dec9c4153395ea626109",
+    "committedAtReviewedCommit": "346c5097e03fd2f3f49dd6b973992fe6eff59c6997b7dec9c4153395ea626109",
+    "actualHead": "93c52e5a26be8e3d0c493de0f31858ad7ac017c2",
+    "committedAtActualHead": "346c5097e03fd2f3f49dd6b973992fe6eff59c6997b7dec9c4153395ea626109",
+    "method": "实际调用 scripts/lib/control.mjs 的 sourceFingerprint 和 committedFingerprint；审查结束再次重算。ef2c3b7之后的提交及现存dirty修改未改变被审源码指纹。",
+    "exactTargetFilesReviewed": [
+      "C:/pi-gui-ios/scripts/ci/native-dependencies.py",
+      "C:/pi-gui-ios/tests/native-inventory.test.mjs",
+      "C:/pi-gui-ios/tests/fixtures/cocoapods-header-extensions.json",
+      "C:/pi-gui-ios/docs/decisions/0003-native-build-integrity.md"
+    ],
+    "checkpointVerification": {
+      "targetAuthorityRevision": 305,
+      "targetAuthorityDigest": "2da08b413d7822e4a90921d7066f9c760a5469c390f5005948e1b424ee96d5fe",
+      "targetCheckpointVerified": true,
+      "currentAuthorityRevision": 328,
+      "currentAuthorityDigest": "5b728fd25e2677f930aee9dc4f7758b19117c66ae975719eb7eb4d987ec0bf02",
+      "currentCheckpointPath": "C:/pi-gui-ios/.agent/checkpoints/v2-2026-11-21T10-15-04-417Z-c4aa7d05-2b07-45fd-998d-84c42f628dce.json",
+      "currentCheckpointSha256": "3f809cfb68ec7be84c60217e0822feeace936633be3050c2381a6d559f4ddf90",
+      "currentCheckpointVerified": true,
+      "result": "目标提交及当前权威均通过schema、完整性摘要、检查点文件摘要、快照外层及内层权威摘要与引用一致性校验。"
+    },
+    "existingCanonicalReports": {
+      "validated": true,
+      "commit": "ef2c3b77f2de2860e286a03c617d884537c344df",
+      "method": "对四份现存报告实际调用validateReport，核对报告来源提交、源码指纹、规范命令、exitCode及原始日志SHA-256；未重写或重新登记报告。",
+      "unit": "现存规范npm test报告exit0；日志263 tests、263 pass、0 fail、0 skipped，技术栈合同通过。",
+      "typecheck": "现存规范报告及日志有效；本审查另独立运行npm run typecheck，exit0。",
+      "bundle": "现存规范iOS JS bundle报告及日志有效，exit0；不代表原生构建成功。",
+      "doctor": "现存规范报告及日志有效，exit0，20/20。"
+    }
+  },
+  "bootstrapAssessment": {
+    "safeForOneGatedMacOSCandidateBootstrap": true,
+    "reason": "本精确差分未发现未解决的Blocker或Important。新增后缀有独立重新取回并核对摘要的固定公开源码依据；目标类型、祖先、边界、nlink、完整字节哈希及owner绑定没有放宽，诊断输出保持固定字面量。允许一次有界、失败关闭的macOS验证，不代表实际安装树兼容或M-1验收通过，也不认定已定位CI44891582412根因或确认其解析的Xcodeproj版本。",
+    "mandatoryConditions": [
+      "使用同一已审源码指纹；macOS在npm ci之后、任何prebuild之前，必须成功执行canonical npm test及当前源码新增的真实POSIX条件分支。",
+      "任何测试失败、未知链接、非法目标、枚举失败或锁/字节漂移均停止；不得跳过失败或将未知结构降级放行。",
+      "只有前置真实POSIX canonical成功后才可进入prebuild与候选生成。",
+      "若合法生成四候选，review.approved必须为false，并以exit78停止后续build、Simulator和IPA；exit78不是整体CI成功或M-1通过。",
+      "真实候选必须另行独立审核版本、来源、全部清单及hash绑定，之后才能考虑落库locked并执行下一轮验证。"
+    ],
+    "m1Accepted": false,
+    "nativeLocksApproved": false
+  },
+  "reports": [
+    {
+      "schemaVersion": 1,
+      "kind": "independent-security",
+      "decision": "pass",
+      "reviewedCommit": "ef2c3b77f2de2860e286a03c617d884537c344df",
+      "sourceFingerprint": "346c5097e03fd2f3f49dd6b973992fe6eff59c6997b7dec9c4153395ea626109",
+      "unresolvedBlockers": 0,
+      "unresolvedImportant": 0,
+      "findings": [],
+      "scope": "精确源码安全复核及一次前置真实POSIX门禁约束的候选bootstrap资格，不包含真实原生候选或最终产物批准。",
+      "assessment": [
+        {
+          "file": "C:/pi-gui-ios/scripts/ci/native-dependencies.py",
+          "lines": "182-215,223-258,266-301",
+          "result": "头文件例外仍要求规范相对target、相同basename、限定Pods/npm/精确codegen物理根。record再次校验真实普通文件、nlink=1及无链接祖先，并哈希完整字节。对全部10种允许后缀、三个物理根及普通内容/Mach-O前缀内容执行60个模拟别名正向探针，60次字节漂移均使旧locked审核失效。"
+        },
+        {
+          "file": "C:/pi-gui-ios/scripts/ci/native-dependencies.py",
+          "lines": "231-286",
+          "result": "四种新增后缀不能通过目录别名隐藏整个native目录。16个新增后缀负向探针覆盖目录目标、真实硬链接、缺失目标与越界目标，均在摘要前拒绝；另有4个真实Windows junction祖先负向通过。别名POSIX元数据部分明确为模拟，不计作真实POSIX验证。"
+        },
+        {
+          "file": "C:/pi-gui-ios/scripts/ci/native-dependencies.py",
+          "lines": "45-117,120-179,231-301",
+          "result": "Hermes六条精确例外和完整组约束未扩大；npm仍由锁文件推导有限路径、target和owner。独立探针确认未知Pods/npm链接在readlink前拒绝，已声明命令所有者切换、目标字节漂移及未声明target均不能沿用旧审核。真实硬链接、junction和枚举失败回归通过。"
+        },
+        {
+          "file": "C:/pi-gui-ios/scripts/ci/native-dependencies.py",
+          "lines": "16-25,109-116,231-259,383-391",
+          "result": "逐项检查reason/context来源，并执行AST字面量来源探针。当前调用链只从固定源码常量选择诊断，不拼接path、target、异常原文或环境值；str(GateError)仍为原主码。生产CLI回归及safe-diagnostics扫描探针通过，private marker、临时绝对路径和原始target未进入公开结果，公开字段集合未扩大。"
+        },
+        {
+          "file": "C:/pi-gui-ios/.github/workflows/native-infrastructure.yml",
+          "lines": "77-85,100-114,140-201",
+          "result": "本差分未修改上传字段、最终IPA验证、权限或ATS策略。前置canonical、候选exit78、白名单上传及失败后停止构建边界保持。"
+        }
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "kind": "independent-review",
+      "decision": "pass",
+      "reviewedCommit": "ef2c3b77f2de2860e286a03c617d884537c344df",
+      "sourceFingerprint": "346c5097e03fd2f3f49dd6b973992fe6eff59c6997b7dec9c4153395ea626109",
+      "unresolvedBlockers": 0,
+      "unresolvedImportant": 0,
+      "findings": [],
+      "scope": "a342097..ef2c3b7功能、回归与证据归属审查。",
+      "assessment": [
+        "独立重新获取两个固定公开源码文件，SHA-256及记录表达式均逐字匹配fixture。固定Xcodeproj1.27.0提供9种头文件后缀，CocoaPods1.16.2 FileAccessor确实引用该常量。",
+        "直接执行旧提交与当前提交的分类函数，独立复现9项修前5通过4拒绝、修后9通过；.h++由允许转为拒绝。modulemap保留。",
+        "独立运行39项native-inventory回归全部通过；补充边界、诊断与CI回归在修正本会话Git Bash PATH后55/55通过。",
+        "新增真实POSIX后缀及字节漂移测试存在于canonical入口的POSIX条件分支，workflow仍要求其在prebuild前成功；本机没有执行这些真实POSIX用例。",
+        "ADR0003及最新验收明确区分固定源码差分与实际CI根因，未声称确认已解析Xcodeproj版本。CI44891582412仍记为failure，无候选，不按exit78处理。",
+        "旧CI的298/298只归属于旧指纹。当前四份Windows规范报告对应ef2c3b7；没有将旧原生测试结果继承为当前原生通过。"
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "kind": "independent-handoff",
+      "decision": "pass",
+      "reviewedCommit": "ef2c3b77f2de2860e286a03c617d884537c344df",
+      "sourceFingerprint": "346c5097e03fd2f3f49dd6b973992fe6eff59c6997b7dec9c4153395ea626109",
+      "unresolvedBlockers": 0,
+      "unresolvedImportant": 0,
+      "findings": [],
+      "restoredTask": "M-1-infrastructure",
+      "commands": [
+        {
+          "command": "node scripts/agent-resume.mjs --remote",
+          "exitCode": 0,
+          "result": "实际执行成功。恢复schema v2权威revision328，任务M-1-infrastructure为reviewing；warnings和failures均为空。远端fetch成功，远端分支仍为a342097，最近CI44891582412为completed/failure。未满足的原生、CI、UI、IPA及当前独立报告门禁仍被列出，没有把恢复exit0当作验收通过。"
+        },
+        {
+          "command": "npm run typecheck",
+          "exitCode": 0,
+          "result": "恢复后实际独立执行tsc --noEmit成功，无类型错误；未生成或改写验收报告。"
+        },
+        {
+          "command": "node --test tests/native-inventory.test.mjs",
+          "exitCode": 0,
+          "result": "39 tests、39 pass、0 fail、0 skipped；包含当前新增后缀分类、固定诊断及真实Windows junction拒绝。"
+        },
+        {
+          "command": "$env:PATH='C:/Program Files/Git/bin;C:/Program Files/Git/usr/bin;'+$env:PATH; $env:RUBY='C:/pi-gui-ios/artifacts/ruby-extract-20261121-a/rubyinstaller-3.3.8-1-x64/bin/ruby.exe'; $env:GEM_HOME='C:/pi-gui-ios/artifacts/ruby-gems-20261121-a'; $env:GEM_PATH=$env:GEM_HOME; node --test tests/native-links.test.mjs tests/ci-diagnostics.test.mjs tests/ipa-ci.test.mjs",
+          "exitCode": 0,
+          "result": "诊断本会话PATH缺少bash后，仅调整该命令进程环境重新运行；55 tests、55 pass、0 fail、0 skipped。真实Ruby候选测试只使用临时synthetic fixture，不是真实macOS依赖候选。"
+        }
+      ],
+      "documentsRead": [
+        "C:/pi-gui-ios/AGENTS.md",
+        "C:/pi-gui-ios/REVIEW.md",
+        "C:/pi-gui-ios/ROADMAP.md",
+        "C:/pi-gui-ios/PROGRESS.md",
+        "C:/pi-gui-ios/.agent/HANDOFF.md",
+        "C:/pi-gui-ios/docs/architecture.md",
+        "C:/pi-gui-ios/docs/decisions/0001-persistent-control.md",
+        "C:/pi-gui-ios/docs/decisions/0002-native-spike-and-repository.md",
+        "C:/pi-gui-ios/docs/decisions/0003-native-build-integrity.md",
+        "C:/pi-gui-ios/docs/decisions/0004-verified-control-v2.md",
+        "C:/pi-gui-ios/docs/decisions/technology-stack.md",
+        "C:/pi-gui-ios/docs/acceptance/native-header-diagnostics-implementation.md",
+        "C:/pi-gui-ios/docs/acceptance/ci-44891582412-analysis.md",
+        "C:/pi-gui-ios/docs/acceptance/ci-44891582412-sanitized-reports.json"
+      ],
+      "remainingStageGates": [
+        "NATIVE-LOCK：真实macOS候选生成及独立审核尚未完成。",
+        "NATIVE-PREBUILT-LINK：当前源码的真实安装树兼容尚待一次有界验证；旧CI失败事实保留。",
+        "ci、ui、ipa仍缺少当前有效成功证据。",
+        "当前三项独立报告需由父任务保存真实receipt并按既有证据流程导入；本只读审查未登记状态。",
+        "locked构建、Simulator真实UI图审、device IPA和SideStore人工验收仍未通过。"
+      ],
+      "nextAction": "父任务先保存本次原始审查receipt及三项精确报告并复验源码指纹；随后仅按bootstrapAssessment的前置门禁安排一次macOS验证。本审查未推送、触发或重跑CI。"
+    }
+  ],
+  "additionalProbes": [
+    {
+      "name": "固定公开源码独立核验",
+      "command": "python -I -B -，内联urllib.request获取两个固定tag源码并计算SHA-256",
+      "exitCode": 0,
+      "result": "Xcodeproj constants.rb摘要b80a95182266aeffd0a4f57082b10f92e0733cd67341b21dc1b83bacbdf27983；CocoaPods file_accessor.rb摘要b102f7934bd8ac6685ba4680d067b79a1da3be7bf29ebcf2b44e51727c2b8c2f；均与fixture相同，表达式匹配。源码仅在内存读取，未执行下载内容。"
+    },
+    {
+      "name": "提交前后分类差分",
+      "command": "python -I -B -，内存加载a342097与当前生产分类函数",
+      "exitCode": 0,
+      "result": "9种头文件修前5通过4拒绝、修后9通过；.h++修后拒绝。该结果只证明固定源码差分，不证明真实CI拒绝路径。"
+    },
+    {
+      "name": "新增后缀与物理字节矩阵",
+      "command": "python -I -B -，独立临时synthetic fixture探针",
+      "exitCode": 0,
+      "result": {
+        "emulatedAliasPositives": 60,
+        "realFileByteDriftRejected": 60,
+        "newSuffixNegativesBeforeHash": 16,
+        "realHardlinkNegatives": 4,
+        "realPosixSymlinksExecuted": false,
+        "limitation": "POSIX别名仅模拟lstat/readlink；物理文件、完整摘要及locked比较真实执行。目录目标负向覆盖四种新增后缀，不能作为真实POSIX验收。"
+      }
+    },
+    {
+      "name": "祖先、未知链接、owner与诊断挑战",
+      "command": "python -I -B -，第二组独立临时synthetic fixture探针",
+      "exitCode": 0,
+      "result": {
+        "newSuffixRealWindowsJunctionAncestorsRejectedBeforeHash": 4,
+        "unknownLinksRejectedBeforeReadlink": 2,
+        "npmOwnerByteOrTargetDriftRejected": 3,
+        "literalProvenanceAndSanitizerChecksPassed": 2,
+        "realPosixSymlinksExecuted": false
+      }
+    },
+    {
+      "name": "实际失败及处置记录",
+      "attempts": [
+        {
+          "command": "首次较长的内联Python探针经Bash调用",
+          "exitCode": 2,
+          "result": "Bash报告unexpected EOF while looking for matching双引号；Python未启动。拆分为两个较短内联探针后均exit0。未将首次调用算作通过。"
+        },
+        {
+          "command": "未补Git Bash PATH时运行三文件55项定向测试",
+          "exitCode": 1,
+          "result": "53通过、2失败。两个失败均为spawnSync('bash')返回status=null，预期分别为23和7。"
+        },
+        {
+          "command": "检查bash子进程定位",
+          "result": "实际确认spawnSync('bash')为ENOENT，Get-Command bash也无法定位；绝对路径C:/Program Files/Git/bin/bash.exe及usr/bin/bash.exe均能运行并返回0。只修正本次命令PATH后55/55通过，未修改源码、断言或证据。"
+        }
+      ]
+    },
+    {
+      "name": "diff与证据完整性",
+      "command": "git diff --check a342097..ef2c3b77f2de2860e286a03c617d884537c344df，以及只读指纹、checkpoint、validateReport和gate调用",
+      "exitCode": 0,
+      "result": "diff检查无错误；目标及当前checkpoint有效；四规范报告有效；阶段gate仍明确拒绝M-1完成。"
+    }
+  ],
+  "notExecuted": [
+    "本审查没有重新运行完整canonical npm test；已独立运行typecheck、39项及55项定向测试，并校验现存263/263规范报告和日志摘要。",
+    "当前ef2c3b7源码的真实POSIX symlink正向/负向测试未在本机执行；模拟探针和Windows junction不能替代它们。",
+    "未执行当前源码的macOS npm ci、prebuild、真实Pods安装树清单或真实四候选生成。",
+    "未确认CI44891582412实际解析的Xcodeproj版本或具体被拒绝链接，未将公开源码后缀差分认作该CI实际根因。",
+    "本审查读取已保存CI API、artifact metadata及脱敏报告，没有重新下载旧artifact ZIP或重新提取完整macOS原始job日志。",
+    "未执行真实候选独立批准、locked构建、缓存命中/污染原生验证、Simulator交互与视觉验收、device IPA或SideStore真机操作。",
+    "未修改目标仓库源码、控制状态或证据，未执行目标仓库提交/推送、CI触发/重跑，未启动任何子Agent、Workflow、fork或审查skill。"
+  ],
+  "workingTree": {
+    "branch": "agent/m-1-bootstrap",
+    "head": "93c52e5a26be8e3d0c493de0f31858ad7ac017c2",
+    "remoteHeadObservedByResume": "a3420973d4dff86b7def48c26eddad0c0501692b",
+    "dirtyAtStartAndEnd": [
+      "M .agent/HANDOFF.md",
+      "M .agent/control.json",
+      "M .agent/state.json",
+      "M .agent/tasks.json",
+      "M PROGRESS.md",
+      "?? .agent/checkpoints/v2-2026-11-21T10-15-04-417Z-c4aa7d05-2b07-45fd-998d-84c42f628dce.json"
+    ],
+    "dirtyStatusUnchanged": true,
+    "authorityDigestUnchanged": true,
+    "sourceFingerprintUnchanged": true,
+    "repositorySourceStateOrEvidenceWrittenByReviewer": false,
+    "temporaryFixturePolicy": "附加探针及测试仅创建并清理独立临时synthetic fixture；未将模拟POSIX或合成候选登记为真实原生证据。"
+  }
+}
