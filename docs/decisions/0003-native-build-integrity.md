@@ -148,6 +148,14 @@ CocoaPods1.16.2 `sandbox/file_accessor.rb`直接引用Xcodeproj的HEADER_FILES_E
 
 新增固定上下文/谓词诊断，保持主拒绝码及退出1：Hermes/npm-bin/Pods-header/未知Pods/未知npm上下文，以及祖先链接、边界、文件系统错误、目标类型、多链接、alias target、header语法/规范化/basename/物理根等有限源码字面量。`GateError`只携带固定code/reason/context；CLI不携带实际path、target、环境或原始异常值。既有safe-diagnostics继续从Git HEAD的AST提取这些有限常量，无须扩大公开报告字段。生产CLI合成失败测试验证固定输出及private marker不泄漏；后续unknown仍拒绝，候选仍不产生，最终IPA与权限边界不改。
 
+## CI44894722354后的唯一RN facade头文件物理映射
+
+实际macOS322项真实POSIX与prebuild通过后，清单仍失败；新增固定诊断明确为Pods-header上下文的HEADER_ROOT_REJECTED，无候选、无路径级信息。核对package-lock固定RN0.88.1的rncore_facades.rb后，FACADE_REEXPOSED_HEADERS仅有React-RCTFabric一项：header_dir=React、唯一glob为Fabric/Mounting/ComponentViews/RCTFabricComponentsPlugins.h。真实Ruby调用其copy_reexposed_headers方法在临时目录执行复制，字节与源header完全一致，facade_path返回build/rncore-facades/React-RCTFabric。CocoaPods1.16.2 PodTarget#header_mappings用pod_name和header_dir拼接namespace。来源摘要、唯一文件及两个scope别名见tests/fixtures/rncore-facade-header.json；不改被参考RN源码。
+
+仅增加`pods/Headers/{Public,Private}/React-RCTFabric/React/RCTFabricComponentsPlugins.h`这两个精确链接路径，到固定`ios/build/rncore-facades/React-RCTFabric/RCTFabricComponentsPlugins.h`文件的映射。两处路径/文本target仍需逐字和规范化一致，目标来源写入`rncore-facade/React-RCTFabric/RCTFabricComponentsPlugins.h`并完整SHA绑定。该label不是整个生成目录的允许规则；未知pod/家族/文件/额外子目录/namespace继续拒绝。物理根及祖先无链接、普通文件、nlink1等原检查保持，目录/链接/硬链接不能伪装该header；两个scope共享物理文件只去重字节行，不取消链接绑定。
+
+修前两个差分均以HEADER_ROOT_REJECTED失败，包含真实Ruby复制；修后48项定向通过。macOS新增真实文件链接/locked字节漂移、目录/硬链接/符号链接/父链负向。固定诊断只界定失败类别，尚未观测CI具体链接，不能据此声称根因已经确认或通过原生候选。保存精确源码四规范报告、独立审查后才再进行一次受POSIX前置约束的验证。本次恢复设计至此为第三轮有界修订；若同类问题仍未解决则停止继续修补，保存日志及blocked，不继续第四轮试绿。
+
 ## 回滚
 
 如发现兼容问题，在开发分支 revert 本实现提交，保留 bootstrap 未验收状态；不得通过放宽权限/签名/平台断言或忽略锁差异来让 job 变绿。对合法新键、新依赖来源或生成结构的支持应有真实公开归档或macOS fixture、精确边界差分和独立复审后再加入显式表；仍须真实macOS验证，不继承本机通过。

@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "reactNativeVersion": "0.88.1",
+  "license": "MIT",
+  "sources": [
+    {
+      "path": "node_modules/react-native/scripts/cocoapods/rncore_facades.rb",
+      "sha256": "6897572939f6ab766ec11952145dda6038f3cf333fce701c75c07b601761a770"
+    },
+    {
+      "path": "node_modules/react-native/React/Fabric/Mounting/ComponentViews/RCTFabricComponentsPlugins.h",
+      "sha256": "a03ae431c8fde9498aea26ac18503f6ff60c32dd95981c947c20dfa07d4acc29"
+    }
+  ],
+  "pod": "React-RCTFabric",
+  "headerDir": "React",
+  "sourceGlob": "Fabric/Mounting/ComponentViews/RCTFabricComponentsPlugins.h",
+  "sourceBase": "node_modules/react-native/React",
+  "physical": "ios/build/rncore-facades/React-RCTFabric/RCTFabricComponentsPlugins.h",
+  "aliases": [
+    "pods/Headers/Public/React-RCTFabric/React/RCTFabricComponentsPlugins.h",
+    "pods/Headers/Private/React-RCTFabric/React/RCTFabricComponentsPlugins.h"
+  ],
+  "limitation": "Pinned source and actual Ruby helper execution establish this one copied file layout; the CI fixed diagnostic does not disclose the rejected path. This is not a claim that the CI rejected this exact file, and does not allow other build/facade files."
+}

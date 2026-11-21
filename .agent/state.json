@@ -1,49 +1,54 @@
 {
   "schemaVersion": 2,
   "kind": "state",
-  "revision": 340,
-  "updatedAt": "2026-11-21T10:30:32.346Z",
+  "revision": 353,
+  "updatedAt": "2026-11-21T10:42:55.395Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "c21ae8a8a57f6472b31b7731ec632829bbb32d394000f4b94b98fdbb05af9e1a",
+    "parentDigest": "5bf0a39af4a004b2338ac6c2c98c706064fe978b9c49be3e7ef13698dd9bb958",
     "phase": "M-1",
     "currentTask": "M-1-infrastructure",
     "branch": "agent/m-1-bootstrap",
     "checkpoint": {
-      "id": "v2-2026-11-21T10-30-32-346Z-bb70be7c-ee87-4c35-9df6-f0e8c9672e70",
-      "path": ".agent/checkpoints/v2-2026-11-21T10-30-32-346Z-bb70be7c-ee87-4c35-9df6-f0e8c9672e70.json",
-      "sha256": "117237d30a97b48ffbddc3a2574ed420c5ac9492197ef39acb4c01deb3976f1d",
-      "authorityDigest": "38be58427146e78640dde1a590df7cc0de835dc68a792a72f39bccb3df925d2e",
-      "at": "2026-11-21T10:30:32.346Z",
+      "id": "v2-2026-11-21T10-42-55-395Z-6fa9495c-958e-4d2d-9175-55af47c7e071",
+      "path": ".agent/checkpoints/v2-2026-11-21T10-42-55-395Z-6fa9495c-958e-4d2d-9175-55af47c7e071.json",
+      "sha256": "367464c752df3060dd08083eedd81dd2c92d8bb4c1cb419272aae5443965f4f9",
+      "authorityDigest": "81ed570edbb9ff994a0ed1942f0351d02e7042fc8ac34b7828ad9f5f286ad178",
+      "at": "2026-11-21T10:42:55.395Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "93c52e5a26be8e3d0c493de0f31858ad7ac017c2",
+        "commit": "b6d52004cd4fb95f9a96c1cc39ed83570d0ed322",
         "dirty": [
           "M .agent/HANDOFF.md",
           " M .agent/control.json",
           " M .agent/state.json",
           " M .agent/tasks.json",
           " M PROGRESS.md",
-          "?? .agent/checkpoints/v2-2026-11-21T10-15-04-417Z-c4aa7d05-2b07-45fd-998d-84c42f628dce.json",
-          "?? .agent/checkpoints/v2-2026-11-21T10-30-13-321Z-a049e909-ef3c-46c4-8b9c-c6105c502bee.json",
-          "?? .agent/checkpoints/v2-2026-11-21T10-30-29-455Z-9151be3e-3086-42be-874d-7f2108c5f0e0.json",
-          "?? .agent/checkpoints/v2-2026-11-21T10-30-30-254Z-c9613599-6b29-47cc-92e2-dc98ca07d3e6.json",
-          "?? .agent/checkpoints/v2-2026-11-21T10-30-31-129Z-27c20a36-eb3d-49b5-96ff-c7e4f1d48c33.json",
-          "?? .agent/checkpoints/v2-2026-11-21T10-30-31-688Z-5808f2b9-e2d4-4098-b685-e049c8574647.json",
-          "?? docs/acceptance/review-ef2c3b7-handoff.json",
-          "?? docs/acceptance/review-ef2c3b7-receipt.json",
-          "?? docs/acceptance/review-ef2c3b7-result.json",
-          "?? docs/acceptance/review-ef2c3b7-review.json",
-          "?? docs/acceptance/review-ef2c3b7-security.json",
-          "?? docs/acceptance/review-ef2c3b7-timing.json"
+          " M docs/decisions/0003-native-build-integrity.md",
+          " M scripts/ci/native-dependencies.py",
+          " M tests/native-inventory.test.mjs",
+          "?? .agent/checkpoints/v2-2026-11-21T10-31-05-190Z-0bbe0bd8-84e9-4c70-a923-c34b449599fa.json",
+          "?? .agent/checkpoints/v2-2026-11-21T10-31-46-587Z-4bcc6e5f-1365-411c-9437-77b30e093308.json",
+          "?? .agent/checkpoints/v2-2026-11-21T10-31-47-310Z-09161433-e9ca-4169-8b42-e782cca2bf2d.json",
+          "?? .agent/checkpoints/v2-2026-11-21T10-38-47-353Z-a5cb24d8-09d6-4875-8c22-baba21579903.json",
+          "?? .agent/checkpoints/v2-2026-11-21T10-38-47-832Z-c65eaede-2ff5-4417-9660-0e5d91484cfa.json",
+          "?? .agent/checkpoints/v2-2026-11-21T10-39-42-809Z-97840715-9c61-430c-b93b-ae18472a0029.json",
+          "?? .agent/checkpoints/v2-2026-11-21T10-39-43-585Z-b9c53393-eac6-4f34-9857-606bc593fb60.json",
+          "?? docs/acceptance/ci-44894722354-analysis.md",
+          "?? docs/acceptance/ci-44894722354-api.json",
+          "?? docs/acceptance/ci-44894722354-artifacts-api.json",
+          "?? docs/acceptance/ci-44894722354-sanitized-reports.json",
+          "?? docs/acceptance/ci-44894722354-start-api.json",
+          "?? docs/acceptance/ci-44894722354-steps-api.json",
+          "?? tests/fixtures/rncore-facade-header.json"
         ]
       },
-      "sourceFingerprint": "346c5097e03fd2f3f49dd6b973992fe6eff59c6997b7dec9c4153395ea626109",
-      "note": "ef2c3b7三类独立证据已导入，任务testing；准备推送一次前置POSIX约束的macOS候选验证"
+      "sourceFingerprint": "f488caac4cc1f572b21936f326ed0adfceb1037ac8022b7fe016ae991a63ca80",
+      "note": "第三轮精确RN单header映射实施完成：真实Ruby源复制及9项精确映射负向通过；其他native/UI/IPA门禁保持，准备提交规范回归"
     },
     "blockers": [
       "NATIVE-LOCK 尚未生成真实macOS Gemfile/Podfile/预编译候选锁并独立核验",
-      "NATIVE-PREBUILT-LINK：CI44891582412/1已完成failure，macOS298项真实POSIX canonical及prebuild通过，实际依赖树字节清单仍以LINK_REJECTED停止，无候选/具体路径。先补固定来源差分和无路径固定谓词诊断，不机械重跑。"
+      "NATIVE-PREBUILT-LINK：CI44894722354/1真实POSIX322项和prebuild成功，实际安装树固定诊断PODS_HEADER/HEADER_ROOT_REJECTED失败，无候选或路径级观测。调查RN0.88.1唯一facade再暴露header的精确物理文件映射；本次恢复设计第三轮，仍失败停止同类修补。"
     ],
     "ci": [
       {
@@ -108,6 +113,15 @@
         "status": "completed",
         "conclusion": "failure",
         "url": "https://github.com/HYJ1817/pi-gui-ios/actions/runs/44891582412"
+      },
+      {
+        "id": "44894722354",
+        "head": "b6d52004cd4fb95f9a96c1cc39ed83570d0ed322",
+        "workflow": ".github/workflows/native-infrastructure.yml",
+        "attempt": 1,
+        "status": "completed",
+        "conclusion": "failure",
+        "url": "https://github.com/HYJ1817/pi-gui-ios/actions/runs/44894722354"
       }
     ],
     "desktop": {
@@ -188,6 +202,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "8f9d23b8069b9239184439a25a1a1cc685cb7a5e767523c625c228a15dcb2b00"
+    "digest": "bf160a40e0ae360b8516378870f61ef519767f48b39acc6168c145f61d1086f8"
   }
 }

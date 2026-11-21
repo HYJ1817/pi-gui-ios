@@ -1,35 +1,40 @@
 # Agent 交接（生成文件）
 
-revision 340；权威摘要 c21ae8a8a57f6472b31b7731ec632829bbb32d394000f4b94b98fdbb05af9e1a
+revision 353；权威摘要 5bf0a39af4a004b2338ac6c2c98c706064fe978b9c49be3e7ef13698dd9bb958
 
 先读 AGENTS.md / REVIEW.md，执行 node scripts/agent-resume.mjs --remote。
 
 当前 M-1-infrastructure（M-1），预期分支 agent/m-1-bootstrap。
 
-下一步：ef2c3b7独立3cf20d98安全/功能/恢复三pass完整原receipt和报告已导入；四规范报告Windows263/263有效。提交审查记录后推送开发分支触发一次macOS验证，不额外dispatch。先npm ci后真实POSIX canonical，再prebuild/生产清单；未知仍拒绝并保留新增固定上下文/谓词诊断。CI44891582412旧failure/无候选不改写。若新候选生成需approved=false/exit78及另行独立审核；否则按实际固定诊断定位，不猜具体路径。native锁/UI/IPA/SideStore门禁保留。
+下一步：第三轮有界修订开始：实际诊断与来源分析见docs/acceptance/ci-44894722354-analysis.md；只为固定RN0.88.1复制的React-RCTFabric/RCTFabricComponentsPlugins.h及Public/Private两个精确namespace加物理映射。先真实Ruby复制/分类差分与精确负向，再规范证据和独立复审。不得声称已观测CI具体链接，不允许整个build/facade目录。若第三轮同类仍失败停止修补保存blocked，不继续试绿。
 
-阻塞：NATIVE-LOCK 尚未生成真实macOS Gemfile/Podfile/预编译候选锁并独立核验；NATIVE-PREBUILT-LINK：CI44891582412/1已完成failure，macOS298项真实POSIX canonical及prebuild通过，实际依赖树字节清单仍以LINK_REJECTED停止，无候选/具体路径。先补固定来源差分和无路径固定谓词诊断，不机械重跑。
+阻塞：NATIVE-LOCK 尚未生成真实macOS Gemfile/Podfile/预编译候选锁并独立核验；NATIVE-PREBUILT-LINK：CI44894722354/1真实POSIX322项和prebuild成功，实际安装树固定诊断PODS_HEADER/HEADER_ROOT_REJECTED失败，无候选或路径级观测。调查RN0.88.1唯一facade再暴露header的精确物理文件映射；本次恢复设计第三轮，仍失败停止同类修补。
 
-检查点 .agent/checkpoints/v2-2026-11-21T10-30-32-346Z-bb70be7c-ee87-4c35-9df6-f0e8c9672e70.json；HEAD 93c52e5a26be8e3d0c493de0f31858ad7ac017c2。dirty（保存时）：
+检查点 .agent/checkpoints/v2-2026-11-21T10-42-55-395Z-6fa9495c-958e-4d2d-9175-55af47c7e071.json；HEAD b6d52004cd4fb95f9a96c1cc39ed83570d0ed322。dirty（保存时）：
 - M .agent/HANDOFF.md
 -  M .agent/control.json
 -  M .agent/state.json
 -  M .agent/tasks.json
 -  M PROGRESS.md
-- ?? .agent/checkpoints/v2-2026-11-21T10-15-04-417Z-c4aa7d05-2b07-45fd-998d-84c42f628dce.json
-- ?? .agent/checkpoints/v2-2026-11-21T10-30-13-321Z-a049e909-ef3c-46c4-8b9c-c6105c502bee.json
-- ?? .agent/checkpoints/v2-2026-11-21T10-30-29-455Z-9151be3e-3086-42be-874d-7f2108c5f0e0.json
-- ?? .agent/checkpoints/v2-2026-11-21T10-30-30-254Z-c9613599-6b29-47cc-92e2-dc98ca07d3e6.json
-- ?? .agent/checkpoints/v2-2026-11-21T10-30-31-129Z-27c20a36-eb3d-49b5-96ff-c7e4f1d48c33.json
-- ?? .agent/checkpoints/v2-2026-11-21T10-30-31-688Z-5808f2b9-e2d4-4098-b685-e049c8574647.json
-- ?? docs/acceptance/review-ef2c3b7-handoff.json
-- ?? docs/acceptance/review-ef2c3b7-receipt.json
-- ?? docs/acceptance/review-ef2c3b7-result.json
-- ?? docs/acceptance/review-ef2c3b7-review.json
-- ?? docs/acceptance/review-ef2c3b7-security.json
-- ?? docs/acceptance/review-ef2c3b7-timing.json
+-  M docs/decisions/0003-native-build-integrity.md
+-  M scripts/ci/native-dependencies.py
+-  M tests/native-inventory.test.mjs
+- ?? .agent/checkpoints/v2-2026-11-21T10-31-05-190Z-0bbe0bd8-84e9-4c70-a923-c34b449599fa.json
+- ?? .agent/checkpoints/v2-2026-11-21T10-31-46-587Z-4bcc6e5f-1365-411c-9437-77b30e093308.json
+- ?? .agent/checkpoints/v2-2026-11-21T10-31-47-310Z-09161433-e9ca-4169-8b42-e782cca2bf2d.json
+- ?? .agent/checkpoints/v2-2026-11-21T10-38-47-353Z-a5cb24d8-09d6-4875-8c22-baba21579903.json
+- ?? .agent/checkpoints/v2-2026-11-21T10-38-47-832Z-c65eaede-2ff5-4417-9660-0e5d91484cfa.json
+- ?? .agent/checkpoints/v2-2026-11-21T10-39-42-809Z-97840715-9c61-430c-b93b-ae18472a0029.json
+- ?? .agent/checkpoints/v2-2026-11-21T10-39-43-585Z-b9c53393-eac6-4f34-9857-606bc593fb60.json
+- ?? docs/acceptance/ci-44894722354-analysis.md
+- ?? docs/acceptance/ci-44894722354-api.json
+- ?? docs/acceptance/ci-44894722354-artifacts-api.json
+- ?? docs/acceptance/ci-44894722354-sanitized-reports.json
+- ?? docs/acceptance/ci-44894722354-start-api.json
+- ?? docs/acceptance/ci-44894722354-steps-api.json
+- ?? tests/fixtures/rncore-facade-header.json
 
-CI：[{"id":"44783585115","head":"58ec99506e00a35121866580ffb28d09d5078b17","workflow":".github/workflows/native-infrastructure.yml","attempt":1,"status":"completed","conclusion":"cancelled","url":"https://github.com/HYJ1817/pi-gui-ios/actions/runs/44783585115"},{"id":"44864063976","head":"d46d6a5f84ad569f42a727fe29b0e2ed7b6f4afd","workflow":".github/workflows/native-infrastructure.yml","attempt":1,"status":"completed","conclusion":"failure","url":"https://github.com/HYJ1817/pi-gui-ios/actions/runs/44864063976"},{"id":"44868846710","head":"86822196c84ee01baf5b8dec41256abdfd04ddeb","workflow":".github/workflows/native-infrastructure.yml","attempt":1,"status":"completed","conclusion":"failure","url":"https://github.com/HYJ1817/pi-gui-ios/actions/runs/44868846710"},{"id":"44872870220","head":"0148a3fc0058e6db17a803e1946c2a88a3aab85a","workflow":".github/workflows/native-infrastructure.yml","attempt":1,"status":"completed","conclusion":"failure","url":"https://github.com/HYJ1817/pi-gui-ios/actions/runs/44872870220"},{"id":"44874304419","head":"2b16a1ae71f67d953fd7f1956b163843d9a4385f","workflow":".github/workflows/native-infrastructure.yml","attempt":1,"status":"completed","conclusion":"failure","url":"https://github.com/HYJ1817/pi-gui-ios/actions/runs/44874304419"},{"id":"44877767639","head":"86cadda377fc1fdf3c483478b03215a3d6b96c32","workflow":".github/workflows/native-infrastructure.yml","attempt":1,"status":"completed","conclusion":"failure","url":"https://github.com/HYJ1817/pi-gui-ios/actions/runs/44877767639"},{"id":"44891582412","head":"a3420973d4dff86b7def48c26eddad0c0501692b","workflow":".github/workflows/native-infrastructure.yml","attempt":1,"status":"completed","conclusion":"failure","url":"https://github.com/HYJ1817/pi-gui-ios/actions/runs/44891582412"}]
+CI：[{"id":"44783585115","head":"58ec99506e00a35121866580ffb28d09d5078b17","workflow":".github/workflows/native-infrastructure.yml","attempt":1,"status":"completed","conclusion":"cancelled","url":"https://github.com/HYJ1817/pi-gui-ios/actions/runs/44783585115"},{"id":"44864063976","head":"d46d6a5f84ad569f42a727fe29b0e2ed7b6f4afd","workflow":".github/workflows/native-infrastructure.yml","attempt":1,"status":"completed","conclusion":"failure","url":"https://github.com/HYJ1817/pi-gui-ios/actions/runs/44864063976"},{"id":"44868846710","head":"86822196c84ee01baf5b8dec41256abdfd04ddeb","workflow":".github/workflows/native-infrastructure.yml","attempt":1,"status":"completed","conclusion":"failure","url":"https://github.com/HYJ1817/pi-gui-ios/actions/runs/44868846710"},{"id":"44872870220","head":"0148a3fc0058e6db17a803e1946c2a88a3aab85a","workflow":".github/workflows/native-infrastructure.yml","attempt":1,"status":"completed","conclusion":"failure","url":"https://github.com/HYJ1817/pi-gui-ios/actions/runs/44872870220"},{"id":"44874304419","head":"2b16a1ae71f67d953fd7f1956b163843d9a4385f","workflow":".github/workflows/native-infrastructure.yml","attempt":1,"status":"completed","conclusion":"failure","url":"https://github.com/HYJ1817/pi-gui-ios/actions/runs/44874304419"},{"id":"44877767639","head":"86cadda377fc1fdf3c483478b03215a3d6b96c32","workflow":".github/workflows/native-infrastructure.yml","attempt":1,"status":"completed","conclusion":"failure","url":"https://github.com/HYJ1817/pi-gui-ios/actions/runs/44877767639"},{"id":"44891582412","head":"a3420973d4dff86b7def48c26eddad0c0501692b","workflow":".github/workflows/native-infrastructure.yml","attempt":1,"status":"completed","conclusion":"failure","url":"https://github.com/HYJ1817/pi-gui-ios/actions/runs/44891582412"},{"id":"44894722354","head":"b6d52004cd4fb95f9a96c1cc39ed83570d0ed322","workflow":".github/workflows/native-infrastructure.yml","attempt":1,"status":"completed","conclusion":"failure","url":"https://github.com/HYJ1817/pi-gui-ios/actions/runs/44894722354"}]
 
 独立任务：[{"taskId":"node:delegated-task:command%3Amcp%3Ac31b83bb-4e95-4301-8a91-f13f8295d85a%3Adelegate-task%3A4b75cf04-9360-469c-87e1-321a7e4b3149","role":"functional-review-and-fresh-handoff","status":"completed","sourceCommit":"58ec99506e00a35121866580ffb28d09d5078b17"},{"taskId":"node:delegated-task:command%3Amcp%3Ac31b83bb-4e95-4301-8a91-f13f8295d85a%3Adelegate-task%3Aff1f8e3d-e43a-47c2-ad8d-14c02bc295d0","role":"security-review","status":"completed","sourceCommit":"58ec99506e00a35121866580ffb28d09d5078b17"},{"taskId":"node:delegated-task:command%3Amcp%3Ac31b83bb-4e95-4301-8a91-f13f8295d85a%3Adelegate-task%3A7af46559-43da-4538-9daa-7eee427ab8c0","role":"native-ci-ipa-fix-isolated","status":"completed","sourceCommit":"26e122a6a7b090e0a850ff9f741b3f7bced896cd"},{"taskId":"node:delegated-task:command%3Amcp%3A34ffc94c-e37f-424a-9a55-d6c1828322d1%3Adelegate-task%3A2c9a5191-6325-44e7-bc24-2a741b3f8b34","role":"security-recheck-and-bootstrap-lock-review","status":"completed","sourceCommit":"d46d6a5f84ad569f42a727fe29b0e2ed7b6f4afd"},{"taskId":"node:delegated-task:command%3Amcp%3A29600ade-642e-4b34-9a46-eb0e685480ef%3Adelegate-task%3A7da88775-0818-4401-b41e-ba036de8f61d","role":"independent-security-review-and-handoff","status":"completed","sourceCommit":"0148a3fc0058e6db17a803e1946c2a88a3aab85a"},{"taskId":"node:delegated-task:command%3Amcp%3A29600ade-642e-4b34-9a46-eb0e685480ef%3Adelegate-task%3A163e28bb-cb98-4c9b-bf1d-f627b765bff2","role":"exact-rn-facade-boundary-and-handoff-review","status":"completed","sourceCommit":"bd20d0169d3e14994fc30788ee5ee7c416c621fa"},{"taskId":"node:delegated-task:command%3Amcp%3A29600ade-642e-4b34-9a46-eb0e685480ef%3Adelegate-task%3Acad17c30-0c15-450a-8e17-ce523cb79963","role":"hermes-alias-inventory-security-review-and-handoff","status":"completed","sourceCommit":"44bff1c4d11fc52ea776c5fd60436e6a3c93923c"},{"taskId":"node:delegated-task:command%3Amcp%3A29600ade-642e-4b34-9a46-eb0e685480ef%3Adelegate-task%3A7d21bf3e-5040-45b8-8f14-ce1993591b7e","role":"dependency-inventory-blockers-recheck-and-handoff","status":"completed","sourceCommit":"d2d1720c000c9acc6ec9684ce42bbf685aa45ddd"},{"taskId":"node:delegated-task:command%3Amcp%3A29600ade-642e-4b34-9a46-eb0e685480ef%3Adelegate-task%3Ab861b32f-d076-4de6-acd5-5cf00ccf799e","role":"final-inventory-completeness-review-and-handoff","status":"completed","sourceCommit":"a8b8360fb0c814a612b07302273a7338e1c112d5"},{"taskId":"node:delegated-task:command%3Amcp%3Ab09dbc65-9265-451d-8397-254007a28ce8%3Adelegate-task%3A191cd5ae-33ec-405d-ac72-559cc19333a7","role":"complete-entry-link-classification-security-review-and-handoff","status":"completed","sourceCommit":"13b85849942f69abf83d3bb0fc570e2052a476f1"},{"taskId":"node:delegated-task:command%3Amcp%3Ab09dbc65-9265-451d-8397-254007a28ce8%3Adelegate-task%3A3cf20d98-00e4-4fc0-9aa6-a4e13cb846d3","role":"fixed-header-vocabulary-and-private-diagnostics-security-review-and-handoff","status":"completed","sourceCommit":"ef2c3b77f2de2860e286a03c617d884537c344df"}]
 

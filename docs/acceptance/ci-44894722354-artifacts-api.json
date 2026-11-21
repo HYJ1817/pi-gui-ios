@@ -1,0 +1,12 @@
+{
+  "artifacts": [
+    {
+      "archive_download_url": "https://api.github.com/repos/HYJ1817/pi-gui-ios/actions/artifacts/14702928723/zip",
+      "digest": "sha256:93dba1dd19c9c0962f45f653d32dc76c9ce53b32d723729a4598cfc70620f6c8",
+      "expired": false,
+      "id": 14702928723,
+      "name": "m-1-ios-44894722354",
+      "size_in_bytes": 1052
+    }
+  ]
+}

@@ -4,6 +4,7 @@ import { mkdtempSync, realpathSync, mkdirSync, cpSync, writeFileSync, readFileSy
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { spawnSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { ROOT } from '../scripts/lib/control.mjs';
 
 const PYTHON = [process.env.PYTHON, 'python3', 'python'].filter(Boolean).find(p => spawnSync(p, ['-I', '-c', 'import sys; assert sys.version_info >= (3,11)']).status === 0);
@@ -169,6 +170,75 @@ print('PRODUCTION_FIXED_DIAGNOSTICS_ONLY')`);
   passed(result, 'PRODUCTION_FIXED_DIAGNOSTICS_ONLY');
 });
 
+const coreFacadeHeader = 'RCTFabricComponentsPlugins.h';
+const facadeSafe = 'pods/Headers/Public/React-RCTFabric/React/' + coreFacadeHeader;
+const facadePhysical = 'ios/build/rncore-facades/React-RCTFabric/' + coreFacadeHeader;
+test('the pinned RN re-exposed facade header requires an exact generated physical mapping', t => {
+  const source = JSON.parse(readFileSync(join(ROOT, 'tests/fixtures/rncore-facade-header.json')));
+  assert.equal(JSON.parse(readFileSync(join(ROOT, 'node_modules/react-native/package.json'))).version, source.reactNativeVersion);
+  for (const file of source.sources) assert.equal(createHash('sha256').update(readFileSync(join(ROOT, file.path))).digest('hex'), file.sha256);
+  passed(py(fixture(t), `
+import sys
+source=json.loads(pathlib.Path(sys.argv[1]).read_text())
+assert m.RNCORE_FACADE_HEADERS == {alias:source['physical'] for alias in source['aliases']}
+safe=${JSON.stringify(facadeSafe)}; physical=${JSON.stringify(facadePhysical)}
+path=pods/pathlib.PurePosixPath(safe).relative_to('pods')
+target=posixpath.relpath(physical,('ios/Pods/'+pathlib.PurePosixPath(safe).relative_to('pods').parent.as_posix()))
+row=m.checked_header_link(path,safe,target)
+assert row['physical'] == 'rncore-facade/React-RCTFabric/${coreFacadeHeader}'
+print('EXACT_RN_FACADE_FILE_MAPPED')`, join(ROOT, 'tests/fixtures/rncore-facade-header.json')), 'EXACT_RN_FACADE_FILE_MAPPED');
+});
+
+test('real locked RN Ruby helper copies exactly the source-derived re-exposed header', t => {
+  passed(py(fixture(t), `
+import sys,subprocess
+ruby=shutil.which(sys.argv[1]) or sys.argv[1]; rn=pathlib.Path(sys.argv[2])
+helper=rn/'scripts/cocoapods/rncore_facades.rb'
+ruby_script="""
+require 'json'
+require ARGV.shift
+rn=ARGV.shift; destination=ARGV.shift
+rules=RNCoreFacades::FACADE_REEXPOSED_HEADERS
+raise 'unexpected facade rules' unless rules.keys == ['React-RCTFabric']
+rule=rules.fetch('React-RCTFabric')
+raise 'unexpected header rule' unless rule == {'header_dir'=>'React','globs'=>['Fabric/Mounting/ComponentViews/RCTFabricComponentsPlugins.h']}
+FileUtils.mkdir_p(destination)
+files=RNCoreFacades.send(:copy_reexposed_headers,rule.fetch('globs'),File.join(rn,'React'),destination,'React-RCTFabric')
+puts JSON.generate({'facade'=>RNCoreFacades.facade_path('React-RCTFabric'),'files'=>files,'header_dir'=>rule.fetch('header_dir')})
+"""
+destination=root/'ios/build/rncore-facades/React-RCTFabric'
+result=subprocess.run([ruby,'-e',ruby_script,str(helper),str(rn),str(destination)],capture_output=True,text=True,timeout=20)
+assert result.returncode == 0, result.stderr
+actual=json.loads(result.stdout)
+assert actual == {'facade':'build/rncore-facades/React-RCTFabric','files':['${coreFacadeHeader}'],'header_dir':'React'}
+assert (destination/'${coreFacadeHeader}').read_bytes() == (rn/'React/Fabric/Mounting/ComponentViews/${coreFacadeHeader}').read_bytes()
+for scope in ('Public','Private'):
+ safe='pods/Headers/'+scope+'/React-RCTFabric/React/${coreFacadeHeader}'
+ path=pods/pathlib.PurePosixPath(safe).relative_to('pods')
+ target=posixpath.relpath(${JSON.stringify(facadePhysical)},path.parent.relative_to(root).as_posix())
+ assert m.checked_header_link(path,safe,target)['physical'] == 'rncore-facade/React-RCTFabric/${coreFacadeHeader}'
+print('REAL_RUBY_FACADE_HEADER_SOURCE_AND_MAPPING')`, process.env.RUBY || 'ruby', join(ROOT, 'node_modules/react-native')), 'REAL_RUBY_FACADE_HEADER_SOURCE_AND_MAPPING');
+});
+
+for (const [name, safe, physical] of [
+  ['another facade family', facadeSafe, facadePhysical.replace('rncore-facades','rndeps-facades')],
+  ['another facade pod', facadeSafe, facadePhysical.replace('React-RCTFabric','React-Core')],
+  ['other build root', facadeSafe, facadePhysical.replace('rncore-facades','other')],
+  ['different filename', facadeSafe.replace(coreFacadeHeader,'Other.h'), facadePhysical.replace(coreFacadeHeader,'Other.h')],
+  ['extra physical child', facadeSafe, facadePhysical.replace('/'+coreFacadeHeader,'/child/'+coreFacadeHeader)],
+  ['wrong namespace pod', facadeSafe.replace('React-RCTFabric','React-Core'), facadePhysical],
+  ['missing React namespace', facadeSafe.replace('/React/','/'), facadePhysical],
+]) test(`facade header does not open generated directories: ${name}`, t => {
+  passed(py(fixture(t), `
+safe=${JSON.stringify(safe)}; physical=${JSON.stringify(physical)}
+path=pods/pathlib.PurePosixPath(safe).relative_to('pods')
+target=posixpath.relpath(physical,path.parent.relative_to(root).as_posix())
+try: m.checked_header_link(path,safe,target)
+except m.GateError as error: assert str(error) == 'NATIVE_PREBUILT_LINK_REJECTED' and error.reason == 'NATIVE_LINK_HEADER_ROOT_REJECTED'
+else: raise AssertionError('unreviewed generated header path accepted')
+print('UNAPPROVED_FACADE_PATH_REJECTED')`), 'UNAPPROVED_FACADE_PATH_REJECTED');
+});
+
 if (process.platform === 'win32') {
   for (const tree of ['ios/Pods', 'node_modules']) for (const name of ['ordinary', '.bin/tool', 'Headers/Public/Synthetic/header.h']) test(`reject actual Windows directory junction in ${tree}/${name}`, t => {
     const root = fixture(t); const link = join(root, tree, name); const outside = join(root, 'outside');
@@ -176,6 +246,39 @@ if (process.platform === 'win32') {
     symlinkSync(outside, link, 'junction'); passed(py(root, reject), 'UNAPPROVED_LINK_REJECTED');
   });
 } else {
+  test('actual POSIX facade header links bind the one physical source and invalidate locked byte drift', t => {
+    passed(py(fixture(t), `
+physical=root/${JSON.stringify(facadePhysical)}; physical.parent.mkdir(parents=True); physical.write_bytes(b'synthetic facade header')
+for scope in ('Public','Private'):
+ link=pods/'Headers'/scope/'React-RCTFabric/React/${coreFacadeHeader}'; link.parent.mkdir(parents=True)
+ os.symlink(posixpath.relpath(physical.relative_to(root).as_posix(),link.parent.relative_to(root).as_posix()),link)
+manifest=m.inventory(root)
+assert len(manifest['links']) == 2 and len(manifest['files']) == 1
+assert manifest['files'][0]['path'] == 'rncore-facade/React-RCTFabric/${coreFacadeHeader}'
+candidate=root/'private'; (candidate/'prebuilt-dependencies.json').write_text(json.dumps(manifest))
+(root/'native/prebuilt-dependencies.json').write_text(json.dumps(manifest))
+(root/'native/lock-review.json').write_text(json.dumps({'schemaVersion':1,'approved':True,'hashes':m.hashes(root,candidate)}))
+m.verify_locked(root,candidate,manifest)
+physical.write_bytes(b'changed facade header')
+changed=m.inventory(root); assert changed['files'] != manifest['files']
+(candidate/'prebuilt-dependencies.json').write_text(json.dumps(changed))
+try: m.verify_locked(root,candidate,changed)
+except m.GateError: pass
+else: raise AssertionError('facade header drift accepted')
+print('REAL_POSIX_FACADE_FILE_BYTES_BOUND')`), 'REAL_POSIX_FACADE_FILE_BYTES_BOUND');
+  });
+  for (const [name, mutation] of [
+    ['directory source', 'physical.unlink(); physical.mkdir()'],
+    ['hardlinked source', "os.link(physical,root/'outside-facade')"],
+    ['linked source', "physical.unlink(); other=physical.with_name('Other.h'); other.write_bytes(b'synthetic'); os.symlink('Other.h',physical)"],
+    ['linked ancestor', "parent=physical.parent; moved=parent.with_name('Moved'); parent.rename(moved); os.symlink('Moved',parent,target_is_directory=True)"],
+  ]) test(`actual POSIX facade header rejects ${name}`, t => {
+    passed(py(fixture(t), `
+physical=root/${JSON.stringify(facadePhysical)}; physical.parent.mkdir(parents=True); physical.write_bytes(b'synthetic facade')
+link=pods/'Headers/Public/React-RCTFabric/React/${coreFacadeHeader}'; link.parent.mkdir(parents=True)
+os.symlink(posixpath.relpath(physical.relative_to(root).as_posix(),link.parent.relative_to(root).as_posix()),link)
+` + mutation + reject), 'UNAPPROVED_LINK_REJECTED');
+  });
   for (const suffix of headers.extensions) test(`real POSIX upstream ${suffix} header link hashes every target byte`, t => {
     passed(py(fixture(t), `
 physical=pods/('Synthetic/Synthetic'+${JSON.stringify(suffix)}); physical.parent.mkdir(); physical.write_bytes(b'synthetic header')
