@@ -1,11 +1,11 @@
 {
   "schemaVersion": 2,
   "kind": "tasks",
-  "revision": 422,
-  "updatedAt": "2026-11-21T13:27:18.552Z",
+  "revision": 423,
+  "updatedAt": "2026-11-21T13:29:37.508Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "e4f1b6e550627d2ceea27a7c076cd8b2325eacd652ecf8ad9736b8391b7acfdc",
+    "parentDigest": "d118552ccff752f7f4d1ea7c135e2f8ce36e309d5bfb85c8559c76294187db01",
     "tasks": [
       {
         "id": "M-1-infrastructure",
@@ -681,6 +681,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "b91cfaebe2e38e1b3af0c3a0dc2a53f77dae8f9a5a2e0685dff4827e51dcf8c5"
+    "digest": "ea4f98f6635c7940cdb440f32b377ee71e55d9d0787a4f365f4609da1934d4ff"
   }
 }
