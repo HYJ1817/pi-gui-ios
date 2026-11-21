@@ -1,0 +1,126 @@
+{
+  "branch": "agent/m-1-bootstrap",
+  "verifiedFingerprints": {
+    "working": "e7d35a7e0eb3b9576d95fc41fe2d0a907c9e515073e3a9007c3bffb6cd90cd07",
+    "committed": "e7d35a7e0eb3b9576d95fc41fe2d0a907c9e515073e3a9007c3bffb6cd90cd07",
+    "dirtySourceFiles": 0
+  },
+  "bootstrapAssessment": {
+    "safeForOneGatedMacOSCandidateBootstrap": false,
+    "uniqueUnresolvedBlockers": 1,
+    "reason": "The three original defects are addressed, but a case-variant known framework can still produce an incomplete, reviewable candidate. INV-FRAMEWORK-CASE is the same blocker in both failed reports.",
+    "next": "Keep M-1-infrastructure in testing. Fix the classification gap without widening the six exact alias exceptions, then independently review the new source. Real macOS npm test remains mandatory before prebuild; candidate exit 78 is not native acceptance.",
+    "priorCI": "44877767639 reported NATIVE_PREBUILT_LINK_REJECTED and produced no candidates. The rejected path was not observed."
+  },
+  "priorBlockers": [
+    {
+      "id": "INV-HARDLINK",
+      "disposition": "Resolved for the reported static-tree defect",
+      "file": "C:/pi-gui-ios/scripts/ci/native-dependencies.py",
+      "line": 139,
+      "evidence": "Four real NTFS equal-byte hardlinks covered the Hermes binary, physical resource, standalone archive and extensionless magic probe. 44bff1c returned unchanged manifests; d2d1720 rejected before either pathname was opened. The ordinary alias target also requires st_nlink == 1 at line 75."
+    },
+    {
+      "id": "INV-PREFIX",
+      "disposition": "Resolved in reviewed code; real POSIX regression still required",
+      "file": "C:/pi-gui-ios/scripts/ci/native-dependencies.py",
+      "line": 79,
+      "evidence": "Component lstat and strict ancestry checks precede the walk, so a present symlink is not treated as a missing prefix. Ten real Windows prefix junctions were rejected before os.walk, and six junctions at the exact alias names were rejected before readlink. Windows symlink creation returned 1314; no POSIX runtime result is claimed."
+    },
+    {
+      "id": "INV-ENUM",
+      "disposition": "Resolved for the reported enumeration defect",
+      "file": "C:/pi-gui-ios/scripts/ci/native-dependencies.py",
+      "line": 116,
+      "evidence": "Injected EACCES both on scandir entry and during iteration at Pods, node_modules and nested Hermes Resources. 44bff1c returned partial manifests in all six cases; d2d1720 returned no manifest and raised only NATIVE_PREBUILT_ENUMERATION_FAILED."
+    }
+  ],
+  "reports": [
+    {
+      "schemaVersion": 1,
+      "kind": "independent-security",
+      "decision": "fail",
+      "reviewedCommit": "d2d1720c000c9acc6ec9684ce42bbf685aa45ddd",
+      "sourceFingerprint": "e7d35a7e0eb3b9576d95fc41fe2d0a907c9e515073e3a9007c3bffb6cd90cd07",
+      "unresolvedBlockers": 1,
+      "unresolvedImportant": 0,
+      "findings": [
+        {
+          "id": "INV-FRAMEWORK-CASE",
+          "severity": "Blocker",
+          "file": "C:/pi-gui-ios/scripts/ci/native-dependencies.py",
+          "line": 131,
+          "trigger": "On a case-insensitive filesystem the known macosx/hermesvm.framework lookup resolves to a directory enumerated as hermesvm.Framework.",
+          "evidence": "NTFS samefile confirmed the lookup referred to the same directory. The case-sensitive suffix tests at lines 120 and 131 did not classify it as a framework. Magic discovery found the binary but omitted Versions/1/Resources/Info.plist; changing that resource left the manifest identical.",
+          "disposition": "Detect native framework suffixes regardless of case, or explicitly reject a spelling mismatch. Keep the alias path and target allowlist exact and add a regression. No edits made."
+        }
+      ],
+      "commands": [
+        {"command": "python -I -B -", "exitCode": 0, "result": "Differential hardlink and enumeration probes, 16 real junction negatives, and the Windows symlink-capability probe completed."},
+        {"command": "python -I -B -", "exitCode": 0, "result": "Confirmed case-based omission. Separately verified that both digest and committed-manifest equality reject synthetic alias-group removal, retargeting, physical hash/size drift and schema v1 when those rows are represented."},
+        {"command": "git diff --exit-code 86cadda..HEAD -- scripts/ci/verify-ipa.py scripts/ci/stage-ipa.py scripts/ci/package-ipa.sh scripts/ci/install-pods.sh scripts/ci/run-step.sh native/dependency-policy.json", "exitCode": 0, "result": "Final IPA symlink/reparse checks, staging and dependency publication scripts unchanged. Workflow diff changes only the prebuild test step, not upload predicates or whitelists."}
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "kind": "independent-review",
+      "decision": "fail",
+      "reviewedCommit": "d2d1720c000c9acc6ec9684ce42bbf685aa45ddd",
+      "sourceFingerprint": "e7d35a7e0eb3b9576d95fc41fe2d0a907c9e515073e3a9007c3bffb6cd90cd07",
+      "unresolvedBlockers": 1,
+      "unresolvedImportant": 0,
+      "findings": [
+        {
+          "id": "INV-FRAMEWORK-CASE",
+          "severity": "Blocker",
+          "file": "C:/pi-gui-ios/scripts/ci/native-dependencies.py",
+          "line": 131,
+          "trigger": "A case-variant known framework passes preflight but is skipped by framework file classification.",
+          "evidence": "In a temporary Windows fixture, production finish with real Ruby lock parsing returned 78 twice and wrote all four review-only files with the same manifest digest despite changing the omitted Info.plist. It reported one file. Restoring lowercase .framework yielded two files and a different digest.",
+          "disposition": "Block bootstrap on this exact source. The candidate-only exit gate cannot catch missing rows when inventory itself omits them."
+        }
+      ],
+      "commands": [
+        {"command": "git diff --check 86cadda..HEAD", "exitCode": 0, "result": "Reviewed both requested commit ranges."},
+        {"command": "python -I -B -", "exitCode": 0, "result": "Public Hermes Debug and Release archive sizes and SHA-256 matched the fixture. Each table had 107 members, the same six exact links, correctly typed physical targets and ordinary ancestors, and zero hardlinks. RN Core and Dependencies Debug tables contained no links. No extraction or execution."},
+        {"command": "node --check tests/native-links.test.mjs && node --input-type=module -", "exitCode": 0, "result": "Parsed JS and compiled all 25 generated POSIX Python test bodies without executing them. macOS workflow runs npm test after npm ci and before prebuild, with no failure override."},
+        {"command": "python -I -B -", "exitCode": 0, "result": "Synthetic candidate-completeness probe; actual child finish statuses 78, 78, 78. No CocoaPods installation, CI run, or real candidate."}
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "kind": "independent-handoff",
+      "decision": "pass",
+      "reviewedCommit": "d2d1720c000c9acc6ec9684ce42bbf685aa45ddd",
+      "sourceFingerprint": "e7d35a7e0eb3b9576d95fc41fe2d0a907c9e515073e3a9007c3bffb6cd90cd07",
+      "restoredTask": "M-1-infrastructure",
+      "unresolvedBlockers": 0,
+      "unresolvedImportant": 0,
+      "findings": [],
+      "commands": [
+        {"command": "node scripts/agent-resume.mjs --remote", "exitCode": 0, "result": "Restored testing at authority revision 218; no recovery failures or warnings. Verified the v2 checkpoint file and inner authority digests. Remote branch remains at 86cadda; no CI was triggered."},
+        {
+          "command": "npm test",
+          "exitCode": 0,
+          "shell": "Git Bash",
+          "environment": {
+            "RUBY": "C:/pi-gui-ios/artifacts/ruby-extract-20261121-a/rubyinstaller-3.3.8-1-x64/bin/ruby.exe",
+            "GEM_HOME": "C:/pi-gui-ios/artifacts/ruby-gems-20261121-a",
+            "GEM_PATH": "C:/pi-gui-ios/artifacts/ruby-gems-20261121-a"
+          },
+          "result": "214/214 passed, zero skipped; technology-stack contract passed. Windows branch only."
+        },
+        {"command": "node scripts/agent-validate.mjs", "exitCode": 1, "result": "Acceptance remains gated; handoff pass is not M-1 acceptance."},
+        {"command": "node --input-type=module -", "exitCode": 0, "result": "Rehashed the working tree and 83 raw committed source blobs; both matched. HEAD and authority unchanged; dirty paths were confined to excluded state and acceptance evidence."}
+      ]
+    }
+  ],
+  "notExecuted": [
+    "Real macOS/POSIX canonical tests",
+    "macOS candidate bootstrap or real candidate approval",
+    "Locked native build or cache verification",
+    "Simulator interactions or visual/UI acceptance",
+    "Real device IPA generation or verification",
+    "SideStore installation"
+  ]
+}

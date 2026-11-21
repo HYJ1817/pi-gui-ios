@@ -113,11 +113,13 @@ def inventory(root):
         checked(base)
         if label == 'pods':
             checked_hermes_prefixes(base, checked)
+        # Classify native suffixes case-insensitively on both filesystem types;
+        # preserve actual spelling in manifest rows and exact alias validation.
         for directory, dirs, names in os.walk(base, followlinks=False, onerror=enumeration_failed):
             for name in list(dirs):
                 path = pathlib.Path(directory) / name
                 relative = path.relative_to(base)
-                native = any(p.endswith(('.framework', '.xcframework')) for p in relative.parts)
+                native = any(p.casefold().endswith(('.framework', '.xcframework')) for p in relative.parts)
                 info = path.lstat()
                 linked = stat.S_ISLNK(info.st_mode) or bool(getattr(info, 'st_file_attributes', 0) & 0x400)
                 if native and linked:
@@ -128,8 +130,8 @@ def inventory(root):
             for name in names:
                 path = pathlib.Path(directory) / name
                 relative = path.relative_to(base)
-                native = any(p.endswith(('.framework', '.xcframework')) for p in relative.parts)
-                native |= name.endswith(('.a', '.dylib', '.so', '.dll', '.node', '.wasm', '.metallib', '.tbd',
+                native = any(p.casefold().endswith(('.framework', '.xcframework')) for p in relative.parts)
+                native |= name.casefold().endswith(('.a', '.dylib', '.so', '.dll', '.node', '.wasm', '.metallib', '.tbd',
                                          '.zip', '.tgz', '.tar.gz', '.tar.xz'))
                 info = path.lstat()
                 linked = stat.S_ISLNK(info.st_mode) or bool(getattr(info, 'st_file_attributes', 0) & 0x400)

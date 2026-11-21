@@ -1,23 +1,23 @@
 {
   "schemaVersion": 2,
   "kind": "state",
-  "revision": 201,
-  "updatedAt": "2026-11-21T07:44:49.436Z",
+  "revision": 226,
+  "updatedAt": "2026-11-21T08:13:39.649Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "046338b4228714053a41879eb1e488dea790a41f1b28fa0a5ede6e3ff8aba3ba",
+    "parentDigest": "1b20a77c7e4df9cfd8014050a3f9959b945c96c31ad5125740fca8581c8e135c",
     "phase": "M-1",
     "currentTask": "M-1-infrastructure",
     "branch": "agent/m-1-bootstrap",
     "checkpoint": {
-      "id": "v2-2026-11-21T07-44-49-436Z-f5371887-333d-40c8-b40f-350ffb2405b8",
-      "path": ".agent/checkpoints/v2-2026-11-21T07-44-49-436Z-f5371887-333d-40c8-b40f-350ffb2405b8.json",
-      "sha256": "deb95674f6f80d8166039915dec1eb41adf2f78d86095476255a5ed973c32bad",
-      "authorityDigest": "e5269e98164289da37ba088afe3b3fce16ecc78ab940ad282f971e2ac727d72d",
-      "at": "2026-11-21T07:44:49.436Z",
+      "id": "v2-2026-11-21T08-13-39-649Z-86bb4513-0f04-4163-b1fd-f87ab3a56886",
+      "path": ".agent/checkpoints/v2-2026-11-21T08-13-39-649Z-86bb4513-0f04-4163-b1fd-f87ab3a56886.json",
+      "sha256": "d7542ed06b62522cc7734c3646817e73478b86b59b3f6da8cb3641a313fb2542",
+      "authorityDigest": "24300587698ab41699614d6fc007611d3f2a00e619225bb6558a81d277df99ca",
+      "at": "2026-11-21T08:13:39.649Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "44bff1c4d11fc52ea776c5fd60436e6a3c93923c",
+        "commit": "d2d1720c000c9acc6ec9684ce42bbf685aa45ddd",
         "dirty": [
           "M .agent/HANDOFF.md",
           " M .agent/control.json",
@@ -33,34 +33,32 @@
           " M docs/decisions/0003-native-build-integrity.md",
           " M scripts/ci/native-dependencies.py",
           " M tests/native-links.test.mjs",
-          "?? .agent/checkpoints/v2-2026-11-21T07-20-25-623Z-642fc201-dbbf-4fc0-ad32-593461865366.json",
-          "?? .agent/checkpoints/v2-2026-11-21T07-21-51-942Z-d570cee9-df81-4f42-bc2d-5f5828afafb5.json",
-          "?? .agent/checkpoints/v2-2026-11-21T07-22-44-589Z-00ad35a6-0814-4db0-870c-e10a34d039d2.json",
-          "?? .agent/checkpoints/v2-2026-11-21T07-22-45-442Z-592e4081-1ef8-47cc-8a03-1aced59e92a8.json",
-          "?? .agent/checkpoints/v2-2026-11-21T07-22-48-816Z-29e6d661-68f2-41fb-8667-e9cc514b3605.json",
-          "?? .agent/checkpoints/v2-2026-11-21T07-22-49-643Z-81fd3969-570b-449d-9a30-896c097f7665.json",
-          "?? .agent/checkpoints/v2-2026-11-21T07-22-54-403Z-488b7228-dfd3-493b-aeb5-864f804cccd8.json",
-          "?? .agent/checkpoints/v2-2026-11-21T07-22-55-246Z-ab1544e3-f25f-4615-b40b-7d9e30762ae6.json",
-          "?? .agent/checkpoints/v2-2026-11-21T07-22-59-423Z-56a1984f-7b01-4d32-8bac-6373ad90937c.json",
-          "?? .agent/checkpoints/v2-2026-11-21T07-23-00-274Z-89cfbb78-cd9c-434f-9ae9-392e6bfd2e92.json",
-          "?? .agent/checkpoints/v2-2026-11-21T07-23-42-322Z-89df3a2f-a50c-4105-8411-3573890f5861.json",
-          "?? .agent/checkpoints/v2-2026-11-21T07-35-29-479Z-f3bfc090-5fe1-4ca3-bf3b-fdac23292d2a.json",
-          "?? .agent/checkpoints/v2-2026-11-21T07-35-30-023Z-73da4c6d-e635-435a-9397-5d256a6b1800.json",
-          "?? .agent/checkpoints/v2-2026-11-21T07-44-48-830Z-ef20fed4-95a5-4707-9e88-c3b88b6059e5.json",
-          "?? docs/acceptance/review-44bff1c-disposition.md",
-          "?? docs/acceptance/review-44bff1c-provenance.json",
-          "?? docs/acceptance/review-44bff1c-result.json"
+          "?? .agent/checkpoints/v2-2026-11-21T07-45-44-505Z-b03110ad-cb63-475a-9b5f-6be4bd9c78a9.json",
+          "?? .agent/checkpoints/v2-2026-11-21T07-46-55-480Z-c81d4104-42aa-4308-9804-2611f17fc7a1.json",
+          "?? .agent/checkpoints/v2-2026-11-21T07-47-43-201Z-9bc76400-e5c0-484a-ad9d-d30124ff528d.json",
+          "?? .agent/checkpoints/v2-2026-11-21T07-47-44-034Z-a8fb59c4-667d-4b38-ae7b-9cf32ce8318a.json",
+          "?? .agent/checkpoints/v2-2026-11-21T07-47-47-327Z-be40155e-7c51-4d1f-9895-3e7097d2a320.json",
+          "?? .agent/checkpoints/v2-2026-11-21T07-47-48-159Z-db2bc360-dae3-45fc-9f48-5aa2a3ccdb07.json",
+          "?? .agent/checkpoints/v2-2026-11-21T07-47-52-561Z-9325b1c3-0e2e-462f-aa15-ea19cccd0862.json",
+          "?? .agent/checkpoints/v2-2026-11-21T07-47-53-384Z-e5c478fb-5d9e-4bf9-9da8-b7b94ab00bcc.json",
+          "?? .agent/checkpoints/v2-2026-11-21T07-47-57-560Z-55a13bc8-4574-4c12-b9b8-855070439bb9.json",
+          "?? .agent/checkpoints/v2-2026-11-21T07-47-58-399Z-71518c05-c856-4596-a800-697b464e39af.json",
+          "?? .agent/checkpoints/v2-2026-11-21T07-48-27-266Z-b8ebd73b-d58a-4b4f-b628-5e37bf39ec04.json",
+          "?? .agent/checkpoints/v2-2026-11-21T08-04-56-651Z-9a25b285-b7c3-4570-be26-d145153acab2.json",
+          "?? .agent/checkpoints/v2-2026-11-21T08-04-57-238Z-552d31b9-ce3d-4a28-9624-cb1d93c3d3b1.json",
+          "?? .agent/checkpoints/v2-2026-11-21T08-13-39-064Z-2c60502a-314d-4ea1-b8b7-6527fe352aeb.json",
+          "?? docs/acceptance/review-d2d1720-disposition.md",
+          "?? docs/acceptance/review-d2d1720-provenance.json",
+          "?? docs/acceptance/review-d2d1720-result.json"
         ]
       },
-      "sourceFingerprint": "e7d35a7e0eb3b9576d95fc41fe2d0a907c9e515073e3a9007c3bffb6cd90cd07",
-      "note": "独立三Blocker窄修复与40项定向回归通过，准备精确提交后canonical和重新独立审查"
+      "sourceFingerprint": "30ef203a01cec72eb524df2b8313f2c0941acb1e15d2e524e826d40bb92a2f1e",
+      "note": "第三轮前大小写完整性窄修复50项通过，先精确提交复验，不推送CI"
     },
     "blockers": [
       "NATIVE-LOCK 尚未生成真实macOS Gemfile/Podfile/预编译候选锁并独立核验",
       "NATIVE-PREBUILT-LINK：CI44877767639完成失败，锁校验后在字节清单NATIVE_PREBUILT_LINK_REJECTED停止，无候选；先研究锁定公开RN/Hermes归档链接结构并本地复现，不重复CI或直接放宽链接策略",
-      "INV-HARDLINK：独立44bff1c审查确认原生文件/别名物理目标可硬链接外部inode，须在任何读取前拒绝并回归",
-      "INV-PREFIX：独立44bff1c审查确认无framework后缀的上层POSIX链接可能漏扫已知Hermes整组，须预检前缀并真实POSIX回归",
-      "INV-ENUM：独立44bff1c审查确认os.walk忽略枚举错误可形成不完整清单，须fail-closed和故障回归"
+      "INV-FRAMEWORK-CASE：d2d1720独立复验确认大小写framework后缀漏扫资源，合成finish可发不完整候选；修分类/补回归后须第三轮独立复验，仍失败即停止同类机械修补"
     ],
     "ci": [
       {
@@ -167,11 +165,17 @@
         "role": "hermes-alias-inventory-security-review-and-handoff",
         "status": "completed",
         "sourceCommit": "44bff1c4d11fc52ea776c5fd60436e6a3c93923c"
+      },
+      {
+        "taskId": "node:delegated-task:command%3Amcp%3A29600ade-642e-4b34-9a46-eb0e685480ef%3Adelegate-task%3A7d21bf3e-5040-45b8-8f14-ce1993591b7e",
+        "role": "dependency-inventory-blockers-recheck-and-handoff",
+        "status": "completed",
+        "sourceCommit": "d2d1720c000c9acc6ec9684ce42bbf685aa45ddd"
       }
     ]
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "fc0045ceaea6e7de1a92b44d3279a38a5559774cdee4467a55ac726e4d1b2716"
+    "digest": "073820c4cbfd684a34d0acc23de649fe7bdf63579827a7683c307d8251b5a71e"
   }
 }

@@ -118,6 +118,14 @@ CI44877767639（86cadda）在环境/npm/prebuild后推进到 `NATIVE_PREBUILT_LI
 
 新增真实硬链接与读取前guard、六个Windows前缀junction的walk前guard、Pods/npm/Resources三处scandir EACCES故障注入；macOS还必须运行真实上层POSIX symlink及别名物理目标硬链接负向。故障注入只检验错误路径，不冒充真实macOS执行。修复不扩大六别名集合、不改最终IPA/候选发布/权限策略；新精确提交仍须独立复审，macOS实际验证仍待完成。
 
+## 大小写变体的清单完整性
+
+d2d1720独立复验确认上述三项已在代码与Windows实际故障差分中处置，但仍发现INV-FRAMEWORK-CASE：case-insensitive文件系统可让已知小写路径解析到枚举名hermesvm.Framework；原大小写敏感suffix判断只发现二进制magic却漏掉Info.plist。独立真实Ruby合成finish能两次返回78并输出同摘要的不完整候选，故不能把exit78当成清单完整性的证明。原失败结果见review-d2d1720-result.json；仍未推送或触发CI。
+
+仅将依赖目录/framework/xcframework和原生文件/归档的suffix分类改为casefold后比较；manifest保留实际路径拼写，**六条别名path/target不casefold、不改允许表**，大小写不符的链接继续拒绝。新增Pods/npm混合大小写framework资源变更、四种归档扩展名、真实Ruby生产finish候选摘要漂移检查，以及macOS大小写别名拒绝回归。两种文件系统均执行相同分类规则，不靠Windows特殊分支使测试变绿。
+
+这是本轮依赖清单的第三次独立复验前修复：若新的精确提交复验仍未通过，停止同类机械修补，保存根因和阻塞，不继续第四轮或CI试跑。即使代码复核通过，实际macOS POSIX和真实候选审核门禁继续保留。
+
 ## 回滚
 
 如发现兼容问题，在开发分支 revert 本实现提交，保留 bootstrap 未验收状态；不得通过放宽权限/签名/平台断言或忽略锁差异来让 job 变绿。对合法新键、新依赖来源或生成结构的支持应有真实公开归档或macOS fixture、精确边界差分和独立复审后再加入显式表；仍须真实macOS验证，不继承本机通过。

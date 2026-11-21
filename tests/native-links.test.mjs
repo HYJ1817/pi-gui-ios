@@ -14,7 +14,7 @@ function fixture(t) {
   const root = realpathSync(mkdtempSync(join(tmpdir(), 'native-alias-synthetic-')));
   t.after(() => rmSync(root, { recursive: true, force: true }));
   for (const dir of ['scripts/ci', 'ios/Pods', 'node_modules', 'private', 'native']) mkdirSync(join(root, dir), { recursive: true });
-  for (const file of ['native-dependencies.py', 'verify-ipa.py', 'verify-template.py']) cpSync(join(ROOT, 'scripts/ci', file), join(root, 'scripts/ci', file));
+  for (const file of ['native-dependencies.py', 'verify-ipa.py', 'verify-template.py', 'validate-locks.rb']) cpSync(join(ROOT, 'scripts/ci', file), join(root, 'scripts/ci', file));
   for (const file of ['Gemfile', 'package-lock.json', 'ios/Podfile', 'private/Gemfile.lock', 'private/Podfile.lock']) writeFileSync(join(root, file), 'synthetic fixture only');
   return root;
 }
@@ -104,6 +104,103 @@ with patch.object(os,'scandir',fault):
 print('ENUMERATION_ERROR_REJECTED')`), 'ENUMERATION_ERROR_REJECTED');
 });
 
+for (const [tree, directory] of [
+  ['ios/Pods', framework.replace('.framework', '.Framework')],
+  ['ios/Pods', 'Synthetic.FRAMEWORK'],
+  ['ios/Pods', 'Synthetic.XcFramework/ios-arm64/Synthetic.Framework'],
+  ['node_modules', 'synthetic/Synthetic.Framework'],
+  ['node_modules', 'synthetic/Synthetic.XCFRAMEWORK/slice'],
+]) test(`case-insensitive native classification includes all resources: ${tree}/${directory}`, t => {
+  passed(py(fixture(t), `
+import sys
+fw=root/${JSON.stringify(tree)}/${JSON.stringify(directory)}; version=fw/'Versions/1'
+resources=version/'Resources'; resources.mkdir(parents=True)
+resource=resources/'Info.plist'; resource.write_bytes(b'synthetic resource before')
+(version/'hermesvm').write_bytes(b'\\xcf\\xfa\\xed\\xfe' + b'synthetic native')
+if sys.platform == 'win32': assert fw.samefile(fw.with_name(fw.name.lower()))
+manifest=m.inventory(root)
+assert len(manifest['files']) == 2 and not manifest['links']
+assert any(row['path'].endswith('/Resources/Info.plist') for row in manifest['files'])
+candidate=root/'private'
+(candidate/'prebuilt-dependencies.json').write_text(json.dumps(manifest))
+(root/'native/prebuilt-dependencies.json').write_text(json.dumps(manifest))
+(root/'native/lock-review.json').write_text(json.dumps({'schemaVersion':1,'approved':True,'hashes':m.hashes(root,candidate)}))
+m.verify_locked(root,candidate,manifest)
+resource.write_bytes(b'synthetic resource after')
+changed=m.inventory(root)
+assert changed != manifest and len(changed['files']) == 2
+(candidate/'prebuilt-dependencies.json').write_text(json.dumps(changed))
+try: m.verify_locked(root,candidate,changed)
+except m.GateError: pass
+else: raise AssertionError('case-variant resource drift accepted')
+print('CASE_VARIANT_RESOURCE_RECORDED_AND_BOUND')`), 'CASE_VARIANT_RESOURCE_RECORDED_AND_BOUND');
+});
+for (const suffix of ['.A', '.DYLIB', '.TAR.GZ', '.ZIP']) test(`native archive classification cannot omit case-variant suffix ${suffix}`, t => {
+  passed(py(fixture(t), `
+file=pods/('synthetic'+${JSON.stringify(suffix)})
+file.write_bytes(b'synthetic non-MachO archive bytes')
+manifest=m.inventory(root)
+assert len(manifest['files']) == 1
+assert manifest['files'][0]['size'] == file.stat().st_size
+print('CASE_VARIANT_ARCHIVE_RECORDED')`), 'CASE_VARIANT_ARCHIVE_RECORDED');
+});
+
+test('actual candidate finish with real Ruby binds case-variant framework resources', t => {
+  passed(py(fixture(t), `
+import sys,contextlib,io
+ruby=pathlib.Path(shutil.which(sys.argv[1]) or sys.argv[1]); assert ruby.is_file()
+os.environ['PATH']=str(ruby.parent)+os.pathsep+os.environ['PATH']
+(root/'native/dependency-policy.json').write_text(json.dumps({'schemaVersion':1,'mode':'bootstrap-required','ruby':'3.3.8','bundler':'2.6.9','cocoapods':'1.16.2'}))
+(root/'Gemfile').write_text("source 'https://rubygems.org'\\nruby '3.3.8'\\ngem 'cocoapods', '= 1.16.2'\\ngem 'bundler', '= 2.6.9'\\n")
+private=root/'private'; os.environ['BUNDLE_GEMFILE']=str(root/'Gemfile')
+(private/'Gemfile.lock').write_text('''GEM
+  remote: https://rubygems.org/
+  specs:
+    cocoapods (1.16.2)
+
+PLATFORMS
+  arm64-darwin-25
+
+DEPENDENCIES
+  bundler (= 2.6.9)
+  cocoapods (= 1.16.2)
+
+RUBY VERSION
+   ruby 3.3.8p144
+
+BUNDLED WITH
+   2.6.9
+''')
+(root/'ios/Podfile.lock').write_text('''PODS:
+  - Synthetic (1.0.0)
+DEPENDENCIES:
+  - Synthetic (from \x60../node_modules/synthetic\x60)
+EXTERNAL SOURCES:
+  Synthetic:
+    :path: "../node_modules/synthetic"
+SPEC CHECKSUMS:
+  Synthetic: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+PODFILE CHECKSUM: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+COCOAPODS: 1.16.2
+''')
+fw=pods/'hermes-engine/destroot/Library/Frameworks/macosx/hermesvm.Framework'
+resources=fw/'Versions/1/Resources'; resources.mkdir(parents=True)
+resource=resources/'Info.plist'; resource.write_bytes(b'synthetic first resource')
+(fw/'Versions/1/hermesvm').write_bytes(b'\\xcf\\xfa\\xed\\xfe' + b'synthetic binary')
+output=root/'artifacts/lock-candidates'; hashes=[]
+for content in (b'synthetic first resource',b'synthetic changed resource'):
+ resource.write_bytes(content)
+ shutil.rmtree(private/'candidate',ignore_errors=True)
+ with contextlib.redirect_stdout(io.StringIO()) as messages: assert m.finish(root,private) == 78
+ assert messages.getvalue().strip() == 'NATIVE_LOCK_BOOTSTRAP_REVIEW_REQUIRED'
+ assert {p.name for p in output.iterdir()} == {'Gemfile.lock','Podfile.lock','prebuilt-dependencies.json','review.json'}
+ review=json.loads((output/'review.json').read_text()); manifest=json.loads((output/'prebuilt-dependencies.json').read_text())
+ assert review['approved'] is False and review['prebuiltFileCount'] == len(manifest['files']) == 2
+ hashes.append(review['hashes']['prebuiltManifestSha256'])
+assert hashes[0] != hashes[1]
+print('REAL_RUBY_CANDIDATE_CASE_RESOURCE_BOUND')`, process.env.RUBY || 'ruby'), 'REAL_RUBY_CANDIDATE_CASE_RESOURCE_BOUND');
+});
+
 // Windows cannot create POSIX links without extra privileges. It executes real
 // junction/reparse negatives, not a fake positive. The same canonical file runs
 // actual os.symlink positives + negatives on the macOS runner before prebuild.
@@ -161,6 +258,10 @@ print('REAL_POSIX_ALIASES_AND_BYTES')`), 'REAL_POSIX_ALIASES_AND_BYTES');
     ['framework ancestor alias', `destination=fw.with_name('moved.framework'); fw.rename(destination); os.symlink(destination.name,fw,target_is_directory=True)`],
     ['multiply linked alias binary target', `outside=root/'outside'; outside.write_bytes((fw/'Versions/1/hermesvm').read_bytes()); (fw/'Versions/1/hermesvm').unlink(); os.link(outside,fw/'Versions/1/hermesvm')`],
     ['multiply linked physical resource', `outside=root/'outside'; outside.write_bytes((fw/'Versions/1/Resources/Info.plist').read_bytes()); (fw/'Versions/1/Resources/Info.plist').unlink(); os.link(outside,fw/'Versions/1/Resources/Info.plist')`],
+    ['case-variant framework does not widen alias paths', `temporary=fw.with_name('temporary-framework'); fw.rename(temporary); temporary.rename(fw.with_name('hermesvm.Framework'))`],
+    ['case-variant xcframework does not widen alias paths', `bundle=pods/'hermes-engine/destroot/Library/Frameworks/universal/hermesvm.xcframework'; temporary=bundle.with_name('temporary-bundle'); bundle.rename(temporary); temporary.rename(bundle.with_name('hermesvm.XCFRAMEWORK'))`],
+    ['case-variant Resources alias', `(fw/'Resources').unlink(); os.symlink('Versions/Current/Resources',fw/'RESOURCES',target_is_directory=True)`],
+    ['case-variant alias target', `(fw/'Resources').unlink(); os.symlink('Versions/Current/RESOURCES',fw/'Resources',target_is_directory=True)`],
     ...['hermes-engine', 'hermes-engine/destroot', 'hermes-engine/destroot/Library',
       'hermes-engine/destroot/Library/Frameworks', 'hermes-engine/destroot/Library/Frameworks/macosx',
       'hermes-engine/destroot/Library/Frameworks/universal'].map(prefix => [
