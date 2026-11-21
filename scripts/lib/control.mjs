@@ -44,6 +44,7 @@ export function validateControl(d) {
   }
   ids.forEach(visit);
   assert(d.tasks.find(t => t.id === d.currentTask).phase === d.phase, 'Current task/phase mismatch');
+  for (const ci of d.ci) validateCiRecord(ci);
   assert(new Set(d.ci.map(c => `${c.id}/${c.attempt}`)).size === d.ci.length, 'Duplicate CI attempt');
   return d;
 }
@@ -113,10 +114,16 @@ export function evidencePath(root, path) {
   return safePath(root, resolve(root, path));
 }
 function checkFile(root, path, sha256) { assert(SHA.test(sha256 ?? ''), 'Missing evidence file digest'); const file = evidencePath(root, path); const bytes = readFileSync(file); assert(digest(bytes) === sha256, 'Evidence file digest mismatch'); return bytes; }
+function validateCiRecord(ci) {
+  validateSchema(ci, 'ci.schema.json');
+  assert(ci.url === `https://github.com/HYJ1817/pi-gui-ios/actions/runs/${ci.id}`, 'CI URL/identity mismatch');
+  assert(ci.status === 'completed' ? ci.conclusion !== null : ci.conclusion === null, 'CI status/conclusion mismatch');
+  return ci;
+}
 export function normalizeCi(raw) {
   assert(raw?.repository?.full_name === 'HYJ1817/pi-gui-ios', 'Unexpected CI repository');
   const ci = { id: String(raw.id ?? ''), head: raw.head_sha, workflow: raw.path, attempt: raw.run_attempt, status: raw.status, conclusion: raw.conclusion || null, url: raw.html_url };
-  validateSchema(ci, 'ci.schema.json'); return ci;
+  return validateCiRecord(ci);
 }
 export function validateReport(d, task, report, root = ROOT, fingerprint = sourceFingerprint(root)) {
   validateSchema(report, 'evidence.schema.json');
@@ -138,10 +145,14 @@ export function validateReport(d, task, report, root = ROOT, fingerprint = sourc
   } else if (report.kind.startsWith('independent-')) {
     const receipt = JSON.parse(checkFile(root, details.receiptPath, details.receiptSha256));
     assert(receipt.latestTerminalStatus === 'completed' && typeof receipt.executedModel === 'string', 'Independent task did not complete');
-    const result = JSON.parse(receipt.summary);
-    assert(result.schemaVersion === 1 && result.kind === report.kind && result.decision === 'pass' && result.reviewedCommit === report.commit && result.sourceFingerprint === fingerprint && result.unresolvedBlockers === 0 && result.unresolvedImportant === 0, 'Independent review did not pass exact source');
+    const summary = JSON.parse(receipt.summary);
+    if (Array.isArray(summary.reports)) assert(new Set(summary.reports.map(r => r.kind)).size === summary.reports.length, 'Duplicate independent result kinds');
+    const result = Array.isArray(summary.reports) ? summary.reports.find(r => r.kind === report.kind) : summary;
+    assert(result && result.schemaVersion === 1 && result.kind === report.kind && result.decision === 'pass' && result.reviewedCommit === report.commit && result.sourceFingerprint === fingerprint && result.unresolvedBlockers === 0 && result.unresolvedImportant === 0, 'Independent review did not pass exact source');
     assert(d.delegates.some(r => r.taskId === receipt.taskId && r.status === 'completed' && r.sourceCommit === report.commit), 'Independent task provenance missing');
-    if (report.kind === 'independent-handoff') assert(result.restoredTask === task.id && Array.isArray(result.commands) && result.commands.some(c => c.exitCode === 0), 'No actual independent recovery verification');
+    if (report.kind === 'independent-handoff') {
+      assert(result.restoredTask === task.id && Array.isArray(result.commands) && result.commands.some(c => typeof c.command === 'string' && c.command.startsWith('node scripts/agent-resume.mjs') && c.exitCode === 0) && result.commands.some(c => ['npm test', 'npm run typecheck', 'npm run check:stack'].includes(c.command) && c.exitCode === 0), 'No actual independent recovery and follow-on verification');
+    }
   } else if (report.kind === 'ui') {
     assert(details.nativeGlassVerified === true && details.visualReview === 'pass' && typeof details.reviewerContext === 'string', 'Visual review missing');
     const images = details.screenshots; assert(Array.isArray(images), 'Screenshot manifest missing');
@@ -149,11 +160,11 @@ export function validateReport(d, task, report, root = ROOT, fingerprint = sourc
       const image = images.find(i => i.device === device && i.appearance === appearance && i.reviewed === true); assert(image, `Missing ${device}/${appearance} visual evidence`);
       const bytes = checkFile(root, image.path, image.sha256); assert(bytes.subarray(0, 8).equals(Buffer.from([137,80,78,71,13,10,26,10])), 'Not a PNG screenshot');
     }
-    assert(d.ci.some(c => c.id === details.ciId && c.attempt === details.attempt && c.head === report.commit && c.conclusion === 'success'), 'UI evidence lacks successful CI provenance');
+    assert(d.ci.some(c => c.id === details.ciId && c.attempt === details.attempt && c.head === report.commit && c.status === 'completed' && c.conclusion === 'success'), 'UI evidence lacks successful CI provenance');
   } else if (report.kind === 'ipa') {
     const verified = JSON.parse(checkFile(root, details.verificationPath, details.verificationSha256));
-    assert(verified.passed === true && verified.kind === 'unsigned-device-structure' && verified.sideStoreInstallVerified === false && SHA.test(details.archiveSha256 ?? ''), 'IPA structure verification missing');
-    assert(d.ci.some(c => c.id === details.ciId && c.attempt === details.attempt && c.head === report.commit && c.conclusion === 'success'), 'IPA evidence lacks successful CI provenance');
+    assert(verified.schemaVersion === 2 && verified.passed === true && verified.kind === 'unsigned-device-archive' && verified.code === 'IPA_VERIFIED' && verified.platform === 'iOS' && stable(verified.architectures) === stable(['arm64']) && Number.isInteger(verified.executables) && verified.executables > 0 && verified.sideStoreInstallVerified === false && SHA.test(details.archiveSha256 ?? '') && verified.sha256 === details.archiveSha256, 'Verified final device IPA archive/hash required');
+    assert(d.ci.some(c => c.id === details.ciId && c.attempt === details.attempt && c.head === report.commit && c.status === 'completed' && c.conclusion === 'success'), 'IPA evidence lacks successful CI provenance');
   } else if (report.kind.startsWith('device-')) {
     const confirmation = JSON.parse(checkFile(root, details.confirmationPath, details.confirmationSha256));
     assert(confirmation.source === 'user-message' && typeof confirmation.messageId === 'string' && confirmation.messageId.length > 0 && confirmation.commit === report.commit && confirmation.kind === report.kind && confirmation.passed === true && confirmation.simulator === false && typeof confirmation.deviceClass === 'string', 'Actual human device confirmation required');

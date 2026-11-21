@@ -70,6 +70,12 @@ Windows 本地实际运行 `npm test -- --test-reporter=spec`：**100 tests，10
 
 离线静态 IPA 检查、历史 Simulator 编译、device IPA 生成、SideStore 真机成功是四种不同证据。所有报告均明确 sideStoreInstallVerified=false。
 
+## 集成后的诊断补充
+
+父工作区另补充 `safe-diagnostics.py`，避免只有一个失败stage而无法排障：公开报告只含固定类别代码、Git HEAD中已有的相对源码名/行号，或HEAD package-lock中的包名/行号；**不复制原始错误消息、引号中的标识符/值、生成或未提交的源码名、绝对路径**。代码词表也从不可变Git源码读取，不能由安装后生成文件扩大。Ruby锁解析仅报告固定校验阶段；pods失败在清理私有日志前提取此类安全诊断，保留原退出码。环境只输出正则约束的8项公开工具版本，不输出env配置或模拟器标识。
+
+`collect-evidence.py` 分别生成白名单内的diagnostics/environment JSON；失败/中断时保留专用空白模拟器的failure.png，并执行相同PNG结构/元数据清理。新增键盘显隐、动画完成与原生手势探针截图也逐个列入白名单。现有不上传原始日志/签名材料/目录通配的断言保持，并将只核文件数量提升为完整预期集合比较。新增合成privacy fixture检验：即使私有标记存在于源码文本或生成文件中，也不能经诊断回显；不使用真实数据。
+
 ## 回滚
 
 如发现兼容问题，在开发分支 revert 本实现提交，保留 bootstrap 未验收状态；不得通过放宽权限/签名/平台断言或忽略锁差异来让 job 变绿。对合法新键、新依赖来源或生成结构的支持应有真实 macOS fixture 和独立复审后再加入显式表。

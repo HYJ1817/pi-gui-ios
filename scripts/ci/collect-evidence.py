@@ -5,6 +5,7 @@ No raw logs, test names, error strings, simulator inventory, PNG text or paths p
 through. Inputs originate only in this job's isolated synthetic simulator run.
 """
 import json
+import importlib.util
 import os
 import pathlib
 import struct
@@ -12,11 +13,15 @@ import sys
 import xml.etree.ElementTree as ET
 import zlib
 
+_spec = importlib.util.spec_from_file_location('native_safe_diagnostics', pathlib.Path(__file__).with_name('safe-diagnostics.py'))
+diagnostics = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(diagnostics)
+
 STEPS = ('environment', 'npm', 'prebuild', 'pods', 'maestro', 'simulator-build',
          'iphone', 'ipad', 'device-build', 'ipa')
-SHOTS = ('01-native-glass.png', '02-interactions.png', '03-navigation.png',
+SHOTS = ('01-native-glass.png', '02-interactions.png', '03-navigation.png', '04-keyboard-visible.png', '05-native-motion.png', '06-native-menu.png',
          'dark/appearance.png', 'accessibility/reduce-transparency.png',
-         'accessibility/dynamic-type.png', 'final.png')
+         'accessibility/dynamic-type.png', 'final.png', 'failure.png')
 PHASES = ('native', 'dark', 'accessibility')
 
 
@@ -121,6 +126,10 @@ def collect(private, output):
         steps.append(item)
     (reports / 'steps.json').write_text(json.dumps({'schemaVersion': 1, 'steps': steps,
         'sideStoreInstallVerified': False}, sort_keys=True) + '\n', encoding='utf-8')
+    failures = [diagnostics.scan(item['step'], [private / 'logs' / (item['step'] + '.log')])
+                for item in steps if item['status'] in ('failed', 'interrupted', 'bootstrap-required')]
+    (reports / 'diagnostics.json').write_text(json.dumps({'schemaVersion': 1, 'diagnostics': failures}, sort_keys=True) + '\n', encoding='utf-8')
+    (reports / 'environment.json').write_text(json.dumps(diagnostics.environment(private / 'logs/environment.log'), sort_keys=True) + '\n', encoding='utf-8')
     for device in ('iphone', 'ipad'):
         for phase in PHASES:
             source = private / 'ui' / device / (phase + '.xml')

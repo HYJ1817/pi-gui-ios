@@ -2,9 +2,9 @@ name: Native infrastructure
 on:
   push:
     branches: ['agent/**']
-    paths: ['app/**', 'src/**', 'modules/**', 'scripts/**', 'tests/**', '.maestro/**', 'native/**', 'Gemfile', 'Gemfile.lock', 'package.json', 'package-lock.json', 'app.json', 'tsconfig.json', '.github/workflows/**']
+    paths: ['App.tsx', 'index.ts', 'global.css', 'metro.config.js', 'babel.config.js', 'src/**', 'modules/**', 'scripts/**', 'tests/**', '.agent/schemas/**', '.maestro/**', 'native/**', 'Gemfile', 'Gemfile.lock', 'package.json', 'package-lock.json', 'app.json', 'tsconfig.json', '.github/workflows/**']
   pull_request:
-    paths: ['app/**', 'src/**', 'modules/**', 'scripts/**', 'tests/**', '.maestro/**', 'native/**', 'Gemfile', 'Gemfile.lock', 'package.json', 'package-lock.json', 'app.json', 'tsconfig.json', '.github/workflows/**']
+    paths: ['App.tsx', 'index.ts', 'global.css', 'metro.config.js', 'babel.config.js', 'src/**', 'modules/**', 'scripts/**', 'tests/**', '.agent/schemas/**', '.maestro/**', 'native/**', 'Gemfile', 'Gemfile.lock', 'package.json', 'package-lock.json', 'app.json', 'tsconfig.json', '.github/workflows/**']
   workflow_dispatch:
 permissions:
   contents: read
@@ -146,6 +146,8 @@ jobs:
           name: m-1-ios-${{ github.run_id }}
           path: |
             artifacts/reports/steps.json
+            artifacts/reports/diagnostics.json
+            artifacts/reports/environment.json
             artifacts/reports/iphone-native.xml
             artifacts/reports/iphone-dark.xml
             artifacts/reports/iphone-accessibility.xml
@@ -155,17 +157,25 @@ jobs:
             artifacts/screenshots/iphone/01-native-glass.png
             artifacts/screenshots/iphone/02-interactions.png
             artifacts/screenshots/iphone/03-navigation.png
+            artifacts/screenshots/iphone/04-keyboard-visible.png
+            artifacts/screenshots/iphone/05-native-motion.png
+            artifacts/screenshots/iphone/06-native-menu.png
             artifacts/screenshots/iphone/dark/appearance.png
             artifacts/screenshots/iphone/accessibility/reduce-transparency.png
             artifacts/screenshots/iphone/accessibility/dynamic-type.png
             artifacts/screenshots/iphone/final.png
+            artifacts/screenshots/iphone/failure.png
             artifacts/screenshots/ipad/01-native-glass.png
             artifacts/screenshots/ipad/02-interactions.png
             artifacts/screenshots/ipad/03-navigation.png
+            artifacts/screenshots/ipad/04-keyboard-visible.png
+            artifacts/screenshots/ipad/05-native-motion.png
+            artifacts/screenshots/ipad/06-native-menu.png
             artifacts/screenshots/ipad/dark/appearance.png
             artifacts/screenshots/ipad/accessibility/reduce-transparency.png
             artifacts/screenshots/ipad/accessibility/dynamic-type.png
             artifacts/screenshots/ipad/final.png
+            artifacts/screenshots/ipad/failure.png
           retention-days: 7
           if-no-files-found: warn
       - name: Upload safe lock candidates for review only

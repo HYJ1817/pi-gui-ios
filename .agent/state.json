@@ -1,50 +1,79 @@
 {
   "schemaVersion": 2,
   "kind": "state",
-  "revision": 33,
-  "updatedAt": "2026-11-20T18:23:45.737Z",
+  "revision": 37,
+  "updatedAt": "2026-11-21T03:58:47.770Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "7da4cebbef135b81cc839b52f12a7252c5fa07b5d43ff8b0129a30de57ee04b5",
+    "parentDigest": "115ef614accad81e1397a88e1ffe14f4b7a9a86876fa063476cf7b89ed3f4cda",
     "phase": "M-1",
     "currentTask": "M-1-infrastructure",
     "branch": "agent/m-1-bootstrap",
     "checkpoint": {
-      "id": "v2-2026-11-20T18-23-45-737Z-7a71abee-1bde-4f2c-bf17-70cdbff7dc9c",
-      "path": ".agent/checkpoints/v2-2026-11-20T18-23-45-737Z-7a71abee-1bde-4f2c-bf17-70cdbff7dc9c.json",
-      "sha256": "21c19d2f6321dfd50ecdc65b7ffcbb796e5533692741e7d913011654280fc5fc",
-      "authorityDigest": "bb592b48aceca23dbd6d1669da5173c0d21aa9f759d09e55366dc60c14c23662",
-      "at": "2026-11-20T18:23:45.737Z",
+      "id": "v2-2026-11-21T03-58-47-770Z-838ea4ae-8dee-4c17-91dc-eff403d0069f",
+      "path": ".agent/checkpoints/v2-2026-11-21T03-58-47-770Z-838ea4ae-8dee-4c17-91dc-eff403d0069f.json",
+      "sha256": "760b696e4ba89596b0c1e5c48affd47ba572e770f89acc07ebe272f341389f3d",
+      "authorityDigest": "49fc7b5be7254a7847437560c2bd3e48e09cda007fb5f8ec93a56cecee029de5",
+      "at": "2026-11-21T03:58:47.770Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "88dfc96c41035b557648435a22e49afb12b9d3ee",
+        "commit": "7c6076e23fd21d69a87bd7f138849ed90630ecad",
         "dirty": [
           "M .agent/HANDOFF.md",
           " M .agent/control.json",
           " M .agent/state.json",
           " M .agent/tasks.json",
-          " M AGENTS.md",
+          " M .github/workflows/native-infrastructure.yml",
+          " M .gitignore",
+          " M .maestro/native.yaml",
           " M PROGRESS.md",
-          " M scripts/agent-resume.mjs",
-          " M scripts/lib/recovery.mjs",
+          " M app.json",
+          " D app/_layout.tsx",
+          " D app/diagnostics.tsx",
+          " D app/index.tsx",
+          " M docs/architecture.md",
+          " M docs/decisions/0003-native-build-integrity.md",
+          " M docs/decisions/technology-stack.md",
+          " M docs/design-system.md",
+          " M docs/testing.md",
+          " M package-lock.json",
+          " M package.json",
+          " M scripts/ci/collect-evidence.py",
+          " M scripts/ci/install-pods.sh",
+          " M scripts/ci/native-dependencies.py",
+          " M scripts/ci/simulator.sh",
+          " M scripts/ci/validate-locks.rb",
+          " M scripts/lib/control.mjs",
+          " M scripts/verify.mjs",
           " M tests/control.test.mjs",
-          "?? .agent/checkpoints/v2-2026-11-20T18-08-31-396Z-1e886974-b747-46ab-be96-a56ef5684a03.json",
-          "?? docs/acceptance/M-1-handoff-review-1.md",
-          "?? docs/acceptance/handoff-review-1-receipt.json",
-          "?? docs/acceptance/native-fix-implementation-receipt.json"
+          " M tests/ipa-integrity.test.mjs",
+          " M tsconfig.json",
+          "?? .agent/checkpoints/v2-2026-11-20T18-49-56-180Z-992fd4b2-e260-49d6-a707-a7478368bdd4.json",
+          "?? .agent/checkpoints/v2-2026-11-21T01-19-37-337Z-2a3895e4-a20a-44da-b047-eb1eb94f292c.json",
+          "?? App.tsx",
+          "?? docs/acceptance/t3-main-delta-285558eb.json",
+          "?? global.css",
+          "?? index.ts",
+          "?? metro.config.js",
+          "?? scripts/check-technology-stack.mjs",
+          "?? scripts/ci/safe-diagnostics.py",
+          "?? src/navigation/",
+          "?? src/screens/",
+          "?? src/uniwind-types.d.ts",
+          "?? tests/ci-diagnostics.test.mjs"
         ]
       },
-      "sourceFingerprint": "fdc9dc25d7fca73f355be23a83f4810efe796a98c79f4f060f627805d4f59438",
-      "note": "两个旧基线独立审查与隔离实现均已回传；保存用户第14条技术栈对齐要求和最新T3 main基线"
+      "sourceFingerprint": "6877c02288e7f7f2d2dd78c7cc13b5dda4e9cd34466d05e6685c1bc4951aed2e",
+      "note": "冻结迁移与安全诊断实现，进入testing；提交后跑完整新证据并推送bootstrap"
     },
     "blockers": [
-      "S1 证据报告未按类型校验且依赖未递归复验（v2修复与回归已实现，待独立复审）",
-      "S2 IPA失败暂存位于公开上传范围",
-      "S3 IPA平台/签名/权限验证不足",
-      "S4 CocoaPods管道与原生锁待修复",
-      "S5 symlink/junction路径边界待修复（v2修复与回归已实现，待独立复审）",
-      "S6 状态schema和CI导入校验不足（v2修复与回归已实现，待独立复审）",
-      "S7 检查点事务顺序和投影修复锁不足（v2修复与回归已实现，待独立复审）"
+      "S1 v2原始证据/类型/提交与递归门禁已实现，待精确提交独立复审",
+      "S2 IPA私有暂存/明确上传集合与脱敏诊断已实现，待独立复审及实际CI证明",
+      "S3 最终归档Mach-O/平台/签名/权限校验已实现，缺真实device IPA与独立复审",
+      "S4 工具版本和pipefail已实现，缺真实macOS候选锁/审核/locked构建",
+      "S5 symlink/junction普通文件边界已实现并回归，待独立复审",
+      "S6 完整schema与CI身份/状态导入已实现，待独立复审",
+      "S7 检查点先持久化/持锁修复/显式恢复和候选诊断已实现，待独立复审"
     ],
     "ci": [
       {
@@ -87,6 +116,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "1efe06f6aef9b834d4e781f72ad9e64c6b85429883a6e5dfc5655a0d5cd0d92e"
+    "digest": "91053dbf94fc0d2578cd4e37ebd99f76751e2a4f2fdf77a1ee27358eeae17ed3"
   }
 }

@@ -1,0 +1,171 @@
+{
+  "schemaVersion": 1,
+  "kind": "t3-current-main-delta-audit",
+  "observedAt": "2026-11-21T01:32:54.325Z",
+  "repository": "pingdotgg/t3code",
+  "auditedBaselineCommit": "068332c603ce5ca40ad5a96a09cffa34ebd05dff",
+  "currentMainCommit": "285558eb1053d17f59ea8ecdf7c57999e92381f8",
+  "lockDocumentCount": 2,
+  "lockSha256": "20cd2948ce75268bfa07df5127cc16191daacd9a53f94a1032c1d914ee71f336",
+  "mobileDependencyCount": 102,
+  "removedDependencies": [
+    {
+      "name": "@react-native-ai/apple",
+      "version": "0.12.0(patch_hash=2d09870c2848d185cb05b53ed823a46e12dba519324d8dd8e584e28731990f9d)(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(@types/react@19.3.0)(bufferutil@4.1.0)(react@19.3.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))"
+    }
+  ],
+  "changedDependencies": [
+    {
+      "name": "expo-audio",
+      "section": "dependencies",
+      "declared": "58.0.11",
+      "lockedVersion": "58.0.11(patch_hash=a483900b44be8042b1eeaa9893fc2c9c7f53184c7a0b349e9d9d61262b306954)(expo-asset@58.0.20(expo@58.0.23)(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(@types/react@19.3.0)(bufferutil@4.1.0)(react@19.3.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(react@19.3.0)(supports-color@8.1.1)(typescript@6.0.3))(expo@58.0.23)(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(bufferutil@4.1.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(@types/react@19.3.0)(bufferutil@4.1.0)(react@19.3.0)(supports-color@8.1.1)(utf-8-validate@6.0.6))(react@19.3.0)",
+      "resolution": {
+        "integrity": "sha512-r/3QzCZ+rHUrjAFoZpczUaC1N3uuHhjKr9YfsOlT3tnXFF+AC6EVofOc8S4OYPdgveIljLpouFcNps6ynf0U2A=="
+      },
+      "unchangedFromAuditedBaseline": false,
+      "registryEvidenceFrom": "t3-main-technology-inventory.json"
+    }
+  ],
+  "coreChoicesUnchanged": true,
+  "coreVersions": {
+    "react": "19.3.0",
+    "react-native": "0.88.1",
+    "@react-navigation/native": "7.5.1",
+    "@react-navigation/native-stack": "7.21.0",
+    "@react-navigation/elements": "2.9.45",
+    "uniwind": "1.13.2",
+    "tailwindcss": "4.3.3",
+    "expo-glass-effect": "58.0.5",
+    "@react-native-menu/menu": "2.0.0",
+    "react-native-reanimated": "4.7.1",
+    "react-native-gesture-handler": "3.5.0",
+    "react-native-worklets": "0.13.1",
+    "react-native-keyboard-controller": "1.23.0"
+  },
+  "packageManager": "pnpm@12.14.0",
+  "node": "26.13.1",
+  "mobilePatchCount": 19,
+  "sourceComparison": [
+    {
+      "path": "package.json",
+      "beforeSha256": "97e395cf3e8f5fccf62bb790d4fb4179368f89ed887604313f2723a0d683ee4e",
+      "afterSha256": "97e395cf3e8f5fccf62bb790d4fb4179368f89ed887604313f2723a0d683ee4e",
+      "changed": false
+    },
+    {
+      "path": "apps/mobile/package.json",
+      "beforeSha256": "b4d671714e783ba8e802745fb28d02714b1a21fc05cd5b99ae3a85458c6eafe0",
+      "afterSha256": "477b4d8235b5eb43161a1b9d6721a8a78a3532eb7f793dcece79b02afab4e4a3",
+      "changed": true
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "beforeSha256": "5a6297ef45a270d52d79dbab4644368aaa664cb78aeb1f4fe3d897c1c38e9a7b",
+      "afterSha256": "20cd2948ce75268bfa07df5127cc16191daacd9a53f94a1032c1d914ee71f336",
+      "changed": true
+    },
+    {
+      "path": "pnpm-workspace.yaml",
+      "beforeSha256": "f78daf1e61d97d5e829a07b92277f5f791bd938b01072624ba1812faa9bf0c40",
+      "afterSha256": "08bbd1beb96cd9879d8e67b6e37c45a548c7c00e9f70a53e1d156b2a6ceeb04f",
+      "changed": true
+    },
+    {
+      "path": "apps/mobile/src/App.tsx",
+      "beforeSha256": "80363393e5d56238c0837ea2879419c6f35aa9335f83f4dbf74955999102599d",
+      "afterSha256": "80363393e5d56238c0837ea2879419c6f35aa9335f83f4dbf74955999102599d",
+      "changed": false
+    },
+    {
+      "path": "apps/mobile/src/Stack.tsx",
+      "beforeSha256": "1d118e2ce0592656b966caaeabea9c7122bc6e8dbf0890a2deb16446e456c6cc",
+      "afterSha256": "4523acdc4843bf541d737832c7e730cbec2e7c264766a85e466fdca1c2856ee7",
+      "changed": true
+    },
+    {
+      "path": "apps/mobile/src/native/EnrichedMarkdownText.tsx",
+      "beforeSha256": "16bb79a5c2cba132c5973df00a993ad5e6ae0bcec2270987fc18cb8e5cc96de9",
+      "afterSha256": "16bb79a5c2cba132c5973df00a993ad5e6ae0bcec2270987fc18cb8e5cc96de9",
+      "changed": false
+    },
+    {
+      "path": "apps/mobile/src/components/ui/GlassSurface.tsx",
+      "beforeSha256": "787ee1fa9eaabc5917058252184e956bb586711947da9917129d6ad4c0887cd9",
+      "afterSha256": "787ee1fa9eaabc5917058252184e956bb586711947da9917129d6ad4c0887cd9",
+      "changed": false
+    },
+    {
+      "path": "apps/mobile/src/features/threads/ThreadFeed.tsx",
+      "beforeSha256": "0a076e18b9ea803072a23d38d25492fa4c0a8c32b8e6900a29f177582f9767f0",
+      "afterSha256": "3817cc1bf88e986e082d10a78396cbad0cf6e38ee0275f0b0ff1c65f19d00f70",
+      "changed": true
+    },
+    {
+      "path": "apps/mobile/src/features/threads/thread-work-log.tsx",
+      "beforeSha256": "6cd34d1531fa8dda41709475347f07e8d8023a500f7c0794d24457e9e46f9c79",
+      "afterSha256": "288a99242a1f66301dda99aba81ea765d50bc7a8cdc31850ca88363627bd6602",
+      "changed": true
+    },
+    {
+      "path": "apps/mobile/src/components/ComposerEditor.tsx",
+      "beforeSha256": "3ffa8f78c5b9c9d36e0feea5ef7576001fc4f3fb5695e4784cf9cdccf0fe0636",
+      "afterSha256": "0195d5072d70494ff467224441213a6caa814f51b72a48384557c3bb1f16fa2e",
+      "changed": true
+    },
+    {
+      "path": "apps/mobile/src/connection/onboarding.ts",
+      "beforeSha256": "db701aa426cc2d2c4b8cdf6a81a384a542c129e40b6ba49e24822d43cc310fab",
+      "afterSha256": "8c27b499a732373e660afb5df2d41f99a8d5629dde66b85c6d1ef16ba37790d4",
+      "changed": true
+    },
+    {
+      "path": "apps/mobile/metro.config.js",
+      "beforeSha256": "1156ce9900c8d9a7a365173f1db645e081f3a6d6c8d33662fdd6109bee0dbca0",
+      "afterSha256": "1156ce9900c8d9a7a365173f1db645e081f3a6d6c8d33662fdd6109bee0dbca0",
+      "changed": false
+    },
+    {
+      "path": "apps/mobile/vite.config.ts",
+      "beforeSha256": "9ca6de5388bd4a7b0ca0056c1b0088860cb2a204257a1ee9bdcae50d5092f473",
+      "afterSha256": "9ca6de5388bd4a7b0ca0056c1b0088860cb2a204257a1ee9bdcae50d5092f473",
+      "changed": false
+    },
+    {
+      "path": "scripts/mobile-e2e.ts",
+      "beforeSha256": "374bcf25dfb86b2b550aff8ec89190892e54045722cd20e55cdc40bc29c47329",
+      "afterSha256": "374bcf25dfb86b2b550aff8ec89190892e54045722cd20e55cdc40bc29c47329",
+      "changed": false
+    },
+    {
+      "path": "scripts/mobile-behavior.ts",
+      "beforeSha256": "5320604d04a3599464c84cef658415baaca42deac16696468a41cd3d390729e1",
+      "afterSha256": "5320604d04a3599464c84cef658415baaca42deac16696468a41cd3d390729e1",
+      "changed": false
+    },
+    {
+      "path": "patches/@react-navigation%2Fnative-stack@7.21.0.patch",
+      "beforeSha256": "990d575444c4af2ce8218b3b7a8280fe244c03abbdb32b822a2e862f791dbf42",
+      "afterSha256": "990d575444c4af2ce8218b3b7a8280fe244c03abbdb32b822a2e862f791dbf42",
+      "changed": false
+    },
+    {
+      "path": "patches/react-native-gesture-handler@3.5.0.patch",
+      "beforeSha256": "171379dd378f8f11e9187876dec2116e5cbf5f21cef6576cdde6956518324f98",
+      "afterSha256": "171379dd378f8f11e9187876dec2116e5cbf5f21cef6576cdde6956518324f98",
+      "changed": false
+    },
+    {
+      "path": "patches/react-native-reanimated@4.7.1.patch",
+      "beforeSha256": "95ee26e5fcab5f50bc4b4c47b3f7e6278a0b20850205efb9f6ee7e70a22d2b59",
+      "afterSha256": "95ee26e5fcab5f50bc4b4c47b3f7e6278a0b20850205efb9f6ee7e70a22d2b59",
+      "changed": false
+    },
+    {
+      "path": "patches/react-native-keyboard-controller@1.23.0.patch",
+      "beforeSha256": "1c7c80317ef050e08d4aabe034a0813d03b497dff2dc8b37fb5f4a6e3b20fddb",
+      "afterSha256": "1c7c80317ef050e08d4aabe034a0813d03b497dff2dc8b37fb5f4a6e3b20fddb",
+      "changed": false
+    }
+  ]
+}

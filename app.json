@@ -12,7 +12,6 @@
       "supportsTablet": true,
       "infoPlist": { "ITSAppUsesNonExemptEncryption": false }
     },
-    "plugins": ["expo-router"],
-    "experiments": { "typedRoutes": true }
+    "plugins": []
   }
 }

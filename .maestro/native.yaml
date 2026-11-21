@@ -8,7 +8,8 @@ name: Native infrastructure interactions
     timeout: 30000
 - takeScreenshot: ${SCREENSHOT_DIR}/01-native-glass
 - tapOn: "Open native menu"
-- assertVisible: "Native validation menu"
+- assertVisible: "Show diagnostic"
+- takeScreenshot: ${SCREENSHOT_DIR}/06-native-menu
 - tapOn: "Show diagnostic"
 - scrollUntilVisible:
     element:
@@ -17,7 +18,14 @@ name: Native infrastructure interactions
 - tapOn:
     id: "device-label"
 - inputText: "CI synthetic device"
+- extendedWaitUntil:
+    visible: "Keyboard state: visible"
+    timeout: 10000
+- takeScreenshot: ${SCREENSHOT_DIR}/04-keyboard-visible
 - hideKeyboard
+- extendedWaitUntil:
+    visible: "Keyboard state: hidden"
+    timeout: 10000
 - assertVisible: "Preview label: CI synthetic device"
 - scrollUntilVisible:
     element:
@@ -28,6 +36,31 @@ name: Native infrastructure interactions
 - assertVisible: "Demo preference: on"
 - assertVisible: "Native menu confirmed"
 - takeScreenshot: ${SCREENSHOT_DIR}/02-interactions
+- scrollUntilVisible:
+    element:
+      id: "run-animation"
+    direction: DOWN
+- tapOn:
+    id: "run-animation"
+- scrollUntilVisible:
+    element:
+      id: "animation-result"
+    direction: DOWN
+- extendedWaitUntil:
+    visible: "Animation completed"
+    timeout: 10000
+- scrollUntilVisible:
+    element:
+      id: "native-gesture"
+    direction: DOWN
+- tapOn:
+    id: "native-gesture"
+- scrollUntilVisible:
+    element:
+      id: "gesture-result"
+    direction: DOWN
+- assertVisible: "Native gesture confirmed"
+- takeScreenshot: ${SCREENSHOT_DIR}/05-native-motion
 - scrollUntilVisible:
     element:
       id: "open-diagnostics"

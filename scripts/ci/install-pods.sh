@@ -3,7 +3,16 @@ set -euo pipefail
 : "${RUNNER_TEMP:?}"
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 PRIVATE="$(mktemp -d "$RUNNER_TEMP/piguimobile-pods.XXXXXX")"
-trap 'rm -rf -- "$PRIVATE"' EXIT
+cleanup() {
+  local status=$?
+  trap - EXIT HUP INT TERM
+  if [[ "$status" != 0 ]]; then
+    "${PYTHON:-python3}" "$ROOT/scripts/ci/safe-diagnostics.py" pods "$PRIVATE/bundle.log" "$PRIVATE/pods.log" || true
+  fi
+  rm -rf -- "$PRIVATE"
+  exit "$status"
+}
+trap cleanup EXIT
 trap 'exit 129' HUP
 trap 'exit 130' INT
 trap 'exit 143' TERM

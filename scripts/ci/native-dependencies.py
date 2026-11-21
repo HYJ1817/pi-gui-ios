@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Reviewed locks + byte-level prebuilt dependency inventory, before any build."""
 import hashlib
+import importlib.util
 import json
 import os
 import pathlib
@@ -14,9 +15,9 @@ class GateError(Exception):
     pass
 
 
-def check(ok):
+def check(ok, code='NATIVE_DEPENDENCIES_REJECTED'):
     if not ok:
-        raise GateError()
+        raise GateError(code)
 
 
 def digest(path):
@@ -39,12 +40,12 @@ def policy(root):
 def inventory(root):
     files = []
     for label, base in [('pods', root / 'ios/Pods'), ('npm', root / 'node_modules')]:
-        check(base.is_dir())
+        check(base.is_dir(), 'NATIVE_DEPENDENCY_TREE_MISSING')
         for directory, dirs, names in os.walk(base, followlinks=False):
             for name in dirs:
                 path = pathlib.Path(directory) / name
                 native = any(p.endswith(('.framework', '.xcframework')) for p in path.relative_to(base).parts)
-                check(not (native and path.is_symlink()))
+                check(not (native and path.is_symlink()), 'NATIVE_PREBUILT_LINK_REJECTED')
             for name in names:
                 path = pathlib.Path(directory) / name
                 relative = path.relative_to(base)
@@ -56,9 +57,9 @@ def inventory(root):
                         native = stream.read(4) in (b'\xcf\xfa\xed\xfe', b'\xca\xfe\xba\xbe',
                                                    b'\xca\xfe\xba\xbf', b'\xfe\xed\xfa\xcf')
                 if native:
-                    check(not path.is_symlink() and path.is_file())
+                    check(not path.is_symlink() and path.is_file(), 'NATIVE_PREBUILT_LINK_REJECTED')
                     safe = label + '/' + relative.as_posix()
-                    check(re.fullmatch(r'[A-Za-z0-9_@./+ ()\-]+', safe) is not None)
+                    check(re.fullmatch(r'[A-Za-z0-9_@./+ ()\-]+', safe) is not None, 'NATIVE_PREBUILT_PATH_REJECTED')
                     files.append({'path': safe, 'sha256': digest(path), 'size': path.stat().st_size})
     return {'schemaVersion': 1, 'files': sorted(files, key=lambda item: item['path'])}
 
@@ -95,7 +96,7 @@ def verify_locked(root, candidate, manifest):
     review = load(root / 'native/lock-review.json')
     check(review.get('schemaVersion') == 1 and review.get('approved') is True
           and review.get('hashes') == hashes(root, candidate))
-    check(manifest == load(root / 'native/prebuilt-dependencies.json'))
+    check(manifest == load(root / 'native/prebuilt-dependencies.json'), 'NATIVE_PREBUILT_BYTES_CHANGED')
 
 
 def finish(root, private):
@@ -106,7 +107,14 @@ def finish(root, private):
     shutil.copyfile(private / 'Gemfile.lock', candidate / 'Gemfile.lock')
     shutil.copyfile(root / 'ios/Podfile.lock', candidate / 'Podfile.lock')
     result = subprocess.run(['ruby', str(root / 'scripts/ci/validate-locks.rb'), str(candidate)],
-                            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=60)
+                            stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=60)
+    if result.returncode != 0:
+        spec = importlib.util.spec_from_file_location('native_safe_diagnostics', pathlib.Path(__file__).with_name('safe-diagnostics.py'))
+        diagnostics = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(diagnostics)
+        public_codes = [line.strip() for line in result.stderr.splitlines() if line.strip() in diagnostics.safe_codes()]
+        for code in public_codes or ['NATIVE_LOCK_VALIDATOR_FAILED']:
+            print(code)
     check(result.returncode == 0)
     manifest = inventory(root)
     (candidate / 'prebuilt-dependencies.json').write_text(json.dumps(manifest, sort_keys=True, indent=2) + '\n', encoding='utf-8')
@@ -134,6 +142,9 @@ if __name__ == '__main__':
             prepare(root, private)
             sys.exit(0)
         sys.exit(finish(root, private))
-    except (GateError, OSError, ValueError, KeyError, subprocess.SubprocessError):
-        print('NATIVE_DEPENDENCIES_REJECTED')
+    except GateError as error:
+        print(str(error))
+        sys.exit(1)
+    except (OSError, ValueError, KeyError, subprocess.SubprocessError):
+        print('NATIVE_DEPENDENCIES_IO_OR_PARSE_ERROR')
         sys.exit(1)

@@ -12,6 +12,7 @@ mkdir -p "$SHOTS/dark" "$SHOTS/accessibility" "$UI"
 cleanup() {
   local status=$?
   trap - EXIT HUP INT TERM
+  if [[ "$status" != 0 ]]; then xcrun simctl io "$UDID" screenshot "$SHOTS/failure.png" >/dev/null 2>&1 || true; fi
   xcrun simctl shutdown "$UDID" >/dev/null 2>&1 || true
   exit "$status"
 }

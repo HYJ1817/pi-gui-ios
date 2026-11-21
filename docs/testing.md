@@ -1,8 +1,8 @@
 # 测试规范
 
-npm test 是 canonical 本地自动化入口；必须包含恢复故障注入和门禁测试。npm run typecheck、npm run export:ios 验证类型与 Metro iOS bundle；npx expo-doctor 验证 SDK 依赖。Windows 不声称能运行 Xcode。
+npm test 是 canonical 本地自动化入口；包含恢复故障注入、IPA/CI安全测试以及与固定T3研究证据匹配的精确技术栈合同。三个已论证的第三方版本差异由闭合名单和精确版本检查替代Expo推荐值比较，仍必须通过native运行验证，不用忽略标志代替兼容证据。npm run typecheck、npm run export:ios 验证类型与 Metro iOS bundle；npx expo-doctor 验证 SDK 依赖。Windows 不声称能运行 Xcode。
 
-GitHub 标准 macOS-26：记录 sw_vers/xcodebuild/simctl 版本与实际选中 runtime；本地 prebuild/CocoaPods；Release simulator 无 Metro 独立运行；Maestro CLI 固定版本与校验和；iPhone/iPad 点击、输入、滑动、断言；深浅色/大字/低透明度截图、native hierarchy、JUnit、构建日志；always 上传合成证据。不得使用付费 Maestro Cloud/EAS 服务。
+GitHub 标准 macOS-26：记录 sw_vers/xcodebuild/simctl 版本与实际选中 runtime；本地 prebuild/CocoaPods；Release simulator 无 Metro 独立运行；Maestro CLI 固定版本与校验和；iPhone/iPad 点击、输入、滑动、断言；深浅色/大字/低透明度截图、必要原生层次证据、JUnit、闭合代码和公开源码定位的结构化诊断；只上传明确白名单中的合成证据，原始构建日志与模拟器清单留在私有临时目录。不得使用付费 Maestro Cloud/EAS 服务。
 
 设备构建单独 generic/platform=iOS、iphoneos arm64、CODE_SIGNING_ALLOWED=NO。IPA 是待 SideStore 重签产物，结构校验不是安装成功。集中人工清单见 acceptance/M-1-device-checklist.md。
 

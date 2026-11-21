@@ -1,5 +1,6 @@
 import { spawnSync } from 'node:child_process';
-import { resolve } from 'node:path';
+import { resolve, dirname } from 'node:path';
+import { existsSync } from 'node:fs';
 import { ROOT, atomicWrite, sourceFingerprint, snapshot, loadControl, digest, createCheckpoint } from './lib/control.mjs';
 const kind = process.argv[2];
 const commands = {
@@ -11,8 +12,10 @@ const commands = {
 const command = commands[kind]; if (!command) throw new Error('Use unit, typecheck, bundle, doctor');
 const startedAt = new Date().toISOString(), fingerprint = sourceFingerprint(), commit = snapshot().commit;
 if (!commit) throw new Error('Commit the initial source before producing acceptance reports');
-// Shell is needed only for Windows npm.cmd; executable/arguments are a closed table, never user input.
-const r = spawnSync(command.program, command.args, { cwd: ROOT, shell: process.platform === 'win32' && command.program === 'npm', encoding: 'utf8', windowsHide: true, maxBuffer: 32 * 1024 * 1024, env: { ...process.env, CI: '1', EXPO_NO_TELEMETRY: '1' } });
+const npmCli = command.program === 'npm' ? [process.env.npm_execpath, resolve(dirname(process.execPath), 'node_modules/npm/bin/npm-cli.js'), resolve(dirname(process.execPath), '../lib/node_modules/npm/bin/npm-cli.js')].find(path => path?.endsWith('npm-cli.js') && existsSync(path)) : null;
+if (command.program === 'npm' && !npmCli) throw new Error('Cannot locate the installed npm CLI; no shell fallback is allowed');
+const args = command.program === 'npm' ? [npmCli, ...command.args] : command.args;
+const r = spawnSync(process.execPath, args, { cwd: ROOT, shell: false, encoding: 'utf8', windowsHide: true, maxBuffer: 32 * 1024 * 1024, env: { ...process.env, CI: '1', EXPO_NO_TELEMETRY: '1' } });
 const output = (r.stdout ?? '') + (r.stderr ?? '') + (r.error?.message ?? '');
 const logPath = 'docs/acceptance/local-' + kind + '-output.txt'; atomicWrite(resolve(ROOT, logPath), output);
 const report = { schemaVersion: 2, kind, taskId: loadControl().data.currentTask, commit, sourceFingerprint: fingerprint, startedAt, finishedAt: new Date().toISOString(), passed: r.status === 0 && fingerprint === sourceFingerprint(), details: { command: command.label, exitCode: r.status ?? 1, logPath, logSha256: digest(output) } };

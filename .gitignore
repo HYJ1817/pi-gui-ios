@@ -5,6 +5,8 @@ android/
 dist/
 artifacts/
 coverage/
+__pycache__/
+*.pyc
 *.log
 .env*
 !.env.example

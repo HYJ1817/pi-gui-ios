@@ -188,6 +188,30 @@ test('a completed independent task with a failing original result cannot become 
   writeFileSync(resolve(root, receiptPath), JSON.stringify(receipt)); report.details.receiptSha256 = digest(readFileSync(resolve(root, receiptPath)));
   assert.throws(() => validateReport(d, d.tasks[0], report, root), /did not pass/);
 });
+test('explicit separate review and handoff results are checked independently in one fresh-context receipt', t => {
+  const { root, d } = fixture(t), commit = snapshot(root).commit; d.tasks[0].requiredEvidence = ['independent-review', 'independent-handoff'];
+  const { report } = proof(root, d, { kind: 'independent-review' });
+  const base = { schemaVersion: 1, decision: 'pass', reviewedCommit: commit, sourceFingerprint: sourceFingerprint(root), unresolvedBlockers: 0, unresolvedImportant: 0 };
+  const results = [{ ...base, kind: 'independent-review' }, { ...base, kind: 'independent-handoff', restoredTask: 'infra', commands: [{ command: 'node scripts/agent-resume.mjs --remote', exitCode: 0 }, { command: 'npm test', exitCode: 0 }] }];
+  const receipt = { taskId: 'fixture-combined-review', latestTerminalStatus: 'completed', executedModel: 'fixture-model', summary: JSON.stringify({ reports: results }) };
+  const receiptPath = 'docs/acceptance/combined-review.json'; const save = () => { writeFileSync(resolve(root, receiptPath), JSON.stringify(receipt)); report.details = { receiptPath, receiptSha256: digest(readFileSync(resolve(root, receiptPath))) }; };
+  d.delegates = [{ taskId: receipt.taskId, role: 'functional-and-handoff', status: 'completed', sourceCommit: commit }]; save();
+  assert.ok(validateReport(d, d.tasks[0], report, root));
+  report.kind = 'independent-handoff'; assert.ok(validateReport(d, d.tasks[0], report, root));
+  results[0].decision = 'fail'; results[0].unresolvedImportant = 1; receipt.summary = JSON.stringify({ reports: results }); save();
+  report.kind = 'independent-review'; assert.throws(() => validateReport(d, d.tasks[0], report, root), /did not pass/);
+  report.kind = 'independent-handoff'; assert.ok(validateReport(d, d.tasks[0], report, root));
+  results[1].commands = [{ exitCode: 0 }]; receipt.summary = JSON.stringify({ reports: results }); save(); assert.throws(() => validateReport(d, d.tasks[0], report, root), /follow-on/);
+});
+test('IPA evidence must identify the hash-bound verified final archive, not only an app directory', t => {
+  const { root, d } = fixture(t), commit = snapshot(root).commit; d.tasks[0].requiredEvidence = ['ipa']; const { report } = proof(root, d, { kind: 'ipa' });
+  d.ci = [{ id: '123', head: commit, workflow: '.github/workflows/native-infrastructure.yml', attempt: 1, status: 'completed', conclusion: 'success', url: 'https://github.com/HYJ1817/pi-gui-ios/actions/runs/123' }];
+  const verification = { schemaVersion: 2, passed: true, kind: 'unsigned-device-archive', code: 'IPA_VERIFIED', platform: 'iOS', architectures: ['arm64'], executables: 2, frameworks: 1, sideStoreInstallVerified: false, sha256: 'a'.repeat(64) };
+  const verificationPath = 'docs/acceptance/ipa-verification.json'; const save = () => { writeFileSync(resolve(root, verificationPath), JSON.stringify(verification)); report.details = { ciId: '123', attempt: 1, archiveSha256: 'a'.repeat(64), verificationPath, verificationSha256: digest(readFileSync(resolve(root, verificationPath))) }; };
+  save(); assert.ok(validateReport(d, d.tasks[0], report, root));
+  verification.kind = 'unsigned-device-directory'; save(); assert.throws(() => validateReport(d, d.tasks[0], report, root), /final device IPA/);
+  verification.kind = 'unsigned-device-archive'; verification.sha256 = 'b'.repeat(64); save(); assert.throws(() => validateReport(d, d.tasks[0], report, root), /archive\/hash/);
+});
 test('manual device and fresh independent review cannot be replaced by local command reports', t => {
   const { root, d } = fixture(t); const { report } = proof(root, d);
   for (const kind of ['device-install', 'independent-security']) { d.tasks[0].requiredEvidence = [kind]; assert.throws(() => validateReport(d, d.tasks[0], { ...report, kind }, root)); }
