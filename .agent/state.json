@@ -1,40 +1,43 @@
 {
   "schemaVersion": 2,
   "kind": "state",
-  "revision": 390,
-  "updatedAt": "2026-11-21T12:22:11.111Z",
+  "revision": 394,
+  "updatedAt": "2026-11-21T12:46:30.236Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "3777caed4d9aa724b88dd913421d5e6649a80831b84069aca84fcd9fcef7fc17",
+    "parentDigest": "8bc81785b73d38b75022c726d95e7ca4553e60b684c14883b9f0b49daa44bdf6",
     "phase": "M-1",
     "currentTask": "M-1-infrastructure",
     "branch": "agent/m-1-bootstrap",
     "checkpoint": {
-      "id": "v2-2026-11-21T12-22-11-111Z-32406bd3-911c-4b5c-a31b-67bc52dc28f1",
-      "path": ".agent/checkpoints/v2-2026-11-21T12-22-11-111Z-32406bd3-911c-4b5c-a31b-67bc52dc28f1.json",
-      "sha256": "f1300074ac8814ed138a841a283b3ebb3a69891fe9c8fc2e5b58387024c95bbf",
-      "authorityDigest": "e38a72cec50e50f477992963cab21b37da68d9ef012ebc1273e0a6422caef23a",
-      "at": "2026-11-21T12:22:11.111Z",
+      "id": "v2-2026-11-21T12-46-30-236Z-e4d3cf4f-648d-4d78-8702-5763e6d0ba2d",
+      "path": ".agent/checkpoints/v2-2026-11-21T12-46-30-236Z-e4d3cf4f-648d-4d78-8702-5763e6d0ba2d.json",
+      "sha256": "8a698ad7e18f47870d25c6ceac29820be0bd230d41fc04da1a6996caf6353fae",
+      "authorityDigest": "4d27ec27dbb6989ae2c55c2a47a2efc50936765d6f115bf7cf3786e8aef7fa93",
+      "at": "2026-11-21T12:46:30.236Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "9503ae3932fa707e00f509a8bb6d884745283feb",
+        "commit": "694461569f0805578bbff10eaafebbb17c82b9eb",
         "dirty": [
           "M .agent/HANDOFF.md",
           " M .agent/control.json",
           " M .agent/state.json",
           " M .agent/tasks.json",
           " M PROGRESS.md",
-          "?? .agent/checkpoints/v2-2026-11-21T12-08-31-091Z-3de47530-ef0a-4c31-8221-50e4f82a2b37.json",
-          "?? .agent/checkpoints/v2-2026-11-21T12-08-31-560Z-eecb50b4-891f-4922-a051-9b2bbec5c4f6.json",
-          "?? .agent/checkpoints/v2-2026-11-21T12-12-19-724Z-e6f01ae5-2145-4a93-9bc2-898b37ae149e.json",
-          "?? docs/acceptance/ci-44901616612-bootstrap.md"
+          " M native/dependency-policy.json",
+          "?? .agent/checkpoints/v2-2026-11-21T12-39-07-126Z-5134275d-ecbb-462c-9837-2084380fe4d7.json",
+          "?? Gemfile.lock",
+          "?? docs/acceptance/owner-waiver-locked-native-validation.md",
+          "?? native/Podfile.lock",
+          "?? native/lock-review.json",
+          "?? native/prebuilt-dependencies.json"
         ]
       },
-      "sourceFingerprint": "f488caac4cc1f572b21936f326ed0adfceb1037ac8022b7fe016ae991a63ca80",
-      "note": "M-1 blocker updated with sanitized CI fact: macOS canonical suite 336/336, prebuild and bootstrap candidate inventory succeeded; locks remain unapproved pending independent review"
+      "sourceFingerprint": "656e09e95672d0f2934c932176d084f970cb52c08e197157a0ebc4aa8ac684d6",
+      "note": "Owner waiver: exact macOS bootstrap candidate promoted to locked mode for one validation; full manifest/link self-audit and npm test passed; independent review gates remain unsatisfied"
     },
     "blockers": [
-      "NATIVE-LOCK：CI 44901616612 已生成实际 macOS 候选（approved=false）；必须独立审查候选 Gemfile.lock、Podfile.lock 和 21,043 项 prebuilt inventory 后才能进入 locked build。审查运行环境缺少 @earendil-works/chord/context，未经复审不得批准。"
+      "M-1完成仍要求独立 review/security/handoff 证据；负责人仅对本次锁定技术验证授权 waive 独立审查，不得将 waiver 记为审查通过或M-1通过。"
     ],
     "ci": [
       {
@@ -197,6 +200,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "0a45230c22e07c9d078a7c3c49fa9d5447c9e609bb6dd5b8a869c95c0e11d41b"
+    "digest": "d6ec84b75b0c312f147ec685b991f0043c59c84a68a7d663edb248eca930d6b4"
   }
 }
