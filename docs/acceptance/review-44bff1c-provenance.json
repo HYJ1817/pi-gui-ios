@@ -1,0 +1,9 @@
+{
+  "taskId": "node:delegated-task:command%3Amcp%3A29600ade-642e-4b34-9a46-eb0e685480ef%3Adelegate-task%3Acad17c30-0c15-450a-8e17-ce523cb79963",
+  "childThreadId": "thread:delegated-task:command%3Amcp%3A29600ade-642e-4b34-9a46-eb0e685480ef%3Adelegate-task%3Acad17c30-0c15-450a-8e17-ce523cb79963",
+  "link": "[复核Hermes六别名清单与严格归档边界](t3-thread://v2/54c2be41-16aa-490a-8cc2-bfd447f6c2a5/thread:delegated-task:command%3Amcp%3A29600ade-642e-4b34-9a46-eb0e685480ef%3Adelegate-task%3Acad17c30-0c15-450a-8e17-ce523cb79963)",
+  "latestTerminalStatus": "completed",
+  "executedModel": "xingchiapi/gpt-6.1-sol",
+  "resultPath": "docs/acceptance/review-44bff1c-result.json",
+  "registration": "Actual completed task_status summary saved as JSON. Security and functional decisions fail with three blockers; not imported as passing evidence. Recovery pass is restricted to the old exact source and does not override the failures."
+}

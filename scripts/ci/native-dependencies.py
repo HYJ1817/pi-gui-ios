@@ -63,15 +63,39 @@ def checked_hermes_alias(path, base, safe, checked):
     rule = HERMES_ALIASES[safe]
     info = path.lstat()
     # Reject all Windows reparse points/junctions, including at reviewed names.
-    check(stat.S_ISLNK(info.st_mode) and not (getattr(info, 'st_file_attributes', 0) & 0x400), code)
+    check(stat.S_ISLNK(info.st_mode) and info.st_nlink == 1
+          and not (getattr(info, 'st_file_attributes', 0) & 0x400), code)
     checked(path.parent, base)
     check(os.readlink(path) == rule['target'], code)
     # Resolve by the finite physical mapping, NOT Path.resolve(alias), so a
     # malicious Current/ancestor/target can never redirect a read outside Pods.
     physical = base.joinpath(*pathlib.PurePosixPath(rule['physical']).parts[1:])
     target = checked(physical, base)
-    check(stat.S_ISDIR(target.st_mode) if rule['directory'] else stat.S_ISREG(target.st_mode), code)
+    check(stat.S_ISDIR(target.st_mode) if rule['directory'] else
+          stat.S_ISREG(target.st_mode) and target.st_nlink == 1, code)
     return {'path': safe, 'target': rule['target']}
+
+
+def checked_hermes_prefixes(base, checked):
+    # os.walk(followlinks=False) omits directory links. Preflight every existing
+    # component of these known roots even when no .framework entry is reached.
+    for prefix in HERMES_FRAMEWORK_ROOTS:
+        current = base
+        for part in pathlib.PurePosixPath(prefix).parts[1:]:
+            current = current / part
+            try:
+                current.lstat()  # Unlike exists(), a dangling alias is not missing.
+            except FileNotFoundError:
+                break  # This vendor tree may legitimately be absent in a fixture.
+            except OSError:
+                raise GateError('NATIVE_PREBUILT_LINK_REJECTED') from None
+            info = checked(current, base)
+            check(stat.S_ISDIR(info.st_mode), 'NATIVE_PREBUILT_LINK_REJECTED')
+
+
+def enumeration_failed(error):
+    # Never create an incomplete reviewable inventory after a traversal error.
+    raise GateError('NATIVE_PREBUILT_ENUMERATION_FAILED') from None
 
 
 def inventory(root):
@@ -87,7 +111,9 @@ def inventory(root):
     for label, base in [('pods', root / 'ios/Pods'), ('npm', root / 'node_modules')]:
         check(base.is_dir(), 'NATIVE_DEPENDENCY_TREE_MISSING')
         checked(base)
-        for directory, dirs, names in os.walk(base, followlinks=False):
+        if label == 'pods':
+            checked_hermes_prefixes(base, checked)
+        for directory, dirs, names in os.walk(base, followlinks=False, onerror=enumeration_failed):
             for name in list(dirs):
                 path = pathlib.Path(directory) / name
                 relative = path.relative_to(base)
@@ -107,6 +133,10 @@ def inventory(root):
                                          '.zip', '.tgz', '.tar.gz', '.tar.xz'))
                 info = path.lstat()
                 linked = stat.S_ISLNK(info.st_mode) or bool(getattr(info, 'st_file_attributes', 0) & 0x400)
+                if not linked:
+                    # Even magic-byte discovery must not read a hard-linked inode
+                    # or special file. Apply before sniffing or hashing any file.
+                    check(stat.S_ISREG(info.st_mode) and info.st_nlink == 1, 'NATIVE_PREBUILT_LINK_REJECTED')
                 if not native and not linked:
                     with path.open('rb') as stream:
                         native = stream.read(4) in (b'\xcf\xfa\xed\xfe', b'\xca\xfe\xba\xbe',
@@ -118,7 +148,7 @@ def inventory(root):
                         links.append(checked_hermes_alias(path, base, safe, checked))
                         continue
                     info = checked(path, base)
-                    check(stat.S_ISREG(info.st_mode), 'NATIVE_PREBUILT_LINK_REJECTED')
+                    check(stat.S_ISREG(info.st_mode) and info.st_nlink == 1, 'NATIVE_PREBUILT_LINK_REJECTED')
                     files.append({'path': safe, 'sha256': digest(path), 'size': info.st_size})
     seen = {row['path'] for row in links}
     for prefix in HERMES_FRAMEWORK_ROOTS:

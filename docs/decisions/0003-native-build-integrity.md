@@ -108,6 +108,16 @@ CI44877767639（86cadda）在环境/npm/prebuild后推进到 `NATIVE_PREBUILT_LI
 
 本机Windows不具备POSIX symlink权限（实际探针返回1314），不伪造positive；canonical运行元数据合同与真正junction拒绝。在macOS的npm ci之后、任何prebuild之前新增同一入口 `npm test`，必须实际执行POSIX六别名positive、逃逸/错误类型等negative和锁摘要漂移检查；测试失败不得进入prebuild。当前此POSIX执行及真实macOS候选仍待CI验证，须完成精确提交独立复审后才触发一次；本变更不授予M-1/native/UI/IPA通过。
 
+## 依赖清单独立审查后的三项 fail-closed 补强
+
+44bff1c独立审查未通过：真实NTFS硬链接可使同字节外部inode伪装成已审文件；不带framework后缀的已知上层POSIX链接可能被walk跳过；scandir错误会默认静默产生不完整清单。完整失败原结果见review-44bff1c-result.json，不以handoff单项pass覆盖security/review fail，不触发新CI。
+
+- 对依赖树中将要读取的每个非symlink文件，在magic前四字节探测及摘要前均要求普通文件且st_nlink=1；别名自身及其固定普通文件目标同样拒绝多链接。目录的合法多链接计数不套用此规则。拒绝未知硬链接，不跟随/读取外部inode，不用“字节相同”代替来源边界。
+- 在遍历Pods前，对两个已知Hermes framework根路径的每个已存在前缀逐组件lstat并用严格祖先策略检查；缺失合法树可停止该前缀预检，但悬空symlink不等于缺失。POSIX链接/Windowsjunction即使位于macosx、Library、destroot等无framework后缀前缀也拒绝，不能静默漏掉整组。
+- os.walk设置onerror，任何枚举错误立即固定码NATIVE_PREBUILT_ENUMERATION_FAILED退出，不返回部分可审核清单，不输出异常路径/消息。
+
+新增真实硬链接与读取前guard、六个Windows前缀junction的walk前guard、Pods/npm/Resources三处scandir EACCES故障注入；macOS还必须运行真实上层POSIX symlink及别名物理目标硬链接负向。故障注入只检验错误路径，不冒充真实macOS执行。修复不扩大六别名集合、不改最终IPA/候选发布/权限策略；新精确提交仍须独立复审，macOS实际验证仍待完成。
+
 ## 回滚
 
 如发现兼容问题，在开发分支 revert 本实现提交，保留 bootstrap 未验收状态；不得通过放宽权限/签名/平台断言或忽略锁差异来让 job 变绿。对合法新键、新依赖来源或生成结构的支持应有真实公开归档或macOS fixture、精确边界差分和独立复审后再加入显式表；仍须真实macOS验证，不继承本机通过。

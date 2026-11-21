@@ -63,10 +63,65 @@ test('macOS canonical tests are required before generating any native project', 
   assert.ok(canonical < ios.indexOf('Generate native project'));
 });
 
+for (const location of [framework + '/Versions/1/hermesvm', 'synthetic.a', 'extensionless-native']) test(`reject real hard link before reading dependency bytes: ${location}`, t => {
+  passed(py(fixture(t), `
+from unittest.mock import patch
+physical=pods/${JSON.stringify(location)}; physical.parent.mkdir(parents=True,exist_ok=True)
+physical.write_bytes(b'\\xcf\\xfa\\xed\\xfe' + b'synthetic native')
+manifest=m.inventory(root); candidate=root/'private'
+(candidate/'prebuilt-dependencies.json').write_text(json.dumps(manifest))
+(root/'native/prebuilt-dependencies.json').write_text(json.dumps(manifest))
+(root/'native/lock-review.json').write_text(json.dumps({'schemaVersion':1,'approved':True,'hashes':m.hashes(root,candidate)}))
+m.verify_locked(root,candidate,manifest)
+outside=root/'outside-native'; outside.write_bytes(physical.read_bytes())
+physical.unlink(); os.link(outside,physical)
+assert physical.stat().st_nlink == outside.stat().st_nlink == 2
+original=pathlib.Path.open
+def guarded_open(path,*args,**kwargs):
+ if path == physical or path == outside: raise AssertionError('hard-linked bytes were read')
+ return original(path,*args,**kwargs)
+with patch.object(pathlib.Path,'open',guarded_open):
+ try: m.inventory(root)
+ except m.GateError as e: assert str(e) == 'NATIVE_PREBUILT_LINK_REJECTED'
+ else: raise AssertionError('equal-byte hardlink bypass accepted')
+print('REAL_HARDLINK_REJECTED_BEFORE_READ')`), 'REAL_HARDLINK_REJECTED_BEFORE_READ');
+});
+for (const location of ['ios/Pods', 'node_modules', 'ios/Pods/' + framework + '/Versions/1/Resources']) test(`directory enumeration error fails closed: ${location}`, t => {
+  passed(py(fixture(t), `
+import errno
+from unittest.mock import patch
+resources=pods/'${framework}/Versions/1/Resources'; resources.mkdir(parents=True)
+(resources/'Info.plist').write_bytes(b'synthetic resource')
+failing=root/${JSON.stringify(location)}; original=os.scandir
+assert any(row['path'].endswith('/Info.plist') for row in m.inventory(root)['files'])
+def fault(path):
+ if pathlib.Path(path) == failing: raise PermissionError(errno.EACCES,'SYNTHETIC_PRIVATE_ENUMERATION_ERROR')
+ return original(path)
+with patch.object(os,'scandir',fault):
+ try: m.inventory(root)
+ except m.GateError as e: assert str(e) == 'NATIVE_PREBUILT_ENUMERATION_FAILED'
+ else: raise AssertionError('incomplete byte manifest accepted')
+print('ENUMERATION_ERROR_REJECTED')`), 'ENUMERATION_ERROR_REJECTED');
+});
+
 // Windows cannot create POSIX links without extra privileges. It executes real
 // junction/reparse negatives, not a fake positive. The same canonical file runs
 // actual os.symlink positives + negatives on the macOS runner before prebuild.
 if (process.platform === 'win32') {
+  for (const prefix of ['hermes-engine', 'hermes-engine/destroot', 'hermes-engine/destroot/Library',
+    'hermes-engine/destroot/Library/Frameworks', 'hermes-engine/destroot/Library/Frameworks/macosx',
+    'hermes-engine/destroot/Library/Frameworks/universal']) test(`preflight rejects actual Windows prefix junction before walking: ${prefix}`, t => {
+    const root = fixture(t); const at = join(root, 'ios/Pods', prefix);
+    mkdirSync(join(at, '..'), { recursive: true }); const outside = join(root, 'outside'); mkdirSync(outside);
+    symlinkSync(outside, at, 'junction');
+    passed(py(root, `
+from unittest.mock import patch
+with patch.object(os,'walk',side_effect=AssertionError('walker reached a linked known prefix')):
+ try: m.inventory(root)
+ except m.GateError as e: assert str(e) == 'NATIVE_PREBUILT_LINK_REJECTED'
+ else: raise AssertionError('linked prefix accepted')
+print('PREFIX_REJECTED_BEFORE_WALK')`), 'PREFIX_REJECTED_BEFORE_WALK');
+  });
   for (const alias of ['Resources', 'Versions/Current']) test(`reject Windows junction even at reviewed Hermes alias ${alias}`, t => {
     const root = fixture(t); const fw = join(root, 'ios/Pods', framework);
     mkdirSync(join(fw, 'Versions/1/Resources'), { recursive: true });
@@ -104,6 +159,14 @@ print('REAL_POSIX_ALIASES_AND_BYTES')`), 'REAL_POSIX_ALIASES_AND_BYTES');
     ['nested resource escape', `outside=root/'outside'; outside.mkdir(); (outside/'private.a').write_text('SYNTHETIC-PRIVATE'); os.symlink(str(outside),fw/'Versions/1/Resources/escape',target_is_directory=True)`],
     ['unreviewed framework name', `fw.rename(fw.with_name('other.framework'))`],
     ['framework ancestor alias', `destination=fw.with_name('moved.framework'); fw.rename(destination); os.symlink(destination.name,fw,target_is_directory=True)`],
+    ['multiply linked alias binary target', `outside=root/'outside'; outside.write_bytes((fw/'Versions/1/hermesvm').read_bytes()); (fw/'Versions/1/hermesvm').unlink(); os.link(outside,fw/'Versions/1/hermesvm')`],
+    ['multiply linked physical resource', `outside=root/'outside'; outside.write_bytes((fw/'Versions/1/Resources/Info.plist').read_bytes()); (fw/'Versions/1/Resources/Info.plist').unlink(); os.link(outside,fw/'Versions/1/Resources/Info.plist')`],
+    ...['hermes-engine', 'hermes-engine/destroot', 'hermes-engine/destroot/Library',
+      'hermes-engine/destroot/Library/Frameworks', 'hermes-engine/destroot/Library/Frameworks/macosx',
+      'hermes-engine/destroot/Library/Frameworks/universal'].map(prefix => [
+      'known pre-framework prefix alias ' + prefix,
+      `prefix=pods/${JSON.stringify(prefix)}; destination=prefix.with_name(prefix.name+'-moved'); prefix.rename(destination); os.symlink(destination.name,prefix,target_is_directory=True)`,
+    ]),
   ];
   for (const [name, mutation] of negatives) test(`real POSIX inventory rejects ${name}`, t => {
     passed(py(fixture(t), setup + '\n' + mutation + `

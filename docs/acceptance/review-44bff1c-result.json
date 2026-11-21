@@ -1,0 +1,81 @@
+{
+  "resumeCandidateBootstrap": false,
+  "nextAction": "Keep M-1-infrastructure in testing. Close the inventory blockers and independently review the new exact commit before one gated macOS bootstrap. Candidate-only exit 78 is not native acceptance.",
+  "priorCI": "44877767639 failed with NATIVE_PREBUILT_LINK_REJECTED. No rejected path, raw lock, or candidates were observed.",
+  "reports": [
+    {
+      "schemaVersion": 1,
+      "kind": "independent-security",
+      "decision": "fail",
+      "reviewedCommit": "44bff1c4d11fc52ea776c5fd60436e6a3c93923c",
+      "sourceFingerprint": "2ff040fe195eb2eddda53c5fb73287350a16a43cb1e8805278d898a4eed295af",
+      "unresolvedBlockers": 2,
+      "unresolvedImportant": 0,
+      "findings": [
+        {
+          "severity": "Blocker",
+          "file": "C:/pi-gui-ios/scripts/ci/native-dependencies.py",
+          "line": 121,
+          "trigger": "A physical Versions/1/hermesvm file is hard-linked to a file outside Pods.",
+          "evidence": "A real NTFS synthetic fixture with no symlinks confirmed the outside inode was hashed. An equal-byte replacement with that hard link left the manifest unchanged and passed verify_locked. The alias target type check also accepts a multiply linked regular file.",
+          "disposition": "Reject multiply linked native files and alias targets before reading; add a regression."
+        },
+        {
+          "severity": "Blocker",
+          "file": "C:/pi-gui-ios/scripts/ci/native-dependencies.py",
+          "line": 94,
+          "trigger": "A POSIX directory symlink replaces a known prefix such as Frameworks/macosx.",
+          "evidence": "Static trace: the prefix has no framework suffix or Windows reparse flag, so the walker skips it without rejecting it. Bootstrap can omit the whole framework and alias group. The existing ancestor test links the .framework entry itself.",
+          "disposition": "Validate known prefix components even when the framework is not reached; add a real POSIX regression."
+        }
+      ],
+      "commands": [
+        {"command": "python -I -B -", "exitCode": 0, "result": "Synthetic hard-link probe confirmed the finding; actual Windows os.symlink returned WinError 1314."},
+        {"command": "git diff --exit-code 86cadda..44bff1c -- scripts/ci/verify-ipa.py scripts/ci/stage-ipa.py scripts/ci/package-ipa.sh scripts/ci/install-pods.sh scripts/ci/run-step.sh native/dependency-policy.json", "exitCode": 0, "result": "Final IPA symlink/reparse checks and bootstrap policy unchanged. Workflow upload predicates and file allowlists unchanged."}
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "kind": "independent-review",
+      "decision": "fail",
+      "reviewedCommit": "44bff1c4d11fc52ea776c5fd60436e6a3c93923c",
+      "sourceFingerprint": "2ff040fe195eb2eddda53c5fb73287350a16a43cb1e8805278d898a4eed295af",
+      "unresolvedBlockers": 1,
+      "unresolvedImportant": 0,
+      "findings": [
+        {
+          "severity": "Blocker",
+          "file": "C:/pi-gui-ios/scripts/ci/native-dependencies.py",
+          "line": 90,
+          "trigger": "Directory enumeration fails inside a physical framework subtree.",
+          "evidence": "Injected scandir EACCES at Versions/1/Resources silently omitted Info.plist. Changing its bytes left the incomplete manifest identical and passed verification against a synthetic review of that manifest.",
+          "disposition": "Fail closed on enumeration errors and add a fault regression."
+        }
+      ],
+      "commands": [
+        {"command": "git diff --check 86cadda..44bff1c", "exitCode": 0, "result": "Scoped diff reviewed; macOS npm test is required before prebuild."},
+        {"command": "python -I -B -", "exitCode": 0, "result": "Member tables and digests matched both Hermes fixtures: six symlinks each, no hard links. Neither RN Debug table contained links. No extraction or execution."},
+        {"command": "python -I -B -", "exitCode": 0, "result": "Synthetic enumeration fault confirmed the finding."},
+        {"command": "python -I -B -", "exitCode": 0, "result": "Synthetic manifest probes independently confirmed digest and equality rejection of recorded alias removal, target drift, and v1 data."}
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "kind": "independent-handoff",
+      "decision": "pass",
+      "reviewedCommit": "44bff1c4d11fc52ea776c5fd60436e6a3c93923c",
+      "sourceFingerprint": "2ff040fe195eb2eddda53c5fb73287350a16a43cb1e8805278d898a4eed295af",
+      "restoredTask": "M-1-infrastructure",
+      "unresolvedBlockers": 0,
+      "unresolvedImportant": 0,
+      "findings": [],
+      "commands": [
+        {"command": "node scripts/agent-resume.mjs", "exitCode": 0, "result": "Restored testing; v2 checkpoint and digests valid, no recovery warnings or failures."},
+        {"command": "npm test", "exitCode": 0, "result": "Git Bash with requested portable RUBY, GEM_HOME and GEM_PATH: 202/202 passed, 0 skipped; technology-stack contract and Windows junction negatives passed."},
+        {"command": "node scripts/agent-validate.mjs", "exitCode": 1, "result": "Expected: native acceptance remains gated."},
+        {"command": "node --input-type=module -e", "exitCode": 0, "result": "Independently recomputed working and committed fingerprints before and after review; both matched. HEAD unchanged, no dirty source, remote tracking still at 86cadda."}
+      ]
+    }
+  ],
+  "notExecuted": ["Real macOS POSIX tests", "macOS candidate bootstrap or candidate approval", "locked native build or cache verification", "Simulator/UI verification", "device IPA generation or validation", "SideStore installation"]
+}

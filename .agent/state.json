@@ -1,53 +1,66 @@
 {
   "schemaVersion": 2,
   "kind": "state",
-  "revision": 176,
-  "updatedAt": "2026-11-21T07:19:54.937Z",
+  "revision": 201,
+  "updatedAt": "2026-11-21T07:44:49.436Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "e660d0ab8be81162c5ab627a4d01359d9cf0f99b2a3fb87f2b86d8eb56800f88",
+    "parentDigest": "046338b4228714053a41879eb1e488dea790a41f1b28fa0a5ede6e3ff8aba3ba",
     "phase": "M-1",
     "currentTask": "M-1-infrastructure",
     "branch": "agent/m-1-bootstrap",
     "checkpoint": {
-      "id": "v2-2026-11-21T07-19-54-937Z-f79803a7-4709-4989-9477-4d44c4a6d549",
-      "path": ".agent/checkpoints/v2-2026-11-21T07-19-54-937Z-f79803a7-4709-4989-9477-4d44c4a6d549.json",
-      "sha256": "337d150d40c98affe26c34f1276022eb0a3052fe84575291733a2974b6fa660d",
-      "authorityDigest": "8c384c79a5c775db31bc765df6b46b4eb754d3111f21282c95b4850826db5b74",
-      "at": "2026-11-21T07:19:54.937Z",
+      "id": "v2-2026-11-21T07-44-49-436Z-f5371887-333d-40c8-b40f-350ffb2405b8",
+      "path": ".agent/checkpoints/v2-2026-11-21T07-44-49-436Z-f5371887-333d-40c8-b40f-350ffb2405b8.json",
+      "sha256": "deb95674f6f80d8166039915dec1eb41adf2f78d86095476255a5ed973c32bad",
+      "authorityDigest": "e5269e98164289da37ba088afe3b3fce16ecc78ab940ad282f971e2ac727d72d",
+      "at": "2026-11-21T07:44:49.436Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "86cadda377fc1fdf3c483478b03215a3d6b96c32",
+        "commit": "44bff1c4d11fc52ea776c5fd60436e6a3c93923c",
         "dirty": [
           "M .agent/HANDOFF.md",
           " M .agent/control.json",
           " M .agent/state.json",
           " M .agent/tasks.json",
-          " M .github/workflows/native-infrastructure.yml",
           " M PROGRESS.md",
+          " M docs/acceptance/local-bundle-output.txt",
+          " M docs/acceptance/local-bundle.json",
+          " M docs/acceptance/local-doctor.json",
+          " M docs/acceptance/local-typecheck.json",
+          " M docs/acceptance/local-unit-output.txt",
+          " M docs/acceptance/local-unit.json",
           " M docs/decisions/0003-native-build-integrity.md",
           " M scripts/ci/native-dependencies.py",
-          "?? .agent/checkpoints/v2-2026-11-21T06-54-47-787Z-38a271bf-8356-4f4b-adf4-52c2111eac3b.json",
-          "?? .agent/checkpoints/v2-2026-11-21T06-56-43-053Z-45f1830d-0ebb-4690-8830-5179a7e4e8bc.json",
-          "?? .agent/checkpoints/v2-2026-11-21T06-56-43-625Z-a1477b3a-999b-477c-b1de-934bb63b32a9.json",
-          "?? .agent/checkpoints/v2-2026-11-21T07-04-04-138Z-7659082e-4cd9-4b08-9363-03c84ad1095c.json",
-          "?? .agent/checkpoints/v2-2026-11-21T07-04-04-728Z-3efca1d6-2bc6-4841-b715-ab9f9b4f79ac.json",
-          "?? .agent/checkpoints/v2-2026-11-21T07-10-08-661Z-ce878b02-b374-4070-9fd7-3b114af33de1.json",
-          "?? .agent/checkpoints/v2-2026-11-21T07-10-09-290Z-3cec927a-ed8d-4c31-996f-a589b4fd54e7.json",
-          "?? .agent/checkpoints/v2-2026-11-21T07-19-53-950Z-a0d59da5-8311-415f-b602-57d0630bc8aa.json",
-          "?? docs/acceptance/ci-44877767639-analysis.md",
-          "?? docs/acceptance/ci-44877767639-api.json",
-          "?? docs/acceptance/ci-44877767639-start-api.json",
-          "?? tests/fixtures/hermes-versioned-aliases.json",
-          "?? tests/native-links.test.mjs"
+          " M tests/native-links.test.mjs",
+          "?? .agent/checkpoints/v2-2026-11-21T07-20-25-623Z-642fc201-dbbf-4fc0-ad32-593461865366.json",
+          "?? .agent/checkpoints/v2-2026-11-21T07-21-51-942Z-d570cee9-df81-4f42-bc2d-5f5828afafb5.json",
+          "?? .agent/checkpoints/v2-2026-11-21T07-22-44-589Z-00ad35a6-0814-4db0-870c-e10a34d039d2.json",
+          "?? .agent/checkpoints/v2-2026-11-21T07-22-45-442Z-592e4081-1ef8-47cc-8a03-1aced59e92a8.json",
+          "?? .agent/checkpoints/v2-2026-11-21T07-22-48-816Z-29e6d661-68f2-41fb-8667-e9cc514b3605.json",
+          "?? .agent/checkpoints/v2-2026-11-21T07-22-49-643Z-81fd3969-570b-449d-9a30-896c097f7665.json",
+          "?? .agent/checkpoints/v2-2026-11-21T07-22-54-403Z-488b7228-dfd3-493b-aeb5-864f804cccd8.json",
+          "?? .agent/checkpoints/v2-2026-11-21T07-22-55-246Z-ab1544e3-f25f-4615-b40b-7d9e30762ae6.json",
+          "?? .agent/checkpoints/v2-2026-11-21T07-22-59-423Z-56a1984f-7b01-4d32-8bac-6373ad90937c.json",
+          "?? .agent/checkpoints/v2-2026-11-21T07-23-00-274Z-89cfbb78-cd9c-434f-9ae9-392e6bfd2e92.json",
+          "?? .agent/checkpoints/v2-2026-11-21T07-23-42-322Z-89df3a2f-a50c-4105-8411-3573890f5861.json",
+          "?? .agent/checkpoints/v2-2026-11-21T07-35-29-479Z-f3bfc090-5fe1-4ca3-bf3b-fdac23292d2a.json",
+          "?? .agent/checkpoints/v2-2026-11-21T07-35-30-023Z-73da4c6d-e635-435a-9397-5d256a6b1800.json",
+          "?? .agent/checkpoints/v2-2026-11-21T07-44-48-830Z-ef20fed4-95a5-4707-9e88-c3b88b6059e5.json",
+          "?? docs/acceptance/review-44bff1c-disposition.md",
+          "?? docs/acceptance/review-44bff1c-provenance.json",
+          "?? docs/acceptance/review-44bff1c-result.json"
         ]
       },
-      "sourceFingerprint": "2ff040fe195eb2eddda53c5fb73287350a16a43cb1e8805278d898a4eed295af",
-      "note": "Hermes六别名窄策略Windows202项回归通过，准备精确提交复核，不先推送CI"
+      "sourceFingerprint": "e7d35a7e0eb3b9576d95fc41fe2d0a907c9e515073e3a9007c3bffb6cd90cd07",
+      "note": "独立三Blocker窄修复与40项定向回归通过，准备精确提交后canonical和重新独立审查"
     },
     "blockers": [
       "NATIVE-LOCK 尚未生成真实macOS Gemfile/Podfile/预编译候选锁并独立核验",
-      "NATIVE-PREBUILT-LINK：CI44877767639完成失败，锁校验后在字节清单NATIVE_PREBUILT_LINK_REJECTED停止，无候选；先研究锁定公开RN/Hermes归档链接结构并本地复现，不重复CI或直接放宽链接策略"
+      "NATIVE-PREBUILT-LINK：CI44877767639完成失败，锁校验后在字节清单NATIVE_PREBUILT_LINK_REJECTED停止，无候选；先研究锁定公开RN/Hermes归档链接结构并本地复现，不重复CI或直接放宽链接策略",
+      "INV-HARDLINK：独立44bff1c审查确认原生文件/别名物理目标可硬链接外部inode，须在任何读取前拒绝并回归",
+      "INV-PREFIX：独立44bff1c审查确认无framework后缀的上层POSIX链接可能漏扫已知Hermes整组，须预检前缀并真实POSIX回归",
+      "INV-ENUM：独立44bff1c审查确认os.walk忽略枚举错误可形成不完整清单，须fail-closed和故障回归"
     ],
     "ci": [
       {
@@ -148,11 +161,17 @@
         "role": "exact-rn-facade-boundary-and-handoff-review",
         "status": "completed",
         "sourceCommit": "bd20d0169d3e14994fc30788ee5ee7c416c621fa"
+      },
+      {
+        "taskId": "node:delegated-task:command%3Amcp%3A29600ade-642e-4b34-9a46-eb0e685480ef%3Adelegate-task%3Acad17c30-0c15-450a-8e17-ce523cb79963",
+        "role": "hermes-alias-inventory-security-review-and-handoff",
+        "status": "completed",
+        "sourceCommit": "44bff1c4d11fc52ea776c5fd60436e6a3c93923c"
       }
     ]
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "c764a9a0a52515e413ac375d92bfa056492975b206e4e4f58d5cf0b1d8366bca"
+    "digest": "fc0045ceaea6e7de1a92b44d3279a38a5559774cdee4467a55ac726e4d1b2716"
   }
 }
