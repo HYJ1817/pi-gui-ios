@@ -1,8 +1,8 @@
 {
   "schemaVersion": 2,
   "kind": "control",
-  "revision": 410,
-  "updatedAt": "2026-11-21T12:53:12.836Z",
+  "revision": 422,
+  "updatedAt": "2026-11-21T13:27:18.552Z",
   "data": {
     "phase": "M-1",
     "currentTask": "M-1-infrastructure",
@@ -95,17 +95,26 @@
         "status": "completed",
         "conclusion": "failure",
         "url": "https://github.com/HYJ1817/pi-gui-ios/actions/runs/44901616612"
+      },
+      {
+        "id": "44906133898",
+        "head": "0e62f613cc69d41d6064c26a251e355c2a299efd",
+        "workflow": ".github/workflows/native-infrastructure.yml",
+        "attempt": 1,
+        "status": "completed",
+        "conclusion": "failure",
+        "url": "https://github.com/HYJ1817/pi-gui-ios/actions/runs/44906133898"
       }
     ],
     "blockers": [
-      "M-1完成仍要求独立 review/security/handoff 证据；负责人仅对本次锁定技术验证授权 waive 独立审查，不得将 waiver 记为审查通过或M-1通过。"
+      "M-1 owner-waiver locked run 44906133898/1 failed before Pods install (NATIVE_DEPENDENCIES_REJECTED); a malformed local Gemfile hash was found and corrected, but the owner directed us not to retry. Candidate lock set is removed from the active repo and remains available only as ignored local artifact. M-1 remains blocked; no Simulator/UI/IPA result."
     ],
     "tasks": [
       {
         "id": "M-1-infrastructure",
         "phase": "M-1",
         "title": "恢复控制层、Windows 原生探针、macOS/Simulator/Maestro/unsigned IPA 验证",
-        "status": "in_progress",
+        "status": "blocked",
         "dependsOn": [],
         "requiredEvidence": [
           "unit",
@@ -634,7 +643,7 @@
             "at": "2026-11-21T12:50:35.459Z"
           }
         ],
-        "updatedAt": "2026-11-21T12:39:06.984Z"
+        "updatedAt": "2026-11-21T13:07:50.951Z"
       },
       {
         "id": "M-1-device",
@@ -773,20 +782,40 @@
       }
     ],
     "checkpoint": {
-      "id": "v2-2026-11-21T12-53-12-836Z-aa30d0e1-8bac-4b80-890c-3c9bab081a64",
-      "path": ".agent/checkpoints/v2-2026-11-21T12-53-12-836Z-aa30d0e1-8bac-4b80-890c-3c9bab081a64.json",
-      "sha256": "34f635c8331de2c5bf760d115ce3a653bf5fbe41fec2e03a6acfcb106e3c9bb3",
-      "authorityDigest": "cf8c25563bf1fc47d84a5d6fb57d4e1ba5eacaabe4dabf8f015e76aa06a02561",
-      "at": "2026-11-21T12:53:12.836Z",
+      "id": "v2-2026-11-21T13-27-18-552Z-cf27aa6b-8da2-4cd9-a473-7ac14f7b1620",
+      "path": ".agent/checkpoints/v2-2026-11-21T13-27-18-552Z-cf27aa6b-8da2-4cd9-a473-7ac14f7b1620.json",
+      "sha256": "724616e823101ac47f826488899787bbb07d17e08ad2545f34f9db1cb19e6440",
+      "authorityDigest": "d9461b83ced0133058a3d1c0a4a7e473db7b27908b9333ae98fbd0e4686b96d5",
+      "at": "2026-11-21T13:27:18.552Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "db25183b4ae03b246aec8ccf2c06a8b900a9ed4f",
-        "dirty": []
+        "commit": "0e62f613cc69d41d6064c26a251e355c2a299efd",
+        "dirty": [
+          "M .agent/HANDOFF.md",
+          " M .agent/control.json",
+          " M .agent/state.json",
+          " M .agent/tasks.json",
+          "D  Gemfile.lock",
+          " M PROGRESS.md",
+          " M docs/acceptance/owner-waiver-locked-native-validation.md",
+          " M docs/architecture.md",
+          "D  native/Podfile.lock",
+          " M native/dependency-policy.json",
+          "D  native/lock-review.json",
+          "D  native/prebuilt-dependencies.json",
+          "?? .agent/checkpoints/v2-2026-11-21T13-02-13-310Z-0f5555d8-f762-4987-b3b6-b5885ad1e828.json",
+          "?? .agent/checkpoints/v2-2026-11-21T13-07-51-098Z-39590884-d2c3-4209-9aab-8904ee715aa2.json",
+          "?? .agent/checkpoints/v2-2026-11-21T13-12-06-232Z-8d8b5b1d-3f11-4709-95a4-c36f0053b9c0.json",
+          "?? .agent/checkpoints/v2-2026-11-21T13-12-52-202Z-6a00e2cf-0b69-4729-a75f-944f9e086b3d.json",
+          "?? .agent/checkpoints/v2-2026-11-21T13-17-16-810Z-fad26e66-1123-48e3-b5d8-24949675f255.json",
+          "?? docs/acceptance/ci-44906133898-locked-attempt.md",
+          "?? docs/decisions/0005-remote-protocol-v1-proposal.md"
+        ]
       },
-      "sourceFingerprint": "656e09e95672d0f2934c932176d084f970cb52c08e197157a0ebc4aa8ac684d6",
-      "note": "locked native candidate files committed and four fresh canonical local reports imported for source fingerprint 656e09e; task remains in_progress under explicit one-run owner waiver"
+      "sourceFingerprint": "85c9c7efc746c38159e41fc1cfdac0ba61ef4d13fdc59786248e00a11123f94c",
+      "note": "Consolidate M-1 blocker and preserve non-gating M0 proposal progress; no more M-1 CI runs per owner direction"
     },
-    "nextAction": "owner-waiver-locked-native-validation.md记录了范围。本地手工核对CI候选全部7,735链接、21,043文件及哈希后，固定Ruby锁语义校验和canonical npm test通过。候选已以owner-waiver-validation-only方式落入locked模式；提交后重新生成本源码指纹的四份规范Windows报告，随后推送触发一次locked macOS CI验证Podfile再生成哈希、全量清单一致、Simulator UI及unsigned device IPA。此waiver不满足required independent-review/security/handoff，故无论本次构建结果如何都不能登记M-1 completed。",
+    "nextAction": "M-1-infrastructure remains blocked and M-1-device/M0 formal tasks remain pending. Owner explicitly requested not to stay stuck on M-1; proceed only with non-gating M0 architecture research. Draft 0005 is a proposal, not frozen API/security model and not M0 acceptance. Do not implement desktop remote server or mobile remote business until prerequisites and security contract are approved. Desktop workspace C:/pi-GUI is dirty; do not modify it.",
     "delegates": [
       {
         "taskId": "node:delegated-task:command%3Amcp%3Ac31b83bb-4e95-4301-8a91-f13f8295d85a%3Adelegate-task%3A4b75cf04-9360-469c-87e1-321a7e4b3149",
@@ -858,6 +887,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "649965216700505e1fe290058ddb78dabe61009c804264dd29265d67012266af"
+    "digest": "e4f1b6e550627d2ceea27a7c076cd8b2325eacd652ecf8ad9736b8391b7acfdc"
   }
 }

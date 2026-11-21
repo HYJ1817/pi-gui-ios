@@ -1,17 +1,17 @@
 {
   "schemaVersion": 2,
   "kind": "tasks",
-  "revision": 410,
-  "updatedAt": "2026-11-21T12:53:12.836Z",
+  "revision": 422,
+  "updatedAt": "2026-11-21T13:27:18.552Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "649965216700505e1fe290058ddb78dabe61009c804264dd29265d67012266af",
+    "parentDigest": "e4f1b6e550627d2ceea27a7c076cd8b2325eacd652ecf8ad9736b8391b7acfdc",
     "tasks": [
       {
         "id": "M-1-infrastructure",
         "phase": "M-1",
         "title": "恢复控制层、Windows 原生探针、macOS/Simulator/Maestro/unsigned IPA 验证",
-        "status": "in_progress",
+        "status": "blocked",
         "dependsOn": [],
         "requiredEvidence": [
           "unit",
@@ -540,7 +540,7 @@
             "at": "2026-11-21T12:50:35.459Z"
           }
         ],
-        "updatedAt": "2026-11-21T12:39:06.984Z"
+        "updatedAt": "2026-11-21T13:07:50.951Z"
       },
       {
         "id": "M-1-device",
@@ -681,6 +681,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "eef8ad32444bb5056b84109df10f69e47dc5d18010192d67299173029a8be0f1"
+    "digest": "b91cfaebe2e38e1b3af0c3a0dc2a53f77dae8f9a5a2e0685dff4827e51dcf8c5"
   }
 }
