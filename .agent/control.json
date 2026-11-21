@@ -1,8 +1,8 @@
 {
   "schemaVersion": 2,
   "kind": "control",
-  "revision": 353,
-  "updatedAt": "2026-11-21T10:42:55.395Z",
+  "revision": 383,
+  "updatedAt": "2026-11-21T11:56:58.514Z",
   "data": {
     "phase": "M-1",
     "currentTask": "M-1-infrastructure",
@@ -97,7 +97,7 @@
         "id": "M-1-infrastructure",
         "phase": "M-1",
         "title": "恢复控制层、Windows 原生探针、macOS/Simulator/Maestro/unsigned IPA 验证",
-        "status": "in_progress",
+        "status": "testing",
         "dependsOn": [],
         "requiredEvidence": [
           "unit",
@@ -536,9 +536,65 @@
             "sourceFingerprint": "346c5097e03fd2f3f49dd6b973992fe6eff59c6997b7dec9c4153395ea626109",
             "commit": "ef2c3b77f2de2860e286a03c617d884537c344df",
             "at": "2026-11-21T10:30:31.075Z"
+          },
+          {
+            "kind": "typecheck",
+            "path": "docs/acceptance/local-typecheck.json",
+            "sha256": "08de2f0f75b83b203c417e2a315eb8e8e1606081147f5a9f691b251bb3a9b087",
+            "sourceFingerprint": "f488caac4cc1f572b21936f326ed0adfceb1037ac8022b7fe016ae991a63ca80",
+            "commit": "be700fedaf0d49938ad8e212c409a63dd4f70472",
+            "at": "2026-11-21T10:43:17.755Z"
+          },
+          {
+            "kind": "bundle",
+            "path": "docs/acceptance/local-bundle.json",
+            "sha256": "43ea6d45627215b53486473fd5683bb2b012a68f4a0d733085f7f751056dd6aa",
+            "sourceFingerprint": "f488caac4cc1f572b21936f326ed0adfceb1037ac8022b7fe016ae991a63ca80",
+            "commit": "be700fedaf0d49938ad8e212c409a63dd4f70472",
+            "at": "2026-11-21T10:43:23.572Z"
+          },
+          {
+            "kind": "doctor",
+            "path": "docs/acceptance/local-doctor.json",
+            "sha256": "f3a4b82db5f9e6e4cb2d100ba05b72e961a560dfa0682533f08f3b474fa52906",
+            "sourceFingerprint": "f488caac4cc1f572b21936f326ed0adfceb1037ac8022b7fe016ae991a63ca80",
+            "commit": "be700fedaf0d49938ad8e212c409a63dd4f70472",
+            "at": "2026-11-21T10:43:28.827Z"
+          },
+          {
+            "kind": "unit",
+            "path": "docs/acceptance/local-unit.json",
+            "sha256": "272da28db3bc7441cf7f33026a4113e468ad73d17eddc4c026a6964c2289e154",
+            "sourceFingerprint": "f488caac4cc1f572b21936f326ed0adfceb1037ac8022b7fe016ae991a63ca80",
+            "commit": "be700fedaf0d49938ad8e212c409a63dd4f70472",
+            "at": "2026-11-21T11:27:33.753Z"
+          },
+          {
+            "kind": "typecheck",
+            "path": "docs/acceptance/local-typecheck.json",
+            "sha256": "74436d5788bb68a21ea7ecdd4af96de353ff98301a8ab64bb3f02ef371ffdd58",
+            "sourceFingerprint": "f488caac4cc1f572b21936f326ed0adfceb1037ac8022b7fe016ae991a63ca80",
+            "commit": "be700fedaf0d49938ad8e212c409a63dd4f70472",
+            "at": "2026-11-21T11:27:34.581Z"
+          },
+          {
+            "kind": "bundle",
+            "path": "docs/acceptance/local-bundle.json",
+            "sha256": "6c38a76e71b568e0c272543af58445c881142914146b81c51360e48eb0cf6f48",
+            "sourceFingerprint": "f488caac4cc1f572b21936f326ed0adfceb1037ac8022b7fe016ae991a63ca80",
+            "commit": "be700fedaf0d49938ad8e212c409a63dd4f70472",
+            "at": "2026-11-21T11:27:35.426Z"
+          },
+          {
+            "kind": "doctor",
+            "path": "docs/acceptance/local-doctor.json",
+            "sha256": "e58fed5306ffa3d386c904e6784bffb3715f3fed4c026e37310493f05869c85d",
+            "sourceFingerprint": "f488caac4cc1f572b21936f326ed0adfceb1037ac8022b7fe016ae991a63ca80",
+            "commit": "be700fedaf0d49938ad8e212c409a63dd4f70472",
+            "at": "2026-11-21T11:27:36.231Z"
           }
         ],
-        "updatedAt": "2026-11-21T10:39:42.755Z"
+        "updatedAt": "2026-11-21T11:56:58.376Z"
       },
       {
         "id": "M-1-device",
@@ -677,43 +733,54 @@
       }
     ],
     "checkpoint": {
-      "id": "v2-2026-11-21T10-42-55-395Z-6fa9495c-958e-4d2d-9175-55af47c7e071",
-      "path": ".agent/checkpoints/v2-2026-11-21T10-42-55-395Z-6fa9495c-958e-4d2d-9175-55af47c7e071.json",
-      "sha256": "367464c752df3060dd08083eedd81dd2c92d8bb4c1cb419272aae5443965f4f9",
-      "authorityDigest": "81ed570edbb9ff994a0ed1942f0351d02e7042fc8ac34b7828ad9f5f286ad178",
-      "at": "2026-11-21T10:42:55.395Z",
+      "id": "v2-2026-11-21T11-56-58-514Z-e8b7d6a7-d4a0-4c75-b1e5-af48d1e85b7e",
+      "path": ".agent/checkpoints/v2-2026-11-21T11-56-58-514Z-e8b7d6a7-d4a0-4c75-b1e5-af48d1e85b7e.json",
+      "sha256": "7954fde3bc50b5f0ff79e6f1e98ac1a111d0cea93a7ebe63534c51353d7ac27f",
+      "authorityDigest": "01bb5d21665bf6edabea07f63405a70c334c5e2cb890b9894a1bb0160a100c9d",
+      "at": "2026-11-21T11:56:58.514Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "b6d52004cd4fb95f9a96c1cc39ed83570d0ed322",
+        "commit": "be700fedaf0d49938ad8e212c409a63dd4f70472",
         "dirty": [
           "M .agent/HANDOFF.md",
           " M .agent/control.json",
           " M .agent/state.json",
           " M .agent/tasks.json",
           " M PROGRESS.md",
-          " M docs/decisions/0003-native-build-integrity.md",
-          " M scripts/ci/native-dependencies.py",
-          " M tests/native-inventory.test.mjs",
-          "?? .agent/checkpoints/v2-2026-11-21T10-31-05-190Z-0bbe0bd8-84e9-4c70-a923-c34b449599fa.json",
-          "?? .agent/checkpoints/v2-2026-11-21T10-31-46-587Z-4bcc6e5f-1365-411c-9437-77b30e093308.json",
-          "?? .agent/checkpoints/v2-2026-11-21T10-31-47-310Z-09161433-e9ca-4169-8b42-e782cca2bf2d.json",
-          "?? .agent/checkpoints/v2-2026-11-21T10-38-47-353Z-a5cb24d8-09d6-4875-8c22-baba21579903.json",
-          "?? .agent/checkpoints/v2-2026-11-21T10-38-47-832Z-c65eaede-2ff5-4417-9660-0e5d91484cfa.json",
-          "?? .agent/checkpoints/v2-2026-11-21T10-39-42-809Z-97840715-9c61-430c-b93b-ae18472a0029.json",
-          "?? .agent/checkpoints/v2-2026-11-21T10-39-43-585Z-b9c53393-eac6-4f34-9857-606bc593fb60.json",
-          "?? docs/acceptance/ci-44894722354-analysis.md",
-          "?? docs/acceptance/ci-44894722354-api.json",
-          "?? docs/acceptance/ci-44894722354-artifacts-api.json",
-          "?? docs/acceptance/ci-44894722354-sanitized-reports.json",
-          "?? docs/acceptance/ci-44894722354-start-api.json",
-          "?? docs/acceptance/ci-44894722354-steps-api.json",
-          "?? tests/fixtures/rncore-facade-header.json"
+          " M docs/acceptance/local-bundle-output.txt",
+          " M docs/acceptance/local-bundle.json",
+          " M docs/acceptance/local-doctor.json",
+          " M docs/acceptance/local-typecheck.json",
+          " M docs/acceptance/local-unit-output.txt",
+          " M docs/acceptance/local-unit.json",
+          "?? .agent/checkpoints/v2-2026-11-21T10-42-56-302Z-1f14be0a-e6d9-4c36-a8e4-b4f372bca143.json",
+          "?? .agent/checkpoints/v2-2026-11-21T10-43-16-960Z-aa83b142-d64e-476e-bf8d-dd13cedee547.json",
+          "?? .agent/checkpoints/v2-2026-11-21T10-43-17-795Z-54d33b53-410e-487c-b012-8f8978fb2d3d.json",
+          "?? .agent/checkpoints/v2-2026-11-21T10-43-22-784Z-422afd97-b5f3-4418-97f8-fc17f345f9d4.json",
+          "?? .agent/checkpoints/v2-2026-11-21T10-43-23-616Z-0ff5172c-4cbd-4ad5-9d74-2bad616420e8.json",
+          "?? .agent/checkpoints/v2-2026-11-21T10-43-27-993Z-db204ea5-c445-43a1-a57d-94cafce3552b.json",
+          "?? .agent/checkpoints/v2-2026-11-21T10-43-28-868Z-9cfccb89-5175-4998-9807-c18bbde28f55.json",
+          "?? .agent/checkpoints/v2-2026-11-21T10-44-27-753Z-39a6376d-b40c-4f52-b12f-277e299c8f20.json",
+          "?? .agent/checkpoints/v2-2026-11-21T11-13-35-499Z-62b40754-c0b8-44db-a705-88fd9c3164ac.json",
+          "?? .agent/checkpoints/v2-2026-11-21T11-23-31-931Z-cbd029b6-3b38-4bd6-91a1-d2b3ea094721.json",
+          "?? .agent/checkpoints/v2-2026-11-21T11-24-47-914Z-caec4c5f-27ad-4e08-8ef3-5e5b3d8da3eb.json",
+          "?? .agent/checkpoints/v2-2026-11-21T11-26-10-433Z-5d495c9d-0143-408e-9325-c007b168e541.json",
+          "?? .agent/checkpoints/v2-2026-11-21T11-27-05-080Z-812515c6-24ac-4eb3-aa66-14be9f13e897.json",
+          "?? .agent/checkpoints/v2-2026-11-21T11-27-10-063Z-2d34baac-d2a0-451c-a9c6-7f7d8fadabc3.json",
+          "?? .agent/checkpoints/v2-2026-11-21T11-27-14-391Z-efc0d991-c6fb-4db5-b369-32900cdff00e.json",
+          "?? .agent/checkpoints/v2-2026-11-21T11-27-33-795Z-8042fa49-2cc1-472a-93d2-376525e598d4.json",
+          "?? .agent/checkpoints/v2-2026-11-21T11-27-34-622Z-b2623e5a-3fce-47b2-9e3d-b985bbcdd9f6.json",
+          "?? .agent/checkpoints/v2-2026-11-21T11-27-35-470Z-49d1f862-1cd3-4463-83d4-d3e60c5ac157.json",
+          "?? .agent/checkpoints/v2-2026-11-21T11-27-36-279Z-da133407-d7d5-4e93-89fa-33edfa79b9fa.json",
+          "?? .agent/checkpoints/v2-2026-11-21T11-28-29-144Z-c5c13325-34c9-4eb0-8817-d192d82ea62c.json",
+          "?? .agent/checkpoints/v2-2026-11-21T11-56-20-339Z-7f64e927-b2a9-4dfc-90f7-2f2a3a8d8c7c.json",
+          "?? docs/acceptance/native-rn-facade-header-implementation.md"
         ]
       },
       "sourceFingerprint": "f488caac4cc1f572b21936f326ed0adfceb1037ac8022b7fe016ae991a63ca80",
-      "note": "第三轮精确RN单header映射实施完成：真实Ruby源复制及9项精确映射负向通过；其他native/UI/IPA门禁保持，准备提交规范回归"
+      "note": "M-1 enters testing; owner-authorized one-shot bootstrap CI only, independent review and completion gates remain open"
     },
-    "nextAction": "第三轮有界修订开始：实际诊断与来源分析见docs/acceptance/ci-44894722354-analysis.md；只为固定RN0.88.1复制的React-RCTFabric/RCTFabricComponentsPlugins.h及Public/Private两个精确namespace加物理映射。先真实Ruby复制/分类差分与精确负向，再规范证据和独立复审。不得声称已观测CI具体链接，不允许整个build/facade目录。若第三轮同类仍失败停止修补保存blocked，不继续试绿。",
+    "nextAction": "只针对已完成源码be700fedaf0d49938ad8e212c409a63dd4f70472执行一次受限macOS候选bootstrap验证；本轮基于负责人授权暂跳独立审查，但不得登记为独立审查通过或M-1完成。若仍是同类Pods header root拒绝，立即blocked并停止第四轮修补；若产出候选，仅保留approved=false并等待独立审核，不锁定、不构建、不发布。",
     "delegates": [
       {
         "taskId": "node:delegated-task:command%3Amcp%3Ac31b83bb-4e95-4301-8a91-f13f8295d85a%3Adelegate-task%3A4b75cf04-9360-469c-87e1-321a7e4b3149",
@@ -785,6 +852,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "5bf0a39af4a004b2338ac6c2c98c706064fe978b9c49be3e7ef13698dd9bb958"
+    "digest": "f1cb5c06ec11191277e509311d3b8549e45055c825708d3a15abc965011c9389"
   }
 }

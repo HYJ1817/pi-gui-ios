@@ -1,17 +1,17 @@
 {
   "schemaVersion": 2,
   "kind": "tasks",
-  "revision": 353,
-  "updatedAt": "2026-11-21T10:42:55.395Z",
+  "revision": 383,
+  "updatedAt": "2026-11-21T11:56:58.514Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "5bf0a39af4a004b2338ac6c2c98c706064fe978b9c49be3e7ef13698dd9bb958",
+    "parentDigest": "f1cb5c06ec11191277e509311d3b8549e45055c825708d3a15abc965011c9389",
     "tasks": [
       {
         "id": "M-1-infrastructure",
         "phase": "M-1",
         "title": "恢复控制层、Windows 原生探针、macOS/Simulator/Maestro/unsigned IPA 验证",
-        "status": "in_progress",
+        "status": "testing",
         "dependsOn": [],
         "requiredEvidence": [
           "unit",
@@ -450,9 +450,65 @@
             "sourceFingerprint": "346c5097e03fd2f3f49dd6b973992fe6eff59c6997b7dec9c4153395ea626109",
             "commit": "ef2c3b77f2de2860e286a03c617d884537c344df",
             "at": "2026-11-21T10:30:31.075Z"
+          },
+          {
+            "kind": "typecheck",
+            "path": "docs/acceptance/local-typecheck.json",
+            "sha256": "08de2f0f75b83b203c417e2a315eb8e8e1606081147f5a9f691b251bb3a9b087",
+            "sourceFingerprint": "f488caac4cc1f572b21936f326ed0adfceb1037ac8022b7fe016ae991a63ca80",
+            "commit": "be700fedaf0d49938ad8e212c409a63dd4f70472",
+            "at": "2026-11-21T10:43:17.755Z"
+          },
+          {
+            "kind": "bundle",
+            "path": "docs/acceptance/local-bundle.json",
+            "sha256": "43ea6d45627215b53486473fd5683bb2b012a68f4a0d733085f7f751056dd6aa",
+            "sourceFingerprint": "f488caac4cc1f572b21936f326ed0adfceb1037ac8022b7fe016ae991a63ca80",
+            "commit": "be700fedaf0d49938ad8e212c409a63dd4f70472",
+            "at": "2026-11-21T10:43:23.572Z"
+          },
+          {
+            "kind": "doctor",
+            "path": "docs/acceptance/local-doctor.json",
+            "sha256": "f3a4b82db5f9e6e4cb2d100ba05b72e961a560dfa0682533f08f3b474fa52906",
+            "sourceFingerprint": "f488caac4cc1f572b21936f326ed0adfceb1037ac8022b7fe016ae991a63ca80",
+            "commit": "be700fedaf0d49938ad8e212c409a63dd4f70472",
+            "at": "2026-11-21T10:43:28.827Z"
+          },
+          {
+            "kind": "unit",
+            "path": "docs/acceptance/local-unit.json",
+            "sha256": "272da28db3bc7441cf7f33026a4113e468ad73d17eddc4c026a6964c2289e154",
+            "sourceFingerprint": "f488caac4cc1f572b21936f326ed0adfceb1037ac8022b7fe016ae991a63ca80",
+            "commit": "be700fedaf0d49938ad8e212c409a63dd4f70472",
+            "at": "2026-11-21T11:27:33.753Z"
+          },
+          {
+            "kind": "typecheck",
+            "path": "docs/acceptance/local-typecheck.json",
+            "sha256": "74436d5788bb68a21ea7ecdd4af96de353ff98301a8ab64bb3f02ef371ffdd58",
+            "sourceFingerprint": "f488caac4cc1f572b21936f326ed0adfceb1037ac8022b7fe016ae991a63ca80",
+            "commit": "be700fedaf0d49938ad8e212c409a63dd4f70472",
+            "at": "2026-11-21T11:27:34.581Z"
+          },
+          {
+            "kind": "bundle",
+            "path": "docs/acceptance/local-bundle.json",
+            "sha256": "6c38a76e71b568e0c272543af58445c881142914146b81c51360e48eb0cf6f48",
+            "sourceFingerprint": "f488caac4cc1f572b21936f326ed0adfceb1037ac8022b7fe016ae991a63ca80",
+            "commit": "be700fedaf0d49938ad8e212c409a63dd4f70472",
+            "at": "2026-11-21T11:27:35.426Z"
+          },
+          {
+            "kind": "doctor",
+            "path": "docs/acceptance/local-doctor.json",
+            "sha256": "e58fed5306ffa3d386c904e6784bffb3715f3fed4c026e37310493f05869c85d",
+            "sourceFingerprint": "f488caac4cc1f572b21936f326ed0adfceb1037ac8022b7fe016ae991a63ca80",
+            "commit": "be700fedaf0d49938ad8e212c409a63dd4f70472",
+            "at": "2026-11-21T11:27:36.231Z"
           }
         ],
-        "updatedAt": "2026-11-21T10:39:42.755Z"
+        "updatedAt": "2026-11-21T11:56:58.376Z"
       },
       {
         "id": "M-1-device",
@@ -593,6 +649,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "1c65c0accfe09c9e7c82738af5437193688cd3c050a6fc968b04809cbf4e87f8"
+    "digest": "a7616a79be946ddfb9199c59983650cfa6bf320dcb7e7b82ee0fff039e806baf"
   }
 }

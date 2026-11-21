@@ -1,0 +1,11 @@
+# RN唯一facade头文件映射 · 第三轮实施记录
+
+精确源码提交be700fedaf0d49938ad8e212c409a63dd4f70472，指纹f488caac4cc1f572b21936f326ed0adfceb1037ac8022b7fe016ae991a63ca80。
+
+实际macOS CI44894722354在上一个源码指纹上322/322 canonical与prebuild通过，但以Pods-header上下文HEADER_ROOT_REJECTED失败，无候选。源码调查与真实Ruby探针发现固定RN0.88.1仅为React-RCTFabric再暴露RCTFabricComponentsPlugins.h，并复制到安装根build/rncore-facades/React-RCTFabric。CocoaPods的固定namespace算法生成Public/Private两个精确链接位置。原2项分类/真实Ruby复制差分均以HEADER_ROOT_REJECTED拒绝；修后48项定向通过，额外在增加fixture来源SHA核验后再次执行9项关键映射与负向全通过。
+
+实现只为上述唯一文件/两个namespace到固定物理文件的映射增加例外。其他facade家族、pod、文件、子目录、namespace或build目录均继续拒绝；目标与祖先无链接、普通文件、nlink1、完整SHA与locked绑定保持。两个链接的物理源去重为一行。新增RN源码/源header摘要fixture、真实Ruby复制、7种路径负向及macOS真实链接/字节漂移/目录/硬链接/符号链接/父链负向，最终IPA和发布边界文件未修改。
+
+现有CI固定诊断未披露具体文件，以上不能当作实际CI逐路径观测。当前源码仍须四份规范报告、精确新上下文独立安全/功能/恢复复审，以及真实macOS验证。上一轮macOS322项结果不继承为本提交通过。
+
+这是恢复设计第三轮有界修订。若本轮仍有同类未解决失败，停止继续第四轮修补或试跑，保存实际日志/根因及blocked状态；不得用放宽通用目录、忽略未知链接或跳过测试来推进。没有锁集批准、native/UI/IPA或SideStore验收。
