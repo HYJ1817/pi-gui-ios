@@ -44,6 +44,7 @@
 - native-stack7.21.0 patch包含独立scene presentation envelope、finishTransitioning、toolbar/center item扩展等；官方7.21.0不是该patch后的同一实现。screens tgz5.0.0-t3.61的Fabric接口包括Stack/Split/Tabs/FormSheet，并非普通4.x替换文件。
 - T3固定core7.24.0并注明旧core会导致native stack启动问题；跟随其导航版本时一并核对core解析，不只安装顶层两个包。
 - 本项目当前Expo58.0.26官方bundledNativeModules实际列：RNGH~3.3.0、Reanimated4.7.1、Worklets0.13.0、keyboard-controller1.22.7、screens~4.30.1、@expo/ui~58.0.29。T3的3.5.0/0.13.1/1.23.0/私有screens属于有意不同组合。本次仅对gesture-handler/keyboard-controller/worklets三个第三方包声明推荐版本差异，并精确固定为3.5.0/1.23.0/0.13.1；canonical npm test 同时执行 check-technology-stack，对照固定研究证据逐项校验13个实际版本、MIT许可、Reanimated/Worklets peer组合和两个core/Metro override，例外列表本身也必须完全匹配。其余SDK检查保持，并新增真实键盘显隐、UI worklet完成和原生手势回调的Maestro门禁。未使用--force、--legacy-peer-deps或宽泛忽略，也不把版本钉住视为native兼容证明。
+- 原生生成模板也作为精确输入：CI使用expo-template-bare-minimum58.0.35，先fetch且不运行其生命周期，再校验已审SHA512后交给Expo；校验器摘要进入原生锁/缓存key。该包manifest声明0BSD，实际随包LICENSE是650 Industries的MIT文本，均记录且完整保留通知。单场景生命周期有严格schema，模板宏只准prebuild，最终IPA只准编译类名；不因此放宽ATS或权限。来源及fixture见tests/fixtures/expo58-template-source.json。
 - T3键盘patch不只是版本钉住：已读iPad浮动/最小化键盘willChangeFrame处理与chat inset补偿；其未使用的额外API不自动成为本项目必需。需要其相同行为时优先复用有许可证的窄补丁并单测，而非重造键盘控制器。
 - Markdown tgz实测版本1.2.0-t3.18、MIT、1193文件、SHA256 `8383ce9d60afbe3ef036376449b69884cc5c2bb6f6120716fb54f30e6c636a3d`，SHA512与T3 lock一致；screens tgz版本5.0.0-t3.61、MIT、1918文件、SHA256 `0516636f91ca55f3d656c31a466c2e3050c97fa06093288c887838b1ee0b3960`，同样已核。保留Software Mansion与T3版权，不能仅因根仓库MIT就忽略vendor许可证。
 

@@ -52,6 +52,12 @@
 - 下一轮 prebuild 后先比对 Gemfile/package-lock/Podfile 和审核锁/清单的 SHA-256，再把审核过的 Podfile.lock 复制到 ios。Bundler 使用 BUNDLE_FROZEN=true；CocoaPods 使用 `pod install --deployment`。安装后重新规范化和比较两个锁及全部预编译字节清单，一处漂移或新增/丢失均失败，才允许构建。
 - 后续若需要换依赖，必须在专用审查分支显式回到无旧锁集的 bootstrap 流程获取新候选，再重新审核落库；不会自动更新、忽略差异或把未锁定解析降级为可验收。
 
+## 模板与场景兼容的精确输入修订
+
+CI44864063976及其独立审查确认原策略不兼容SDK58模板的单场景生命周期；具体实证见docs/acceptance/ci-44864063976-analysis.md。仅为已核对结构增加严格schema，模板宏只能用于prebuild，最终IPA只能为PiGUIMobile.SceneDelegate；权限与ATS拒绝规则保持。不是通过删除未知字段消除报错。
+
+CI fetch固定expo-template-bare-minimum58.0.35（不执行fetch生命周期），由verify-template.py先验证已审SHA512及包名/版本，再传本地tar给Expo。校验器摘要也进入hashes与精确缓存key，实际变化需重新bootstrap审核。原生应用树/其祖先与二进制清单统一拒绝链接及Windows重解析点；合成测试的可信临时根先canonicalize，再另外构造并验证不可信链接，未将坏输入预先resolve掩盖失败。
+
 ## 缓存边界
 
 actions/cache restore/save 均固定 SHA 0057852bfaa89a56745cba8c7296529d2fc39830（已只读核对官方 v4.3.0 tag）。key 绑定 OS/arch、macOS/Ruby/CocoaPods/Bundler 版本和 Gemfile、Gemfile.lock、package-lock、生成 Podfile、审核 Podfile.lock、策略、review、预编译清单的 hashFiles；**没有 restore-keys 宽泛回退**。

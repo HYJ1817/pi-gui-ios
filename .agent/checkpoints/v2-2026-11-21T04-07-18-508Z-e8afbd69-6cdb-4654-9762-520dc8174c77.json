@@ -1,0 +1,373 @@
+{
+  "schemaVersion": 2,
+  "kind": "checkpoint",
+  "revision": 51,
+  "updatedAt": "2026-11-21T04:07:18.508Z",
+  "data": {
+    "id": "v2-2026-11-21T04-07-18-508Z-e8afbd69-6cdb-4654-9762-520dc8174c77",
+    "note": "agent-task evidence M-1-infrastructure",
+    "control": {
+      "schemaVersion": 2,
+      "kind": "control",
+      "revision": 51,
+      "updatedAt": "2026-11-21T04:07:18.477Z",
+      "data": {
+        "phase": "M-1",
+        "currentTask": "M-1-infrastructure",
+        "branch": "agent/m-1-bootstrap",
+        "protocolVersion": 1,
+        "desktop": {
+          "repo": "HYJ1817/pi-gui",
+          "branch": "main",
+          "commit": "af0432a0bc3b04c717a63ede3cc457e859401833",
+          "protocolVersion": null
+        },
+        "ci": [
+          {
+            "id": "44783585115",
+            "head": "58ec99506e00a35121866580ffb28d09d5078b17",
+            "workflow": ".github/workflows/native-infrastructure.yml",
+            "attempt": 1,
+            "status": "completed",
+            "conclusion": "cancelled",
+            "url": "https://github.com/HYJ1817/pi-gui-ios/actions/runs/44783585115"
+          },
+          {
+            "id": "44864063976",
+            "head": "d46d6a5f84ad569f42a727fe29b0e2ed7b6f4afd",
+            "workflow": ".github/workflows/native-infrastructure.yml",
+            "attempt": 1,
+            "status": "completed",
+            "conclusion": "failure",
+            "url": "https://github.com/HYJ1817/pi-gui-ios/actions/runs/44864063976"
+          }
+        ],
+        "blockers": [
+          "S1 v2原始证据/类型/提交与递归门禁已实现，待精确提交独立复审",
+          "S2 IPA私有暂存/明确上传集合与脱敏诊断已实现，待独立复审及实际CI证明",
+          "S3 最终归档Mach-O/平台/签名/权限校验已实现，缺真实device IPA与独立复审",
+          "S4 工具版本和pipefail已实现，缺真实macOS候选锁/审核/locked构建",
+          "S5 symlink/junction普通文件边界已实现并回归，待独立复审",
+          "S6 完整schema与CI身份/状态导入已实现，待独立复审",
+          "S7 检查点先持久化/持锁修复/显式恢复和候选诊断已实现，待独立复审"
+        ],
+        "tasks": [
+          {
+            "id": "M-1-infrastructure",
+            "phase": "M-1",
+            "title": "恢复控制层、Windows 原生探针、macOS/Simulator/Maestro/unsigned IPA 验证",
+            "status": "testing",
+            "dependsOn": [],
+            "requiredEvidence": [
+              "unit",
+              "typecheck",
+              "bundle",
+              "doctor",
+              "ci",
+              "ui",
+              "ipa",
+              "independent-review",
+              "independent-security",
+              "independent-handoff"
+            ],
+            "acceptance": "所有自动化、真实UI及独立审查通过；另须完成T3当前main技术栈逐项分析与关键选型实际验证，ExpoRouter非硬约束、优先ReactNavigation；不包含SideStore人工验收",
+            "evidence": [
+              {
+                "kind": "unit",
+                "path": "docs/acceptance/local-unit.json",
+                "sha256": "ffb9d1bf59e5c5b3983dbdad9c68825661c2e815484eba6b36a4a43056b6c0fe",
+                "sourceFingerprint": "a76a060b3718e6845f528e51400ba880b0f19ae21a161878ed66abc06d8ebd4d",
+                "commit": "a3acf20eef222e556c5b9de392da51005dfc0238",
+                "at": "2026-11-20T18:05:04.927Z"
+              },
+              {
+                "kind": "typecheck",
+                "path": "docs/acceptance/local-typecheck.json",
+                "sha256": "50f5f10827284571bf42bea76f5b0f8eea8e941a120bbc254310cd28622c68f8",
+                "sourceFingerprint": "a76a060b3718e6845f528e51400ba880b0f19ae21a161878ed66abc06d8ebd4d",
+                "commit": "a3acf20eef222e556c5b9de392da51005dfc0238",
+                "at": "2026-11-20T18:05:41.533Z"
+              },
+              {
+                "kind": "bundle",
+                "path": "docs/acceptance/local-bundle.json",
+                "sha256": "356efd0b80e0a43f235e4e7367c7ae317bff84b56258635c5a0da1e8b4f7c80c",
+                "sourceFingerprint": "a76a060b3718e6845f528e51400ba880b0f19ae21a161878ed66abc06d8ebd4d",
+                "commit": "a3acf20eef222e556c5b9de392da51005dfc0238",
+                "at": "2026-11-20T18:05:42.260Z"
+              },
+              {
+                "kind": "doctor",
+                "path": "docs/acceptance/local-doctor.json",
+                "sha256": "136f7fb9a8f1862d6996d8d40bb4f6e36ea3bf69e4106703b736d1c2dd7c2937",
+                "sourceFingerprint": "a76a060b3718e6845f528e51400ba880b0f19ae21a161878ed66abc06d8ebd4d",
+                "commit": "a3acf20eef222e556c5b9de392da51005dfc0238",
+                "at": "2026-11-20T18:05:42.999Z"
+              },
+              {
+                "kind": "unit",
+                "path": "docs/acceptance/local-unit.json",
+                "sha256": "4ebcf9c45c93ef2f8aacc07b728c07b4dbe615310da8cac881753c52b130226e",
+                "sourceFingerprint": "7667db27d0a41f614d0df9f74cf2e5c5fc237fbab5d92bc7c653a0dc5f5bc995",
+                "commit": "d46d6a5f84ad569f42a727fe29b0e2ed7b6f4afd",
+                "at": "2026-11-21T04:03:56.532Z"
+              },
+              {
+                "kind": "typecheck",
+                "path": "docs/acceptance/local-typecheck.json",
+                "sha256": "ceeb85adbf71de29c3251453cb1a7f6cd80480f86f16b618213a07e71152dfd9",
+                "sourceFingerprint": "7667db27d0a41f614d0df9f74cf2e5c5fc237fbab5d92bc7c653a0dc5f5bc995",
+                "commit": "d46d6a5f84ad569f42a727fe29b0e2ed7b6f4afd",
+                "at": "2026-11-21T04:07:16.894Z"
+              },
+              {
+                "kind": "bundle",
+                "path": "docs/acceptance/local-bundle.json",
+                "sha256": "88e0707653e51d2c8b8d23d6acc721a984622396e025b9bbb30098cee029fff6",
+                "sourceFingerprint": "7667db27d0a41f614d0df9f74cf2e5c5fc237fbab5d92bc7c653a0dc5f5bc995",
+                "commit": "d46d6a5f84ad569f42a727fe29b0e2ed7b6f4afd",
+                "at": "2026-11-21T04:07:17.697Z"
+              },
+              {
+                "kind": "doctor",
+                "path": "docs/acceptance/local-doctor.json",
+                "sha256": "07742566d02a9d0444d535e5f00f057e7386d0c623bc5559d99855a4352e56e6",
+                "sourceFingerprint": "7667db27d0a41f614d0df9f74cf2e5c5fc237fbab5d92bc7c653a0dc5f5bc995",
+                "commit": "d46d6a5f84ad569f42a727fe29b0e2ed7b6f4afd",
+                "at": "2026-11-21T04:07:18.476Z"
+              }
+            ],
+            "updatedAt": "2026-11-21T03:58:47.613Z"
+          },
+          {
+            "id": "M-1-device",
+            "phase": "M-1",
+            "title": "一次集中 SideStore 免费签名安装与真机验收",
+            "status": "pending",
+            "dependsOn": [
+              "M-1-infrastructure"
+            ],
+            "requiredEvidence": [
+              "device-install",
+              "device-upgrade"
+            ],
+            "acceptance": "真实 iPhone 安装/运行/刷新/覆盖升级及可用 iPad 验证；不以 Simulator 或 IPA 结构代替",
+            "evidence": []
+          },
+          {
+            "id": "M0-architecture",
+            "phase": "M0",
+            "title": "冻结架构、协议和安全模型",
+            "status": "pending",
+            "dependsOn": [
+              "M-1-device"
+            ],
+            "requiredEvidence": [
+              "unit",
+              "independent-review",
+              "independent-security",
+              "protocol-contract"
+            ],
+            "acceptance": "双方源码证据、ADR、权限和兼容契约通过独立安全审查",
+            "evidence": []
+          },
+          {
+            "id": "M1-remote",
+            "phase": "M1",
+            "title": "桌面远程授权、配对、撤销",
+            "status": "pending",
+            "dependsOn": [
+              "M0-architecture"
+            ],
+            "requiredEvidence": [
+              "unit",
+              "integration",
+              "independent-review",
+              "independent-security"
+            ],
+            "acceptance": "隔离入口、TLS、重放、撤销断连、最小权限及桌面 canonical 验证",
+            "evidence": []
+          },
+          {
+            "id": "M2-shell",
+            "phase": "M2",
+            "title": "原生设计系统与 iPad 导航布局",
+            "status": "pending",
+            "dependsOn": [
+              "M1-remote"
+            ],
+            "requiredEvidence": [
+              "unit",
+              "ui",
+              "independent-review"
+            ],
+            "acceptance": "双设备、主题、辅助功能真实渲染验收",
+            "evidence": []
+          },
+          {
+            "id": "M3-core",
+            "phase": "M3",
+            "title": "会话、消息、任务、模型、工具及审批",
+            "status": "pending",
+            "dependsOn": [
+              "M2-shell"
+            ],
+            "requiredEvidence": [
+              "unit",
+              "integration",
+              "ui",
+              "independent-review",
+              "independent-security"
+            ],
+            "acceptance": "桌面/移动完整合成闭环，保持桌面审批",
+            "evidence": []
+          },
+          {
+            "id": "M4-sync",
+            "phase": "M4",
+            "title": "实时同步、断线补发、多设备一致性",
+            "status": "pending",
+            "dependsOn": [
+              "M3-core"
+            ],
+            "requiredEvidence": [
+              "unit",
+              "integration",
+              "fault-injection",
+              "independent-review"
+            ],
+            "acceptance": "乱序、间隙、重启、重复与冲突不破坏状态",
+            "evidence": []
+          },
+          {
+            "id": "M5-tailscale",
+            "phase": "M5",
+            "title": "Tailscale 异地与真机安全兼容",
+            "status": "pending",
+            "dependsOn": [
+              "M4-sync"
+            ],
+            "requiredEvidence": [
+              "integration",
+              "device-network",
+              "independent-review",
+              "independent-security"
+            ],
+            "acceptance": "异地 TLS/私网认证、网络切换、真机兼容通过",
+            "evidence": []
+          },
+          {
+            "id": "M6-distribution",
+            "phase": "M6",
+            "title": "IPA、版本检测、SideStore 源与发布候选",
+            "status": "pending",
+            "dependsOn": [
+              "M5-tailscale"
+            ],
+            "requiredEvidence": [
+              "unit",
+              "ipa",
+              "device-upgrade",
+              "independent-review",
+              "independent-security"
+            ],
+            "acceptance": "更新兼容通过；正式发布和 main 合并另需用户授权",
+            "evidence": []
+          }
+        ],
+        "checkpoint": {
+          "id": "v2-2026-11-21T04-07-17-734Z-95e599b6-93d5-45e1-aec2-740411612065",
+          "path": ".agent/checkpoints/v2-2026-11-21T04-07-17-734Z-95e599b6-93d5-45e1-aec2-740411612065.json",
+          "sha256": "f042dbe1f76595d5d286ce1b42ffc4563e853342b1cf760d46a1259a07f76fb3",
+          "authorityDigest": "9ad096a3072af3dfe962a225a730940b0787c0f77f8b3638861e784e94231be1",
+          "at": "2026-11-21T04:07:17.734Z",
+          "git": {
+            "branch": "agent/m-1-bootstrap",
+            "commit": "d46d6a5f84ad569f42a727fe29b0e2ed7b6f4afd",
+            "dirty": [
+              "M .agent/HANDOFF.md",
+              " M .agent/control.json",
+              " M .agent/state.json",
+              " M .agent/tasks.json",
+              " M PROGRESS.md",
+              " M docs/acceptance/local-bundle-output.txt",
+              " M docs/acceptance/local-bundle.json",
+              " M docs/acceptance/local-doctor.json",
+              " M docs/acceptance/local-typecheck.json",
+              " M docs/acceptance/local-unit-output.txt",
+              " M docs/acceptance/local-unit.json",
+              "?? .agent/checkpoints/v2-2026-11-21T04-00-15-125Z-ac7a8412-3fbb-4453-ba95-473b38064ccd.json",
+              "?? .agent/checkpoints/v2-2026-11-21T04-00-54-995Z-8e9d84ba-beeb-4239-8966-da894f5f74ce.json",
+              "?? .agent/checkpoints/v2-2026-11-21T04-03-56-570Z-ee7f9298-2b15-4481-9ca5-63674054d955.json",
+              "?? .agent/checkpoints/v2-2026-11-21T04-03-57-140Z-9eed5724-3f83-4207-914b-c95b91c83e0e.json",
+              "?? .agent/checkpoints/v2-2026-11-21T04-04-02-795Z-654c03d4-d923-4a41-a5b3-449e5aeba90a.json",
+              "?? .agent/checkpoints/v2-2026-11-21T04-04-07-249Z-be02fb3a-dbe9-4c98-b545-3b9885fe0dc2.json",
+              "?? .agent/checkpoints/v2-2026-11-21T04-07-16-168Z-ccca579f-f127-4490-bf2b-3ef029e45223.json",
+              "?? .agent/checkpoints/v2-2026-11-21T04-07-16-926Z-909486e4-d21f-45d7-82bb-92453add85a7.json",
+              "?? docs/acceptance/ci-44864063976-api.json"
+            ]
+          },
+          "sourceFingerprint": "7667db27d0a41f614d0df9f74cf2e5c5fc237fbab5d92bc7c653a0dc5f5bc995",
+          "note": "agent-task evidence M-1-infrastructure"
+        },
+        "nextAction": "已集成7c6076e原生安全修复并完成ReactNavigation/Uniwind/Menu/Reanimated/Gesture/Keyboard探针迁移。T3当前main复核285558eb，13项核心不变，矩阵和增量证据已保存。本地最近完整回归123/123，另新增的隐私保护定向5/5通过；提交后须统一重验并导入新原始报告，再推送开发分支启动安全macOS bootstrap及独立复审。bootstrap预计exit78只产候选锁，不能算native/UI/IPA验收。",
+        "delegates": [
+          {
+            "taskId": "node:delegated-task:command%3Amcp%3Ac31b83bb-4e95-4301-8a91-f13f8295d85a%3Adelegate-task%3A4b75cf04-9360-469c-87e1-321a7e4b3149",
+            "role": "functional-review-and-fresh-handoff",
+            "status": "completed",
+            "sourceCommit": "58ec99506e00a35121866580ffb28d09d5078b17"
+          },
+          {
+            "taskId": "node:delegated-task:command%3Amcp%3Ac31b83bb-4e95-4301-8a91-f13f8295d85a%3Adelegate-task%3Aff1f8e3d-e43a-47c2-ad8d-14c02bc295d0",
+            "role": "security-review",
+            "status": "completed",
+            "sourceCommit": "58ec99506e00a35121866580ffb28d09d5078b17"
+          },
+          {
+            "taskId": "node:delegated-task:command%3Amcp%3Ac31b83bb-4e95-4301-8a91-f13f8295d85a%3Adelegate-task%3A7af46559-43da-4538-9daa-7eee427ab8c0",
+            "role": "native-ci-ipa-fix-isolated",
+            "status": "completed",
+            "sourceCommit": "26e122a6a7b090e0a850ff9f741b3f7bced896cd"
+          }
+        ]
+      },
+      "integrity": {
+        "algorithm": "sha256",
+        "digest": "4a9d7a52b285030184bee95f249c5919e8312896b0e3771223180c85d49f283c"
+      }
+    },
+    "git": {
+      "branch": "agent/m-1-bootstrap",
+      "commit": "d46d6a5f84ad569f42a727fe29b0e2ed7b6f4afd",
+      "dirty": [
+        "M .agent/HANDOFF.md",
+        " M .agent/control.json",
+        " M .agent/state.json",
+        " M .agent/tasks.json",
+        " M PROGRESS.md",
+        " M docs/acceptance/local-bundle-output.txt",
+        " M docs/acceptance/local-bundle.json",
+        " M docs/acceptance/local-doctor.json",
+        " M docs/acceptance/local-typecheck.json",
+        " M docs/acceptance/local-unit-output.txt",
+        " M docs/acceptance/local-unit.json",
+        "?? .agent/checkpoints/v2-2026-11-21T04-00-15-125Z-ac7a8412-3fbb-4453-ba95-473b38064ccd.json",
+        "?? .agent/checkpoints/v2-2026-11-21T04-00-54-995Z-8e9d84ba-beeb-4239-8966-da894f5f74ce.json",
+        "?? .agent/checkpoints/v2-2026-11-21T04-03-56-570Z-ee7f9298-2b15-4481-9ca5-63674054d955.json",
+        "?? .agent/checkpoints/v2-2026-11-21T04-03-57-140Z-9eed5724-3f83-4207-914b-c95b91c83e0e.json",
+        "?? .agent/checkpoints/v2-2026-11-21T04-04-02-795Z-654c03d4-d923-4a41-a5b3-449e5aeba90a.json",
+        "?? .agent/checkpoints/v2-2026-11-21T04-04-07-249Z-be02fb3a-dbe9-4c98-b545-3b9885fe0dc2.json",
+        "?? .agent/checkpoints/v2-2026-11-21T04-07-16-168Z-ccca579f-f127-4490-bf2b-3ef029e45223.json",
+        "?? .agent/checkpoints/v2-2026-11-21T04-07-16-926Z-909486e4-d21f-45d7-82bb-92453add85a7.json",
+        "?? .agent/checkpoints/v2-2026-11-21T04-07-17-734Z-95e599b6-93d5-45e1-aec2-740411612065.json",
+        "?? docs/acceptance/ci-44864063976-api.json"
+      ]
+    },
+    "sourceFingerprint": "7667db27d0a41f614d0df9f74cf2e5c5fc237fbab5d92bc7c653a0dc5f5bc995"
+  },
+  "integrity": {
+    "algorithm": "sha256",
+    "digest": "3066fe5ee36248153f4adea22b2534761029523ef6a2e2ed0c310b551dcd3066"
+  }
+}

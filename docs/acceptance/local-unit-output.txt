@@ -1,38 +1,164 @@
 
 > pi-gui-mobile@0.0.1 test
-> node --test tests/*.test.mjs
+> node --test tests/*.test.mjs && node scripts/check-technology-stack.mjs
 
-✔ normal atomic state and locked projection recovery preserve single authority (432.2521ms)
-✔ process exit mid-write preserves old authority and dirty source (595.268ms)
-✔ existing writer lock prevents mutation AND projection repair before any writes (323.9007ms)
-✔ checksum tamper and unsupported schema rejected (346.9298ms)
-✔ full runtime schema rejects missing nextAction, zero protocol, malformed checkpoint and CI before commit (395.5712ms)
-✔ dependency cycles, unknown task statuses and phase drift are rejected (363.1711ms)
-✔ cannot skip testing/review or accept missing proof; actual structured proof works (2087.1459ms)
-✔ a failed report or nonzero exit cannot be restamped into pass evidence (1349.2264ms)
-✔ one report cannot satisfy unrelated evidence kinds (1239.2459ms)
-✔ acceptance requires a real committed source tree, not just current HEAD restamping (704.2462ms)
-✔ working tree/source changes invalidate evidence; commit fingerprint matches original tree (2043.8359ms)
-✔ report and log hash tampering are detected (1647.9868ms)
-✔ upstream completed status with expired evidence cannot start or complete a downstream task (3619.7869ms)
-✔ known blockers prevent acceptance despite otherwise valid evidence (1184.0616ms)
-✔ evidence is constrained to canonical dedicated directories (342.7059ms)
-✔ directory symlink or Windows junction cannot escape evidence or state boundaries (406.809ms)
-✔ CI API imports require exact repository, workflow, numeric ID/attempt, commit and conclusion (368.808ms)
-✔ CI running and failed status persist without becoming successful proof (473.8832ms)
-✔ checkpoint is durable and verified before the authority references it (2234.0479ms)
-✔ failed checkpoint persistence leaves authority revision and reference unchanged (1312.8294ms)
-✔ Git branch drift is detected without discarding dirty code (1436.8289ms)
-✔ desktop/mobile protocol mismatch blocks post-spike gates (2138.829ms)
-✔ restore from a verified checkpoint preserves dirty source and backs up corrupt authority (871.3375ms)
-✔ CI success must match the exact imported API receipt, workflow, head and attempt (1134.0622ms)
-✔ a completed independent task with a failing original result cannot become passing review (1101.3787ms)
-✔ manual device and fresh independent review cannot be replaced by local command reports (880.737ms)
-ℹ tests 26
+✔ diagnostics preserve known validator codes and public-source locations without raw messages (832.5028ms)
+✔ unknown private text and outside-source paths yield only a fixed diagnostic (824.9951ms)
+✔ generated source names and quoted values cannot become diagnostics; locked package names remain useful (800.2272ms)
+✔ artifact diagnostics and environment are structural allowlisted data, never raw runner logs (773.6174ms)
+✔ failed synthetic UI screenshot is retained with metadata removed (555.353ms)
+✔ normal atomic state and locked projection recovery preserve single authority (533.786ms)
+✔ process exit mid-write preserves old authority and dirty source (835.2859ms)
+✔ existing writer lock prevents mutation AND projection repair before any writes (498.6897ms)
+✔ checksum tamper and unsupported schema rejected (439.677ms)
+✔ full runtime schema rejects missing nextAction, zero protocol, malformed checkpoint and CI before commit (424.3023ms)
+✔ dependency cycles, unknown task statuses and phase drift are rejected (378.4158ms)
+✔ cannot skip testing/review or accept missing proof; actual structured proof works (2352.2113ms)
+✔ a failed report or nonzero exit cannot be restamped into pass evidence (1391.0683ms)
+✔ one report cannot satisfy unrelated evidence kinds (1319.8781ms)
+✔ acceptance requires a real committed source tree, not just current HEAD restamping (762.835ms)
+✔ working tree/source changes invalidate evidence; commit fingerprint matches original tree (2022.4935ms)
+✔ report and log hash tampering are detected (1915.2617ms)
+✔ upstream completed status with expired evidence cannot start or complete a downstream task (4361.1544ms)
+✔ known blockers prevent acceptance despite otherwise valid evidence (1297.824ms)
+✔ evidence is constrained to canonical dedicated directories (362.1717ms)
+✔ directory symlink or Windows junction cannot escape evidence or state boundaries (391.3483ms)
+✔ CI API imports require exact repository, workflow, numeric ID/attempt, commit and conclusion (391.4268ms)
+✔ CI running and failed status persist without becoming successful proof (422.5926ms)
+✔ checkpoint is durable and verified before the authority references it (2303.5291ms)
+✔ failed checkpoint persistence leaves authority revision and reference unchanged (1609.3689ms)
+✔ Git branch drift is detected without discarding dirty code (1624.6245ms)
+✔ desktop/mobile protocol mismatch blocks post-spike gates (2340.6121ms)
+✔ checkpoint candidates remain inspectable when authority and newest snapshot are corrupt (1366.2569ms)
+✔ actual CLI diagnoses corrupt authority and lists verified candidates without changing files (1672.6207ms)
+✔ restore from a verified checkpoint preserves dirty source and backs up corrupt authority (1070.7879ms)
+✔ CI success must match the exact imported API receipt, workflow, head and attempt (1261.0288ms)
+✔ a completed independent task with a failing original result cannot become passing review (1257.3609ms)
+✔ explicit separate review and handoff results are checked independently in one fresh-context receipt (1463.9369ms)
+✔ IPA evidence must identify the hash-bound verified final archive, not only an app directory (1213.0513ms)
+✔ manual device and fresh independent review cannot be replaced by local command reports (939.6111ms)
+✔ bootstrap is explicit and never synthesizes committed native locks (229.3892ms)
+✔ a partly committed bootstrap lock set fails closed (126.9264ms)
+✔ locked mode without reviewed hashes cannot install (111.7279ms)
+✔ reject unpinned bundler (117.656ms)
+✔ reject unpinned cocoapods (104.1512ms)
+✔ reject unpinned ruby (108.2285ms)
+✔ byte inventory detects changed, added, removed archives and native binaries (150.1424ms)
+✔ source/Podfile/lock drift invalidates a previously reviewed native set (136.391ms)
+✔ pod install failure survives a successful tee and cleans all private material (1427.0662ms)
+✔ step wrapper exposes only fixed step and status, keeping command details private (335.53ms)
+✔ collector preserves JUnit failures but strips test strings, stdout, PNG metadata, logs and inventory (177.0871ms)
+✔ unsafe/unrepresented JUnit is rejected (147.4888ms)
+✔ unsafe/unrepresented JUnit is rejected (142.9578ms)
+✔ unsafe/unrepresented JUnit is rejected (165.9303ms)
+✔ unsafe/unrepresented JUnit is rejected (153.5006ms)
+✔ unsafe/unrepresented JUnit is rejected (153.6829ms)
+✔ malformed screenshot never enters publish scope (153.2829ms)
+✔ unknown diagnostic step/status content cannot become a public report (142.2776ms)
+✔ interrupted step is distinguished from never started, using fixed public codes (423.903ms)
+✔ uploads require explicit verification/sanitization/bootstrap outcomes (0.6311ms)
+✔ native cache has fixed action SHA, exact reviewed key and no loose restore keys or build products (1.1976ms)
+✔ all Python security scripts compile without writing pycache (66.2156ms)
+✔ valid directory and final IPA are inspected without lipo/codesign mocks (388.4462ms)
+✔ a genuine one-slice FAT arm64 header is parsed (153.3831ms)
+✔ reject arm64 simulator in actual final IPA bytes (185.9414ms)
+✔ reject macOS in actual final IPA bytes (142.7467ms)
+✔ reject x86_64 in actual final IPA bytes (156.369ms)
+✔ reject arm64e in actual final IPA bytes (175.3926ms)
+✔ reject signed in actual final IPA bytes (170.84ms)
+✔ reject zero minimum in actual final IPA bytes (161.2843ms)
+✔ reject newer minimum in actual final IPA bytes (200.7246ms)
+✔ reject SDK older than deployment in actual final IPA bytes (152.0249ms)
+✔ reject legacy platform in actual final IPA bytes (171.1588ms)
+✔ reject missing build command in actual final IPA bytes (156.4755ms)
+✔ reject dyld environment in actual final IPA bytes (158.8873ms)
+✔ reject object file in actual final IPA bytes (148.2049ms)
+✔ reject FAT with additional architectures (146.5922ms)
+✔ reject malformed load command bounds (135.72ms)
+✔ reject corrupt segment bounds (134.9048ms)
+✔ reject unsigned-looking bundle with signed nested framework (162.4775ms)
+✔ reject simulator nested framework (152.5138ms)
+✔ reject extra architecture in nested framework (169.5308ms)
+✔ inspect unreferenced Mach-O executables as well (156.2759ms)
+✔ reject framework missing declared binary (155.7304ms)
+✔ reject completely empty framework directory (211.5005ms)
+✔ deny sensitive/unknown plist field NSCameraUsageDescription (149.4986ms)
+✔ deny sensitive/unknown plist field NSFutureSensitiveUsageDescription (152.6397ms)
+✔ deny sensitive/unknown plist field NSBonjourServices (151.3181ms)
+✔ deny sensitive/unknown plist field NSLocalNetworkUsageDescription (154.2058ms)
+✔ deny sensitive/unknown plist field NFCReaderUsageDescription (140.4583ms)
+✔ deny sensitive/unknown plist field LSFutureSensitivePolicy (150.1546ms)
+✔ deny sensitive/unknown plist field UIBackgroundModes (132.9578ms)
+✔ deny sensitive/unknown plist field UIFileSharingEnabled (140.4342ms)
+✔ deny sensitive/unknown plist field com.apple.developer.future-entitlement (147.0703ms)
+✔ deny sensitive/unknown plist field get-task-allow (151.9198ms)
+✔ deny sensitive/unknown plist field LSApplicationQueriesSchemes (140.8393ms)
+✔ deny sensitive/unknown plist field CFBundleURLTypes (143.1201ms)
+✔ deny ATS {"NSAllowsArbitraryLoads":true} (142.3575ms)
+✔ deny ATS {"NSAllowsLocalNetworking":true} (144.186ms)
+✔ deny ATS {"NSAllowsArbitraryLoadsInWebContent":true} (136.1169ms)
+✔ deny ATS {"NSFutureRelaxation":true} (139.6095ms)
+✔ deny ATS {"NSExceptionDomains":{"example.invalid":{"NSIncludesSubdomains":true}}} (135.8549ms)
+✔ deny ATS {"NSAllowsArbitraryLoads":0} (132.9926ms)
+✔ deny invalid minimumOS bad (135.3044ms)
+✔ deny invalid minimumOS 0.0 (135.9546ms)
+✔ deny invalid minimumOS 999.0 (138.5198ms)
+✔ deny invalid minimumOS 15.999 (137.0934ms)
+✔ deny invalid minimumOS false (144.2014ms)
+✔ deny signing material embedded.mobileprovision (145.5411ms)
+✔ deny signing material private.p12 (137.1179ms)
+✔ deny signing material arbitrary.entitlements (134.1339ms)
+✔ deny signing material archived-expanded-entitlements.xcent (137.7339ms)
+✔ deny signing material future-entitlements.plist (138.6954ms)
+✔ deny signing material ResourceRules.plist (137.8669ms)
+✔ deny signing material ExportOptions.plist (145.8272ms)
+✔ deny signing material _CodeSignature/CodeResources (150.7204ms)
+✔ reject ZIP traversal (139.6007ms)
+✔ reject ZIP duplicate (170.7235ms)
+✔ reject ZIP outside (131.4614ms)
+✔ reject ZIP link (132.9079ms)
+✔ malformed archive returns fixed diagnostic without private path (72.2329ms)
+✔ package succeeds, then a failed signed build removes stale IPA and all staging (974.4693ms)
+✔ publication failure after first final copy leaves no final IPA or Payload (465.7864ms)
+✔ signature removal failure is closed and never publishes source framework material (458.9041ms)
+✔ explicit own URL schemes and closed ATS are allowed (135.0828ms)
+✔ invalid or simulator SDK metadata cannot masquerade as iphoneos (142.6543ms)
+✔ case-insensitive duplicate ZIP entries fail closed (210.8452ms)
+✔ workflow upload paths form an exact file whitelist and exclude raw logs/inventory (0.819ms)
+✔ all CI shell scripts pass bash syntax checking (148.545ms)
+ℹ tests 124
 ℹ suites 0
-ℹ pass 26
+ℹ pass 124
 ℹ fail 0
 ℹ cancelled 0
 ℹ skipped 0
 ℹ todo 0
-ℹ duration_ms 29152.6708
+ℹ duration_ms 38395.1748
+{
+  "schemaVersion": 1,
+  "passed": true,
+  "kind": "technology-stack-contract",
+  "referenceCommit": "285558eb1053d17f59ea8ecdf7c57999e92381f8",
+  "auditedBaselineCommit": "068332c603ce5ca40ad5a96a09cffa34ebd05dff",
+  "versions": {
+    "react": "19.3.0",
+    "react-native": "0.88.1",
+    "@react-navigation/native": "7.5.1",
+    "@react-navigation/native-stack": "7.21.0",
+    "@react-navigation/elements": "2.9.45",
+    "uniwind": "1.13.2",
+    "tailwindcss": "4.3.3",
+    "expo-glass-effect": "58.0.5",
+    "@react-native-menu/menu": "2.0.0",
+    "react-native-reanimated": "4.7.1",
+    "react-native-gesture-handler": "3.5.0",
+    "react-native-worklets": "0.13.1",
+    "react-native-keyboard-controller": "1.23.0"
+  },
+  "reviewedExpoRecommendationExceptions": [
+    "react-native-gesture-handler",
+    "react-native-keyboard-controller",
+    "react-native-worklets"
+  ],
+  "runtimeAcceptance": "Separate native interaction, visual, device IPA and independent-review gates still required"
+}

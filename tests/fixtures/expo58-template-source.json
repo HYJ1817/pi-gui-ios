@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "package": "expo-template-bare-minimum",
+  "version": "58.0.35",
+  "license": "0BSD",
+  "bundledLicenseText": "MIT",
+  "noticeFile": "tests/fixtures/EXPO_TEMPLATE_LICENSE.txt",
+  "repository": "expo/expo",
+  "member": "package/ios/HelloWorld/Info.plist",
+  "sha256": "39c9b72affe8926c9529b855aff4355f1258003609bb6c6264a151c22c20470b",
+  "integrity": "sha512-YW9njiXrFEBrSxHMZJzMW9/1ZgH46ZuY7IqxlYhQv9dxIEMVFUwAmcD29+WH7AofTII1FsfnTLC5DJ03HUo9xw=="
+}

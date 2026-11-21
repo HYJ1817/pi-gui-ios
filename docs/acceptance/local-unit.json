@@ -2,15 +2,15 @@
   "schemaVersion": 2,
   "kind": "unit",
   "taskId": "M-1-infrastructure",
-  "commit": "a3acf20eef222e556c5b9de392da51005dfc0238",
-  "sourceFingerprint": "a76a060b3718e6845f528e51400ba880b0f19ae21a161878ed66abc06d8ebd4d",
-  "startedAt": "2026-11-20T18:03:54.018Z",
-  "finishedAt": "2026-11-20T18:04:24.007Z",
+  "commit": "d46d6a5f84ad569f42a727fe29b0e2ed7b6f4afd",
+  "sourceFingerprint": "7667db27d0a41f614d0df9f74cf2e5c5fc237fbab5d92bc7c653a0dc5f5bc995",
+  "startedAt": "2026-11-21T04:00:15.646Z",
+  "finishedAt": "2026-11-21T04:00:54.832Z",
   "passed": true,
   "details": {
     "command": "npm test",
     "exitCode": 0,
     "logPath": "docs/acceptance/local-unit-output.txt",
-    "logSha256": "e28c26210a12b1a1eec598e6233c321934de7ae4975d4b0f532d4ad1289e6059"
+    "logSha256": "8f0ba9c35c98f8f106ba29199db970dba741cd74743ac7d67ef3a43f8f17de8e"
   }
 }

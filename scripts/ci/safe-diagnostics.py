@@ -38,7 +38,7 @@ def safe_codes():
             'NATIVE_LOCKS_SAFE', 'NATIVE_LOCKS_REJECTED', 'NATIVE_DEPENDENCIES_LOCKED',
             'NATIVE_DEPENDENCIES_BOOTSTRAP_REQUIRED', 'NATIVE_DEPENDENCIES_VERIFIED',
             'NATIVE_LOCK_BOOTSTRAP_REVIEW_REQUIRED'}
-    for filename in ('verify-ipa.py', 'native-dependencies.py', 'configure-native.py'):
+    for filename in ('verify-ipa.py', 'native-dependencies.py', 'configure-native.py', 'verify-template.py'):
         for node in ast.walk(ast.parse(git_source('scripts/ci/' + filename))):
             if isinstance(node, ast.Constant) and isinstance(node.value, str) and re.fullmatch(
                     r'(?:NATIVE|IPA|MACHO|PLIST|ATS|ARCHIVE|FRAMEWORK|BUNDLE|SIGNING|EXECUTABLE)_[A-Z0-9_]*[A-Z0-9]', node.value):

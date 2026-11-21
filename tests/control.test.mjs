@@ -164,6 +164,14 @@ test('restore from a verified checkpoint preserves dirty source and backs up cor
   assert.equal(readFileSync(resolve(root, restored.backup), 'utf8'), '{interrupted authority');
   assert.ok(validateCheckpoint(root, loadControl(root))); assert.equal(loadControl(root).data.currentTask, 'infra');
 });
+test('a missing authority file can be restored from a verified checkpoint without inventing a byte backup', t => {
+  const { root } = fixture(t); const saved = createCheckpoint(root, 'recover missing authority');
+  writeFileSync(resolve(root, 'source.ts'), 'dirty source survives missing authority'); rmSync(resolve(root, '.agent/control.json'));
+  const restored = restoreCheckpoint(root, saved.data.checkpoint.path);
+  assert.equal(restored.authorityWasMissing, true); assert.equal(restored.backup, null);
+  assert.equal(readFileSync(resolve(root, 'source.ts'), 'utf8'), 'dirty source survives missing authority');
+  assert.ok(validateCheckpoint(root, loadControl(root))); assert.match(loadControl(root).data.nextAction, /原权威文件缺失/);
+});
 test('CI success must match the exact imported API receipt, workflow, head and attempt', t => {
   const { root, d } = fixture(t); const commit = snapshot(root).commit;
   d.tasks[0].requiredEvidence = ['ci']; const { report } = proof(root, d, { kind: 'ci' });

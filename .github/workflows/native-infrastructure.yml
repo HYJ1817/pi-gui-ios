@@ -72,7 +72,9 @@ jobs:
       - name: Generate native project and deny template network exemption
         run: |
           bash scripts/ci/run-step.sh prebuild bash -euo pipefail -c '
-            npx expo prebuild --platform ios --no-install
+            npm pack expo-template-bare-minimum@58.0.35 --ignore-scripts --silent --pack-destination "$RUNNER_TEMP/native-private"
+            python3 scripts/ci/verify-template.py "$RUNNER_TEMP/native-private/expo-template-bare-minimum-58.0.35.tgz"
+            npx expo prebuild --platform ios --no-install --template "$RUNNER_TEMP/native-private/expo-template-bare-minimum-58.0.35.tgz"
             python3 scripts/ci/configure-native.py
           '
       - name: Restore exact reviewed dependency downloads
@@ -80,7 +82,7 @@ jobs:
         if: hashFiles('native/lock-review.json') != ''
         uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
-          key: native-v1-${{ runner.os }}-${{ runner.arch }}-macos26-ruby3.3.8-pod1.16.2-bundle2.6.9-${{ hashFiles('Gemfile', 'Gemfile.lock', 'package-lock.json', 'ios/Podfile', 'native/dependency-policy.json', 'native/Podfile.lock', 'native/lock-review.json', 'native/prebuilt-dependencies.json') }}
+          key: native-v1-${{ runner.os }}-${{ runner.arch }}-macos26-ruby3.3.8-pod1.16.2-bundle2.6.9-${{ hashFiles('Gemfile', 'Gemfile.lock', 'package-lock.json', 'ios/Podfile', 'scripts/ci/verify-template.py', 'native/dependency-policy.json', 'native/Podfile.lock', 'native/lock-review.json', 'native/prebuilt-dependencies.json') }}
           path: |
             ~/Library/Caches/CocoaPods/Pods
             ~/.cocoapods/repos/trunk
@@ -95,7 +97,7 @@ jobs:
         if: steps.pods.outputs.result == 'passed' && steps.native-cache.outputs.cache-hit != 'true'
         uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
-          key: native-v1-${{ runner.os }}-${{ runner.arch }}-macos26-ruby3.3.8-pod1.16.2-bundle2.6.9-${{ hashFiles('Gemfile', 'Gemfile.lock', 'package-lock.json', 'ios/Podfile', 'native/dependency-policy.json', 'native/Podfile.lock', 'native/lock-review.json', 'native/prebuilt-dependencies.json') }}
+          key: native-v1-${{ runner.os }}-${{ runner.arch }}-macos26-ruby3.3.8-pod1.16.2-bundle2.6.9-${{ hashFiles('Gemfile', 'Gemfile.lock', 'package-lock.json', 'ios/Podfile', 'scripts/ci/verify-template.py', 'native/dependency-policy.json', 'native/Podfile.lock', 'native/lock-review.json', 'native/prebuilt-dependencies.json') }}
           path: |
             ~/Library/Caches/CocoaPods/Pods
             ~/.cocoapods/repos/trunk

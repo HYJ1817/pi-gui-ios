@@ -38,26 +38,38 @@ def policy(root):
 
 
 def inventory(root):
+    spec = importlib.util.spec_from_file_location('native_fs_policy', pathlib.Path(__file__).with_name('verify-ipa.py'))
+    fs_policy = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(fs_policy)
+    def checked(path, base=None):
+        try:
+            return fs_policy.checked_filesystem_path(path, base)
+        except fs_policy.Invalid:
+            raise GateError('NATIVE_PREBUILT_LINK_REJECTED') from None
     files = []
     for label, base in [('pods', root / 'ios/Pods'), ('npm', root / 'node_modules')]:
         check(base.is_dir(), 'NATIVE_DEPENDENCY_TREE_MISSING')
+        checked(base)
         for directory, dirs, names in os.walk(base, followlinks=False):
             for name in dirs:
                 path = pathlib.Path(directory) / name
                 native = any(p.endswith(('.framework', '.xcframework')) for p in path.relative_to(base).parts)
-                check(not (native and path.is_symlink()), 'NATIVE_PREBUILT_LINK_REJECTED')
+                if native or getattr(path.lstat(), 'st_file_attributes', 0) & 0x400:
+                    checked(path, base)
             for name in names:
                 path = pathlib.Path(directory) / name
                 relative = path.relative_to(base)
                 native = any(p.endswith(('.framework', '.xcframework')) for p in relative.parts)
                 native |= name.endswith(('.a', '.dylib', '.so', '.dll', '.node', '.wasm', '.metallib', '.tbd',
                                          '.zip', '.tgz', '.tar.gz', '.tar.xz'))
-                if not native and not path.is_symlink():
+                linked = path.is_symlink() or bool(getattr(path.lstat(), 'st_file_attributes', 0) & 0x400)
+                if not native and not linked:
                     with path.open('rb') as stream:
                         native = stream.read(4) in (b'\xcf\xfa\xed\xfe', b'\xca\xfe\xba\xbe',
                                                    b'\xca\xfe\xba\xbf', b'\xfe\xed\xfa\xcf')
                 if native:
-                    check(not path.is_symlink() and path.is_file(), 'NATIVE_PREBUILT_LINK_REJECTED')
+                    checked(path, base)
+                    check(path.is_file(), 'NATIVE_PREBUILT_LINK_REJECTED')
                     safe = label + '/' + relative.as_posix()
                     check(re.fullmatch(r'[A-Za-z0-9_@./+ ()\-]+', safe) is not None, 'NATIVE_PREBUILT_PATH_REJECTED')
                     files.append({'path': safe, 'sha256': digest(path), 'size': path.stat().st_size})
@@ -65,7 +77,8 @@ def inventory(root):
 
 
 def hashes(root, locks):
-    return {'gemfileSha256': digest(root / 'Gemfile'),
+    return {'templateVerifierSha256': digest(root / 'scripts/ci/verify-template.py'),
+            'gemfileSha256': digest(root / 'Gemfile'),
             'packageLockSha256': digest(root / 'package-lock.json'),
             'podfileSha256': digest(root / 'ios/Podfile'),
             'gemLockSha256': digest(locks / 'Gemfile.lock'),

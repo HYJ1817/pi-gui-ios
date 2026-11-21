@@ -254,15 +254,18 @@ export function restoreCheckpoint(root, path) {
     const data = structuredClone(point.data.control.data), actual = snapshot(root);
     assert(actual.branch === data.branch, 'Restore does not switch or reset a mismatched branch');
     let revision = point.revision + 1;
-    const authority = readSafe(root, '.agent/control.json');
-    try { const current = decode(authority.toString('utf8'), 'control'); revision = Math.max(revision, current.revision); } catch {}
-    const backup = '.agent/recovery-backups/authority-' + Date.now() + '-' + randomUUID() + '.txt';
-    atomicWrite(resolve(root, backup), authority, root);
+    let authority = null, backup = null;
+    try { authority = readSafe(root, '.agent/control.json'); } catch (error) { if (error.code !== 'ENOENT') throw error; }
+    if (authority !== null) {
+      try { const current = decode(authority.toString('utf8'), 'control'); revision = Math.max(revision, current.revision); } catch {}
+      backup = '.agent/recovery-backups/authority-' + Date.now() + '-' + randomUUID() + '.txt';
+      atomicWrite(resolve(root, backup), authority, root);
+    }
     let selected = false;
     for (const task of data.tasks) if (['accepted', 'completed'].includes(task.status) && gate(data, task, root).length) { task.status = 'testing'; if (!selected) { data.currentTask = task.id; data.phase = task.phase; selected = true; } }
     data.checkpoint = { id: point.data.id, path, sha256: digest(bytes), authorityDigest: point.data.control.integrity.digest, at: point.updatedAt, git: point.data.git, sourceFingerprint: point.data.sourceFingerprint, note: point.data.note };
-    data.nextAction = '已从显式校验的检查点恢复；先核对 dirty diff、远端和运行中 CI，保留所有源码改动；失效任务已回 testing。';
-    const control = envelope('control', revision + 1, data); commitControl(root, control); return { control, backup };
+    data.nextAction = (authority === null ? '原权威文件缺失，无原文字节可备份；' : '原权威文件已保留本地原文备份；') + '已从显式校验的检查点恢复；先核对 dirty diff、远端和运行中 CI，保留所有源码改动；失效任务已回 testing。';
+    const control = envelope('control', revision + 1, data); commitControl(root, control); return { control, backup, authorityWasMissing: authority === null };
   });
 }
 export function transition(d, id, target, root = ROOT) {

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, readdirSync, rmSync, existsSync, cpSync, chmodSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, readdirSync, rmSync, existsSync, cpSync, chmodSync, realpathSync, symlinkSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { resolve, join, dirname } from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -39,7 +39,7 @@ function fat(data, count = 1) {
   return Buffer.concat([header, data]);
 }
 function fixture(t) {
-  const root = mkdtempSync(join(tmpdir(), 'ipa-synthetic-')); t.after(() => rmSync(root, { recursive: true, force: true }));
+  const root = realpathSync(mkdtempSync(join(tmpdir(), 'ipa-synthetic-'))); t.after(() => rmSync(root, { recursive: true, force: true }));
   const app = join(root, 'PiGUIMobile.app'); mkdirSync(app);
   const info = { CFBundleIdentifier: 'io.github.hyj1817.piguimobile', CFBundleExecutable: 'PiGUIMobile', CFBundleSupportedPlatforms: ['iPhoneOS'], UIDeviceFamily: [1, 2], MinimumOSVersion: '15.1', NSAppTransportSecurity: { NSAllowsArbitraryLoads: false } };
   writePlist(join(app, 'Info.plist'), info); writeFileSync(join(app, 'PiGUIMobile'), binary());
@@ -143,6 +143,24 @@ test('workflow upload paths form an exact file whitelist and exclude raw logs/in
   assert.ok(paths.every(p => !/[?*]/.test(p) && /\.(?:ipa|json|xml|png|lock)$|\/SHA256SUMS$/.test(p)));
   assert.ok(paths.every(p => !/Payload|log|simulators|entitlements|mobileprovision/.test(p)));
   assert.equal(/path: artifacts\//.test(workflow), false);
+});
+test('app resource junction/symlink cannot copy outside bytes into a publishable IPA', t => {
+  const f = fixture(t), options = fakeRepo(f); const outside = join(f.root, 'outside-app'); mkdirSync(outside); writeFileSync(join(outside, 'private.txt'), 'SYNTHETIC-PRIVATE-OUTSIDE-APP');
+  const resources = join(f.app, 'Resources'); mkdirSync(resources);
+  symlinkSync(outside, join(resources, 'escape'), process.platform === 'win32' ? 'junction' : 'dir');
+  reject(f.app, 'ARCHIVE_LINK'); const result = pack(f, options); assert.notEqual(result.status, 0, result.stdout + result.stderr);
+  assert.equal(existsSync(join(f.root, 'artifacts/ipa/PiGUIMobile-unsigned.ipa')), false); assert.equal(readFileSync(join(outside, 'private.txt'), 'utf8'), 'SYNTHETIC-PRIVATE-OUTSIDE-APP');
+});
+test('archive inspection rejects both a linked app root and a linked ancestor', t => {
+  const f = fixture(t); const target = join(f.root, 'linked'); mkdirSync(target);
+  const linked = join(target, 'PiGUIMobile.app'); symlinkSync(f.app, linked, process.platform === 'win32' ? 'junction' : 'dir'); reject(linked, 'ARCHIVE_LINK');
+  const physical = join(f.root, 'physical-parent'); mkdirSync(physical); cpSync(f.app, join(physical, 'PiGUIMobile.app'), { recursive: true });
+  const parent = join(f.root, 'ancestor'); symlinkSync(physical, parent, process.platform === 'win32' ? 'junction' : 'dir'); reject(join(parent, 'PiGUIMobile.app'), 'ARCHIVE_LINK');
+});
+test('final IPA accepts the compiled single-scene delegate but rejects an unresolved template macro', t => {
+  const f = fixture(t); const scene = { UISceneConfigurationName: 'Default Configuration', UISceneDelegateClassName: 'PiGUIMobile.SceneDelegate' };
+  f.info.UIApplicationSceneManifest = { UIApplicationSupportsMultipleScenes: false, UISceneConfigurations: { UIWindowSceneSessionRoleApplication: [scene] } }; f.update(); assert.equal(verify(archive(f)).status, 0);
+  scene.UISceneDelegateClassName = '$(PRODUCT_MODULE_NAME).SceneDelegate'; f.update(); reject(archive(f), 'PLIST_SCENE_CONFIGURATION');
 });
 test('all CI shell scripts pass bash syntax checking', () => {
   for (const name of readdirSync(join(ROOT, 'scripts/ci')).filter(n => n.endsWith('.sh'))) {

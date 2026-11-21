@@ -1,11 +1,11 @@
 {
   "schemaVersion": 2,
   "kind": "tasks",
-  "revision": 37,
-  "updatedAt": "2026-11-21T03:58:47.770Z",
+  "revision": 60,
+  "updatedAt": "2026-11-21T04:59:42.310Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "115ef614accad81e1397a88e1ffe14f4b7a9a86876fa063476cf7b89ed3f4cda",
+    "parentDigest": "d1d2a242c36a8b52c8167710577327f9abf22203c32f7ac2a4e3cf77089da01d",
     "tasks": [
       {
         "id": "M-1-infrastructure",
@@ -58,6 +58,38 @@
             "sourceFingerprint": "a76a060b3718e6845f528e51400ba880b0f19ae21a161878ed66abc06d8ebd4d",
             "commit": "a3acf20eef222e556c5b9de392da51005dfc0238",
             "at": "2026-11-20T18:05:42.999Z"
+          },
+          {
+            "kind": "unit",
+            "path": "docs/acceptance/local-unit.json",
+            "sha256": "4ebcf9c45c93ef2f8aacc07b728c07b4dbe615310da8cac881753c52b130226e",
+            "sourceFingerprint": "7667db27d0a41f614d0df9f74cf2e5c5fc237fbab5d92bc7c653a0dc5f5bc995",
+            "commit": "d46d6a5f84ad569f42a727fe29b0e2ed7b6f4afd",
+            "at": "2026-11-21T04:03:56.532Z"
+          },
+          {
+            "kind": "typecheck",
+            "path": "docs/acceptance/local-typecheck.json",
+            "sha256": "ceeb85adbf71de29c3251453cb1a7f6cd80480f86f16b618213a07e71152dfd9",
+            "sourceFingerprint": "7667db27d0a41f614d0df9f74cf2e5c5fc237fbab5d92bc7c653a0dc5f5bc995",
+            "commit": "d46d6a5f84ad569f42a727fe29b0e2ed7b6f4afd",
+            "at": "2026-11-21T04:07:16.894Z"
+          },
+          {
+            "kind": "bundle",
+            "path": "docs/acceptance/local-bundle.json",
+            "sha256": "88e0707653e51d2c8b8d23d6acc721a984622396e025b9bbb30098cee029fff6",
+            "sourceFingerprint": "7667db27d0a41f614d0df9f74cf2e5c5fc237fbab5d92bc7c653a0dc5f5bc995",
+            "commit": "d46d6a5f84ad569f42a727fe29b0e2ed7b6f4afd",
+            "at": "2026-11-21T04:07:17.697Z"
+          },
+          {
+            "kind": "doctor",
+            "path": "docs/acceptance/local-doctor.json",
+            "sha256": "07742566d02a9d0444d535e5f00f057e7386d0c623bc5559d99855a4352e56e6",
+            "sourceFingerprint": "7667db27d0a41f614d0df9f74cf2e5c5fc237fbab5d92bc7c653a0dc5f5bc995",
+            "commit": "d46d6a5f84ad569f42a727fe29b0e2ed7b6f4afd",
+            "at": "2026-11-21T04:07:18.476Z"
           }
         ],
         "updatedAt": "2026-11-21T03:58:47.613Z"
@@ -201,6 +233,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "84f38dd3d24c869bd681cd60cac0774b19dac7045e01c26a8553fdccb87c6628"
+    "digest": "7f8be393c44f605ed0359d871bd9c4fd96cd52a4f50985c274918a387d61f0d8"
   }
 }

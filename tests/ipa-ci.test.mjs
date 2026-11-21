@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, readdirSync, rmSync, existsSync, cpSync, chmodSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, readdirSync, rmSync, existsSync, cpSync, chmodSync, realpathSync, symlinkSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { resolve, join, dirname, delimiter } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -13,7 +13,7 @@ const executable = spawnSync(PYTHON, ['-c', 'import sys; print(sys.executable)']
 const marker = 'SYNTHETIC-PRIVATE-DO-NOT-UPLOAD';
 const policy = { schemaVersion: 1, mode: 'bootstrap-required', ruby: '3.3.8', bundler: '2.6.9', cocoapods: '1.16.2' };
 function fixture(t) {
-  const root = mkdtempSync(join(tmpdir(), 'ipa-ci-synthetic-')); t.after(() => rmSync(root, { recursive: true, force: true }));
+  const root = realpathSync(mkdtempSync(join(tmpdir(), 'ipa-ci-synthetic-'))); t.after(() => rmSync(root, { recursive: true, force: true }));
   mkdirSync(join(root, 'scripts')); cpSync(join(ROOT, 'scripts/ci'), join(root, 'scripts/ci'), { recursive: true });
   for (const dir of ['runner-temp', 'private', 'native', 'ios/Pods', 'node_modules']) mkdirSync(join(root, dir), { recursive: true });
   writeFileSync(join(root, 'native/dependency-policy.json'), JSON.stringify(policy));
@@ -81,7 +81,7 @@ for operation in ('change','add','remove'):
 print('THREE_MUTATIONS_REJECTED')`));
   assert.equal(result.status, 0, result.stdout + result.stderr); assert.match(result.stdout, /THREE_MUTATIONS_REJECTED/);
 });
-test('source/Podfile/lock drift invalidates a previously reviewed native set', t => {
+test('source/template/Podfile/lock drift invalidates a previously reviewed native set', t => {
   const f = fixture(t); const result = py(f, moduleCode('native-dependencies.py', `
 native=root/'native'; candidate=root/'private'
 for name in ('Gemfile.lock','Podfile.lock'): (candidate/name).write_text('synthetic lock')
@@ -89,14 +89,14 @@ manifest=m.inventory(root)
 (candidate/'prebuilt-dependencies.json').write_text(json.dumps(manifest))
 (native/'prebuilt-dependencies.json').write_text(json.dumps(manifest))
 (native/'lock-review.json').write_text(json.dumps({'schemaVersion':1,'approved':True,'hashes':m.hashes(root,candidate)}))
-for path in (root/'Gemfile',root/'package-lock.json',root/'ios/Podfile',candidate/'Gemfile.lock',candidate/'Podfile.lock'):
+for path in (root/'Gemfile',root/'package-lock.json',root/'ios/Podfile',root/'scripts/ci/verify-template.py',candidate/'Gemfile.lock',candidate/'Podfile.lock'):
  original=path.read_bytes(); path.write_bytes(original+b'changed')
  try: m.verify_locked(root,candidate,manifest)
  except m.GateError: pass
  else: raise AssertionError('drift accepted')
  path.write_bytes(original)
-print('FIVE_DRIFTS_REJECTED')`));
-  assert.equal(result.status, 0, result.stdout + result.stderr); assert.match(result.stdout, /FIVE_DRIFTS_REJECTED/);
+print('SIX_DRIFTS_REJECTED')`));
+  assert.equal(result.status, 0, result.stdout + result.stderr); assert.match(result.stdout, /SIX_DRIFTS_REJECTED/);
 });
 test('pod install failure survives a successful tee and cleans all private material', t => {
   const f = fixture(t); const bin = join(f.root, 'bin'); mkdirSync(bin);
@@ -148,9 +148,15 @@ test('native cache has fixed action SHA, exact reviewed key and no loose restore
   const actions = [...workflow.matchAll(/uses: actions\/cache\/(restore|save)@([a-f0-9]{40})/g)]; assert.equal(actions.length, 2); assert.equal(actions[0][2], actions[1][2]);
   assert.equal(/restore-keys/.test(workflow), false); assert.match(workflow, /if: hashFiles\('native\/lock-review.json'\) != ''/);
   const keys = workflow.split('\n').filter(l => l.trim().startsWith('key: native-v1')); assert.equal(keys.length, 2); assert.equal(keys[0], keys[1]);
-  for (const name of ['Gemfile.lock', 'package-lock.json', 'native/Podfile.lock', 'native/prebuilt-dependencies.json', 'native/lock-review.json']) assert.ok(keys[0].includes(name));
+  for (const name of ['Gemfile.lock', 'package-lock.json', 'scripts/ci/verify-template.py', 'native/Podfile.lock', 'native/prebuilt-dependencies.json', 'native/lock-review.json']) assert.ok(keys[0].includes(name));
   assert.match(workflow, /if: steps\.pods\.outputs\.result == 'passed'/);
   const cached = workflow.split('\n').filter(l => /^            (?:~\/|ios\/Pods\/)/.test(l)); assert.equal(cached.length, 12); assert.ok(cached.every(l => !/Payload|build\/|DerivedData|native-private|\.mobileprovision|ipa/.test(l)));
+});
+test('native dependency byte inventory rejects a resource junction/symlink before reading outside files', t => {
+  const f = fixture(t); const outside = join(f.root, 'outside-native'); mkdirSync(outside); writeFileSync(join(outside, 'private.tar.gz'), 'SYNTHETIC-PRIVATE-OUTSIDE');
+  const folder = join(f.root, 'ios/Pods/Synthetic.framework'); mkdirSync(folder); symlinkSync(outside, join(folder, 'Resources'), process.platform === 'win32' ? 'junction' : 'dir');
+  const result = py(f, moduleCode('native-dependencies.py', `\ntry: m.inventory(root)\nexcept m.GateError: print('LINK_REJECTED_BEFORE_INVENTORY')\nelse: raise AssertionError('outside files were hashed')`));
+  assert.equal(result.status, 0, result.stdout + result.stderr); assert.match(result.stdout, /LINK_REJECTED_BEFORE_INVENTORY/); assert.equal(result.stdout.includes('SYNTHETIC-PRIVATE'), false);
 });
 test('all Python security scripts compile without writing pycache', () => {
   const result = spawnSync(PYTHON, ['-c', "import pathlib; [compile(p.read_bytes(), str(p), 'exec') for p in pathlib.Path('scripts/ci').glob('*.py')]"], { cwd: ROOT, encoding: 'utf8' }); assert.equal(result.status, 0, result.stderr);

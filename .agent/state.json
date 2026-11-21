@@ -1,79 +1,78 @@
 {
   "schemaVersion": 2,
   "kind": "state",
-  "revision": 37,
-  "updatedAt": "2026-11-21T03:58:47.770Z",
+  "revision": 60,
+  "updatedAt": "2026-11-21T04:59:42.310Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "115ef614accad81e1397a88e1ffe14f4b7a9a86876fa063476cf7b89ed3f4cda",
+    "parentDigest": "d1d2a242c36a8b52c8167710577327f9abf22203c32f7ac2a4e3cf77089da01d",
     "phase": "M-1",
     "currentTask": "M-1-infrastructure",
     "branch": "agent/m-1-bootstrap",
     "checkpoint": {
-      "id": "v2-2026-11-21T03-58-47-770Z-838ea4ae-8dee-4c17-91dc-eff403d0069f",
-      "path": ".agent/checkpoints/v2-2026-11-21T03-58-47-770Z-838ea4ae-8dee-4c17-91dc-eff403d0069f.json",
-      "sha256": "760b696e4ba89596b0c1e5c48affd47ba572e770f89acc07ebe272f341389f3d",
-      "authorityDigest": "49fc7b5be7254a7847437560c2bd3e48e09cda007fb5f8ec93a56cecee029de5",
-      "at": "2026-11-21T03:58:47.770Z",
+      "id": "v2-2026-11-21T04-59-42-310Z-6a5076d6-481e-42f5-8730-7f7aa99de2e9",
+      "path": ".agent/checkpoints/v2-2026-11-21T04-59-42-310Z-6a5076d6-481e-42f5-8730-7f7aa99de2e9.json",
+      "sha256": "9f8fa9aebb4a4ba72a52fb7998923438a10dba470a10ba9e1035512fa513da7b",
+      "authorityDigest": "e3fbe15e2313e87195c38d85b11edbfbeb9319c320c25aff13ecd977bba13e3a",
+      "at": "2026-11-21T04:59:42.310Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "7c6076e23fd21d69a87bd7f138849ed90630ecad",
+        "commit": "d46d6a5f84ad569f42a727fe29b0e2ed7b6f4afd",
         "dirty": [
           "M .agent/HANDOFF.md",
           " M .agent/control.json",
           " M .agent/state.json",
           " M .agent/tasks.json",
           " M .github/workflows/native-infrastructure.yml",
-          " M .gitignore",
-          " M .maestro/native.yaml",
           " M PROGRESS.md",
-          " M app.json",
-          " D app/_layout.tsx",
-          " D app/diagnostics.tsx",
-          " D app/index.tsx",
-          " M docs/architecture.md",
+          " M THIRD_PARTY_NOTICES.md",
+          " M docs/acceptance/local-bundle-output.txt",
+          " M docs/acceptance/local-bundle.json",
+          " M docs/acceptance/local-doctor.json",
+          " M docs/acceptance/local-typecheck.json",
+          " M docs/acceptance/local-unit-output.txt",
+          " M docs/acceptance/local-unit.json",
           " M docs/decisions/0003-native-build-integrity.md",
           " M docs/decisions/technology-stack.md",
-          " M docs/design-system.md",
-          " M docs/testing.md",
-          " M package-lock.json",
           " M package.json",
-          " M scripts/ci/collect-evidence.py",
-          " M scripts/ci/install-pods.sh",
+          " M scripts/agent-restore.mjs",
+          " M scripts/ci/configure-native.py",
           " M scripts/ci/native-dependencies.py",
-          " M scripts/ci/simulator.sh",
-          " M scripts/ci/validate-locks.rb",
+          " M scripts/ci/safe-diagnostics.py",
+          " M scripts/ci/verify-ipa.py",
           " M scripts/lib/control.mjs",
-          " M scripts/verify.mjs",
           " M tests/control.test.mjs",
+          " M tests/ipa-ci.test.mjs",
           " M tests/ipa-integrity.test.mjs",
-          " M tsconfig.json",
-          "?? .agent/checkpoints/v2-2026-11-20T18-49-56-180Z-992fd4b2-e260-49d6-a707-a7478368bdd4.json",
-          "?? .agent/checkpoints/v2-2026-11-21T01-19-37-337Z-2a3895e4-a20a-44da-b047-eb1eb94f292c.json",
-          "?? App.tsx",
-          "?? docs/acceptance/t3-main-delta-285558eb.json",
-          "?? global.css",
-          "?? index.ts",
-          "?? metro.config.js",
-          "?? scripts/check-technology-stack.mjs",
-          "?? scripts/ci/safe-diagnostics.py",
-          "?? src/navigation/",
-          "?? src/screens/",
-          "?? src/uniwind-types.d.ts",
-          "?? tests/ci-diagnostics.test.mjs"
+          "?? .agent/checkpoints/v2-2026-11-21T04-00-15-125Z-ac7a8412-3fbb-4453-ba95-473b38064ccd.json",
+          "?? .agent/checkpoints/v2-2026-11-21T04-00-54-995Z-8e9d84ba-beeb-4239-8966-da894f5f74ce.json",
+          "?? .agent/checkpoints/v2-2026-11-21T04-03-56-570Z-ee7f9298-2b15-4481-9ca5-63674054d955.json",
+          "?? .agent/checkpoints/v2-2026-11-21T04-03-57-140Z-9eed5724-3f83-4207-914b-c95b91c83e0e.json",
+          "?? .agent/checkpoints/v2-2026-11-21T04-04-02-795Z-654c03d4-d923-4a41-a5b3-449e5aeba90a.json",
+          "?? .agent/checkpoints/v2-2026-11-21T04-04-07-249Z-be02fb3a-dbe9-4c98-b545-3b9885fe0dc2.json",
+          "?? .agent/checkpoints/v2-2026-11-21T04-07-16-168Z-ccca579f-f127-4490-bf2b-3ef029e45223.json",
+          "?? .agent/checkpoints/v2-2026-11-21T04-07-16-926Z-909486e4-d21f-45d7-82bb-92453add85a7.json",
+          "?? .agent/checkpoints/v2-2026-11-21T04-07-17-734Z-95e599b6-93d5-45e1-aec2-740411612065.json",
+          "?? .agent/checkpoints/v2-2026-11-21T04-07-18-508Z-e8afbd69-6cdb-4654-9762-520dc8174c77.json",
+          "?? .agent/checkpoints/v2-2026-11-21T04-07-19-115Z-d5fe6102-b289-460f-a4e9-2166db14354a.json",
+          "?? .agent/checkpoints/v2-2026-11-21T04-46-42-207Z-088d28b7-e87b-4d68-8451-1472570f01ea.json",
+          "?? .agent/checkpoints/v2-2026-11-21T04-46-42-798Z-38c1efd5-8300-4f7f-a9d1-eb1e6b59fe0a.json",
+          "?? docs/acceptance/ci-44864063976-analysis.md",
+          "?? docs/acceptance/ci-44864063976-api.json",
+          "?? docs/acceptance/security-review-d46d6a5-receipt.json",
+          "?? scripts/ci/verify-template.py",
+          "?? tests/fixtures/",
+          "?? tests/ios-template.test.mjs"
         ]
       },
-      "sourceFingerprint": "6877c02288e7f7f2d2dd78c7cc13b5dda4e9cd34466d05e6685c1bc4951aed2e",
-      "note": "冻结迁移与安全诊断实现，进入testing；提交后跑完整新证据并推送bootstrap"
+      "sourceFingerprint": "a4ae0ee9c7ce997c43b5c6dce20f3c03b492b51c62ba31d13d5eda4583eef738",
+      "note": "三项复审缺陷修复完成且142项回归通过；准备提交并重跑真实bootstrap"
     },
     "blockers": [
-      "S1 v2原始证据/类型/提交与递归门禁已实现，待精确提交独立复审",
-      "S2 IPA私有暂存/明确上传集合与脱敏诊断已实现，待独立复审及实际CI证明",
-      "S3 最终归档Mach-O/平台/签名/权限校验已实现，缺真实device IPA与独立复审",
-      "S4 工具版本和pipefail已实现，缺真实macOS候选锁/审核/locked构建",
-      "S5 symlink/junction普通文件边界已实现并回归，待独立复审",
-      "S6 完整schema与CI身份/状态导入已实现，待独立复审",
-      "S7 检查点先持久化/持锁修复/显式恢复和候选诊断已实现，待独立复审"
+      "R2-1 Windows IPA目录junction/重解析点：已补目录及祖先检查和负向回归，待新提交复核",
+      "R2-2 缺失权威恢复：已支持缺文件且不虚构字节备份，待新提交复核",
+      "R2-3 Expo单场景manifest兼容：已补严格模板/最终包区分及负向回归，待新提交复核",
+      "NATIVE-LOCK 尚未生成真实macOS Gemfile/Podfile/预编译候选锁并独立核验"
     ],
     "ci": [
       {
@@ -84,6 +83,15 @@
         "status": "completed",
         "conclusion": "cancelled",
         "url": "https://github.com/HYJ1817/pi-gui-ios/actions/runs/44783585115"
+      },
+      {
+        "id": "44864063976",
+        "head": "d46d6a5f84ad569f42a727fe29b0e2ed7b6f4afd",
+        "workflow": ".github/workflows/native-infrastructure.yml",
+        "attempt": 1,
+        "status": "completed",
+        "conclusion": "failure",
+        "url": "https://github.com/HYJ1817/pi-gui-ios/actions/runs/44864063976"
       }
     ],
     "desktop": {
@@ -111,11 +119,17 @@
         "role": "native-ci-ipa-fix-isolated",
         "status": "completed",
         "sourceCommit": "26e122a6a7b090e0a850ff9f741b3f7bced896cd"
+      },
+      {
+        "taskId": "node:delegated-task:command%3Amcp%3A34ffc94c-e37f-424a-9a55-d6c1828322d1%3Adelegate-task%3A2c9a5191-6325-44e7-bc24-2a741b3f8b34",
+        "role": "security-recheck-and-bootstrap-lock-review",
+        "status": "completed",
+        "sourceCommit": "d46d6a5f84ad569f42a727fe29b0e2ed7b6f4afd"
       }
     ]
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "91053dbf94fc0d2578cd4e37ebd99f76751e2a4f2fdf77a1ee27358eeae17ed3"
+    "digest": "681ed2169f48f9c10607a4823e98920af7003d86b5fd2ba4fc2df3901ecfc764"
   }
 }

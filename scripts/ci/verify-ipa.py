@@ -53,6 +53,21 @@ FALSE_KEYS = {'UIFileSharingEnabled', 'LSSupportsOpeningDocumentsInPlace', 'LSUI
               'LSBackgroundOnly'}
 
 
+def checked_filesystem_path(value, root=None):
+    """Reject links/reparse points in every ancestor and canonical tree escapes."""
+    path = pathlib.Path(os.path.abspath(value))
+    inspect = list(reversed([path, *path.parents]))
+    current = None
+    for item in inspect:
+        current = item.lstat()
+        require(not stat.S_ISLNK(current.st_mode) and not
+                (getattr(current, 'st_file_attributes', 0) & getattr(stat, 'FILE_ATTRIBUTE_REPARSE_POINT', 0x400)),
+                'ARCHIVE_LINK')
+    if root is not None:
+        require(path.resolve(strict=True).is_relative_to(pathlib.Path(root).resolve(strict=True)), 'ARCHIVE_PATH')
+    return current
+
+
 def version(value):
     require(isinstance(value, str) and re.fullmatch(r'(?:[1-9][0-9]?)(?:\.[0-9]{1,2}){0,2}', value),
             'MINIMUM_OS_INVALID')
@@ -138,10 +153,22 @@ def macho(data, allow_signature=False):
     return {'minimum': build, 'filetype': filetype, 'signed': signed}
 
 
-def plist_policy(value):
+def plist_policy(value, allow_template_scene=False):
     if isinstance(value, dict):
         for key, item in value.items():
             require(isinstance(key, str), 'PLIST_KEY_INVALID')
+            if key == 'UIApplicationSceneManifest':
+                require(isinstance(item, dict) and set(item) == {'UIApplicationSupportsMultipleScenes', 'UISceneConfigurations'}
+                        and item['UIApplicationSupportsMultipleScenes'] is False, 'PLIST_SCENE_CONFIGURATION')
+                configurations = item['UISceneConfigurations']
+                require(isinstance(configurations, dict) and set(configurations) == {'UIWindowSceneSessionRoleApplication'}, 'PLIST_SCENE_CONFIGURATION')
+                scenes = configurations['UIWindowSceneSessionRoleApplication']
+                require(isinstance(scenes, list) and len(scenes) == 1 and isinstance(scenes[0], dict)
+                        and set(scenes[0]) == {'UISceneConfigurationName', 'UISceneDelegateClassName'}
+                        and scenes[0]['UISceneConfigurationName'] == 'Default Configuration'
+                        and scenes[0]['UISceneDelegateClassName'] in (('PiGUIMobile.SceneDelegate', '$(PRODUCT_MODULE_NAME).SceneDelegate') if allow_template_scene else ('PiGUIMobile.SceneDelegate',)),
+                        'PLIST_SCENE_CONFIGURATION')
+                continue
             if key == 'NSAppTransportSecurity':
                 require(isinstance(item, dict), 'ATS_POLICY')
                 for ats_key, ats_value in item.items():
@@ -168,10 +195,10 @@ def plist_policy(value):
                         1 <= len(url['CFBundleURLSchemes']) <= 2 and
                         all(scheme in ('piguimobile', BUNDLE_ID) for scheme in url['CFBundleURLSchemes'])
                         for url in item), 'PLIST_URL_SCHEME')
-            plist_policy(item)
+            plist_policy(item, allow_template_scene)
     elif isinstance(value, list):
         for item in value:
-            plist_policy(item)
+            plist_policy(item, allow_template_scene)
 
 
 class Tree:
@@ -180,23 +207,23 @@ class Tree:
         self.paths = {}
         self.directories = set()
         source = pathlib.Path(source)
-        if source.is_dir():
-            require(not source.is_symlink(), 'ARCHIVE_LINK')
+        source_stat = checked_filesystem_path(source)
+        if stat.S_ISDIR(source_stat.st_mode):
             self.prefix = ''
             self.app = source
             for root, dirs, files in os.walk(source, followlinks=False):
                 for name in dirs + files:
                     path = pathlib.Path(root) / name
-                    require(not path.is_symlink(), 'ARCHIVE_LINK')
+                    checked = checked_filesystem_path(path, source)
                     require(not any(ord(char) < 32 or char in ':\\\\' for char in name), 'ARCHIVE_PATH')
-                    mode = path.stat().st_mode
+                    mode = checked.st_mode
                     require(stat.S_ISREG(mode) or stat.S_ISDIR(mode), 'ARCHIVE_SPECIAL_FILE')
                     if stat.S_ISREG(mode):
                         self.paths[path.relative_to(source).as_posix()] = path
                     else:
                         self.directories.add(path.relative_to(source).as_posix())
         else:
-            require(source.is_file() and not source.is_symlink(), 'ARCHIVE_NOT_FOUND')
+            require(stat.S_ISREG(source_stat.st_mode), 'ARCHIVE_NOT_FOUND')
             self.zip = zipfile.ZipFile(source)
             entries = self.zip.infolist()
             require(0 < len(entries) <= 100000, 'ARCHIVE_ENTRIES')

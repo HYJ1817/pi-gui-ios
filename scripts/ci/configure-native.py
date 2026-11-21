@@ -19,9 +19,11 @@ try:
     if 'NSAllowsLocalNetworking' in ats:
         policy.require(type(ats['NSAllowsLocalNetworking']) is bool, 'ATS_POLICY')
         ats['NSAllowsLocalNetworking'] = False
-    policy.plist_policy(info)
+    policy.plist_policy(info, allow_template_scene=True)
     path.write_bytes(plistlib.dumps(info))
     print('NATIVE_RELEASE_POLICY_CONFIGURED')
-except Exception:
+except Exception as error:
+    if 'policy' in locals() and hasattr(policy, 'Invalid') and isinstance(error, policy.Invalid):
+        print(str(error))
     print('NATIVE_RELEASE_POLICY_REJECTED')
     sys.exit(1)
