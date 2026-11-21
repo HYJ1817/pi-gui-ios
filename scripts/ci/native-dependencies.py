@@ -5,6 +5,7 @@ import importlib.util
 import json
 import os
 import pathlib
+import posixpath
 import re
 import shutil
 import stat
@@ -98,7 +99,7 @@ def enumeration_failed(error):
     raise GateError('NATIVE_PREBUILT_ENUMERATION_FAILED') from None
 
 
-def inventory(root):
+def filesystem_guard():
     spec = importlib.util.spec_from_file_location('native_fs_policy', pathlib.Path(__file__).with_name('verify-ipa.py'))
     fs_policy = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(fs_policy)
@@ -107,56 +108,163 @@ def inventory(root):
             return fs_policy.checked_filesystem_path(path, base)
         except (fs_policy.Invalid, OSError):
             raise GateError('NATIVE_PREBUILT_LINK_REJECTED') from None
-    files, links = [], []
-    for label, base in [('pods', root / 'ios/Pods'), ('npm', root / 'node_modules')]:
-        check(base.is_dir(), 'NATIVE_DEPENDENCY_TREE_MISSING')
-        checked(base)
+    return checked
+
+
+def npm_bin_rules(root, checked=None):
+    """Derive exact bin link paths/targets from the committed npm v3 lock."""
+    code = 'NATIVE_PREBUILT_LINK_REJECTED'
+    checked = checked or filesystem_guard()
+    lock_path = root / 'package-lock.json'
+    info = checked(lock_path, root)
+    check(stat.S_ISREG(info.st_mode) and info.st_nlink == 1, code)
+    def unique(pairs):
+        result = {}
+        for key, value in pairs:
+            check(key not in result, code)
+            result[key] = value
+        return result
+    try:
+        lock = json.loads(lock_path.read_text(encoding='utf-8'), object_pairs_hook=unique)
+    except (ValueError, OSError):
+        raise GateError(code) from None
+    check(isinstance(lock, dict) and lock.get('lockfileVersion') == 3
+          and isinstance(lock.get('packages'), dict), code)
+    name = r'(?:@[A-Za-z0-9_][A-Za-z0-9_.-]*/)?[A-Za-z0-9_][A-Za-z0-9_.-]*'
+    rules = {}
+    for owner, package in lock['packages'].items():
+        check(isinstance(package, dict), code)
+        if not owner:  # The application itself is not installed into .bin.
+            continue
+        check(re.fullmatch(r'node_modules/' + name + r'(?:/node_modules/' + name + r')*', owner)
+              and package.get('link', False) is False, code)
+        package_path = pathlib.PurePosixPath(owner)
+        modules = package_path.parent.parent if package_path.parent.name.startswith('@') else package_path.parent
+        bins = package.get('bin', {})
+        if isinstance(bins, str):
+            bins = {package_path.name: bins}
+        check(isinstance(bins, dict), code)
+        for command, target in bins.items():
+            check(re.fullmatch(r'[A-Za-z0-9_][A-Za-z0-9_.-]*', command) is not None
+                  and isinstance(target, str), code)
+            target = target.removeprefix('./')
+            check(re.fullmatch(r'[A-Za-z0-9_@./+ ()-]+', target) is not None
+                  and all(part not in ('', '.', '..') for part in target.split('/')), code)
+            physical = package_path / target
+            link = modules / '.bin' / command
+            relative = posixpath.relpath(str(physical), str(link.parent))
+            safe = 'npm/' + link.relative_to('node_modules').as_posix()
+            rules.setdefault(safe, {})[relative] = {
+                'owner': 'npm/' + package_path.relative_to('node_modules').as_posix(),
+                'physical': 'npm/' + physical.relative_to('node_modules').as_posix(),
+            }
+    return rules
+
+
+def checked_posix_link(path, base, checked):
+    code = 'NATIVE_PREBUILT_LINK_REJECTED'
+    try:
+        info = path.lstat()
+        check(stat.S_ISLNK(info.st_mode) and info.st_nlink == 1
+              and not (getattr(info, 'st_file_attributes', 0) & 0x400), code)
+        checked(path.parent, base)
+        return os.readlink(path)
+    except OSError:
+        raise GateError(code) from None
+
+
+def is_header_link(path, safe):
+    parts = pathlib.PurePosixPath(safe).parts
+    return (len(parts) >= 5 and parts[:2] == ('pods', 'Headers') and parts[2] in ('Public', 'Private')
+            and path.suffix.casefold() in ('.h', '.hh', '.hpp', '.hxx', '.ipp', '.h++', '.modulemap'))
+
+
+def checked_header_link(path, safe, target):
+    # CocoaPods 1.16.2 HeadersStore and target installers create file links in
+    # exactly these namespaces. Directory links are never a header exception.
+    code = 'NATIVE_PREBUILT_LINK_REJECTED'
+    parts = pathlib.PurePosixPath(safe).parts
+    check(is_header_link(path, safe), code)
+    check(re.fullmatch(r'[A-Za-z0-9_@./+ ()-]+', target) is not None and not target.startswith('/'), code)
+    project_link = 'ios/Pods/' + '/'.join(parts[1:])
+    physical = posixpath.normpath(posixpath.join(posixpath.dirname(project_link), target))
+    check(target == posixpath.relpath(physical, posixpath.dirname(project_link))
+          and pathlib.PurePosixPath(physical).name == path.name, code)
+    for label, prefix in (('pods', 'ios/Pods/'), ('npm', 'node_modules/'), ('codegen', 'ios/build/generated/ios/')):
+        if physical.startswith(prefix):
+            check(all(part not in ('', '.', '..') for part in physical.split('/')), code)
+            return {'kind': 'cocoapods-header', 'path': safe, 'target': target,
+                    'physical': label + '/' + physical.removeprefix(prefix)}
+    raise GateError(code)
+
+
+def inventory(root):
+    checked = filesystem_guard()
+    bin_rules = npm_bin_rules(root, checked)
+    files, links = {}, []
+    bases = {'pods': root / 'ios/Pods', 'npm': root / 'node_modules', 'codegen': root / 'ios/build/generated/ios'}
+    def record(path, base, safe):
+        check(re.fullmatch(r'[A-Za-z0-9_@./+ ()-]+', safe) is not None, 'NATIVE_PREBUILT_PATH_REJECTED')
+        info = checked(path, base)
+        check(stat.S_ISREG(info.st_mode) and info.st_nlink == 1, 'NATIVE_PREBUILT_LINK_REJECTED')
+        row = {'path': safe, 'sha256': digest(path), 'size': info.st_size}
+        check(safe not in files or files[safe] == row, 'NATIVE_PREBUILT_BYTES_CHANGED')
+        files[safe] = row
+    def linked_entry(path, base, safe):
+        check(re.fullmatch(r'[A-Za-z0-9_@./+ ()-]+', safe) is not None, 'NATIVE_PREBUILT_PATH_REJECTED')
+        if safe in HERMES_ALIASES:
+            return checked_hermes_alias(path, base, safe, checked)
+        check(safe in bin_rules or is_header_link(path, safe), 'NATIVE_PREBUILT_LINK_REJECTED')
+        target = checked_posix_link(path, base, checked)
+        if safe in bin_rules and target in bin_rules[safe]:
+            row = {'kind': 'npm-bin', 'path': safe, 'target': target, **bin_rules[safe][target]}
+        else:
+            row = checked_header_link(path, safe, target)
+        label, relative = row['physical'].split('/', 1)
+        # Inspect the lexical, finite physical target before reading bytes. Do
+        # not resolve an alias or permit linked ancestors, directories or nlink>1.
+        record(bases[label].joinpath(*pathlib.PurePosixPath(relative).parts), bases[label], row['physical'])
+        return row
+    for label in ('pods', 'npm'):
+        base = bases[label]
+        info = checked(base)
+        check(stat.S_ISDIR(info.st_mode), 'NATIVE_DEPENDENCY_TREE_MISSING')
         if label == 'pods':
             checked_hermes_prefixes(base, checked)
-        # Classify native suffixes case-insensitively on both filesystem types;
-        # preserve actual spelling in manifest rows and exact alias validation.
         for directory, dirs, names in os.walk(base, followlinks=False, onerror=enumeration_failed):
             for name in list(dirs):
                 path = pathlib.Path(directory) / name
-                relative = path.relative_to(base)
-                native = any(p.casefold().endswith(('.framework', '.xcframework')) for p in relative.parts)
+                safe = label + '/' + path.relative_to(base).as_posix()
                 info = path.lstat()
-                linked = stat.S_ISLNK(info.st_mode) or bool(getattr(info, 'st_file_attributes', 0) & 0x400)
-                if native and linked:
-                    links.append(checked_hermes_alias(path, base, label + '/' + relative.as_posix(), checked))
-                    dirs.remove(name)  # Explicitly prune even though followlinks=False.
-                elif native or getattr(info, 'st_file_attributes', 0) & 0x400:
-                    checked(path, base)
+                if stat.S_ISLNK(info.st_mode) or getattr(info, 'st_file_attributes', 0) & 0x400:
+                    links.append(linked_entry(path, base, safe))
+                    dirs.remove(name)
+                else:
+                    check(stat.S_ISDIR(checked(path, base).st_mode), 'NATIVE_PREBUILT_LINK_REJECTED')
             for name in names:
                 path = pathlib.Path(directory) / name
                 relative = path.relative_to(base)
+                safe = label + '/' + relative.as_posix()
+                info = path.lstat()
+                # Every link is classified BEFORE suffix or magic-byte discovery.
+                if stat.S_ISLNK(info.st_mode) or getattr(info, 'st_file_attributes', 0) & 0x400:
+                    links.append(linked_entry(path, base, safe))
+                    continue
+                check(stat.S_ISREG(info.st_mode) and info.st_nlink == 1, 'NATIVE_PREBUILT_LINK_REJECTED')
                 native = any(p.casefold().endswith(('.framework', '.xcframework')) for p in relative.parts)
                 native |= name.casefold().endswith(('.a', '.dylib', '.so', '.dll', '.node', '.wasm', '.metallib', '.tbd',
-                                         '.zip', '.tgz', '.tar.gz', '.tar.xz'))
-                info = path.lstat()
-                linked = stat.S_ISLNK(info.st_mode) or bool(getattr(info, 'st_file_attributes', 0) & 0x400)
-                if not linked:
-                    # Even magic-byte discovery must not read a hard-linked inode
-                    # or special file. Apply before sniffing or hashing any file.
-                    check(stat.S_ISREG(info.st_mode) and info.st_nlink == 1, 'NATIVE_PREBUILT_LINK_REJECTED')
-                if not native and not linked:
+                                                   '.zip', '.tgz', '.tar.gz', '.tar.xz'))
+                if not native:
                     with path.open('rb') as stream:
                         native = stream.read(4) in (b'\xcf\xfa\xed\xfe', b'\xca\xfe\xba\xbe',
                                                    b'\xca\xfe\xba\xbf', b'\xfe\xed\xfa\xcf')
                 if native:
-                    safe = label + '/' + relative.as_posix()
-                    check(re.fullmatch(r'[A-Za-z0-9_@./+ ()\-]+', safe) is not None, 'NATIVE_PREBUILT_PATH_REJECTED')
-                    if linked:
-                        links.append(checked_hermes_alias(path, base, safe, checked))
-                        continue
-                    info = checked(path, base)
-                    check(stat.S_ISREG(info.st_mode) and info.st_nlink == 1, 'NATIVE_PREBUILT_LINK_REJECTED')
-                    files.append({'path': safe, 'sha256': digest(path), 'size': info.st_size})
+                    record(path, base, safe)
     seen = {row['path'] for row in links}
     for prefix in HERMES_FRAMEWORK_ROOTS:
         group = {path for path in HERMES_ALIASES if path.startswith(prefix + '/')}
         check(not seen.intersection(group) or group.issubset(seen), 'NATIVE_PREBUILT_LINK_REJECTED')
-    return {'schemaVersion': 2, 'files': sorted(files, key=lambda item: item['path']),
+    return {'schemaVersion': 3, 'files': sorted(files.values(), key=lambda item: item['path']),
             'links': sorted(links, key=lambda item: item['path'])}
 
 

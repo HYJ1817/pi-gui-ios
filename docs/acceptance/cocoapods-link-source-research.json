@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "kind": "public-toolchain-source-research",
+  "tool": "CocoaPods",
+  "version": "1.16.2",
+  "readOnly": true,
+  "realPosixExecution": false,
+  "sources": [
+    {
+      "url": "https://raw.githubusercontent.com/CocoaPods/CocoaPods/1.16.2/lib/cocoapods/sandbox/headers_store.rb",
+      "sha256": "6958dc3d007dbb4bbcdc1eb3d68eafed97d1f35f7f02b41c94a513a7cf5b00d7",
+      "observation": "add_file builds a relative source from sandbox.root + relative_header_path to the namespaced header directory, then uses FileUtils.ln_sf on POSIX; the link basename equals the source basename."
+    },
+    {
+      "url": "https://raw.githubusercontent.com/CocoaPods/CocoaPods/1.16.2/lib/cocoapods/installer/xcode/pods_project_generator/target_installer.rb",
+      "sha256": "1f75df17989a2595c38bcc9f858fd841c3fcc507c06a4d6e5901bf4fbd46bc51",
+      "observation": "create_module_map and create_umbrella_header link the generated support file to the target header directory using a canonical relative source."
+    },
+    {
+      "url": "https://raw.githubusercontent.com/CocoaPods/CocoaPods/1.16.2/lib/cocoapods/installer/xcode/pods_project_generator/pod_target_installer.rb",
+      "sha256": "197ab3b2c1753d8d6947c1a114a22e5558a6a69616f5b7fb2c161fc18151306e",
+      "observation": "create_module_map also links custom generated module maps to the target header namespace."
+    },
+    {
+      "url": "https://raw.githubusercontent.com/CocoaPods/CocoaPods/1.16.2/lib/cocoapods/target/pod_target.rb",
+      "sha256": "c273d3db12da02532dc93d74a0aa1f8c01bb0fe417c7f025560550fb8e8742ff",
+      "observation": "Initializes the Private HeadersStore; describes public/private file mappings and computes module_map_path under the header namespace."
+    }
+  ],
+  "additionalSource": "https://raw.githubusercontent.com/CocoaPods/CocoaPods/1.16.2/lib/cocoapods/sandbox.rb",
+  "additionalObservation": "Initializes the Public HeadersStore and defines headers_root as sandbox.root/Headers.",
+  "localPinnedReactNativeEvidence": [
+    "scripts/ci/validate-locks.rb already permits build/generated/ios local sources",
+    "node_modules/react-native/scripts/codegen/templates/ReactCodegen.podspec.template describes source files generated under that codegen path"
+  ],
+  "policyLimitation": "Source evidence establishes tool behavior, not the actual CI dependency layout. Only file aliases in Pods/Headers/{Public,Private} with approved header/modulemap suffixes, canonical relative targets and identical source basename are eligible. Physical targets must be single-link regular files without linked ancestors under Pods, npm, or ios/build/generated/ios, and all target bytes are hashed. Other links fail closed."
+}

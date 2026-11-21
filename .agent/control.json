@@ -1,8 +1,8 @@
 {
   "schemaVersion": 2,
   "kind": "control",
-  "revision": 248,
-  "updatedAt": "2026-11-21T09:02:13.346Z",
+  "revision": 258,
+  "updatedAt": "2026-11-21T09:28:27.937Z",
   "data": {
     "phase": "M-1",
     "currentTask": "M-1-infrastructure",
@@ -80,7 +80,7 @@
         "id": "M-1-infrastructure",
         "phase": "M-1",
         "title": "恢复控制层、Windows 原生探针、macOS/Simulator/Maestro/unsigned IPA 验证",
-        "status": "blocked",
+        "status": "testing",
         "dependsOn": [],
         "requiredEvidence": [
           "unit",
@@ -409,7 +409,7 @@
             "at": "2026-11-21T08:16:48.681Z"
           }
         ],
-        "updatedAt": "2026-11-21T08:52:30.502Z"
+        "updatedAt": "2026-11-21T09:28:27.425Z"
       },
       {
         "id": "M-1-device",
@@ -548,49 +548,38 @@
       }
     ],
     "checkpoint": {
-      "id": "v2-2026-11-21T09-02-13-346Z-700ab0e4-e571-4bc9-be8f-72499d11739a",
-      "path": ".agent/checkpoints/v2-2026-11-21T09-02-13-346Z-700ab0e4-e571-4bc9-be8f-72499d11739a.json",
-      "sha256": "eea599e1dcf54781789206367bf29d642c95b82e50e525cf117eee3134ec6533",
-      "authorityDigest": "e39c5d1602fc3f3d1bca906874f48d79255adc0eccdcb3bcc4204af7579f7e98",
-      "at": "2026-11-21T09:02:13.346Z",
+      "id": "v2-2026-11-21T09-28-27-937Z-d27736d0-60da-41cb-a02f-a00814db2f64",
+      "path": ".agent/checkpoints/v2-2026-11-21T09-28-27-937Z-d27736d0-60da-41cb-a02f-a00814db2f64.json",
+      "sha256": "5ef9d12373d6adc6ebf8ba8260449050df59e23411640445643764f514e5410c",
+      "authorityDigest": "c08e55a55398be1cf8699ff67d017f77dc30530567f4c4be2d3ea24482d6b2db",
+      "at": "2026-11-21T09:28:27.937Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "a8b8360fb0c814a612b07302273a7338e1c112d5",
+        "commit": "8ca9bc48982c535c5798d7ac960a771203834e12",
         "dirty": [
-          "MM .agent/HANDOFF.md",
-          "A  .agent/checkpoints/v2-2026-11-21T08-14-32-709Z-7a0d1b61-3979-4fc3-a109-10eb1a07c97b.json",
-          "A  .agent/checkpoints/v2-2026-11-21T08-15-43-541Z-7891ab61-87e2-4525-9593-aa86273293a1.json",
-          "A  .agent/checkpoints/v2-2026-11-21T08-16-32-371Z-c35d4e49-6055-497a-ae6a-ccb4f4cad5fc.json",
-          "A  .agent/checkpoints/v2-2026-11-21T08-16-33-223Z-6c9bf0b6-7a94-4d3f-8954-ec77eb5e6e62.json",
-          "A  .agent/checkpoints/v2-2026-11-21T08-16-37-020Z-886b0ac8-a80b-4c30-a213-0239c22c8fc9.json",
-          "A  .agent/checkpoints/v2-2026-11-21T08-16-37-842Z-a7e60740-b428-458e-9f51-5631ac052116.json",
-          "A  .agent/checkpoints/v2-2026-11-21T08-16-42-632Z-1c52b58a-492c-4c0f-a762-d5937f94fbd7.json",
-          "A  .agent/checkpoints/v2-2026-11-21T08-16-43-527Z-5f03b332-9515-499c-b68c-3bdb989e107a.json",
-          "A  .agent/checkpoints/v2-2026-11-21T08-16-47-848Z-726f73ed-bf83-4fe2-aa48-d806fcbed341.json",
-          "A  .agent/checkpoints/v2-2026-11-21T08-16-48-726Z-23a3c0cc-d7fc-42df-9c50-a82e65af721b.json",
-          "A  .agent/checkpoints/v2-2026-11-21T08-17-18-559Z-4cc5b608-9e34-4123-83ab-e11f215d5cd9.json",
-          "A  .agent/checkpoints/v2-2026-11-21T08-52-30-544Z-4c2d599b-1b9d-4d30-95ed-6b4c936e3761.json",
-          "MM .agent/control.json",
-          "MM .agent/state.json",
-          "MM .agent/tasks.json",
-          "MM PROGRESS.md",
-          "M  docs/acceptance/local-bundle-output.txt",
-          "M  docs/acceptance/local-bundle.json",
-          "M  docs/acceptance/local-doctor.json",
-          "M  docs/acceptance/local-typecheck.json",
-          "M  docs/acceptance/local-unit-output.txt",
-          "M  docs/acceptance/local-unit.json",
-          "AM docs/acceptance/review-a8b8360-disposition.md",
-          "A  docs/acceptance/review-a8b8360-provenance.json",
-          "A  docs/acceptance/review-a8b8360-result.json",
-          "?? docs/acceptance/native-inventory-link-research.json",
-          "?? docs/acceptance/native-inventory-recovery-proposal.md"
+          "M .agent/HANDOFF.md",
+          " M .agent/control.json",
+          " M .agent/state.json",
+          " M .agent/tasks.json",
+          " M PROGRESS.md",
+          " M docs/decisions/0003-native-build-integrity.md",
+          " M scripts/ci/native-dependencies.py",
+          " M tests/ipa-ci.test.mjs",
+          " M tests/native-links.test.mjs",
+          "?? .agent/checkpoints/v2-2026-11-21T09-03-13-879Z-7c5ab9bc-68d4-4c29-b287-dc6255308ab7.json",
+          "?? .agent/checkpoints/v2-2026-11-21T09-15-30-534Z-f292f060-9ce1-4a0c-9a99-4b9ce511a2a7.json",
+          "?? .agent/checkpoints/v2-2026-11-21T09-15-31-222Z-e9279594-f3e9-4e69-b7c4-00981367d41d.json",
+          "?? .agent/checkpoints/v2-2026-11-21T09-26-15-518Z-75482041-ce3a-44f5-b231-4208a147e114.json",
+          "?? .agent/checkpoints/v2-2026-11-21T09-28-27-463Z-2d555ad2-25d3-478a-ac50-9e7a89adf7d3.json",
+          "?? docs/acceptance/cocoapods-link-source-research.json",
+          "?? docs/acceptance/native-inventory-classification-implementation.md",
+          "?? tests/native-inventory.test.mjs"
         ]
       },
-      "sourceFingerprint": "30ef203a01cec72eb524df2b8313f2c0941acb1e15d2e524e826d40bb92a2f1e",
-      "note": "第三轮复验失败已归档，M-1 blocked；完成npm命令链接来源只读调查及恢复方案草案；待保存状态文档提交"
+      "sourceFingerprint": "b31ec8eeab625f6aedcabf3de3121593f54b75ea3d0698a1444fc3aab5f320e1",
+      "note": "Windows canonical248/248及技术栈合同通过；准备冻结链接分类重构源码，实际POSIX与macOS门禁未过"
     },
-    "nextAction": "从 node scripts/agent-resume.mjs --remote 核验 blocked 状态。第三轮失败原结果与来源见 docs/acceptance/review-a8b8360-{result,provenance,disposition}；恢复设计见 docs/acceptance/native-inventory-recovery-proposal.md。源码 a8b8360 的 Windows 224/224、typecheck、bundle、Doctor 20/20 通过，独立任务 b861b32f 已完成但安全/功能失败。三轮上限后已封存，当前没有可启动的依赖任务。实际 POSIX、候选锁、原生构建、UI、IPA、SideStore 均待验。未推送，远端 86cadda，最近 CI 44877767639/1 failed。",
+    "nextAction": "用户在明确说明第三轮失败与blocked后要求继续做吧，开启基于已保存恢复方案的新一轮实施。先实现全目录项链接判定、锁文件派生的有限npm bin路径/目标与物理目标摘要，再定向回归、规范报告和新提交独立审查。保留旧失败证据及所有native/UI/IPA门禁；代码复审前不启动candidate CI。",
     "delegates": [
       {
         "taskId": "node:delegated-task:command%3Amcp%3Ac31b83bb-4e95-4301-8a91-f13f8295d85a%3Adelegate-task%3A4b75cf04-9360-469c-87e1-321a7e4b3149",
@@ -650,6 +639,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "41fb44bf050d477bd037cf8b7409ec4a442e654d0055d1d3b832c81b207eb80d"
+    "digest": "3a8f14922366d9971b4032077680d5a4e1af33fbec7364075ddcb82006a36009"
   }
 }

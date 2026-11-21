@@ -18,7 +18,7 @@ function fixture(t) {
   for (const dir of ['runner-temp', 'private', 'native', 'ios/Pods', 'node_modules']) mkdirSync(join(root, dir), { recursive: true });
   writeFileSync(join(root, 'native/dependency-policy.json'), JSON.stringify(policy));
   writeFileSync(join(root, 'Gemfile'), readFileSync(join(ROOT, 'Gemfile')));
-  writeFileSync(join(root, 'package-lock.json'), '{"fixture":true}');
+  writeFileSync(join(root, 'package-lock.json'), JSON.stringify({ lockfileVersion: 3, packages: {} }));
   writeFileSync(join(root, 'ios/Podfile'), '# synthetic offline fixture only\n');
   const env = { ...process.env, PYTHON: executable, RUNNER_TEMP: join(root, 'runner-temp').replaceAll('\\', '/'), PYTHONDONTWRITEBYTECODE: '1' };
   return { root, env, options: { cwd: root, env, encoding: 'utf8' } };

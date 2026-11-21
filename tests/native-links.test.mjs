@@ -15,7 +15,8 @@ function fixture(t) {
   t.after(() => rmSync(root, { recursive: true, force: true }));
   for (const dir of ['scripts/ci', 'ios/Pods', 'node_modules', 'private', 'native']) mkdirSync(join(root, dir), { recursive: true });
   for (const file of ['native-dependencies.py', 'verify-ipa.py', 'verify-template.py', 'validate-locks.rb']) cpSync(join(ROOT, 'scripts/ci', file), join(root, 'scripts/ci', file));
-  for (const file of ['Gemfile', 'package-lock.json', 'ios/Podfile', 'private/Gemfile.lock', 'private/Podfile.lock']) writeFileSync(join(root, file), 'synthetic fixture only');
+  for (const file of ['Gemfile', 'ios/Podfile', 'private/Gemfile.lock', 'private/Podfile.lock']) writeFileSync(join(root, file), 'synthetic fixture only');
+  writeFileSync(join(root, 'package-lock.json'), JSON.stringify({ lockfileVersion: 3, packages: {} }));
   return root;
 }
 function py(root, body, ...args) {
@@ -48,12 +49,12 @@ assert len(m.HERMES_ALIASES) == 6
 print('EXACT_OBSERVED_SIX_ALIASES')`, join(ROOT, 'tests/fixtures/hermes-versioned-aliases.json'));
   passed(result, 'EXACT_OBSERVED_SIX_ALIASES');
 });
-test('manifest v2 includes an explicit deterministic alias inventory even without links', t => {
+test('manifest v3 includes an explicit deterministic alias inventory even without links', t => {
   const root = fixture(t);
   passed(py(root, `
 a=m.inventory(root); b=m.inventory(root)
-assert a == b == {'schemaVersion':2,'files':[],'links':[]}
-print('MANIFEST_V2_EMPTY_ALIASES')`), 'MANIFEST_V2_EMPTY_ALIASES');
+assert a == b == {'schemaVersion':3,'files':[],'links':[]}
+print('MANIFEST_V3_EMPTY_ALIASES')`), 'MANIFEST_V3_EMPTY_ALIASES');
 });
 test('macOS canonical tests are required before generating any native project', () => {
   const workflow = readFileSync(join(ROOT, '.github/workflows/native-infrastructure.yml'), 'utf8');
@@ -234,7 +235,7 @@ print('REAL_WINDOWS_JUNCTION_REJECTED')`), 'REAL_WINDOWS_JUNCTION_REJECTED');
   test('real POSIX Hermes aliases are recorded while only physical target bytes are hashed', t => {
     passed(py(fixture(t), setup + `
 manifest=m.inventory(root)
-assert manifest['schemaVersion'] == 2 and len(manifest['links']) == 6 and len(manifest['files']) == 4
+assert manifest['schemaVersion'] == 3 and len(manifest['links']) == 6 and len(manifest['files']) == 4
 assert manifest == m.inventory(root)
 assert manifest['links'] == sorted([{'path':path,'target':rule['target']} for path,rule in m.HERMES_ALIASES.items()],key=lambda x:x['path'])
 assert all('/Versions/1/' in row['path'] for row in manifest['files'])

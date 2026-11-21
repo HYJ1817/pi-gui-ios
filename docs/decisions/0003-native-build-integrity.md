@@ -126,6 +126,20 @@ d2d1720独立复验确认上述三项已在代码与Windows实际故障差分中
 
 这是本轮依赖清单的第三次独立复验前修复：若新的精确提交复验仍未通过，停止同类机械修补，保存根因和阻塞，不继续第四轮或CI试跑。即使代码复核通过，实际macOS POSIX和真实候选审核门禁继续保留。
 
+## 2026-11-21 用户要求继续后的链接分类重构
+
+第三轮失败原结果、来源与封存提交 8ca9bc4 保留。用户在获知 blocked 和尚未实施的恢复方案后明确要求“继续做吧”，据此从封存状态开始一轮有明确根因与验证矩阵的实施；这不撤销旧失败结果或任何原生/安全验收门禁。
+
+目录遍历现对**每个目录项先判定链接**，之后才按后缀和 magic-byte 分类；无原生后缀的未知 POSIX 链接同样拒绝。全部真实目录的父链亦检查，Windows 重解析点/junction 不参与以下 POSIX 例外。六条 Hermes 别名保持原来的精确路径、文本 target、固定物理目标和完整三条组约束。
+
+npm 命令链接的有限路径与相对 target 从 package-lock v3 的 bin 声明计算，不读安装后 package.json 来扩大允许表。拒绝重复 JSON 键、工作区 link、非法所有者、命令名、绝对/逃逸/非规范 bin 声明。支持 scoped 包和嵌套 node_modules；当前锁中42个候选命令路径有3处同名声明，每处实际链接只能匹配锁内的一个候选所有者。路径和 target 均逐字比较，实际所有者、物理目标、目标全部字节/大小均记录并绑定，不按 .bin 目录整体放行，不执行命令目标。
+
+额外读取固定 CocoaPods1.16.2 的 HeadersStore、PodTarget 与 target installer 源码后，确认其会创建头文件、umbrella header 和 modulemap 的相对**文件**链接。来源URL、四份原文SHA256及调用观察见 docs/acceptance/cocoapods-link-source-research.json。因此仅允许 `pods/Headers/{Public,Private}/<namespace>/...` 中 `.h/.hh/.hpp/.hxx/.ipp/.h++/.modulemap` 的规范相对文件链接，物理源与链接 basename 必须相同。物理源严格限制在 Pods、node_modules 或已有精确 codegen 路径 `ios/build/generated/ios`，其自身及祖先不能是链接；物理源必须普通文件且 nlink=1。悬空、目录、绝对、非规范、多链接、越界或其他命名空间均拒绝。源文件无论后缀或内容为何，都完整哈希；不能借头文件名隐藏原生字节或整个目录。此处的有限结构属于本项目的审查政策，并不声称从真实 CI 安装树中已经观测了每个链接。
+
+依赖清单升 schemaVersion3。Hermes 的 `{path,target}` 行保持，命令链接另含 `kind=npm-bin/owner/physical`，头文件链接含 `kind=cocoapods-header/physical`；所有物理源进入去重后的 files 清单。排序清单整体绑定 review.hashes 和 locked 精确比较；即使改指另一个已声明命令所有者，也使旧审核失效。旧清单没有自动迁移。未知结构在读取其目标字节前失败，最终 IPA 的无链接政策、发布白名单、权限与 ATS 边界未改。
+
+新增回归先在修复前执行4个无后缀目录/文件链接模拟差分，4/4失败；修复后这4项及20个锁声明/真实Windowsjunction用例通过。模拟仅覆盖 Windows 无法创建 POSIX 链接的遗漏代码路径，不冒充真实POSIX验收。macOS canonical npm test 仍须在 prebuild 前运行新增真实无后缀链接负向、scoped/nested npm 命令链接与所有者/字节漂移、CocoaPods头文件/modulemap及拒绝矩阵。全部规范回归、精确提交独立审查、实际macOS安装树与候选锁审核继续由各自证据门禁判定。
+
 ## 回滚
 
 如发现兼容问题，在开发分支 revert 本实现提交，保留 bootstrap 未验收状态；不得通过放宽权限/签名/平台断言或忽略锁差异来让 job 变绿。对合法新键、新依赖来源或生成结构的支持应有真实公开归档或macOS fixture、精确边界差分和独立复审后再加入显式表；仍须真实macOS验证，不继承本机通过。
