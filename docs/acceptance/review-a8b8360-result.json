@@ -1,0 +1,209 @@
+{
+  "schemaVersion": 1,
+  "decision": "fail",
+  "branch": "agent/m-1-bootstrap",
+  "reviewedCommit": "a8b8360fb0c814a612b07302273a7338e1c112d5",
+  "sourceFingerprint": {
+    "expected": "30ef203a01cec72eb524df2b8313f2c0941acb1e15d2e524e826d40bb92a2f1e",
+    "working": "30ef203a01cec72eb524df2b8313f2c0941acb1e15d2e524e826d40bb92a2f1e",
+    "committed": "30ef203a01cec72eb524df2b8313f2c0941acb1e15d2e524e826d40bb92a2f1e",
+    "verified": true
+  },
+  "reports": [
+    {
+      "schemaVersion": 1,
+      "kind": "independent-security",
+      "decision": "fail",
+      "reviewedCommit": "a8b8360fb0c814a612b07302273a7338e1c112d5",
+      "sourceFingerprint": "30ef203a01cec72eb524df2b8313f2c0941acb1e15d2e524e826d40bb92a2f1e",
+      "unresolvedBlockers": 1,
+      "unresolvedImportant": 0,
+      "findings": [
+        {
+          "id": "INV-UNREVIEWED-POSIX-LINK",
+          "severity": "Blocker",
+          "file": "scripts/ci/native-dependencies.py",
+          "line": 142,
+          "trigger": "On macOS/POSIX, an unapproved symlink in ios/Pods or node_modules has a name without a native suffix and points to a directory containing native payload.",
+          "evidence": "inventory uses os.walk(..., followlinks=False), but its directory and file branches do not reject a POSIX symlink unless its path is classified native. For a non-native linked entry, line 142 skips magic-byte probing and line 146 does not record it; a directory symlink is not descended. A synthetic production-inventory probe modeling the POSIX directory-entry shape returned an empty manifest while the target contained hidden-native.a. This was not a real POSIX filesystem test: creating a POSIX symlink on this Windows host failed with WinError 1314.",
+          "disposition": "Block candidate bootstrap. Per the caller's final-review constraint, do not start another same-class repair/review or CI run in this round; preserve this as an unresolved blocker."
+        }
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "kind": "independent-review",
+      "decision": "fail",
+      "reviewedCommit": "a8b8360fb0c814a612b07302273a7338e1c112d5",
+      "sourceFingerprint": "30ef203a01cec72eb524df2b8313f2c0941acb1e15d2e524e826d40bb92a2f1e",
+      "unresolvedBlockers": 1,
+      "unresolvedImportant": 0,
+      "findings": [
+        {
+          "id": "INV-UNREVIEWED-POSIX-LINK",
+          "severity": "Blocker",
+          "file": "scripts/ci/native-dependencies.py",
+          "line": 142,
+          "trigger": "An unapproved POSIX link without a native-suffix path component hides native dependency bytes from the inventory.",
+          "evidence": "The non-native linked-entry branches neither reject the link nor traverse it; the mocked production-path probe produced an empty schema-v2 manifest despite a synthetic native file at the target. The test suite covers the six exact Hermes aliases, known Hermes prefixes, and Windows junction negatives, but does not cover this unapproved no-suffix POSIX-link case. No real POSIX execution is claimed.",
+          "disposition": "Same blocker as the security report; bootstrap remains unsafe and no fix or further same-class attempt was made."
+        }
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "kind": "independent-handoff",
+      "decision": "pass",
+      "reviewedCommit": "a8b8360fb0c814a612b07302273a7338e1c112d5",
+      "sourceFingerprint": "30ef203a01cec72eb524df2b8313f2c0941acb1e15d2e524e826d40bb92a2f1e",
+      "restoredTask": "M-1-infrastructure",
+      "unresolvedBlockers": 0,
+      "unresolvedImportant": 0,
+      "findings": [],
+      "scopeNote": "Recovery and canonical-test handoff passed; this does not override the independent-security or independent-review failures."
+    }
+  ],
+  "bootstrapAssessment": {
+    "safeForOneGatedMacOSCandidateBootstrap": false,
+    "reason": "The inventory can omit unapproved POSIX links and their native targets, so a review-only candidate may bind an incomplete manifest. No candidate bootstrap or CI was started."
+  },
+  "priorFindingsDisposition": [
+    {
+      "id": "INV-HARDLINK",
+      "disposition": "Resolved for the reported case.",
+      "evidence": "Current code checks regular-file type and st_nlink before magic sniffing or hashing; alias targets also require st_nlink == 1. Canonical Windows hard-link tests passed."
+    },
+    {
+      "id": "INV-PREFIX",
+      "disposition": "Resolved for the two enumerated Hermes roots; real POSIX validation remains unexecuted.",
+      "evidence": "Component lstat and strict path checks precede the walk; Windows junction tests reject known-root prefixes before traversal. This does not cover the new unapproved-link finding outside those roots."
+    },
+    {
+      "id": "INV-ENUM",
+      "disposition": "Resolved for the reported enumeration failures.",
+      "evidence": "os.walk uses onerror=enumeration_failed; injected enumeration errors fail closed in canonical tests."
+    },
+    {
+      "id": "INV-FRAMEWORK-CASE",
+      "disposition": "Resolved and independently challenged.",
+      "evidence": "Suffix classification uses casefold while alias paths and targets remain exact. A separate synthetic run of production finish with portable Ruby 3.3.8 returned exit 78 twice, produced only the four review-only files with approved=false, recorded both framework files, and changed the manifest digest when Info.plist bytes changed."
+    }
+  ],
+  "priorCI": {
+    "run": "44877767639",
+    "result": "Failed with NATIVE_PREBUILT_LINK_REJECTED.",
+    "limitation": "No specific rejected path, raw lock, or candidate was observed; this review does not infer the rejection cause."
+  },
+  "finalIPABoundary": {
+    "unchangedAcross86caddaToHEAD": true,
+    "evidence": "git diff --exit-code found no changes to verify-ipa.py, stage-ipa.py, package-ipa.sh, install-pods.sh, run-step.sh, or native/dependency-policy.json. Final IPA link rejection and its upload boundary remain unchanged.",
+    "finalIPAProduced": false,
+    "lockApprovalGranted": false
+  },
+  "handoff": {
+    "restoredTask": "M-1-infrastructure",
+    "resumeCommand": {
+      "command": "node scripts/agent-resume.mjs --remote",
+      "exitCode": 0
+    },
+    "canonicalCommand": {
+      "command": "RUBY=C:/pi-gui-ios/artifacts/ruby-extract-20261121-a/rubyinstaller-3.3.8-1-x64/bin/ruby.exe GEM_HOME=C:/pi-gui-ios/artifacts/ruby-gems-20261121-a GEM_PATH=C:/pi-gui-ios/artifacts/ruby-gems-20261121-a npm test (Git Bash)",
+      "exitCode": 0,
+      "result": "224 passed, 0 failed, 0 skipped; technology-stack contract passed. Windows branch only."
+    },
+    "nextAction": "Keep M-1-infrastructure in testing/blocked; do not run a fourth same-class repair/review, candidate bootstrap, or CI run in this round. Final IPA and native lock approval remain gated."
+  },
+  "notExecuted": [
+    "Real macOS/POSIX canonical link tests",
+    "Real macOS dependency candidates or candidate approval",
+    "Locked native build or cache verification",
+    "Simulator, UI, or visual verification",
+    "Device IPA generation or verification",
+    "SideStore installation"
+  ],
+  "commands": [
+    {
+      "id": "C1",
+      "command": "node scripts/agent-resume.mjs --remote",
+      "exitCode": 0,
+      "result": "Recovered M-1-infrastructure in testing; no recovery warnings or failures."
+    },
+    {
+      "id": "C2",
+      "command": "Canonical npm test via Git Bash with the requested portable Ruby and gem paths",
+      "exitCode": 0,
+      "result": "224 tests passed, zero skipped; technology-stack contract passed."
+    },
+    {
+      "id": "C3",
+      "command": "Independent sourceFingerprint and committedFingerprint recomputation for a8b8360",
+      "exitCode": 0,
+      "result": "Working and committed fingerprints both matched the expected value."
+    },
+    {
+      "id": "C4",
+      "command": "git diff --check 86cadda..HEAD",
+      "exitCode": 0,
+      "result": "No whitespace errors."
+    },
+    {
+      "id": "C5",
+      "command": "git diff --exit-code 86cadda..HEAD -- final-IPA scripts and native/dependency-policy.json",
+      "exitCode": 0,
+      "result": "Protected final-IPA and policy files unchanged."
+    },
+    {
+      "id": "C6",
+      "command": "Independent synthetic production finish using portable Ruby 3.3.8",
+      "exitCode": 0,
+      "result": "Two exit-78 review-only candidates; resource was recorded and its mutation changed the bound manifest digest."
+    },
+    {
+      "id": "C7",
+      "command": "Synthetic production-inventory probe modeling an unapproved POSIX directory-link entry",
+      "exitCode": 0,
+      "result": "Returned an empty manifest despite a native file at the modeled link target; not a real POSIX filesystem run."
+    },
+    {
+      "id": "C8",
+      "command": "Windows POSIX symlink capability probe",
+      "exitCode": 0,
+      "result": "Creation unavailable with WinError 1314."
+    },
+    {
+      "id": "C9",
+      "command": "Initial synthetic symlink probe",
+      "exitCode": 1,
+      "result": "Probe harness used an incomplete synthetic stat object and failed before reaching a product conclusion; the corrected C7 probe completed."
+    }
+  ],
+  "workingTree": {
+    "sourceFilesDirty": 0,
+    "sourceFingerprintUnchanged": true,
+    "dirtyNonSourceObserved": [
+      ".agent/HANDOFF.md",
+      ".agent/control.json",
+      ".agent/state.json",
+      ".agent/tasks.json",
+      "PROGRESS.md",
+      "docs/acceptance/local-bundle-output.txt",
+      "docs/acceptance/local-bundle.json",
+      "docs/acceptance/local-doctor.json",
+      "docs/acceptance/local-typecheck.json",
+      "docs/acceptance/local-unit-output.txt",
+      "docs/acceptance/local-unit.json",
+      ".agent/checkpoints/v2-2026-11-21T08-14-32-709Z-7a0d1b61-3979-4fc3-a109-10eb1a07c97b.json",
+      ".agent/checkpoints/v2-2026-11-21T08-15-43-541Z-7891ab61-87e2-4525-9593-aa86273293a1.json",
+      ".agent/checkpoints/v2-2026-11-21T08-16-32-371Z-c35d4e49-6055-497a-ae6a-ccb4f4cad5fc.json",
+      ".agent/checkpoints/v2-2026-11-21T08-16-33-223Z-6c9bf0b6-7a94-4d3f-8954-ec77eb5e6e62.json",
+      ".agent/checkpoints/v2-2026-11-21T08-16-37-020Z-886b0ac8-a80b-4c30-a213-0239c22c8fc9.json",
+      ".agent/checkpoints/v2-2026-11-21T08-16-37-842Z-a7e60740-b428-458e-9f51-5631ac052116.json",
+      ".agent/checkpoints/v2-2026-11-21T08-16-42-632Z-1c52b58a-492c-4c0f-a762-d5937f94fbd7.json",
+      ".agent/checkpoints/v2-2026-11-21T08-16-43-527Z-5f03b332-9515-499c-b68c-3bdb989e107a.json",
+      ".agent/checkpoints/v2-2026-11-21T08-16-47-848Z-726f73ed-bf83-4fe2-aa48-d806fcbed341.json",
+      ".agent/checkpoints/v2-2026-11-21T08-16-48-726Z-23a3c0cc-d7fc-42df-9c50-a82e65af721b.json",
+      ".agent/checkpoints/v2-2026-11-21T08-17-18-559Z-4cc5b608-9e34-4123-83ab-e11f215d5cd9.json"
+    ],
+    "attribution": "Observed during review; attribution of all non-source state/evidence refreshes is not established. No source edit, commit, push, CI action, or device action was performed."
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "kind": "read-only-link-policy-research",
+  "sourceCommit": "a8b8360fb0c814a612b07302273a7338e1c112d5",
+  "sourceFingerprint": "30ef203a01cec72eb524df2b8313f2c0941acb1e15d2e524e826d40bb92a2f1e",
+  "localToolchain": {
+    "npm": "11.19.1",
+    "binLinks": "6.0.2"
+  },
+  "binLinksSources": [
+    {
+      "path": "lib/link-bins.js",
+      "sha256": "929bd4599d527d5e5133a1a95422fe3068e2d39aea9920925e93ccbc73d330dc"
+    },
+    {
+      "path": "lib/link-bin.js",
+      "sha256": "1dfffb36c0db98ed27e9a69179987b07f83c8411183c16e9d94209b4b91d47ff"
+    },
+    {
+      "path": "lib/link-gently.js",
+      "sha256": "a6c14179fabf88c03bdf83eff1b3df51530ce5bfd7ebea0b3d4a8121a725a20f"
+    },
+    {
+      "path": "lib/bin-target.js",
+      "sha256": "a958fcc5310958cfc2ab4ffbe4592af182041b7b4f7fb2f6d59a1a64409888db"
+    }
+  ],
+  "staticLockAnalysis": {
+    "declaredBinPackages": 41,
+    "declaredBinPaths": 42,
+    "duplicateDeclarations": [
+      {
+        "path": "node_modules/.bin/fingerprint",
+        "owners": [
+          "node_modules/@expo/fingerprint",
+          "node_modules/expo"
+        ]
+      },
+      {
+        "path": "node_modules/.bin/expo-modules",
+        "owners": [
+          "node_modules/expo",
+          "node_modules/expo-modules-cli"
+        ]
+      },
+      {
+        "path": "node_modules/.bin/expo-modules-autolinking",
+        "owners": [
+          "node_modules/expo",
+          "node_modules/expo-modules-autolinking"
+        ]
+      }
+    ],
+    "example": {
+      "path": "node_modules/.bin/expo",
+      "owner": "node_modules/expo",
+      "relativeTarget": "../expo/bin/cli"
+    }
+  },
+  "limitation": "Read-only analysis of package-lock and local npm sources. No POSIX symlink creation, actual POSIX npm installation, candidate generation, or CI execution occurred. Duplicate declaration analysis does not establish which owner a POSIX install selects."
+}
