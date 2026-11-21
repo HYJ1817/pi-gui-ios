@@ -1,8 +1,8 @@
 {
   "schemaVersion": 2,
   "kind": "control",
-  "revision": 81,
-  "updatedAt": "2026-11-21T05:52:11.548Z",
+  "revision": 103,
+  "updatedAt": "2026-11-21T06:10:39.723Z",
   "data": {
     "phase": "M-1",
     "currentTask": "M-1-infrastructure",
@@ -41,6 +41,15 @@
         "status": "completed",
         "conclusion": "failure",
         "url": "https://github.com/HYJ1817/pi-gui-ios/actions/runs/44868846710"
+      },
+      {
+        "id": "44872870220",
+        "head": "0148a3fc0058e6db17a803e1946c2a88a3aab85a",
+        "workflow": ".github/workflows/native-infrastructure.yml",
+        "attempt": 1,
+        "status": "completed",
+        "conclusion": "failure",
+        "url": "https://github.com/HYJ1817/pi-gui-ios/actions/runs/44872870220"
       }
     ],
     "blockers": [
@@ -165,6 +174,38 @@
             "sourceFingerprint": "a4ae0ee9c7ce997c43b5c6dce20f3c03b492b51c62ba31d13d5eda4583eef738",
             "commit": "86822196c84ee01baf5b8dec41256abdfd04ddeb",
             "at": "2026-11-21T05:03:23.598Z"
+          },
+          {
+            "kind": "unit",
+            "path": "docs/acceptance/local-unit.json",
+            "sha256": "115b0b15f5528db808e2c18b225598af5c01dca127cab283ee2282359807e27e",
+            "sourceFingerprint": "ca015d26724cdc7d7e89cfd6001f76373b302f85f9275ff79fb75bd3666df526",
+            "commit": "0148a3fc0058e6db17a803e1946c2a88a3aab85a",
+            "at": "2026-11-21T05:54:14.421Z"
+          },
+          {
+            "kind": "typecheck",
+            "path": "docs/acceptance/local-typecheck.json",
+            "sha256": "e268dfa446e26140355587dc6ab02d5a6e8118f9f44c2dd150c6a760fc28e22c",
+            "sourceFingerprint": "ca015d26724cdc7d7e89cfd6001f76373b302f85f9275ff79fb75bd3666df526",
+            "commit": "0148a3fc0058e6db17a803e1946c2a88a3aab85a",
+            "at": "2026-11-21T05:54:19.536Z"
+          },
+          {
+            "kind": "bundle",
+            "path": "docs/acceptance/local-bundle.json",
+            "sha256": "3be40c5a2888ef6ab51b71375b5aa739e380c02a5f4b857b17a5fa224d4edcbd",
+            "sourceFingerprint": "ca015d26724cdc7d7e89cfd6001f76373b302f85f9275ff79fb75bd3666df526",
+            "commit": "0148a3fc0058e6db17a803e1946c2a88a3aab85a",
+            "at": "2026-11-21T05:54:26.815Z"
+          },
+          {
+            "kind": "doctor",
+            "path": "docs/acceptance/local-doctor.json",
+            "sha256": "6df7f9e91efc229749e89c83f6278fcc1c0f79bd53909893857850a41b03e954",
+            "sourceFingerprint": "ca015d26724cdc7d7e89cfd6001f76373b302f85f9275ff79fb75bd3666df526",
+            "commit": "0148a3fc0058e6db17a803e1946c2a88a3aab85a",
+            "at": "2026-11-21T05:54:33.338Z"
           }
         ],
         "updatedAt": "2026-11-21T03:58:47.613Z"
@@ -306,22 +347,20 @@
       }
     ],
     "checkpoint": {
-      "id": "v2-2026-11-21T05-52-11-548Z-c66660de-7fda-40d3-adf8-6429ca7bad10",
-      "path": ".agent/checkpoints/v2-2026-11-21T05-52-11-548Z-c66660de-7fda-40d3-adf8-6429ca7bad10.json",
-      "sha256": "50ea2007fa696752597d4d4c49101bbfb65b28ecab66f68fe8a9fc803a842842",
-      "authorityDigest": "cafa3215a2d147aff1522ce8f2552c2266d754cc57b62567bd6c2614eb9e0647",
-      "at": "2026-11-21T05:52:11.548Z",
+      "id": "v2-2026-11-21T06-10-39-723Z-12f56b45-fcdd-4cc7-85d3-0cc14b9c7d48",
+      "path": ".agent/checkpoints/v2-2026-11-21T06-10-39-723Z-12f56b45-fcdd-4cc7-85d3-0cc14b9c7d48.json",
+      "sha256": "bb7c34a3b7b6d5eab1a451cf9f2a5e000fccec52e506750e479161ec14858617",
+      "authorityDigest": "13ac9f1648e6c0f8f8b7fe6285980f87e91348c4845315bd5b1d135a80f44019",
+      "at": "2026-11-21T06:10:39.723Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "86822196c84ee01baf5b8dec41256abdfd04ddeb",
+        "commit": "0148a3fc0058e6db17a803e1946c2a88a3aab85a",
         "dirty": [
           "M .agent/HANDOFF.md",
           " M .agent/control.json",
           " M .agent/state.json",
           " M .agent/tasks.json",
-          " M .github/workflows/native-infrastructure.yml",
           " M PROGRESS.md",
-          " M README.md",
           " M docs/acceptance/local-bundle-output.txt",
           " M docs/acceptance/local-bundle.json",
           " M docs/acceptance/local-doctor.json",
@@ -330,28 +369,29 @@
           " M docs/acceptance/local-unit.json",
           " M docs/decisions/0003-native-build-integrity.md",
           " M scripts/ci/validate-locks.rb",
-          "?? .agent/checkpoints/v2-2026-11-21T05-00-25-356Z-bbd5cd0c-5717-4ce8-a47f-f7e1e5922a50.json",
-          "?? .agent/checkpoints/v2-2026-11-21T05-01-02-491Z-b52f6308-c8e7-49a4-8c51-164a65839fd5.json",
-          "?? .agent/checkpoints/v2-2026-11-21T05-03-12-043Z-a59818cb-318d-4730-a8d8-c8307d201538.json",
-          "?? .agent/checkpoints/v2-2026-11-21T05-03-16-413Z-2761d523-d942-4d75-bf72-de3475220ee4.json",
-          "?? .agent/checkpoints/v2-2026-11-21T05-03-20-512Z-d9e95290-aa7b-4b30-af91-fe9200a374d0.json",
-          "?? .agent/checkpoints/v2-2026-11-21T05-03-21-304Z-f11323ff-8f53-4fda-8683-b248fe47d207.json",
-          "?? .agent/checkpoints/v2-2026-11-21T05-03-22-098Z-6698bdeb-a8a4-474f-9d22-ca9234b34533.json",
-          "?? .agent/checkpoints/v2-2026-11-21T05-03-22-880Z-0252f3eb-afed-4c8f-beb3-f573fdf1d846.json",
-          "?? .agent/checkpoints/v2-2026-11-21T05-03-23-632Z-fc5d6026-dec3-4c09-9f55-b5a8f2d4f737.json",
-          "?? .agent/checkpoints/v2-2026-11-21T05-20-16-654Z-3cb0b519-7f82-444d-8577-5c664c0dfd59.json",
-          "?? .agent/checkpoints/v2-2026-11-21T05-20-17-142Z-1a89a375-a8a5-4c07-ade9-d37380b12023.json",
-          "?? .agent/checkpoints/v2-2026-11-21T05-44-30-700Z-e44006ec-0c1e-47ad-b52d-6c5b889ff60c.json",
-          "?? .agent/checkpoints/v2-2026-11-21T05-50-26-464Z-2ed38e9c-3d96-42cf-9553-d7f56aa794b4.json",
-          "?? docs/acceptance/ci-44868846710-analysis.md",
-          "?? docs/acceptance/ci-44868846710-api.json",
-          "?? tests/native-locks.test.mjs"
+          " M tests/ci-diagnostics.test.mjs",
+          " M tests/native-locks.test.mjs",
+          "?? .agent/checkpoints/v2-2026-11-21T05-52-12-685Z-21499b77-85a5-4261-b768-24d0945638d5.json",
+          "?? .agent/checkpoints/v2-2026-11-21T05-54-13-327Z-713023c6-7601-4079-98d4-696e8d8bdb1d.json",
+          "?? .agent/checkpoints/v2-2026-11-21T05-54-14-477Z-17c4e514-8a26-4fab-a37b-4f423a29805e.json",
+          "?? .agent/checkpoints/v2-2026-11-21T05-54-18-479Z-4141fed5-3690-4380-bdb3-3d11d43929c7.json",
+          "?? .agent/checkpoints/v2-2026-11-21T05-54-19-581Z-8475d9b1-699a-40a7-a28e-d2c8a035c8d2.json",
+          "?? .agent/checkpoints/v2-2026-11-21T05-54-25-698Z-37b21623-ecf9-443b-8d71-9f2375fa8fff.json",
+          "?? .agent/checkpoints/v2-2026-11-21T05-54-26-863Z-4e15c08b-11de-41f9-92f6-e2694f659ee8.json",
+          "?? .agent/checkpoints/v2-2026-11-21T05-54-32-234Z-1e0fee5d-d266-4bd4-a293-2d1f3668ec9a.json",
+          "?? .agent/checkpoints/v2-2026-11-21T05-54-33-385Z-f0b74993-2172-4fb4-9dbd-0a36a58dcf35.json",
+          "?? .agent/checkpoints/v2-2026-11-21T05-55-12-355Z-b7abb578-821b-42dd-a33b-d97b930dd1e2.json",
+          "?? .agent/checkpoints/v2-2026-11-21T05-55-56-740Z-d42f00a5-619e-43f1-a8bd-0a266e4484ad.json",
+          "?? .agent/checkpoints/v2-2026-11-21T06-09-03-153Z-a25b562e-7a1c-4985-80bb-1f3c93f10a56.json",
+          "?? .agent/checkpoints/v2-2026-11-21T06-09-03-726Z-9634bfcf-8cb3-4f7f-8a13-ae2575fea06a.json",
+          "?? docs/acceptance/ci-44872870220-analysis.md",
+          "?? docs/acceptance/ci-44872870220-api.json"
         ]
       },
-      "sourceFingerprint": "ca015d26724cdc7d7e89cfd6001f76373b302f85f9275ff79fb75bd3666df526",
-      "note": "保存锁解析修复与完整测试，准备源码提交"
+      "sourceFingerprint": "67ce26168524f725741ecece27b1cbe4f63e75f09e2e09e89a004e5120061f2e",
+      "note": "锁结构诊断拆分已完整173/173测试通过，保持所有原拒绝谓词；准备一次定位性macOS运行"
     },
-    "nextAction": "CocoaPods Symbol兼容修复及23项真实Ruby测试已实现；canonical165/165和typecheck通过。提交推送后取得真实macOS bootstrap候选，并对精确提交独立复核R2三项及本次锁解析；未批准锁集，不登记UI/IPA通过。",
+    "nextAction": "CI44872870220 Windows165项及prebuild通过，pods失败固定码POD_STRUCTURE，无候选/原生/UI/IPA。仅细分安全诊断不放宽策略，已通过真实Ruby定向；完成canonical后提交一次定位性bootstrap。若同类解析仍失败三轮即停止机械重跑，按具体码记录根因/阻塞再处理。独立复核7da88775仍覆盖0148a3f，不沿用到未提交新源码。",
     "delegates": [
       {
         "taskId": "node:delegated-task:command%3Amcp%3Ac31b83bb-4e95-4301-8a91-f13f8295d85a%3Adelegate-task%3A4b75cf04-9360-469c-87e1-321a7e4b3149",
@@ -376,11 +416,17 @@
         "role": "security-recheck-and-bootstrap-lock-review",
         "status": "completed",
         "sourceCommit": "d46d6a5f84ad569f42a727fe29b0e2ed7b6f4afd"
+      },
+      {
+        "taskId": "node:delegated-task:command%3Amcp%3A29600ade-642e-4b34-9a46-eb0e685480ef%3Adelegate-task%3A7da88775-0818-4401-b41e-ba036de8f61d",
+        "role": "independent-security-review-and-handoff",
+        "status": "working",
+        "sourceCommit": "0148a3fc0058e6db17a803e1946c2a88a3aab85a"
       }
     ]
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "1a87b4bc83f95a1c22d933c11165912dd056d2f7930a571d63119389b50d5130"
+    "digest": "9da5f5992e67d5d563ca9daaf9c6492210257ba8cf19e1225b09ffff713e7a17"
   }
 }

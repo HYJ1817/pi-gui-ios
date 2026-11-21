@@ -108,7 +108,15 @@ for (const [name, pod, phase] of [
   ['credential URL', POD.replace(':path: "../node_modules/synthetic"', `:git: "https://${marker}@github.com/synthetic/native.git"`), 'POD_SOURCES'],
   ['query URL', POD.replace(':path: "../node_modules/synthetic"', `:http: "https://repo.reactnative.dev/synthetic.tar.gz?secret=${marker}"`), 'POD_SOURCES'],
   ['unapproved host', POD.replace(':path: "../node_modules/synthetic"', ':http: "https://unapproved.invalid/native.tar.gz"'), 'POD_SOURCES'],
-  ['unknown top-level key', POD + `\n${marker}: hidden\n`, 'POD_STRUCTURE'],
+  ['unknown top-level key', POD + `\n${marker}: hidden\n`, 'POD_STRUCTURE_KEYS'],
+  ['non-map YAML root', '- Synthetic\n', 'POD_STRUCTURE_ROOT'],
+  ['unexpected CocoaPods version value', POD.replace('COCOAPODS: 1.16.2', `COCOAPODS: ${marker}`), 'POD_STRUCTURE_VERSION'],
+  ['non-array dependencies', POD.replace('DEPENDENCIES:\n  - Synthetic (from `../node_modules/synthetic`)', 'DEPENDENCIES: {}'), 'POD_DEPENDENCY_ARRAY'],
+  ['invalid pod entry key', POD.replace('  - Synthetic (1.0.0)', `  - "${marker}:invalid": []`), 'POD_ENTRY_KEY'],
+  ['unsupported pod value type', POD.replace('  - Synthetic (1.0.0)', '  - false'), 'POD_ENTRY_TYPE'],
+  ['invalid dependency reference', POD.replace('Synthetic (from `../node_modules/synthetic`)', `Synthetic (from [${marker}])`), 'POD_ENTRY_REFERENCE'],
+  ['escaping dependency reference', POD.replace('Synthetic (from `../node_modules/synthetic`)', `Synthetic (from \`../../${marker}\`)`), 'POD_ENTRY_LOCAL_PATH'],
+  ['unknown spec repository', POD + `\nSPEC REPOS:\n  ${marker}: []\n`, 'POD_REPOSITORIES'],
   ['NUL content', POD + '\0', 'POD_FORMAT'],
 ]) test(`reject ${name} without disclosing values or modifying either lock`, t => reject(t, pod, phase));
 test('safe reconstruction removes YAML comments rather than publishing unparsed text', t => {

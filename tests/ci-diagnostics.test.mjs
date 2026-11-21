@@ -28,9 +28,9 @@ function scan(f, content) {
 
 test('diagnostics preserve known validator codes and public-source locations without raw messages', t => {
   const f = fixture(t);
-  const result = scan(f, `NATIVE_LOCKS_REJECTED_GEM_PARSE\n${f.root.replaceAll('\\', '/')}/src/public-source.ts:1:7: error: has no member 'fieldValue' '${SECRET}'\n${SECRET}\n`);
+  const result = scan(f, `NATIVE_LOCKS_REJECTED_GEM_PARSE\nNATIVE_LOCKS_REJECTED_POD_STRUCTURE_KEYS\n${f.root.replaceAll('\\', '/')}/src/public-source.ts:1:7: error: has no member 'fieldValue' '${SECRET}'\n${SECRET}\n`);
   assert.equal(result.status, 0, result.stderr); assert.equal(result.stdout.includes(SECRET), false);
-  const report = JSON.parse(result.stdout); assert.ok(report.codes.includes('NATIVE_LOCKS_REJECTED_GEM_PARSE')); assert.ok(report.codes.includes('COMPILER_MEMBER_NOT_FOUND'));
+  const report = JSON.parse(result.stdout); assert.ok(report.codes.includes('NATIVE_LOCKS_REJECTED_GEM_PARSE')); assert.ok(report.codes.includes('NATIVE_LOCKS_REJECTED_POD_STRUCTURE_KEYS')); assert.ok(report.codes.includes('COMPILER_MEMBER_NOT_FOUND'));
   assert.deepEqual(report.sourceLocations, [{ path: 'src/public-source.ts', line: 1 }]);
   assert.equal(Object.hasOwn(report, 'message'), false);
 });
@@ -48,11 +48,11 @@ test('generated source names and quoted values cannot become diagnostics; locked
 test('artifact diagnostics and environment are structural allowlisted data, never raw runner logs', t => {
   const f = fixture(t);
   writeFileSync(join(f.privateRoot, 'steps/pods.json'), JSON.stringify({ step: 'pods', status: 'failed' }));
-  writeFileSync(join(f.privateRoot, 'logs/pods.log'), `NATIVE_LOCKS_REJECTED_POD_SOURCES\n${SECRET}\n`);
+  writeFileSync(join(f.privateRoot, 'logs/pods.log'), `NATIVE_LOCKS_REJECTED_POD_STRUCTURE_KEYS\n${SECRET}\n`);
   writeFileSync(join(f.privateRoot, 'logs/environment.log'), `ProductVersion:\t26.7.2\nBuildVersion:\t25G332\nXcode 26.6\nBuild version 17F113\nv24.22.1\n11.19.1\nruby 3.3.8 (synthetic fixture)\nBundler version 2.6.9\n${SECRET}\n`);
   const result = spawnSync(PYTHON, ['scripts/ci/collect-evidence.py'], f.options); assert.equal(result.status, 0, result.stdout + result.stderr);
   const diagnostics = readFileSync(join(f.root, 'artifacts/reports/diagnostics.json'), 'utf8'); const environment = readFileSync(join(f.root, 'artifacts/reports/environment.json'), 'utf8');
-  assert.equal((diagnostics + environment).includes(SECRET), false); assert.match(diagnostics, /NATIVE_LOCKS_REJECTED_POD_SOURCES/);
+  assert.equal((diagnostics + environment).includes(SECRET), false); assert.match(diagnostics, /NATIVE_LOCKS_REJECTED_POD_STRUCTURE_KEYS/);
   const value = JSON.parse(environment); assert.equal(value.observed, true); assert.equal(value.versions.ruby, '3.3.8'); assert.equal(value.versions.xcode, '26.6');
 });
 test('failed synthetic UI screenshot is retained with metadata removed', t => {

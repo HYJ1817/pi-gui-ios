@@ -47,9 +47,13 @@ begin
     YAML.safe_load(text, permitted_classes: [Symbol], permitted_symbols: option_keys, aliases: false)
   end
   pods = parse_pods.call(pod_text)
-  phase = 'POD_STRUCTURE'
+  phase = 'POD_STRUCTURE_ROOT'
+  raise unless pods.is_a?(Hash)
+  phase = 'POD_STRUCTURE_KEYS'
   allowed = ['PODS', 'DEPENDENCIES', 'SPEC REPOS', 'EXTERNAL SOURCES', 'CHECKOUT OPTIONS', 'SPEC CHECKSUMS', 'PODFILE CHECKSUM', 'COCOAPODS']
-  raise unless pods.is_a?(Hash) && (pods.keys - allowed).empty? && pods['COCOAPODS'] == '1.16.2'
+  raise unless (pods.keys - allowed).empty?
+  phase = 'POD_STRUCTURE_VERSION'
+  raise unless pods['COCOAPODS'] == '1.16.2'
   token = /\A[A-Za-z0-9_.+\/() ,=<>!~\-]+\z/
   local_path = lambda do |value|
     value.match?(%r{\A(?:\.\./node_modules/[A-Za-z0-9_@./+\-]+|build/generated/ios(?:/[A-Za-z0-9_./+\-]+)?)\z}) && !value.delete_prefix('../').split('/').include?('..')
@@ -57,16 +61,31 @@ begin
   visit = lambda do |value|
     case value
     when Array then value.each { |v| visit.call(v) }
-    when Hash then value.each { |k, v| raise unless k.is_a?(String) && k.match?(token); visit.call(v) }
+    when Hash
+      value.each do |k, v|
+        phase = 'POD_ENTRY_KEY'
+        raise unless k.is_a?(String) && k.match?(token)
+        visit.call(v)
+      end
     when String
       unless value.match?(token)
+        phase = 'POD_ENTRY_REFERENCE'
         from = value.match(/\A[A-Za-z0-9_.+\/\-]+ \(from [`'\"]([^`'\"]+)[`'\"]\)\z/)
-        raise unless from && local_path.call(from[1])
+        raise unless from
+        phase = 'POD_ENTRY_LOCAL_PATH'
+        raise unless local_path.call(from[1])
       end
-    else raise
+    else
+      phase = 'POD_ENTRY_TYPE'
+      raise
     end
   end
-  ['PODS', 'DEPENDENCIES'].each { |key| raise unless pods[key].is_a?(Array); visit.call(pods[key]) }
+  ['PODS', 'DEPENDENCIES'].each do |key|
+    phase = 'POD_DEPENDENCY_ARRAY'
+    raise unless pods[key].is_a?(Array)
+    visit.call(pods[key])
+  end
+  phase = 'POD_REPOSITORIES'
   repos = pods.fetch('SPEC REPOS', {})
   raise unless repos.is_a?(Hash) && (repos.keys - ['trunk', 'https://cdn.cocoapods.org/']).empty?
   repos.values.each { |v| visit.call(v) }
