@@ -1,6 +1,6 @@
 # 项目进度（生成文件）
 
-权威：.agent/control.json；schema v2；revision 394；2026-11-21T12:46:30.236Z
+权威：.agent/control.json；schema v2；revision 409；2026-11-21T12:52:24.366Z
 
 阶段：M-1；当前：M-1-infrastructure；分支：agent/m-1-bootstrap
 
@@ -18,7 +18,7 @@
 
 阻塞：M-1完成仍要求独立 review/security/handoff 证据；负责人仅对本次锁定技术验证授权 waive 独立审查，不得将 waiver 记为审查通过或M-1通过。
 
-检查点：.agent/checkpoints/v2-2026-11-21T12-46-30-236Z-e4d3cf4f-648d-4d78-8702-5763e6d0ba2d.json；保存时 HEAD：694461569f0805578bbff10eaafebbb17c82b9eb
+检查点：.agent/checkpoints/v2-2026-11-21T12-52-24-366Z-50c892e6-4955-4f6f-9051-f0b1dccdf0de.json；保存时 HEAD：dfd0d17975debc5b0a2ae906e44ae019775cea71
 
 CI：44783585115/1 completed/cancelled @ 58ec99506e00a35121866580ffb28d09d5078b17；44864063976/1 completed/failure @ d46d6a5f84ad569f42a727fe29b0e2ed7b6f4afd；44868846710/1 completed/failure @ 86822196c84ee01baf5b8dec41256abdfd04ddeb；44872870220/1 completed/failure @ 0148a3fc0058e6db17a803e1946c2a88a3aab85a；44874304419/1 completed/failure @ 2b16a1ae71f67d953fd7f1956b163843d9a4385f；44877767639/1 completed/failure @ 86cadda377fc1fdf3c483478b03215a3d6b96c32；44891582412/1 completed/failure @ a3420973d4dff86b7def48c26eddad0c0501692b；44894722354/1 completed/failure @ b6d52004cd4fb95f9a96c1cc39ed83570d0ed322；44901616612/1 completed/failure @ 9503ae3932fa707e00f509a8bb6d884745283feb
 

@@ -1,8 +1,8 @@
 {
   "schemaVersion": 2,
   "kind": "control",
-  "revision": 394,
-  "updatedAt": "2026-11-21T12:46:30.236Z",
+  "revision": 409,
+  "updatedAt": "2026-11-21T12:52:24.366Z",
   "data": {
     "phase": "M-1",
     "currentTask": "M-1-infrastructure",
@@ -600,6 +600,38 @@
             "sourceFingerprint": "f488caac4cc1f572b21936f326ed0adfceb1037ac8022b7fe016ae991a63ca80",
             "commit": "be700fedaf0d49938ad8e212c409a63dd4f70472",
             "at": "2026-11-21T11:27:36.231Z"
+          },
+          {
+            "kind": "unit",
+            "path": "docs/acceptance/local-unit.json",
+            "sha256": "345b4d3a4cbb8bb8d1046f5c44bd6893006d05ea7d88185cdef84515a40cc883",
+            "sourceFingerprint": "656e09e95672d0f2934c932176d084f970cb52c08e197157a0ebc4aa8ac684d6",
+            "commit": "dfd0d17975debc5b0a2ae906e44ae019775cea71",
+            "at": "2026-11-21T12:50:32.800Z"
+          },
+          {
+            "kind": "typecheck",
+            "path": "docs/acceptance/local-typecheck.json",
+            "sha256": "c7a4510974bc4dd5b7a51bed162e7595e12826da01effa780a33b81e803c1f72",
+            "sourceFingerprint": "656e09e95672d0f2934c932176d084f970cb52c08e197157a0ebc4aa8ac684d6",
+            "commit": "dfd0d17975debc5b0a2ae906e44ae019775cea71",
+            "at": "2026-11-21T12:50:33.678Z"
+          },
+          {
+            "kind": "bundle",
+            "path": "docs/acceptance/local-bundle.json",
+            "sha256": "075957549814fab50e408fb7dc83f85b0f0963ad3ec76e2e83dfc31eb5b19133",
+            "sourceFingerprint": "656e09e95672d0f2934c932176d084f970cb52c08e197157a0ebc4aa8ac684d6",
+            "commit": "dfd0d17975debc5b0a2ae906e44ae019775cea71",
+            "at": "2026-11-21T12:50:34.592Z"
+          },
+          {
+            "kind": "doctor",
+            "path": "docs/acceptance/local-doctor.json",
+            "sha256": "19e88b7091c7c804912064fd184e19f57e6b948a239a27c50aa26e4f5a24dd7b",
+            "sourceFingerprint": "656e09e95672d0f2934c932176d084f970cb52c08e197157a0ebc4aa8ac684d6",
+            "commit": "dfd0d17975debc5b0a2ae906e44ae019775cea71",
+            "at": "2026-11-21T12:50:35.459Z"
           }
         ],
         "updatedAt": "2026-11-21T12:39:06.984Z"
@@ -741,31 +773,40 @@
       }
     ],
     "checkpoint": {
-      "id": "v2-2026-11-21T12-46-30-236Z-e4d3cf4f-648d-4d78-8702-5763e6d0ba2d",
-      "path": ".agent/checkpoints/v2-2026-11-21T12-46-30-236Z-e4d3cf4f-648d-4d78-8702-5763e6d0ba2d.json",
-      "sha256": "8a698ad7e18f47870d25c6ceac29820be0bd230d41fc04da1a6996caf6353fae",
-      "authorityDigest": "4d27ec27dbb6989ae2c55c2a47a2efc50936765d6f115bf7cf3786e8aef7fa93",
-      "at": "2026-11-21T12:46:30.236Z",
+      "id": "v2-2026-11-21T12-52-24-366Z-50c892e6-4955-4f6f-9051-f0b1dccdf0de",
+      "path": ".agent/checkpoints/v2-2026-11-21T12-52-24-366Z-50c892e6-4955-4f6f-9051-f0b1dccdf0de.json",
+      "sha256": "ded1bcf15ff5992439916978752b0eb63aaa4933cd48abe6de913d499d43b4da",
+      "authorityDigest": "23dd5c98497f933432d5f74dbf08c180f117dc197239425bd650b44befdaff36",
+      "at": "2026-11-21T12:52:24.366Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "694461569f0805578bbff10eaafebbb17c82b9eb",
+        "commit": "dfd0d17975debc5b0a2ae906e44ae019775cea71",
         "dirty": [
           "M .agent/HANDOFF.md",
           " M .agent/control.json",
           " M .agent/state.json",
           " M .agent/tasks.json",
           " M PROGRESS.md",
-          " M native/dependency-policy.json",
-          "?? .agent/checkpoints/v2-2026-11-21T12-39-07-126Z-5134275d-ecbb-462c-9837-2084380fe4d7.json",
-          "?? Gemfile.lock",
-          "?? docs/acceptance/owner-waiver-locked-native-validation.md",
-          "?? native/Podfile.lock",
-          "?? native/lock-review.json",
-          "?? native/prebuilt-dependencies.json"
+          " M docs/acceptance/local-bundle-output.txt",
+          " M docs/acceptance/local-bundle.json",
+          " M docs/acceptance/local-doctor.json",
+          " M docs/acceptance/local-typecheck.json",
+          " M docs/acceptance/local-unit-output.txt",
+          " M docs/acceptance/local-unit.json",
+          "?? .agent/checkpoints/v2-2026-11-21T12-47-18-770Z-2cb87407-a4d4-4cbd-ada0-357c2aaea1a9.json",
+          "?? .agent/checkpoints/v2-2026-11-21T12-48-05-532Z-f96d92b0-1db4-4512-9177-8d56da748cbb.json",
+          "?? .agent/checkpoints/v2-2026-11-21T12-50-03-857Z-5d8a6d8c-b892-4399-8cdc-0937cf213ac3.json",
+          "?? .agent/checkpoints/v2-2026-11-21T12-50-07-162Z-74a8ffaa-78f0-4e3e-ab43-95cc46a37413.json",
+          "?? .agent/checkpoints/v2-2026-11-21T12-50-11-558Z-1d28416b-0c3b-4fd3-a045-497ef8b08171.json",
+          "?? .agent/checkpoints/v2-2026-11-21T12-50-15-796Z-ff17f993-be63-4fbe-a1d6-e7ac74ebcda3.json",
+          "?? .agent/checkpoints/v2-2026-11-21T12-50-32-844Z-22078fde-48e7-4f81-957f-699042066e98.json",
+          "?? .agent/checkpoints/v2-2026-11-21T12-50-33-721Z-356073e7-5b7d-47d0-9dbb-af96e9f95df5.json",
+          "?? .agent/checkpoints/v2-2026-11-21T12-50-34-637Z-ba327708-d330-4617-bc8a-58cd1d217daa.json",
+          "?? .agent/checkpoints/v2-2026-11-21T12-50-35-499Z-a10e8c2a-c6ed-41a4-8103-cc6798b925e7.json"
         ]
       },
       "sourceFingerprint": "656e09e95672d0f2934c932176d084f970cb52c08e197157a0ebc4aa8ac684d6",
-      "note": "Owner waiver: exact macOS bootstrap candidate promoted to locked mode for one validation; full manifest/link self-audit and npm test passed; independent review gates remain unsatisfied"
+      "note": "locked candidate promotion local evidence current: 272 tests, typecheck, bundle, doctor passed; independent gates remain unmet"
     },
     "nextAction": "owner-waiver-locked-native-validation.md记录了范围。本地手工核对CI候选全部7,735链接、21,043文件及哈希后，固定Ruby锁语义校验和canonical npm test通过。候选已以owner-waiver-validation-only方式落入locked模式；提交后重新生成本源码指纹的四份规范Windows报告，随后推送触发一次locked macOS CI验证Podfile再生成哈希、全量清单一致、Simulator UI及unsigned device IPA。此waiver不满足required independent-review/security/handoff，故无论本次构建结果如何都不能登记M-1 completed。",
     "delegates": [
@@ -839,6 +880,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "8bc81785b73d38b75022c726d95e7ca4553e60b684c14883b9f0b49daa44bdf6"
+    "digest": "cf8c25563bf1fc47d84a5d6fb57d4e1ba5eacaabe4dabf8f015e76aa06a02561"
   }
 }
