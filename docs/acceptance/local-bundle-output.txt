@@ -4,7 +4,7 @@
 
 Starting Metro Bundler
 
-iOS Bundled 1555ms index.ts (1631 modules)
+iOS Bundled 1053ms index.ts (1610 modules)
 
 › Assets (16):
 node_modules\@react-navigation\elements\lib\module\assets\back-icon-mask.png (653B)

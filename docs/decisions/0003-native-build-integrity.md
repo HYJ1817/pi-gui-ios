@@ -82,6 +82,14 @@ Windows 本地实际运行 `npm test -- --test-reporter=spec`：**100 tests，10
 
 `collect-evidence.py` 分别生成白名单内的diagnostics/environment JSON；失败/中断时保留专用空白模拟器的failure.png，并执行相同PNG结构/元数据清理。新增键盘显隐、动画完成与原生手势探针截图也逐个列入白名单。现有不上传原始日志/签名材料/目录通配的断言保持，并将只核文件数量提升为完整预期集合比较。新增合成privacy fixture检验：即使私有标记存在于源码文本或生成文件中，也不能经诊断回显；不使用真实数据。
 
+## CocoaPods 符号键兼容与真实解析器回归
+
+CI44868846710（8682219）已实际通过固定模板及发布策略配置，随后在候选锁的 `POD_FORMAT` 阶段失败；公开诊断不含原始锁或异常值，不据此声称已观测其具体字段。用 Ruby3.3.8/Psych5.1.2 的合成 CocoaPods 格式锁可复现：`:path`/`:podspec` 被解析为 Symbol，而空 permitted_classes 会抛 Psych::DisallowedClass；原先按字符串 `':path'` 比较选项也不匹配真实 Symbol。
+
+保留严格安全加载，仅允许 Symbol 类及八个已知 source option 符号（path、podspec、git、http、commit、tag、branch、sha256），随后逐字段检查其所在位置、字符串值、来源和路径；保留 Symbol 键而不转成字符串，以维持 `pod install --deployment` 的 external_source 比较语义。重建后的 YAML 使用同一严格解析器回读并比较，未知符号/Ruby对象/别名仍拒绝，未解析注释不发布。新增明确 `POD_PARSE` 阶段，不回显异常值。检查源名称和 checksum 名称时显式要求 String，避免 Ruby 的 Symbol#match? 接受错误类型。
+
+新增 `tests/native-locks.test.mjs` 使用真实 Ruby3.3.8/Bundler2.6.9 直接执行生产校验器，覆盖合法符号/往返幂等、generated/local路径、来源、对象/符号/别名及失败不改写/不泄漏。Windows checks 同样安装固定 Ruby/Bundler，canonical `npm test` 不再以未运行的 Ruby 校验器当作覆盖；便携工具只在本机忽略目录，不加入项目依赖或上传。此兼容修复不批准任何锁集，仍须真实 macOS bootstrap、独立候选审查和 locked 重跑。
+
 ## 回滚
 
 如发现兼容问题，在开发分支 revert 本实现提交，保留 bootstrap 未验收状态；不得通过放宽权限/签名/平台断言或忽略锁差异来让 job 变绿。对合法新键、新依赖来源或生成结构的支持应有真实 macOS fixture 和独立复审后再加入显式表。

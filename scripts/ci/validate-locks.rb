@@ -37,7 +37,16 @@ begin
   phase = 'POD_FORMAT'
   pod_text = File.read(File.join(root, 'Podfile.lock'))
   raise unless pod_text.ascii_only? && !pod_text.include?("\0") && pod_text.bytesize < 2_000_000
-  pods = YAML.safe_load(pod_text, permitted_classes: [], permitted_symbols: [], aliases: false)
+  phase = 'POD_PARSE'
+  # CocoaPods 1.16.2 emits Symbol keys such as :path and :podspec. Permit
+  # only its finite source-option vocabulary; never allow arbitrary Ruby classes
+  # or symbols. Keep symbols intact so pod install --deployment sees the same
+  # external_source hashes as the original lock, including after serialization.
+  option_keys = [:path, :podspec, :git, :http, :commit, :tag, :branch, :sha256].freeze
+  parse_pods = lambda do |text|
+    YAML.safe_load(text, permitted_classes: [Symbol], permitted_symbols: option_keys, aliases: false)
+  end
+  pods = parse_pods.call(pod_text)
   phase = 'POD_STRUCTURE'
   allowed = ['PODS', 'DEPENDENCIES', 'SPEC REPOS', 'EXTERNAL SOURCES', 'CHECKOUT OPTIONS', 'SPEC CHECKSUMS', 'PODFILE CHECKSUM', 'COCOAPODS']
   raise unless pods.is_a?(Hash) && (pods.keys - allowed).empty? && pods['COCOAPODS'] == '1.16.2'
@@ -65,17 +74,17 @@ begin
   hosts = ['github.com', 'cdn.cocoapods.org', 'repo1.maven.org', 'repo.maven.apache.org', 'repo.reactnative.dev']
   ['EXTERNAL SOURCES', 'CHECKOUT OPTIONS'].each do |section|
     pods.fetch(section, {}).each do |name, options|
-      raise unless name.match?(token) && options.is_a?(Hash)
+      raise unless name.is_a?(String) && name.match?(token) && options.is_a?(Hash)
       options.each do |key, value|
         raise unless value.is_a?(String)
         case key
-        when ':path', ':podspec'
+        when :path, :podspec
           raise unless local_path.call(value)
-        when ':git', ':http'
+        when :git, :http
           uri = URI.parse(value)
           raise unless uri.scheme == 'https' && hosts.include?(uri.host) && !uri.userinfo && !uri.query && !uri.fragment && uri.port == 443
           raise unless uri.path.match?(%r{\A/[A-Za-z0-9_./+\-]+\z})
-        when ':commit', ':tag', ':branch', ':sha256'
+        when :commit, :tag, :branch, :sha256
           raise unless value.match?(/\A[A-Za-z0-9_.+\-]+\z/)
         else raise
         end
@@ -86,13 +95,13 @@ begin
   raise unless pods['PODFILE CHECKSUM'].is_a?(String) && pods['PODFILE CHECKSUM'].match?(/\A[0-9a-f]{40}\z/)
   checksums = pods.fetch('SPEC CHECKSUMS')
   raise unless checksums.is_a?(Hash) && !checksums.empty?
-  checksums.each { |name, digest| raise unless name.match?(token) && digest.is_a?(String) && digest.match?(/\A[0-9a-f]{40}\z/) }
+  checksums.each { |name, digest| raise unless name.is_a?(String) && name.match?(token) && digest.is_a?(String) && digest.match?(/\A[0-9a-f]{40}\z/) }
   # Disallow YAML comments, directives, extra documents or unused scalar material.
   # Re-parse a round trip to prove the semantic representation is stable; publish
   # YAML.dump, so no unparsed comments or input spelling can become an artifact.
   phase = 'SERIALIZE'
   safe_pods = YAML.dump(pods)
-  raise unless YAML.safe_load(safe_pods, aliases: false) == pods
+  raise unless parse_pods.call(safe_pods) == pods
   File.write(File.join(root, 'Podfile.lock'), safe_pods)
   File.write(File.join(root, 'Gemfile.lock'), safe_gems)
   puts 'NATIVE_LOCKS_SAFE'
