@@ -1,0 +1,11 @@
+# 13b8584 · 链接分类独立复验处置
+
+独立任务191cd5ae于2026-11-21 09:30:46Z开始、09:49:14Z结束。完整原始task_status回执保存在review-13b8584-receipt.json，原始JSON结果另存review-13b8584-result.json。精确源码提交13b85849942f69abf83d3bb0fc570e2052a476f1，指纹b31ec8eeab625f6aedcabf3de3121593f54b75ea3d0698a1444fc3aab5f320e1；后续3ae1856只含状态/验收记录，源码一致。
+
+安全、功能与独立恢复三项原结果均为pass，Blocker/Important各0。三份schema-v2包装报告经agent-task核验原回执后已导入。审查者独立运行Windows canonical npm test 248/248、typecheck和12项附加synthetic失败探针，并核验四报告/日志/检查点摘要及固定CocoaPods源码。辅助读取/skill失败与探针初次错误均保留在原结果中，没有将其当作成功证据。最终审查由该独立上下文直接完成。
+
+INV-UNREVIEWED-POSIX-LINK在本精确源码中的静默遗漏路径已获独立确认处置；删除这一具体源码阻断。历史第三轮fail与8ca9bc4封存记录保留。实际POSIX、安装树和真实候选锁继续受原生门禁约束；旧CI44877767639的失败不会改写为成功。
+
+本次结论仅允许一次受前置测试约束的macOS候选bootstrap。workflow必须在npm ci之后、prebuild之前成功执行canonical npm test及其真实POSIX条件分支。任何失败均停止；生成的四候选仍须approved=false并以78停止后续build/Simulator/IPA。之后另行独立审核真实候选，不能直接批准锁集或登记CI成功。当前阶段回testing，保留NATIVE-LOCK和实际安装树门禁。
+
+未执行：本源码的真实POSIX测试、macOS候选生成/审核、locked构建与缓存、Simulator/UI/视觉、device IPA与SideStore。

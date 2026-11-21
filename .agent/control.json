@@ -1,8 +1,8 @@
 {
   "schemaVersion": 2,
   "kind": "control",
-  "revision": 277,
-  "updatedAt": "2026-11-21T09:31:05.601Z",
+  "revision": 290,
+  "updatedAt": "2026-11-21T09:51:50.405Z",
   "data": {
     "phase": "M-1",
     "currentTask": "M-1-infrastructure",
@@ -72,15 +72,14 @@
     ],
     "blockers": [
       "NATIVE-LOCK 尚未生成真实macOS Gemfile/Podfile/预编译候选锁并独立核验",
-      "NATIVE-PREBUILT-LINK：CI 44877767639/1 在 86cadda 以 NATIVE_PREBUILT_LINK_REJECTED 失败，无候选或路径级证据。原生候选继续受清单完整性门禁约束。",
-      "INV-UNREVIEWED-POSIX-LINK：a8b8360 第三轮安全与功能复验确认普通名称的未批准 POSIX 链接可能被依赖清单静默跳过。证据限于源码与模拟探针，真实 macOS/POSIX 验证待完成。原结果见 docs/acceptance/review-a8b8360-result.json。"
+      "NATIVE-PREBUILT-LINK：13b8584已通过精确源码安全/功能/交接复验，允许一次macOS canonical真实POSIX前置门禁约束的候选bootstrap。实际安装树和候选仍待验证；历史失败CI44877767639及原结果保留。"
     ],
     "tasks": [
       {
         "id": "M-1-infrastructure",
         "phase": "M-1",
         "title": "恢复控制层、Windows 原生探针、macOS/Simulator/Maestro/unsigned IPA 验证",
-        "status": "reviewing",
+        "status": "testing",
         "dependsOn": [],
         "requiredEvidence": [
           "unit",
@@ -439,9 +438,33 @@
             "sourceFingerprint": "b31ec8eeab625f6aedcabf3de3121593f54b75ea3d0698a1444fc3aab5f320e1",
             "commit": "13b85849942f69abf83d3bb0fc570e2052a476f1",
             "at": "2026-11-21T09:29:53.058Z"
+          },
+          {
+            "kind": "independent-review",
+            "path": "docs/acceptance/review-13b8584-review.json",
+            "sha256": "56fcd6104d6a253d35a8e9f7d3a7542c6be81668dedf524973ad7a9f2f8b0ef8",
+            "sourceFingerprint": "b31ec8eeab625f6aedcabf3de3121593f54b75ea3d0698a1444fc3aab5f320e1",
+            "commit": "13b85849942f69abf83d3bb0fc570e2052a476f1",
+            "at": "2026-11-21T09:50:48.646Z"
+          },
+          {
+            "kind": "independent-security",
+            "path": "docs/acceptance/review-13b8584-security.json",
+            "sha256": "1acce33afd26bca11ed0ea59e658c4669f966aeecf5ba8552e354da64b4a855e",
+            "sourceFingerprint": "b31ec8eeab625f6aedcabf3de3121593f54b75ea3d0698a1444fc3aab5f320e1",
+            "commit": "13b85849942f69abf83d3bb0fc570e2052a476f1",
+            "at": "2026-11-21T09:50:49.442Z"
+          },
+          {
+            "kind": "independent-handoff",
+            "path": "docs/acceptance/review-13b8584-handoff.json",
+            "sha256": "58cd0fa7174f37f2badda1d92617fd3baf3bd9a2ed922da313051f882ac4d273",
+            "sourceFingerprint": "b31ec8eeab625f6aedcabf3de3121593f54b75ea3d0698a1444fc3aab5f320e1",
+            "commit": "13b85849942f69abf83d3bb0fc570e2052a476f1",
+            "at": "2026-11-21T09:50:50.243Z"
           }
         ],
-        "updatedAt": "2026-11-21T09:30:19.855Z"
+        "updatedAt": "2026-11-21T09:50:50.921Z"
       },
       {
         "id": "M-1-device",
@@ -580,43 +603,38 @@
       }
     ],
     "checkpoint": {
-      "id": "v2-2026-11-21T09-31-05-601Z-be8d18ed-8e60-45ee-bd97-f8a2bceb9af1",
-      "path": ".agent/checkpoints/v2-2026-11-21T09-31-05-601Z-be8d18ed-8e60-45ee-bd97-f8a2bceb9af1.json",
-      "sha256": "3f2103d7f00e326be3b18603b1a0be024ad8d3293d0cd375cdb6060fe14fbde3",
-      "authorityDigest": "1360f47c85c8e3cb49176cf2b51fa6ebe9c7de003529eb1c615f525aa9c7faef",
-      "at": "2026-11-21T09:31:05.601Z",
+      "id": "v2-2026-11-21T09-51-50-405Z-0c577fb7-b351-44fb-809a-3e7147ba9f06",
+      "path": ".agent/checkpoints/v2-2026-11-21T09-51-50-405Z-0c577fb7-b351-44fb-809a-3e7147ba9f06.json",
+      "sha256": "b5e21327238871e0563e98ed06af14543e109800ff61565560075fb7d077622b",
+      "authorityDigest": "0f7c39ac7899ab131f223d6112c9a191fdbd028bb0ad2c7bc549d1a0393468c2",
+      "at": "2026-11-21T09:51:50.405Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "13b85849942f69abf83d3bb0fc570e2052a476f1",
+        "commit": "3ae18567ba551d81f803c75e8259df1de2312578",
         "dirty": [
           "M .agent/HANDOFF.md",
           " M .agent/control.json",
           " M .agent/state.json",
           " M .agent/tasks.json",
           " M PROGRESS.md",
-          " M docs/acceptance/local-bundle-output.txt",
-          " M docs/acceptance/local-bundle.json",
-          " M docs/acceptance/local-doctor.json",
-          " M docs/acceptance/local-typecheck.json",
-          " M docs/acceptance/local-unit-output.txt",
-          " M docs/acceptance/local-unit.json",
-          "?? .agent/checkpoints/v2-2026-11-21T09-28-28-849Z-fcaa2f8f-2eeb-45ce-9c0c-b9577da189fb.json",
-          "?? .agent/checkpoints/v2-2026-11-21T09-29-26-227Z-92bf08e9-1920-4769-90f2-a885f8167e12.json",
-          "?? .agent/checkpoints/v2-2026-11-21T09-29-26-995Z-f210328d-609c-4111-bf2a-cdd94c9f0286.json",
-          "?? .agent/checkpoints/v2-2026-11-21T09-29-41-225Z-41e001f3-fe7d-42e2-bba3-20285e342eeb.json",
-          "?? .agent/checkpoints/v2-2026-11-21T09-29-42-083Z-9ecd8170-0c81-41bf-8f5a-054d43e5afcd.json",
-          "?? .agent/checkpoints/v2-2026-11-21T09-29-46-944Z-7c4b535b-9e73-46e1-a387-5926ee693dac.json",
-          "?? .agent/checkpoints/v2-2026-11-21T09-29-47-841Z-99ea2a75-af77-418d-88b3-4d7ba36a7b34.json",
-          "?? .agent/checkpoints/v2-2026-11-21T09-29-52-194Z-b7ed346c-467e-4f98-b263-7691d77f2129.json",
-          "?? .agent/checkpoints/v2-2026-11-21T09-29-53-097Z-6f5c2d59-e52d-48a6-9052-de1e9f547612.json",
-          "?? .agent/checkpoints/v2-2026-11-21T09-30-19-904Z-d22a3575-eefc-40de-9d9a-591de996d055.json",
-          "?? .agent/checkpoints/v2-2026-11-21T09-30-20-508Z-95794736-2beb-4942-97f7-fb57acd96cb8.json"
+          "?? .agent/checkpoints/v2-2026-11-21T09-31-35-386Z-67d9e457-2bbe-4f1f-954e-8e3af3d05306.json",
+          "?? .agent/checkpoints/v2-2026-11-21T09-50-34-031Z-d316587d-e7dc-4c56-9be5-50eccbb3da69.json",
+          "?? .agent/checkpoints/v2-2026-11-21T09-50-48-684Z-d290bf4f-beb7-4c8f-aae8-059428df2cb4.json",
+          "?? .agent/checkpoints/v2-2026-11-21T09-50-49-478Z-cc3435b0-192a-4ae8-8a85-d9e0cb87893e.json",
+          "?? .agent/checkpoints/v2-2026-11-21T09-50-50-296Z-d458465b-6a2e-49ed-9f13-3d39b805b6e4.json",
+          "?? .agent/checkpoints/v2-2026-11-21T09-50-50-960Z-99bad138-2745-49df-a97a-7d235608863f.json",
+          "?? docs/acceptance/review-13b8584-disposition.md",
+          "?? docs/acceptance/review-13b8584-handoff.json",
+          "?? docs/acceptance/review-13b8584-receipt.json",
+          "?? docs/acceptance/review-13b8584-result.json",
+          "?? docs/acceptance/review-13b8584-review.json",
+          "?? docs/acceptance/review-13b8584-security.json"
         ]
       },
       "sourceFingerprint": "b31ec8eeab625f6aedcabf3de3121593f54b75ea3d0698a1444fc3aab5f320e1",
-      "note": "独立191cd5ae已启动：13b8584精确源码安全/功能/交接复审，等待完成事件；四规范报告通过，尚未推送/CI"
+      "note": "13b8584三类独立报告已导入并处置源码阻断；允许一次POSIX前置约束macOS候选，准备提交审查记录后推送"
     },
-    "nextAction": "独立任务191cd5ae正在审查13b8584，等待其完成事件，不轮询、不改源码、不推送或启动CI。四类规范报告已验证并导入，Windows248/248、typecheck、bundle、Doctor20/20通过。若代码复审pass，先保存完整原receipt及三份精确报告，再解除已处置源码阻断并启动一次macOS canonical真实POSIX前置门禁约束的candidate bootstrap；若fail保存发现后做有界处置。所有旧失败记录、native锁/UI/IPA/SideStore门禁保留。",
+    "nextAction": "13b8584独立191cd5ae三项pass原receipt及三份精确报告已保存并导入；Windows248/248及四规范报告仍有效。提交审查与状态记录后，推送agent/m-1-bootstrap触发一次macOS candidate bootstrap；不额外workflow_dispatch。必须先通过npm ci后/prebuild前canonical真实POSIX测试，任一失败立即停止。候选若生成须approved=false、exit78，不登记整体CI/native/UI/IPA通过；下载公开四候选并独立审核后才可落库locked。",
     "delegates": [
       {
         "taskId": "node:delegated-task:command%3Amcp%3Ac31b83bb-4e95-4301-8a91-f13f8295d85a%3Adelegate-task%3A4b75cf04-9360-469c-87e1-321a7e4b3149",
@@ -675,13 +693,13 @@
       {
         "taskId": "node:delegated-task:command%3Amcp%3Ab09dbc65-9265-451d-8397-254007a28ce8%3Adelegate-task%3A191cd5ae-33ec-405d-ac72-559cc19333a7",
         "role": "complete-entry-link-classification-security-review-and-handoff",
-        "status": "working",
+        "status": "completed",
         "sourceCommit": "13b85849942f69abf83d3bb0fc570e2052a476f1"
       }
     ]
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "5c15522fac01104e3edf4aa7bb485bb3bf520f4779ba0d42a20521f749fb8606"
+    "digest": "f679050349464dcd69e18ce20db67376607e36c90cca2cbc9af2a9fe49be56e3"
   }
 }

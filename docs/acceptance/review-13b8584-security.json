@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 2,
+  "kind": "independent-security",
+  "taskId": "M-1-infrastructure",
+  "commit": "13b85849942f69abf83d3bb0fc570e2052a476f1",
+  "sourceFingerprint": "b31ec8eeab625f6aedcabf3de3121593f54b75ea3d0698a1444fc3aab5f320e1",
+  "startedAt": "2026-11-21T09:30:46.398Z",
+  "finishedAt": "2026-11-21T09:49:14.780Z",
+  "passed": true,
+  "details": {
+    "receiptPath": "docs/acceptance/review-13b8584-receipt.json",
+    "receiptSha256": "e0330144d629bf3900fcad210b117de5c076927022f132f05eb354bf32885a63",
+    "scope": "精确源码安全审查及一次前置测试约束的macOS候选bootstrap资格；不包含实际POSIX、候选锁或最终产物验收。"
+  }
+}

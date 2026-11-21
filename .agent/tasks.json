@@ -1,17 +1,17 @@
 {
   "schemaVersion": 2,
   "kind": "tasks",
-  "revision": 277,
-  "updatedAt": "2026-11-21T09:31:05.601Z",
+  "revision": 290,
+  "updatedAt": "2026-11-21T09:51:50.405Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "5c15522fac01104e3edf4aa7bb485bb3bf520f4779ba0d42a20521f749fb8606",
+    "parentDigest": "f679050349464dcd69e18ce20db67376607e36c90cca2cbc9af2a9fe49be56e3",
     "tasks": [
       {
         "id": "M-1-infrastructure",
         "phase": "M-1",
         "title": "恢复控制层、Windows 原生探针、macOS/Simulator/Maestro/unsigned IPA 验证",
-        "status": "reviewing",
+        "status": "testing",
         "dependsOn": [],
         "requiredEvidence": [
           "unit",
@@ -370,9 +370,33 @@
             "sourceFingerprint": "b31ec8eeab625f6aedcabf3de3121593f54b75ea3d0698a1444fc3aab5f320e1",
             "commit": "13b85849942f69abf83d3bb0fc570e2052a476f1",
             "at": "2026-11-21T09:29:53.058Z"
+          },
+          {
+            "kind": "independent-review",
+            "path": "docs/acceptance/review-13b8584-review.json",
+            "sha256": "56fcd6104d6a253d35a8e9f7d3a7542c6be81668dedf524973ad7a9f2f8b0ef8",
+            "sourceFingerprint": "b31ec8eeab625f6aedcabf3de3121593f54b75ea3d0698a1444fc3aab5f320e1",
+            "commit": "13b85849942f69abf83d3bb0fc570e2052a476f1",
+            "at": "2026-11-21T09:50:48.646Z"
+          },
+          {
+            "kind": "independent-security",
+            "path": "docs/acceptance/review-13b8584-security.json",
+            "sha256": "1acce33afd26bca11ed0ea59e658c4669f966aeecf5ba8552e354da64b4a855e",
+            "sourceFingerprint": "b31ec8eeab625f6aedcabf3de3121593f54b75ea3d0698a1444fc3aab5f320e1",
+            "commit": "13b85849942f69abf83d3bb0fc570e2052a476f1",
+            "at": "2026-11-21T09:50:49.442Z"
+          },
+          {
+            "kind": "independent-handoff",
+            "path": "docs/acceptance/review-13b8584-handoff.json",
+            "sha256": "58cd0fa7174f37f2badda1d92617fd3baf3bd9a2ed922da313051f882ac4d273",
+            "sourceFingerprint": "b31ec8eeab625f6aedcabf3de3121593f54b75ea3d0698a1444fc3aab5f320e1",
+            "commit": "13b85849942f69abf83d3bb0fc570e2052a476f1",
+            "at": "2026-11-21T09:50:50.243Z"
           }
         ],
-        "updatedAt": "2026-11-21T09:30:19.855Z"
+        "updatedAt": "2026-11-21T09:50:50.921Z"
       },
       {
         "id": "M-1-device",
@@ -513,6 +537,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "f49f33d3af08774007c5bf729d7cf7acf32076907eba48c0dd3b0abb80cf197e"
+    "digest": "5a11b6b7df4bb49fdbc023d2bb0ea755e68f3c808674eb0009fa414263b723be"
   }
 }

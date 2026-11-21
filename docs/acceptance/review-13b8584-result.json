@@ -1,0 +1,228 @@
+{
+  "schemaVersion": 1,
+  "reviewedCommit": "13b85849942f69abf83d3bb0fc570e2052a476f1",
+  "sourceFingerprint": "b31ec8eeab625f6aedcabf3de3121593f54b75ea3d0698a1444fc3aab5f320e1",
+  "bootstrapAssessment": {
+    "safeForOneGatedMacOSCandidateBootstrap": true,
+    "reason": "本上下文独立检查实际diff、生产代码、测试、来源和报告，并完成Windows规范回归及额外失败探针，未发现需要阻断这份精确源码进入一次受限候选bootstrap的新Blocker或Important。此判断严格以macOS在npm ci之后、prebuild之前成功执行canonical npm test及其真实POSIX分支为前提；任一前置测试或清单验证失败必须停止。候选仍须approved=false并以78停止后续构建，之后另行独立审核真实候选。本结论不是macOS执行成功、原生锁批准、整体M-1、UI或IPA验收通过。"
+  },
+  "fingerprintVerification": {
+    "verified": true,
+    "working": "b31ec8eeab625f6aedcabf3de3121593f54b75ea3d0698a1444fc3aab5f320e1",
+    "committed": "b31ec8eeab625f6aedcabf3de3121593f54b75ea3d0698a1444fc3aab5f320e1",
+    "head": "3ae18567ba551d81f803c75e8259df1de2312578",
+    "headSourceFingerprint": "b31ec8eeab625f6aedcabf3de3121593f54b75ea3d0698a1444fc3aab5f320e1",
+    "headAfterReviewedCommitIsMetadataOnly": true,
+    "reviewedDiff": "8ca9bc4..13b85849942f69abf83d3bb0fc570e2052a476f1"
+  },
+  "reports": [
+    {
+      "schemaVersion": 1,
+      "kind": "independent-security",
+      "decision": "pass",
+      "reviewedCommit": "13b85849942f69abf83d3bb0fc570e2052a476f1",
+      "sourceFingerprint": "b31ec8eeab625f6aedcabf3de3121593f54b75ea3d0698a1444fc3aab5f320e1",
+      "unresolvedBlockers": 0,
+      "unresolvedImportant": 0,
+      "findings": [],
+      "scope": "精确源码安全审查及一次前置测试约束的macOS候选bootstrap资格；不包含实际POSIX、候选锁或最终产物验收。",
+      "checks": [
+        "目录和文件分支均在后缀及magic-byte分类之前执行lstat与链接判定；未知普通名称链接不能再经非native分支静默遗漏。",
+        "六条Hermes别名仍按精确path、文本target、完整三条组及固定物理目标验证；未扩成framework或目录通用例外。",
+        "npm规则从v3锁有限派生，递归拒绝重复JSON键，检查所有者、工作区link、命令名和规范目标；scoped与nested路径及三处已声明冲突受到实际目标和owner绑定。",
+        "npm命令和CocoaPods头文件的物理目标均进入普通文件、nlink=1、无链接父链和完整SHA256检查；去重不会取消目标字节或链接所有者绑定。",
+        "头文件例外要求Public或Private命名空间、允许后缀、规范相对target、相同basename和受限物理根。额外探针确认.h目录别名不能隐藏native子树，native命名空间资源仍被记录，codegen头文件完整字节及漂移被绑定。",
+        "实际diff确认最终IPA验证、打包、权限、ATS、候选安装门禁及上传白名单相关受保护文件没有放宽。"
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "kind": "independent-review",
+      "decision": "pass",
+      "reviewedCommit": "13b85849942f69abf83d3bb0fc570e2052a476f1",
+      "sourceFingerprint": "b31ec8eeab625f6aedcabf3de3121593f54b75ea3d0698a1444fc3aab5f320e1",
+      "unresolvedBlockers": 0,
+      "unresolvedImportant": 0,
+      "findings": [],
+      "scope": "源码功能、回归及证据一致性审查；不保证尚未执行的真实macOS安装树一定兼容。",
+      "checks": [
+        "独立执行npm test：248 tests、248 pass、0 fail、0 skipped；技术栈合同通过。数字仅对应Windows分支，不包含条件分支中尚未执行的真实POSIX用例。",
+        "独立执行npm run typecheck，退出0。",
+        "重新解析并通过validateReport核验四份规范报告、报告来源commit、源码指纹、原始日志摘要及报告摘要对应关系；unit为248/248，Doctor原始日志为20/20，bundle与typecheck日志成功。",
+        "validateCheckpoint通过当前v2检查点文件摘要、内外层信封、权威引用及源码指纹核验；恢复没有warnings或failures。",
+        "直接只读取回固定CocoaPods1.16.2四份研究源码，四个SHA256均与研究记录一致；核实相对文件链接调用。另核实sandbox.rb的Public HeadersStore初始化。来源行为不被当作真实CI安装树观测。",
+        "现有workflow在macOS npm ci之后、prebuild之前执行canonical npm test；没有continue-on-error放行。",
+        "schema-v3文件和链接清单继续由review.hashes及locked精确比较绑定；额外生产代码探针确认头文件字节漂移及等字节命令的owner切换均使先前有效的locked结果失效。"
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "kind": "independent-handoff",
+      "decision": "pass",
+      "reviewedCommit": "13b85849942f69abf83d3bb0fc570e2052a476f1",
+      "sourceFingerprint": "b31ec8eeab625f6aedcabf3de3121593f54b75ea3d0698a1444fc3aab5f320e1",
+      "restoredTask": "M-1-infrastructure",
+      "unresolvedBlockers": 0,
+      "unresolvedImportant": 0,
+      "findings": [],
+      "scope": "已从仓库文档和权威状态独立恢复并继续实质检查。此handoff通过不消除整体阶段的剩余验收门禁。",
+      "commands": [
+        {
+          "command": "node scripts/agent-resume.mjs --remote",
+          "exitCode": 0,
+          "result": "恢复M-1-infrastructure，状态reviewing，schema v2、revision278；warnings=[]、failures=[]。远端fetch成功，远端分支仍为86cadda377fc1fdf3c483478b03215a3d6b96c32；最近五次CI均completed/failure，无本次源码的新候选运行。"
+        },
+        {
+          "command": "npm run typecheck",
+          "exitCode": 0,
+          "result": "实际执行tsc --noEmit成功。"
+        },
+        {
+          "command": "npm test",
+          "invocation": "RUBY=C:/pi-gui-ios/artifacts/ruby-extract-20261121-a/rubyinstaller-3.3.8-1-x64/bin/ruby.exe GEM_HOME=C:/pi-gui-ios/artifacts/ruby-gems-20261121-a GEM_PATH=C:/pi-gui-ios/artifacts/ruby-gems-20261121-a npm test",
+          "shell": "Git Bash",
+          "exitCode": 0,
+          "result": "248 tests、248 pass、0 fail、0 cancelled、0 skipped；technology-stack-contract passed。真实便携Ruby锁校验包含在该入口中；真实POSIX条件分支未执行。"
+        },
+        {
+          "command": "git diff --check 8ca9bc4..13b85849942f69abf83d3bb0fc570e2052a476f1",
+          "exitCode": 0,
+          "result": "无空白错误。"
+        },
+        {
+          "command": "git diff --exit-code 8ca9bc4..13b85849942f69abf83d3bb0fc570e2052a476f1 -- scripts/ci/verify-ipa.py scripts/ci/stage-ipa.py scripts/ci/package-ipa.sh scripts/ci/install-pods.sh scripts/ci/run-step.sh scripts/ci/collect-evidence.py scripts/ci/configure-native.py .github/workflows/native-infrastructure.yml native/dependency-policy.json",
+          "exitCode": 0,
+          "result": "所列最终IPA、权限、发布、安装及workflow边界文件在本轮diff中未变。"
+        }
+      ],
+      "nextAction": "由父执行者保存完整原始receipt及三份精确审查报告后，才决定启动一次受真实POSIX canonical测试前置约束的macOS候选bootstrap。保持历史失败和所有未通过门禁；本审查未修改任务状态或证据。"
+    }
+  ],
+  "additionalSyntheticProbes": {
+    "executed": 12,
+    "allExpectedAssertionsSatisfied": true,
+    "method": "只使用自动清理的临时synthetic目录、真实普通文件、真实硬链接及生产函数；针对Windows无法创建的POSIX链接，仅窄范围模拟lstat/readlink元数据，不声称真实POSIX执行。",
+    "results": [
+      {
+        "case": "头文件后缀目录别名内含hidden.a",
+        "result": "拒绝，不能剪枝后生成遗漏该native子树的成功清单。"
+      },
+      {
+        "case": "Native.FRAMEWORK头文件命名空间及codegen目标",
+        "result": "命名空间Info.plist与头文件全部字节均被记录；头文件改动改变清单。"
+      },
+      {
+        "case": "头文件物理目标真实硬链接",
+        "result": "拒绝。"
+      },
+      {
+        "case": "头文件物理目标的链接父目录",
+        "result": "拒绝。"
+      },
+      {
+        "case": "指向仓库内但不在批准根的private目录",
+        "result": "拒绝。"
+      },
+      {
+        "case": "ios/build/generated/ios-other前缀混淆",
+        "result": "拒绝。"
+      },
+      {
+        "case": "codegen头文件字节改变",
+        "result": "此前有效的locked清单变为拒绝。"
+      },
+      {
+        "case": "同名命令在两个已声明且等字节所有者之间切换",
+        "result": "清单owner及physical改变；此前有效的locked清单变为拒绝。"
+      },
+      {
+        "case": "未知npm命令链接",
+        "result": "在读取目标前拒绝。"
+      },
+      {
+        "case": "非规范头文件相对target",
+        "result": "拒绝。"
+      },
+      {
+        "case": "npm bin物理目标为含native文件的目录",
+        "result": "拒绝。"
+      },
+      {
+        "case": "重复package-lock JSON键",
+        "result": "在读取命令目标前拒绝。"
+      }
+    ],
+    "actualPosixCapabilityProbe": {
+      "symlinkCreated": false,
+      "winerror": 1314,
+      "errno": 22,
+      "conclusion": "本机真实POSIX链接执行不可用，不能把模拟探针当作POSIX验收。"
+    }
+  },
+  "priorFailuresPreserved": {
+    "historicalReview": "已读取第三轮review-a8b8360-result.json的fail原结果及8ca9bc4封存背景，没有改写或删除历史失败。",
+    "priorLinkFinding": "INV-UNREVIEWED-POSIX-LINK的静默遗漏路径已在本精确源码中处置，Windows模拟分支和实际junction负向通过；真实POSIX结论仍必须由macOS前置测试给出。",
+    "latestCI": {
+      "run": "44877767639",
+      "head": "86cadda377fc1fdf3c483478b03215a3d6b96c32",
+      "conclusion": "failure",
+      "observedCode": "NATIVE_PREBUILT_LINK_REJECTED",
+      "limitation": "没有据此推断具体被拒绝路径，也没有新候选或锁批准。"
+    }
+  },
+  "unsuccessfulReviewAttempts": [
+    {
+      "stage": "code-review skill调用",
+      "result": "该skill自动尝试fork执行后返回429额度错误，没有提供可用审查结果；未重试，也未调用Agent或Workflow工具。最终判断由当前上下文直接完成。"
+    },
+    {
+      "stage": "首次附加检查点核验命令",
+      "exitCode": 1,
+      "result": "审查探针误传validateCheckpoint参数而产生TypeError；这是探针错误，不是产品失败。修正为validateCheckpoint(ROOT, controlEnvelope)后实际通过。"
+    },
+    {
+      "stage": "首次较长synthetic探针命令",
+      "exitCode": 2,
+      "result": "Bash在运行Python前报告unexpected EOF；未产生产品结论。拆为两个较短命令后12项探针实际完成。"
+    },
+    {
+      "stage": "首次dirty来源分类",
+      "exitCode": 0,
+      "result": "探针错误地对已trim的首条status使用固定列切片，误报HANDOFF为source dirty；随后直接读取git status --porcelain=v1 -z原始列，确认sourceDirty=[]。源码指纹始终一致。"
+    },
+    {
+      "stage": "WebFetch辅助源码读取",
+      "result": "返回429，没有可用输出。另行通过只读urllib获取固定版本源码，四份原文SHA256实际匹配；未执行下载内容。"
+    }
+  ],
+  "notExecuted": [
+    "真实macOS/POSIX canonical测试，包括Hermes、npm bin和CocoaPods链接正负向条件分支。",
+    "本次精确源码的真实macOS npm/Pods安装树及候选bootstrap。",
+    "真实Gemfile.lock、Podfile.lock、schema-v3预编译候选锁集的生成、独立审核和批准。",
+    "locked原生构建、真实缓存命中或污染回归。",
+    "本次源码的Simulator运行、iPhone/iPad交互、native glass、无障碍及真实截图视觉验收。",
+    "真实device IPA生成、去签、最终归档验证。",
+    "SideStore安装、刷新及覆盖升级。",
+    "本上下文未重新执行bundle和Doctor；已核验该精确源码的现有规范报告及原始日志。",
+    "未提交、推送、触发、重跑或取消CI；未修改源码、控制层状态或证据文件。"
+  ],
+  "workingTree": {
+    "branch": "agent/m-1-bootstrap",
+    "head": "3ae18567ba551d81f803c75e8259df1de2312578",
+    "sourceFilesDirty": 0,
+    "sourceFingerprintUnchangedAfterReview": true,
+    "dirtyNonSourceObserved": [
+      ".agent/HANDOFF.md",
+      ".agent/control.json",
+      ".agent/state.json",
+      ".agent/tasks.json",
+      "PROGRESS.md",
+      ".agent/checkpoints/v2-2026-11-21T09-31-35-386Z-67d9e457-2bbe-4f1f-954e-8e3af3d05306.json"
+    ],
+    "observation": "上述dirty集合在本审查初次实际读取与结束读取时一致，均未由本审查编辑。要求执行的resume进行了git fetch，更新的是Git远端元数据，没有修复或重写工作区。"
+  },
+  "overallM1Accepted": false,
+  "nativeLockApproved": false,
+  "finalIPAVerified": false,
+  "sideStoreInstallVerified": false
+}
