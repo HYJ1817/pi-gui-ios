@@ -6,12 +6,12 @@
 
 桌面只读基线：`HYJ1817/pi-gui@af0432a0bc3b04c717a63ede3cc457e859401833`。不得以桌面当前 dirty 工作区内容替代此固定基线。
 
-- `server/auth.js`：本地服务以 Origin 检查和 Electron 注入的 `PI_GUI_TOKEN` 保护；token 不进入 renderer。令牌缺失时只剩开发用 Origin 检查。此边界不能直接改为 LAN listener，也不能由移动端复用/读取本地 token。
-- `server/router.js:176-187`：`/api/*` 在分派前统一做本地认证，事件入口 `/api/events` 输出全局 SSE。新增远程适配器必须在独立路由/认证上下文内，不能将整个本地路由代理到网络。
+- `server/auth.js:33-60`：本地 HTTP API 检查精确 loopback Origin 与 Electron 注入的 `PI_GUI_TOKEN`；缺 token 时是开发模式。该 token 不属于远程设备凭据，不能移动复用或透传。
+- `server.js:1719,1875`（固定基线）由组合根创建 HTTP server 并绑定 loopback；`server/router.js:176-187` 统一认证后再分派 `/api/*` 与全局 `/api/events`。目前没有单独的移动远程入口；这需要 M0 先确认独立 listener/handler 的装配边界，而不是把现有 listener 暴露到 LAN。
 - `server/projects.js` 与 `server/sessions.js`：项目由桌面登记；会话归属按会话头中的 cwd 校验，列表/历史访问不能仅凭客户端提供的绝对路径或文件名。
-- `server/runtime-registry.js:7-14,90-112`：并行 runtime 身份绑定 backend、项目/仓库/workspace epoch、conversation 与 runtime generation/session；旧 owner 会被拒绝。这些内部身份只供桌面校验，不应作为可伪造的客户端授权声明。
+- `server/runtime-registry.js:7-14,90-112`：并行 runtime 身份绑定 backend、项目/仓库/workspace epoch、conversation 与 runtime generation/session；旧 owner 会被拒绝。这些内部身份只供桌面校验，不应作为可伪造的客户端授权声明。`server/router.js` 同时保留 Classic owner 请求校验与 Runtime 路由；两者不可假定互换。
 - `server/sse.js:15-29,82-124`：已有 SSE 使用序号、有限 backlog、连接预算和 snapshot。远程端只能投影经授权的事件，不能把当前全局事件流原样公开。
-- `public/approval-model.js`：审批事实来源是 Pi `extension_ui_request` 的 id 与方法；协议没有结构化风险/作用域字段时保持 unknown/null。移动端不能自行增加审批语义或绕过 Pi 的应答通道。
+- `public/approval-model.js`：审批事实来源是 Pi `extension_ui_request` 的 id 与方法；协议没有结构化风险/作用域字段时保持 unknown/null。Classic approval scope 和 Runtime owner 绑定需要分别适配；移动端不能自行增加审批语义或绕过 Pi 的应答通道。
 - 研究背景与更广的桌面/移动接缝见 `docs/source-research.md`；跨仓库协议仍未实现，本文只提出待审合同。
 
 ## 拟定边界

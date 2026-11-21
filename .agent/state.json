@@ -1,27 +1,29 @@
 {
   "schemaVersion": 2,
   "kind": "state",
-  "revision": 423,
-  "updatedAt": "2026-11-21T13:29:37.508Z",
+  "revision": 424,
+  "updatedAt": "2026-11-21T13:33:35.372Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "d118552ccff752f7f4d1ea7c135e2f8ce36e309d5bfb85c8559c76294187db01",
+    "parentDigest": "cc5d2b79398f2b2db2c57d4827e03acaa43b5b322aa0f2a4ecadc974df7a1017",
     "phase": "M-1",
     "currentTask": "M-1-infrastructure",
     "branch": "agent/m-1-bootstrap",
     "checkpoint": {
-      "id": "v2-2026-11-21T13-29-37-508Z-b02c598c-ade0-4965-84ef-fa59bd495f3b",
-      "path": ".agent/checkpoints/v2-2026-11-21T13-29-37-508Z-b02c598c-ade0-4965-84ef-fa59bd495f3b.json",
-      "sha256": "cb6bcd301945d103aff7b5dc55cc23d95307bbf5b54e46fa6dea7f47bf37f6de",
-      "authorityDigest": "e4f1b6e550627d2ceea27a7c076cd8b2325eacd652ecf8ad9736b8391b7acfdc",
-      "at": "2026-11-21T13:29:37.508Z",
+      "id": "v2-2026-11-21T13-33-35-372Z-e7ad9276-d67c-4264-a50e-2b60894ecf15",
+      "path": ".agent/checkpoints/v2-2026-11-21T13-33-35-372Z-e7ad9276-d67c-4264-a50e-2b60894ecf15.json",
+      "sha256": "947995f0fcbec5ae0e3783a7fcccafdd0dca9aa02e186423fc53149e7b3ccf9a",
+      "authorityDigest": "d118552ccff752f7f4d1ea7c135e2f8ce36e309d5bfb85c8559c76294187db01",
+      "at": "2026-11-21T13:33:35.372Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "660d60fdef92092b732f4fe7c9a00267e7547c27",
-        "dirty": []
+        "commit": "8123b093d958b575a90d5b037a76ff03faf24962",
+        "dirty": [
+          "M docs/decisions/0005-remote-protocol-v1-proposal.md"
+        ]
       },
-      "sourceFingerprint": "85c9c7efc746c38159e41fc1cfdac0ba61ef4d13fdc59786248e00a11123f94c",
-      "note": "M0 non-gating architecture proposal committed; M-1 locked candidate rolled back to bootstrap-required after one failed attempt; no additional M-1 run"
+      "sourceFingerprint": "23c56e3a921d49ab379e44d6df9de1e20c65daa7cbe4fb144021346dddcf4b64",
+      "note": "M0 proposal updated with pinned desktop baseline listener/auth evidence; formal M1 remains blocked, no M1 CI retry or desktop source modification"
     },
     "blockers": [
       "M-1 owner-waiver locked run 44906133898/1 failed before Pods install (NATIVE_DEPENDENCIES_REJECTED); a malformed local Gemfile hash was found and corrected, but the owner directed us not to retry. Candidate lock set is removed from the active repo and remains available only as ignored local artifact. M-1 remains blocked; no Simulator/UI/IPA result."
@@ -196,6 +198,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "20d0e65fae8477526df65d38b9aecb87dcd52f4b431529f33b3a975694f0dbff"
+    "digest": "790e5b950bae7071efea320225a8bdb40ee60041fe4b80e2faa9a937006ef2d7"
   }
 }
