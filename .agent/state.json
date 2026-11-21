@@ -1,50 +1,54 @@
 {
   "schemaVersion": 2,
   "kind": "state",
-  "revision": 305,
-  "updatedAt": "2026-11-21T10:07:58.255Z",
+  "revision": 327,
+  "updatedAt": "2026-11-21T10:15:03.461Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "2da08b413d7822e4a90921d7066f9c760a5469c390f5005948e1b424ee96d5fe",
+    "parentDigest": "b942a780eaea0908272b5463b66a9e33ff147ec7773393e6308c0474dcdeae65",
     "phase": "M-1",
     "currentTask": "M-1-infrastructure",
     "branch": "agent/m-1-bootstrap",
     "checkpoint": {
-      "id": "v2-2026-11-21T10-07-58-255Z-c736efa4-b27c-4d11-a36f-3ed7bf1d2e9b",
-      "path": ".agent/checkpoints/v2-2026-11-21T10-07-58-255Z-c736efa4-b27c-4d11-a36f-3ed7bf1d2e9b.json",
-      "sha256": "99aaf1bc1fd67ccacc4e26ed528c4f89854ff2bb0a4c7fab758665c5ba27a398",
-      "authorityDigest": "6a0570f8927a04772af11b1be975f4f749db3ef032cff29fda4503cd6bc19363",
-      "at": "2026-11-21T10:07:58.255Z",
+      "id": "v2-2026-11-21T10-15-03-461Z-d186e575-50fa-4f46-a4df-2f61853b1615",
+      "path": ".agent/checkpoints/v2-2026-11-21T10-15-03-461Z-d186e575-50fa-4f46-a4df-2f61853b1615.json",
+      "sha256": "2e8e0d16c446b90a41391e6fa8db5b162320e4a95c94cc2f9b948f45fa33adfa",
+      "authorityDigest": "dc79cf969f8b546c398f72369f57f503deea4270aded6d441f50fcd4667f8519",
+      "at": "2026-11-21T10:15:03.461Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "a3420973d4dff86b7def48c26eddad0c0501692b",
+        "commit": "ef2c3b77f2de2860e286a03c617d884537c344df",
         "dirty": [
           "M .agent/HANDOFF.md",
           " M .agent/control.json",
           " M .agent/state.json",
           " M .agent/tasks.json",
           " M PROGRESS.md",
-          " M docs/decisions/0003-native-build-integrity.md",
-          " M scripts/ci/native-dependencies.py",
-          " M tests/native-inventory.test.mjs",
-          "?? .agent/checkpoints/v2-2026-11-21T09-51-51-235Z-6b2fb546-dbc6-4e4b-976b-3b5282eae83b.json",
-          "?? .agent/checkpoints/v2-2026-11-21T09-53-22-604Z-4919d4fe-61f4-48dd-bf74-0621376f7926.json",
-          "?? .agent/checkpoints/v2-2026-11-21T09-53-23-243Z-f0ce1b93-ab0a-4893-b797-56ec1bf66923.json",
-          "?? .agent/checkpoints/v2-2026-11-21T09-57-32-328Z-b99c536a-9a3d-4ed4-8b8b-4666c4e9c480.json",
-          "?? .agent/checkpoints/v2-2026-11-21T10-00-48-809Z-9002ff59-0edd-482c-98bb-8b387e91b898.json",
-          "?? .agent/checkpoints/v2-2026-11-21T10-00-49-322Z-8fcd759d-653f-4cb0-93cf-9a74af6d94f2.json",
-          "?? .agent/checkpoints/v2-2026-11-21T10-03-30-537Z-7c36684f-d808-4d12-9320-afe2c2a09d71.json",
-          "?? .agent/checkpoints/v2-2026-11-21T10-03-31-152Z-2706ad06-ad0c-43c1-840b-b1a984964835.json",
-          "?? docs/acceptance/ci-44891582412-analysis.md",
-          "?? docs/acceptance/ci-44891582412-api.json",
-          "?? docs/acceptance/ci-44891582412-artifacts-api.json",
-          "?? docs/acceptance/ci-44891582412-posix-api.json",
-          "?? docs/acceptance/ci-44891582412-start-api.json",
-          "?? tests/fixtures/cocoapods-header-extensions.json"
+          " M docs/acceptance/local-bundle-output.txt",
+          " M docs/acceptance/local-bundle.json",
+          " M docs/acceptance/local-doctor.json",
+          " M docs/acceptance/local-typecheck.json",
+          " M docs/acceptance/local-unit-output.txt",
+          " M docs/acceptance/local-unit.json",
+          "?? .agent/checkpoints/v2-2026-11-21T10-07-59-285Z-15775034-14b4-4c37-b96c-77718089104b.json",
+          "?? .agent/checkpoints/v2-2026-11-21T10-11-31-717Z-a4fee858-e8a4-407b-981b-53db39452eb4.json",
+          "?? .agent/checkpoints/v2-2026-11-21T10-12-02-894Z-768f3e50-f3d1-40e7-9969-b8cd4ce58c6d.json",
+          "?? .agent/checkpoints/v2-2026-11-21T10-12-06-149Z-2f4fef5a-b821-42e3-add2-f7c0771c908e.json",
+          "?? .agent/checkpoints/v2-2026-11-21T10-12-07-148Z-d1d820e7-d452-48b9-a26f-9419db2a02a8.json",
+          "?? .agent/checkpoints/v2-2026-11-21T10-12-12-564Z-33ae884e-18c0-4dc0-9174-f4ff327aa396.json",
+          "?? .agent/checkpoints/v2-2026-11-21T10-12-13-711Z-5f99682a-4f10-46d1-944b-303a766099b5.json",
+          "?? .agent/checkpoints/v2-2026-11-21T10-12-18-174Z-84edc712-91f1-43ea-8e65-bf09ecf7bcf5.json",
+          "?? .agent/checkpoints/v2-2026-11-21T10-12-19-789Z-e420420e-3472-499f-bdce-6b95cacea487.json",
+          "?? .agent/checkpoints/v2-2026-11-21T10-12-36-241Z-96fa39dd-3d63-447b-91c1-b8a1323b5425.json",
+          "?? .agent/checkpoints/v2-2026-11-21T10-12-36-834Z-988d3e2d-29f6-46fc-9507-a0467513403d.json",
+          "?? .agent/checkpoints/v2-2026-11-21T10-12-37-545Z-dea6792e-98da-4844-93db-1e63e9005b59.json",
+          "?? .agent/checkpoints/v2-2026-11-21T10-13-23-557Z-43d49c32-0c94-43f8-ba15-1443615d7573.json",
+          "?? docs/acceptance/ci-44891582412-sanitized-reports.json",
+          "?? docs/acceptance/native-header-diagnostics-implementation.md"
         ]
       },
       "sourceFingerprint": "346c5097e03fd2f3f49dd6b973992fe6eff59c6997b7dec9c4153395ea626109",
-      "note": "固定工具源码9种头文件后缀差分修前5pass4fail，修后39项定向全过；新增有限上下文/谓词诊断不含路径/target；准备精确提交及规范回归"
+      "note": "263项规范回归已导入，CI44891582412三安全JSON与macOS298项数字证据已保存；独立3cf20d98运行中，准备保存报告交接提交"
     },
     "blockers": [
       "NATIVE-LOCK 尚未生成真实macOS Gemfile/Podfile/预编译候选锁并独立核验",
@@ -182,11 +186,17 @@
         "role": "complete-entry-link-classification-security-review-and-handoff",
         "status": "completed",
         "sourceCommit": "13b85849942f69abf83d3bb0fc570e2052a476f1"
+      },
+      {
+        "taskId": "node:delegated-task:command%3Amcp%3Ab09dbc65-9265-451d-8397-254007a28ce8%3Adelegate-task%3A3cf20d98-00e4-4fc0-9aa6-a4e13cb846d3",
+        "role": "fixed-header-vocabulary-and-private-diagnostics-security-review-and-handoff",
+        "status": "working",
+        "sourceCommit": "ef2c3b77f2de2860e286a03c617d884537c344df"
       }
     ]
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "331ceff209b587ae93737f059fb03d90f95c04664ae1497384bc7b441985e21b"
+    "digest": "a4f7409e09cc50ff768c27f1a067c181490dead6b5c4a99e8be57f4ef7d4e136"
   }
 }

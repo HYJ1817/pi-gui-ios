@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "runId": "44891582412",
+  "head": "a3420973d4dff86b7def48c26eddad0c0501692b",
+  "artifactId": 14701584684,
+  "zipSha256": "1b8ca9d8568ff43e6715fbe1387ad866611ffb5148911cf377a673ce939d54e3",
+  "members": [
+    {
+      "path": "reports/steps.json",
+      "sha256": "c31ede49ddc4473cd6f26e127e3e19be9bfc16a3be51124dff5945a956df1644",
+      "content": {
+        "schemaVersion": 1,
+        "sideStoreInstallVerified": false,
+        "steps": [
+          {
+            "code": "NATIVE_STEP_ENVIRONMENT_PASSED",
+            "status": "passed",
+            "step": "environment"
+          },
+          {
+            "code": "NATIVE_STEP_NPM_PASSED",
+            "status": "passed",
+            "step": "npm"
+          },
+          {
+            "code": "NATIVE_STEP_PREBUILD_PASSED",
+            "status": "passed",
+            "step": "prebuild"
+          },
+          {
+            "code": "NATIVE_STEP_PODS_FAILED",
+            "status": "failed",
+            "step": "pods"
+          },
+          {
+            "code": "NATIVE_STEP_MAESTRO_NOT_RUN",
+            "status": "not-run",
+            "step": "maestro"
+          },
+          {
+            "code": "NATIVE_STEP_SIMULATOR_BUILD_NOT_RUN",
+            "status": "not-run",
+            "step": "simulator-build"
+          },
+          {
+            "code": "NATIVE_STEP_IPHONE_NOT_RUN",
+            "status": "not-run",
+            "step": "iphone"
+          },
+          {
+            "code": "NATIVE_STEP_IPAD_NOT_RUN",
+            "status": "not-run",
+            "step": "ipad"
+          },
+          {
+            "code": "NATIVE_STEP_DEVICE_BUILD_NOT_RUN",
+            "status": "not-run",
+            "step": "device-build"
+          },
+          {
+            "code": "NATIVE_STEP_IPA_NOT_RUN",
+            "status": "not-run",
+            "step": "ipa"
+          }
+        ]
+      }
+    },
+    {
+      "path": "reports/environment.json",
+      "sha256": "f222ca8282d178ccf79490a034b9534d59dd6e76f7af889e735904afb34d3702",
+      "content": {
+        "observed": true,
+        "schemaVersion": 1,
+        "versions": {
+          "bundler": "2.6.9",
+          "macOS": "26.7.2",
+          "macOSBuild": "25G332",
+          "node": "24.22.1",
+          "npm": "11.19.1",
+          "ruby": "3.3.8",
+          "xcode": "26.6",
+          "xcodeBuild": "17F113"
+        }
+      }
+    },
+    {
+      "path": "reports/diagnostics.json",
+      "sha256": "30f1b634aa3c65903f998b8e670759696fed6aaee0c0d4cff64a44d750d71fd0",
+      "content": {
+        "diagnostics": [
+          {
+            "codes": [
+              "NATIVE_DEPENDENCIES_BOOTSTRAP_REQUIRED",
+              "NATIVE_FAILURE_DETAILS_WITHHELD",
+              "NATIVE_PREBUILT_LINK_REJECTED"
+            ],
+            "kind": "safe-ci-diagnostics",
+            "schemaVersion": 1,
+            "sourceLocations": [],
+            "step": "pods"
+          }
+        ],
+        "schemaVersion": 1
+      }
+    }
+  ],
+  "posixCanonical": {
+    "jobId": 136808970483,
+    "counts": {
+      "tests": 298,
+      "pass": 298,
+      "fail": 0,
+      "skipped": 0
+    },
+    "method": "Exact numeric total fields extracted from actual completed job log; raw log not published."
+  }
+}
