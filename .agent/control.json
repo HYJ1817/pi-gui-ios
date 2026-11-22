@@ -1,8 +1,8 @@
 {
   "schemaVersion": 2,
   "kind": "control",
-  "revision": 491,
-  "updatedAt": "2026-11-22T03:56:20.325Z",
+  "revision": 498,
+  "updatedAt": "2026-11-22T04:07:50.040Z",
   "data": {
     "phase": "M0",
     "currentTask": "M0-architecture",
@@ -763,6 +763,22 @@
             "sourceFingerprint": "00029d58c16e03cddea371746e619074e8d63ab3d0892baf5d7210d29461f4ab",
             "commit": "5621c6bdb7151dc1a1e409c18e527a15829c8e88",
             "at": "2026-11-22T03:53:25.570Z"
+          },
+          {
+            "kind": "unit",
+            "path": "docs/acceptance/local-unit.json",
+            "sha256": "d1bd875028ec5101f88dbb76d588ff4cd7b3e5d61bc9fa745371bf87915c25c4",
+            "sourceFingerprint": "c4ae4e23f91806519d41322c74c2bc44a425ddae83c279faf9bd35560fb352de",
+            "commit": "a27c521f0ded4972dae3bdc75f33ab1609a68de2",
+            "at": "2026-11-22T04:07:46.410Z"
+          },
+          {
+            "kind": "protocol-contract",
+            "path": "docs/acceptance/local-protocol-contract.json",
+            "sha256": "9fe3bbabab1bbb69134251d95804f6988aa1f75a1dba014ea5526d2ae7d5fce4",
+            "sourceFingerprint": "c4ae4e23f91806519d41322c74c2bc44a425ddae83c279faf9bd35560fb352de",
+            "commit": "a27c521f0ded4972dae3bdc75f33ab1609a68de2",
+            "at": "2026-11-22T04:07:47.255Z"
           }
         ],
         "updatedAt": "2026-11-21T13:47:29.393Z"
@@ -871,21 +887,31 @@
       }
     ],
     "checkpoint": {
-      "id": "v2-2026-11-22T03-54-47-171Z-10c091db-809e-48bc-815d-4ed86316abce",
-      "path": ".agent/checkpoints/v2-2026-11-22T03-54-47-171Z-10c091db-809e-48bc-815d-4ed86316abce.json",
-      "sha256": "3c176289521fd93f170c450c9e7487c0b7ab08cb24436b1f6084facf79712565",
-      "authorityDigest": "7735493c7c60a4f314e274aed94188fb2bc4dcf0100121cb8c6210c96f87cb22",
-      "at": "2026-11-22T03:54:47.171Z",
+      "id": "v2-2026-11-22T04-07-47-296Z-a49bc3fa-3a4e-47c9-9a8d-fb264d1f7f13",
+      "path": ".agent/checkpoints/v2-2026-11-22T04-07-47-296Z-a49bc3fa-3a4e-47c9-9a8d-fb264d1f7f13.json",
+      "sha256": "a9cceb26ffac08d7ef6757200aff21d0d2f946325fc127d9bc6c1f674842cc5f",
+      "authorityDigest": "6fc492b120a3917ff265f955481ca9efe72f716b876b0f6e75df439a1d6e46ce",
+      "at": "2026-11-22T04:07:47.296Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "3e4a212abedffebcb463d3e5e50a41817fea7267",
+        "commit": "a27c521f0ded4972dae3bdc75f33ab1609a68de2",
         "dirty": [
           "M .agent/HANDOFF.md",
-          " M PROGRESS.md"
+          " M .agent/control.json",
+          " M .agent/state.json",
+          " M .agent/tasks.json",
+          " M PROGRESS.md",
+          " M docs/acceptance/local-protocol-contract-output.txt",
+          " M docs/acceptance/local-protocol-contract.json",
+          " M docs/acceptance/local-unit-output.txt",
+          " M docs/acceptance/local-unit.json",
+          "?? .agent/checkpoints/v2-2026-11-22T04-07-44-323Z-8657fbc2-be53-41db-97b2-77e774ef06e7.json",
+          "?? .agent/checkpoints/v2-2026-11-22T04-07-45-607Z-c7ea901d-08fc-46f4-98da-ce0be0074a98.json",
+          "?? .agent/checkpoints/v2-2026-11-22T04-07-46-452Z-9d6b5426-7f4e-44f3-859b-ad502596b60f.json"
         ]
       },
-      "sourceFingerprint": "00029d58c16e03cddea371746e619074e8d63ab3d0892baf5d7210d29461f4ab",
-      "note": "r5 remediated on 5621c6b; r6 review delegated (pi devin/swe-2)"
+      "sourceFingerprint": "c4ae4e23f91806519d41322c74c2bc44a425ddae83c279faf9bd35560fb352de",
+      "note": "agent-task evidence M0-architecture"
     },
     "nextAction": "真机/SideStore 验收统一移至全部软件实现、自动化/Simulator/IPA/审查完成后的最终一次清单，由用户亲自操作；中途不请求设备、不等待设备。Agent 对普通问题自主排障，三轮同类失败后记录 deferred/unverified 并继续无依赖工作。M-1 基础验证保持 blocked；M0 design 已先行，继续收敛协议/安全合同，不启用远程入口。",
     "delegates": [
@@ -1036,13 +1062,13 @@
       {
         "taskId": "delegate-task:3f8260b2-f246-440a-9aa1-fbb79a297dcf",
         "role": "m0-combined-functional-security-review",
-        "status": "working",
+        "status": "completed",
         "sourceCommit": "d30227c73fa218311ee660f82e92f6445c2e0780"
       }
     ]
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "73da0d5f5738e4b489fb403cd6d832091f805a7d589f71053c86e4619a2b1042"
+    "digest": "64eccf0b7152b86f4b59aace785c4874065897fd78c090b6c63740b27bbbe509"
   }
 }
