@@ -1,8 +1,8 @@
 {
   "schemaVersion": 2,
   "kind": "control",
-  "revision": 428,
-  "updatedAt": "2026-11-21T13:52:39.455Z",
+  "revision": 436,
+  "updatedAt": "2026-11-22T02:39:40.627Z",
   "data": {
     "phase": "M0",
     "currentTask": "M0-architecture",
@@ -104,6 +104,15 @@
         "status": "completed",
         "conclusion": "failure",
         "url": "https://github.com/HYJ1817/pi-gui-ios/actions/runs/44906133898"
+      },
+      {
+        "id": "44911181329",
+        "head": "0b3745e4d71da50bbbf1bcf9b58bccdf450c54ce",
+        "workflow": ".github/workflows/native-infrastructure.yml",
+        "attempt": 1,
+        "status": "completed",
+        "conclusion": "cancelled",
+        "url": "https://github.com/HYJ1817/pi-gui-ios/actions/runs/44911181329"
       }
     ],
     "blockers": [
@@ -649,16 +658,16 @@
       {
         "id": "M-1-device",
         "phase": "M-1",
-        "title": "一次集中 SideStore 免费签名安装与真机验收",
+        "title": "最终一次 SideStore 免费签名安装与真机验收（全部软件完成后）",
         "status": "pending",
         "dependsOn": [
-          "M-1-infrastructure"
+          "M6-distribution"
         ],
         "requiredEvidence": [
           "device-install",
           "device-upgrade"
         ],
-        "acceptance": "真实 iPhone 安装/运行/刷新/覆盖升级及可用 iPad 验证；不以 Simulator 或 IPA 结构代替",
+        "acceptance": "全部软件实现、自动化/模拟器验证与发布候选审查完成后，用户一次性进行真实 iPhone SideStore 安装/运行/刷新/覆盖升级及可用 iPad 检查；Agent 不操作真机，执行前证据保持 pending。",
         "evidence": []
       },
       {
@@ -773,40 +782,49 @@
         "requiredEvidence": [
           "unit",
           "ipa",
-          "device-upgrade",
           "independent-review",
           "independent-security"
         ],
-        "acceptance": "更新兼容通过；正式发布和 main 合并另需用户授权",
+        "acceptance": "unsigned arm64 IPA 与版本/来源/隐私/权限/自动化升级兼容验证通过；真实 SideStore 刷新/覆盖升级由最终 M-1-device 清单单次完成；正式发布另需用户授权",
         "evidence": []
       }
     ],
     "checkpoint": {
-      "id": "v2-2026-11-21T13-52-39-455Z-0857837b-a11a-4ed7-bfcc-bde590cb26b1",
-      "path": ".agent/checkpoints/v2-2026-11-21T13-52-39-455Z-0857837b-a11a-4ed7-bfcc-bde590cb26b1.json",
-      "sha256": "486fa19f8c763a082a3e66f94f416faf8837975d11a5b01ac65f93f2b52e6a35",
-      "authorityDigest": "7455dfd793df450f5f863f46dec2613af8f2f8e18eae9309164131c8b0cc3e10",
-      "at": "2026-11-21T13:52:39.455Z",
+      "id": "v2-2026-11-22T02-39-40-627Z-34f83e53-722f-4211-ab8b-84030c1742c6",
+      "path": ".agent/checkpoints/v2-2026-11-22T02-39-40-627Z-34f83e53-722f-4211-ab8b-84030c1742c6.json",
+      "sha256": "c1b535ebb1f81750b9a87fbe32e0f3b621c19e18a990bb78b453573bd883d1f6",
+      "authorityDigest": "50be6c1076469ce0e5814ec5e414dcb6ba6a08d315133dbc5271320eb984bfe1",
+      "at": "2026-11-22T02:39:40.627Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "298b9d431b23907f20b633f7ffec7555f0af827d",
+        "commit": "0b3745e4d71da50bbbf1bcf9b58bccdf450c54ce",
         "dirty": [
           "M .agent/HANDOFF.md",
           " M .agent/control.json",
           " M .agent/state.json",
           " M .agent/tasks.json",
+          " M AGENTS.md",
           " M PROGRESS.md",
           " M ROADMAP.md",
+          " M docs/acceptance/owner-waiver-m0-design-progression.md",
           " M docs/architecture.md",
-          " M docs/decisions/0005-remote-protocol-v1-proposal.md",
-          "?? .agent/checkpoints/v2-2026-11-21T13-47-29-529Z-4e459391-eccd-44fa-b1bf-24455a727172.json",
-          "?? docs/acceptance/owner-waiver-m0-design-progression.md"
+          " M scripts/verify.mjs",
+          "?? .agent/checkpoints/v2-2026-11-21T13-57-54-053Z-af0ea517-04d2-4d18-b3f3-8a2a2762e5b3.json",
+          "?? .agent/checkpoints/v2-2026-11-21T14-13-44-294Z-8eb27176-2008-4d3f-8dfe-1bd93724993a.json",
+          "?? .agent/checkpoints/v2-2026-11-21T14-16-43-654Z-7f2f881d-950a-4c92-8e64-5c543b0b64f5.json",
+          "?? .agent/checkpoints/v2-2026-11-21T14-19-52-753Z-70288f67-a7bb-4f34-a70f-73465772c7d3.json",
+          "?? docs/acceptance/local-protocol-contract-output.txt",
+          "?? docs/acceptance/local-protocol-contract.json",
+          "?? docs/contracts/",
+          "?? docs/decisions/0006-final-device-acceptance-and-deferrals.md",
+          "?? scripts/lib/remote-protocol-contract.mjs",
+          "?? tests/remote-contract.test.mjs"
         ]
       },
-      "sourceFingerprint": "2d6c48fa134857096278ef3bf05744be4a7a7a6ade8df8d78ad016ec8d99558d",
-      "note": "M0 design-only authorized progression: refined fixed-source mapping, threat model and narrow Runtime-first v1 candidate; no M1 implementation or CI retry; M1 gates remain blocked"
+      "sourceFingerprint": "9ea35b2663b1c5453e80d411d172535ad5841a2c7461b8259690a5a6e4f278af",
+      "note": "实际运行 node --test tests/remote-contract.test.mjs，exit=0"
     },
-    "nextAction": "M0-architecture is active under the owner-approved design-only sequence waiver. Read fixed desktop baseline af0432a0bc3b04c717a63ede3cc457e859401833 and mobile sources; refine docs/decisions/0005 proposal into a versioned protocol/security contract, add synthetic contract tests only after schema is agreed, and obtain independent functional/security reviews before M0 acceptance. Do not modify desktop dirty checkout or implement remote service yet. M-1 remains blocked and its candidate native locks are returned to bootstrap-required.",
+    "nextAction": "真机/SideStore 验收统一移至全部软件实现、自动化/Simulator/IPA/审查完成后的最终一次清单，由用户亲自操作；中途不请求设备、不等待设备。Agent 对普通问题自主排障，三轮同类失败后记录 deferred/unverified 并继续无依赖工作。M-1 基础验证保持 blocked；M0 design 已先行，继续收敛协议/安全合同，不启用远程入口。",
     "delegates": [
       {
         "taskId": "node:delegated-task:command%3Amcp%3Ac31b83bb-4e95-4301-8a91-f13f8295d85a%3Adelegate-task%3A4b75cf04-9360-469c-87e1-321a7e4b3149",
@@ -878,6 +896,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "15db53d22369d8827022b1ca9cb30e98bf9d8a7fadfe05a093a23b72464bc327"
+    "digest": "59ac2dfd3985ce2d7bdc5073557e8d5afc1859c22d2842a3c6f1d019a82c8d26"
   }
 }

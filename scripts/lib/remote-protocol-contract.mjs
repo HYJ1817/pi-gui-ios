@@ -1,0 +1,281 @@
+import { createHash, createPrivateKey, createPublicKey, sign as signSignature, verify as verifySignature } from 'node:crypto';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+
+const CONTRACT_URL = new URL('../../docs/contracts/remote-v1.json', import.meta.url);
+export const REMOTE_V1 = Object.freeze(JSON.parse(readFileSync(fileURLToPath(CONTRACT_URL), 'utf8')));
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const OPAQUE_ID = /^[A-Za-z0-9_-]{8,128}$/;
+const HEX_SHA256 = /^[0-9a-f]{64}$/;
+const ALLOWED_TRANSPORT_HEADERS=new Set([...REMOTE_V1.signedRequestHeaders,'content-type','accept']);
+const MAX_REQUEST_BYTES=REMOTE_V1.limits.maxRequestBytes;
+const FORBIDDEN_KEYS = new Set(['command','args','path','file','sessionpath','filepath','projectpath','cwd','url','headers','env','token','authorization','piguitoken','apikey','secret','credential']);
+const normalizeKey = key => key.toLowerCase().replace(/[_-]/g,'').replace(/[^a-z0-9]/g,'');
+const isForbiddenKey = key => {
+  const normalized=normalizeKey(key);
+  return FORBIDDEN_KEYS.has(normalized)||normalized.endsWith('filepath')||normalized.endsWith('sessionpath')
+    ||normalized.endsWith('token')||normalized.endsWith('apikey')||normalized.endsWith('secret')||normalized.endsWith('credential')||normalized.endsWith('password');
+};
+const own=(o,k)=>Object.prototype.hasOwnProperty.call(o,k);
+const isRecord=value=>value!==null&&typeof value==='object'&&!Array.isArray(value);
+const sha256=bytes=>createHash('sha256').update(bytes).digest('hex');
+const bytesOf=value=>Buffer.isBuffer(value)?value:typeof value==='string'?Buffer.from(value,'utf8'):null;
+const DER_ED25519_PREFIX=Buffer.from('302a300506032b6570032100','hex');
+const DER_ED25519_PRIVATE_PREFIX=Buffer.from('302e020100300506032b657004220420','hex');
+
+function canonicalJson(value) {
+  if(Array.isArray(value))return `[${value.map(canonicalJson).join(',')}]`;
+  if(isRecord(value))return `{${Object.keys(value).sort().map(key=>`${JSON.stringify(key)}:${canonicalJson(value[key])}`).join(',')}}`;
+  return JSON.stringify(value);
+}
+function b64url(bytes) {return Buffer.from(bytes).toString('base64url');}
+function decodeB64url(text,expectedBytes) {
+  if(typeof text!=='string'||!/^[A-Za-z0-9_-]+$/.test(text))return null;
+  const bytes=Buffer.from(text,'base64url');
+  return bytes.length===expectedBytes&&b64url(bytes)===text?bytes:null;
+}
+function validateJsonValue(value,depth=0) {
+  if(depth>16)return false;
+  if(value===null||typeof value==='string'||typeof value==='boolean')return true;
+  if(typeof value==='number')return Number.isFinite(value);
+  if(Array.isArray(value))return value.length<=10000&&value.every(item=>validateJsonValue(item,depth+1));
+  return isRecord(value)&&Object.entries(value).length<=256&&Object.values(value).every(item=>validateJsonValue(item,depth+1));
+}
+function validateSchema(value,schema,depth=0) {
+  if(depth>16)return false;
+  if(schema.type==='object') {
+    if(!isRecord(value))return false;
+    const props=schema.properties??{};
+    if(schema.additionalProperties===false&&Object.keys(value).some(key=>!own(props,key)))return false;
+    if((schema.required??[]).some(key=>!own(value,key)))return false;
+    return Object.entries(value).every(([key,item])=>{
+      if(own(props,key))return validateSchema(item,props[key],depth+1);
+      if(isRecord(schema.additionalProperties))return validateSchema(item,schema.additionalProperties,depth+1);
+      return schema.additionalProperties===false?false:validateJsonValue(item,depth+1);
+    });
+  }
+  if(schema.type==='array') {
+    if(!Array.isArray(value)||(schema.maxItems!==undefined&&value.length>schema.maxItems)||(schema.minItems!==undefined&&value.length<schema.minItems))return false;
+    if(schema.uniqueItems&&new Set(value.map(item=>JSON.stringify(item))).size!==value.length)return false;
+    return schema.items?value.every(item=>validateSchema(item,schema.items,depth+1)):true;
+  }
+  if(schema.type==='string') {
+    if(typeof value!=='string'||(schema.minLength!==undefined&&value.length<schema.minLength)||(schema.maxLength!==undefined&&value.length>schema.maxLength)
+      ||(schema.pattern&&!new RegExp(schema.pattern).test(value))||(schema.enum&&!schema.enum.includes(value)))return false;
+    if(schema.format==='uuid')return UUID.test(value);
+    if(schema.format==='date-time')return Number.isFinite(Date.parse(value))&&/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?Z$/.test(value);
+    return true;
+  }
+  if(schema.type==='integer')return Number.isSafeInteger(value)&&(schema.minimum===undefined||value>=schema.minimum)&&(schema.const===undefined||value===schema.const)&&(schema.enum===undefined||schema.enum.includes(value));
+  if(schema.type==='boolean')return typeof value==='boolean';
+  return false;
+}
+function hasForbiddenKey(value,depth=0) {
+  if(depth>16)return true;
+  if(Array.isArray(value))return value.some(item=>hasForbiddenKey(item,depth+1));
+  if(!isRecord(value))return false;
+  return Object.entries(value).some(([key,item])=>isForbiddenKey(key)||hasForbiddenKey(item,depth+1));
+}
+function routeMatches(template,actual,params={}) {
+  if(typeof actual!=='string'||!actual.startsWith('/')||actual.includes('?')||actual.includes('#')||actual.includes('\\')||actual.includes('//')||/%2f|%5c/i.test(actual))return false;
+  const expected=template.split('/'),received=actual.split('/');if(expected.length!==received.length)return false;
+  for(let i=0;i<expected.length;i++) {
+    const match=/^\{([A-Za-z][A-Za-z0-9]*)\}$/.exec(expected[i]);
+    if(!match){if(expected[i]!==received[i])return false;continue;}
+    if(!OPAQUE_ID.test(received[i])||received[i]==='.'||received[i]==='..')return false;
+    params[match[1]]=received[i];
+  }
+  return true;
+}
+function validateSignatureHeaders(input,expectedBodyHash,method,eventStream=false) {
+  if(!isRecord(input))return {ok:false,code:'signature_headers_missing'};
+  const headers=Object.fromEntries(Object.entries(input).map(([key,value])=>[key.toLowerCase(),value]));
+  if(Object.keys(headers).length!==Object.keys(input).length||Object.keys(headers).some(name=>!ALLOWED_TRANSPORT_HEADERS.has(name))||own(headers,'x-pi-gui-token'))return {ok:false,code:'signature_headers_invalid'};
+  if([...REMOTE_V1.signedRequestHeaders].some(name=>typeof headers[name]!=='string'||!headers[name]))return {ok:false,code:'signature_headers_missing'};
+  if(method==='GET'&&headers['content-type']!==undefined)return {ok:false,code:'signature_headers_invalid'};
+  if(method!=='GET'&&headers['content-type']!=='application/json; charset=utf-8')return {ok:false,code:'signature_headers_invalid'};
+  if(headers.accept!==undefined&&headers.accept!==(eventStream?'text/event-stream':'application/json'))return {ok:false,code:'signature_headers_invalid'};
+  if(!OPAQUE_ID.test(headers['x-pi-remote-device'])||!UUID.test(headers['x-pi-remote-request-id'])||!/^[0-9]{13}$/.test(headers['x-pi-remote-timestamp'])
+    ||!decodeB64url(headers['x-pi-remote-nonce'],32)||!decodeB64url(headers['x-pi-remote-signature'],64)
+    ||!HEX_SHA256.test(headers['x-pi-remote-body-sha256'])||headers['x-pi-remote-body-sha256']!==expectedBodyHash)return {ok:false,code:'signature_headers_invalid'};
+  return {ok:true,headers};
+}
+function validatePairTransportHeaders(input) {
+  if(!isRecord(input))return {ok:false,code:'pair_headers_invalid'};
+  const headers=Object.fromEntries(Object.entries(input).map(([key,value])=>[key.toLowerCase(),value]));
+  if(Object.keys(headers).length!==Object.keys(input).length||Object.keys(headers).some(key=>!['content-type','accept'].includes(key))
+    ||headers['content-type']!=='application/json; charset=utf-8'
+    ||(headers.accept!==undefined&&headers.accept!=='application/json'))return {ok:false,code:'pair_headers_invalid'};
+  return {ok:true};
+}
+function requestBodyBytes(request) {
+  if(request.method==='GET')return request.rawBody===undefined||request.rawBody===null||request.rawBody===''?Buffer.alloc(0):null;
+  return bytesOf(request.rawBody);
+}
+function validateBodyBytes(request) {
+  const bytes=requestBodyBytes(request);
+  if(!bytes)return {ok:false,code:request.method==='GET'?'get_body_forbidden':'body_bytes_required'};
+  if(bytes.length>MAX_REQUEST_BYTES)return {ok:false,code:'request_too_large'};
+  if(request.method==='GET') {
+    if(request.body!==undefined&&request.body!==null)return {ok:false,code:'get_body_forbidden'};
+    return {ok:true,bytes,digest:sha256(bytes)};
+  }
+  if(!isRecord(request.body))return {ok:false,code:'body_parse_mismatch'};
+  let parsed;try {parsed=JSON.parse(bytes.toString('utf8'));}catch{return {ok:false,code:'body_parse_mismatch'};}
+  const canonical=canonicalJson(parsed);
+  if(canonical!==canonicalJson(request.body)||bytes.toString('utf8')!==canonical)return {ok:false,code:'body_parse_mismatch'};
+  return {ok:true,bytes,digest:sha256(bytes)};
+}
+function ed25519PublicKey(rawKey) {
+  if(!decodeB64url(rawKey,32))return null;
+  return createPublicKey({key:Buffer.concat([DER_ED25519_PREFIX,Buffer.from(rawKey,'base64url')]),format:'der',type:'spki'});
+}
+function ed25519PrivateKey(key) {
+  if(key&&key.type==='private'&&key.asymmetricKeyType==='ed25519')return key;
+  if(typeof key!=='string')return null;
+  const raw=decodeB64url(key,32);if(!raw)return null;
+  try{return createPrivateKey({key:Buffer.concat([DER_ED25519_PRIVATE_PREFIX,raw]),format:'der',type:'pkcs8'});}catch{return null;}
+}
+function signEd25519(privateKey,message) {
+  const key=ed25519PrivateKey(privateKey);if(!key)return null;
+  try{return signSignature(null,Buffer.from(message,'utf8'),key).toString('base64url');}catch{return null;}
+}
+function verifyEd25519(rawKey,signature,message) {
+  const publicKey=ed25519PublicKey(rawKey),sig=decodeB64url(signature,64);
+  if(!publicKey||!sig)return false;
+  try{return verifySignature(null,Buffer.from(message,'utf8'),publicKey,sig);}catch{return false;}
+}
+
+export function buildPairProofMessage(body) {
+  if(!isRecord(body))return null;
+  const schema=structuredClone(REMOTE_V1.pairExchange.body);
+  schema.required=schema.required.filter(key=>key!=='proofSignature');
+  delete schema.properties.proofSignature;
+  const {proofSignature,...proofFields}=body;
+  if(!validateSchema(proofFields,schema)||hasForbiddenKey(proofFields))return null;
+  return ['remote-v1-pair',proofFields.pairingSessionId,proofFields.pairCode,proofFields.deviceName,proofFields.devicePublicKey,proofFields.clientNonce,proofFields.serviceFingerprint].join('\n');
+}
+export function verifyPairProof(body) {
+  const message=buildPairProofMessage(body);
+  return message!==null&&verifyEd25519(body.devicePublicKey,body.proofSignature,message);
+}
+export function buildSignatureMessage({protocolVersion,requestId,method,path,query={},timestamp,nonce,bodySha256}) {
+  if(!isRecord(query)||Object.values(query).some(value=>typeof value!=='string'))return null;
+  const canonicalQuery=Object.keys(query).sort().map(key=>`${encodeURIComponent(key)}=${encodeURIComponent(query[key])}`).join('&');
+  const target=canonicalQuery?`${path}?${canonicalQuery}`:path;
+  return [String(protocolVersion),requestId,String(method).toUpperCase(),target,timestamp,nonce,bodySha256].join('\n');
+}
+export function verifyRemoteSignature({request,devicePublicKey,registeredDeviceId,grantedScopes,nowMs=Date.now(),consumeNonce}) {
+  const shape=validateRemoteRequest(request);if(!shape.ok)return shape;
+  const headers=Object.fromEntries(Object.entries(request.headers).map(([key,value])=>[key.toLowerCase(),value]));
+  if(typeof registeredDeviceId!=='string'||registeredDeviceId!==headers['x-pi-remote-device'])return {ok:false,code:'device_identity_mismatch'};
+  const requiredScope=shape.scope ?? REMOTE_V1.eventStream.scope;
+  if(!Array.isArray(grantedScopes)||!grantedScopes.includes(requiredScope))return {ok:false,code:'scope_denied'};
+  const timestamp=Number(headers['x-pi-remote-timestamp']);
+  if(!Number.isSafeInteger(timestamp)||Math.abs(nowMs-timestamp)>REMOTE_V1.signedRequest.maximumClockSkewSeconds*1000)return {ok:false,code:'signature_expired'};
+  const message=buildSignatureMessage({protocolVersion:REMOTE_V1.contractVersion,requestId:headers['x-pi-remote-request-id'],method:request.method,path:request.path,query:request.query??{},timestamp:headers['x-pi-remote-timestamp'],nonce:headers['x-pi-remote-nonce'],bodySha256:headers['x-pi-remote-body-sha256']});
+  if(!message||!verifyEd25519(devicePublicKey,headers['x-pi-remote-signature'],message))return {ok:false,code:'signature_invalid'};
+  if(typeof consumeNonce!=='function')return {ok:false,code:'replay_store_unavailable'};
+  // consumeNonce must atomically persist (deviceId, nonce) before request dispatch.
+  const consumed=consumeNonce(headers['x-pi-remote-device'],headers['x-pi-remote-nonce'],timestamp);
+  if(consumed&&typeof consumed.then==='function')return {ok:false,code:'async_replay_store_unsupported'};
+  if(consumed!==true)return {ok:false,code:'request_replayed'};
+  return {ok:true,operation:shape.operation,scope:requiredScope,requestId:shape.requestId,deviceId:registeredDeviceId,pathParameters:shape.pathParameters};
+}
+
+export function validatePairExchange(request) {
+  if(!isRecord(request)||request.method!==REMOTE_V1.pairExchange.method||request.path!==REMOTE_V1.pairExchange.path)return {ok:false,code:'route_mismatch'};
+  const transport=validatePairTransportHeaders(request.headers);if(!transport.ok)return transport;
+  const body=validateBodyBytes(request);if(!body.ok)return body;
+  if(!validateSchema(request.body,REMOTE_V1.pairExchange.body)||hasForbiddenKey(request.body))return {ok:false,code:'pair_payload_invalid'};
+  return {ok:true,code:'pair_shape_valid'};
+}
+export function validatePairExchangeResponse(response) {return validateSchema(response,REMOTE_V1.pairExchange.responseSchema)&&!hasForbiddenKey(response);}
+export function verifyPairExchangeProof(request,expectedServiceFingerprint) {
+  const shape=validatePairExchange(request);if(!shape.ok)return shape;
+  if(request.body.serviceFingerprint!==expectedServiceFingerprint)return {ok:false,code:'service_fingerprint_mismatch'};
+  if(!verifyPairProof(request.body))return {ok:false,code:'pair_proof_invalid'};
+  return {ok:true,code:'device_proof_valid_not_authorized'};
+}
+export function authorizePairExchange({request,expectedServiceFingerprint,recordPairAttempt,confirmLocally,consumePairingCodeAndRegisterDevice,grantedScopes,deviceId,serverNonce,expiresAt,desktopPrivateKey}) {
+  const shape=validatePairExchange(request);if(!shape.ok)return shape;
+  if(request.body.serviceFingerprint!==expectedServiceFingerprint)return {ok:false,code:'service_fingerprint_mismatch'};
+  if(typeof recordPairAttempt!=='function'||typeof request.body.pairingSessionId!=='string')return {ok:false,code:'pair_rate_limiter_unavailable'};
+  const keyFingerprint=sha256(Buffer.from(request.body.devicePublicKey,'base64url'));
+  let allowed;try {allowed=recordPairAttempt({pairingSessionId:request.body.pairingSessionId,deviceKeyFingerprint:keyFingerprint});}catch{return {ok:false,code:'pair_rate_limiter_unavailable'};}
+  if(allowed&&typeof allowed.then==='function')return {ok:false,code:'async_pair_limiter_unsupported'};
+  if(allowed!==true)return {ok:false,code:'pair_rate_limited'};
+  if(!verifyPairProof(request.body))return {ok:false,code:'pair_proof_invalid'};
+  if(!Array.isArray(grantedScopes)||new Set(grantedScopes).size!==grantedScopes.length
+    ||!['projects.read','sessions.read'].every(scope=>grantedScopes.includes(scope))
+    ||grantedScopes.some(scope=>!REMOTE_V1.scopeVocabulary.includes(scope))||grantedScopes.length>6)return {ok:false,code:'scopes_invalid'};
+  if(typeof confirmLocally!=='function')return {ok:false,code:'desktop_confirmation_required'};
+  const confirmation={pairingSessionId:request.body.pairingSessionId,deviceName:request.body.deviceName,deviceKeyFingerprint:keyFingerprint,serviceFingerprint:request.body.serviceFingerprint,requestedScopes:[...grantedScopes]};
+  if(confirmLocally(confirmation)!==true)return {ok:false,code:'desktop_confirmation_required'};
+  if(!OPAQUE_ID.test(deviceId??'')||!decodeB64url(serverNonce,32)||!Number.isFinite(Date.parse(expiresAt??'')))return {ok:false,code:'pair_response_invalid'};
+  if(typeof consumePairingCodeAndRegisterDevice!=='function')return {ok:false,code:'pair_store_unavailable'};
+  const unsigned={deviceId,serverNonce,grantedScopes,expiresAt};
+  const responseRequestId=request.body.clientNonce;
+  const serverSignature=signEd25519(desktopPrivateKey,['remote-v1-pair-response',responseRequestId,canonicalJson(unsigned)].join('\n'));
+  if(!serverSignature)return {ok:false,code:'pair_signing_failed'};
+  // This callback must atomically rate-limit/hash-compare/consume the one-time
+  // code and persist the device key, exact scopes and expiry before replying.
+  let persisted;
+  try {persisted=consumePairingCodeAndRegisterDevice({pairingSessionId:request.body.pairingSessionId,pairCode:request.body.pairCode,deviceId,devicePublicKey:request.body.devicePublicKey,grantedScopes,expiresAt});}
+  catch {return {ok:false,code:'pair_store_unavailable'};}
+  if(persisted&&typeof persisted.then==='function')return {ok:false,code:'async_pair_store_unsupported'};
+  if(persisted!==true)return {ok:false,code:'pair_code_consumed_or_limited'};
+  return {ok:true,code:'device_registered',requestId:responseRequestId,response:{...unsigned,serverSignature}};
+}
+export function verifyPairExchangeResponse(response,desktopPublicKey,requestId) {
+  if(!validatePairExchangeResponse(response)||!/^([A-Za-z0-9_-]{43})$/.test(requestId??''))return false;
+  const {serverSignature,...unsigned}=response;
+  const message=['remote-v1-pair-response',requestId,canonicalJson(unsigned)].join('\n');
+  return verifyEd25519(desktopPublicKey,serverSignature,message);
+}
+export function validateRemoteRequest(request) {
+  if(!isRecord(request)||typeof request.method!=='string'||typeof request.path!=='string')return {ok:false,code:'request_invalid'};
+  const query=request.query===undefined?{}:request.query;
+  if(!isRecord(query)||hasForbiddenKey(query))return {ok:false,code:'query_invalid'};
+  let operation=null,operationId='events.stream';
+  if(request.path===REMOTE_V1.eventStream.path&&request.method===REMOTE_V1.eventStream.method) {
+    if(Object.keys(query).some(key=>!REMOTE_V1.eventStream.queryParameters.includes(key)))return {ok:false,code:'query_invalid'};
+    if(own(query,'cursor')&&(typeof query.cursor!=='string'||query.cursor.length>REMOTE_V1.eventStream.cursorMaxLength))return {ok:false,code:'query_invalid'};
+  } else {
+    operation=REMOTE_V1.operations.find(item=>item.method===request.method&&routeMatches(item.path,request.path));
+    if(!operation)return {ok:false,code:'operation_route_mismatch'};
+    operationId=operation.id;if(Object.keys(query).length)return {ok:false,code:'query_invalid'};
+  }
+  const body=validateBodyBytes(request);if(!body.ok)return body;
+  const auth=validateSignatureHeaders(request.headers,body.digest,request.method,operationId==='events.stream');if(!auth.ok)return auth;
+  const requestId=auth.headers['x-pi-remote-request-id'];
+  if(operationId==='events.stream')return {ok:true,code:'event_stream_shape_valid',operation:operationId,requestId,resource:query.cursor??null};
+  if(request.method==='GET') {
+    const params={};routeMatches(operation.path,request.path,params);
+    return {ok:true,code:'request_shape_valid',operation:operation.id,requestId,scope:operation.scope,pathParameters:params};
+  }
+  if(!isRecord(request.body)||!validateSchema(request.body,REMOTE_V1.requestEnvelope))return {ok:false,code:'envelope_invalid'};
+  if(request.body.operation!==operation.id)return {ok:false,code:'operation_route_mismatch'};
+  if(operation.ownerRevisionRequired&&(!Number.isSafeInteger(request.body.ownerRevision)||request.body.ownerRevision<0))return {ok:false,code:'owner_revision_required'};
+  if(!operation.ownerRevisionRequired&&own(request.body,'ownerRevision')&&(!Number.isSafeInteger(request.body.ownerRevision)||request.body.ownerRevision<0))return {ok:false,code:'owner_revision_invalid'};
+  if(!validateSchema(request.body.payload,operation.payload)||hasForbiddenKey(request.body.payload))return {ok:false,code:'payload_invalid'};
+  const params={};routeMatches(operation.path,request.path,params);
+  return {ok:true,code:'request_shape_valid',operation:operation.id,requestId,scope:operation.scope,pathParameters:params};
+}
+export function validateEventEnvelope(event) {
+  if(!validateSchema(event,REMOTE_V1.eventStream.eventEnvelope)||hasForbiddenKey(event))return false;
+  const payloadSchema=REMOTE_V1.eventStream.eventPayloadSchemas[event.event];
+  return !!payloadSchema&&validateSchema(event.payload,payloadSchema)&&!hasForbiddenKey(event.payload);
+}
+export function validateRemoteResponse(response,operationId=null,requestId=null) {
+  if(!isRecord(response)||response.protocolVersion!==REMOTE_V1.contractVersion||!UUID.test(response.requestId??'')||(requestId!==null&&response.requestId!==requestId))return false;
+  if(own(response,'result')) {
+    if(Object.keys(response).sort().join(',')!=='operation,protocolVersion,requestId,result,serverRevision'||typeof response.operation!=='string'
+      ||(operationId!==null&&response.operation!==operationId)||!Number.isSafeInteger(response.serverRevision)||response.serverRevision<0)return false;
+    const operation=REMOTE_V1.operations.find(item=>item.id===response.operation);
+    return !!operation&&validateSchema(response.result,operation.result)&&!hasForbiddenKey(response.result);
+  }
+  if(!isRecord(response.error)||Object.keys(response.error).sort().join(',')!=='code,retryable')return false;
+  return typeof response.error.code==='string'&&REMOTE_V1.responseEnvelope.errorCodes.includes(response.error.code)
+    &&typeof response.error.retryable==='boolean'&&Object.keys(response).sort().join(',')==='error,protocolVersion,requestId';
+}

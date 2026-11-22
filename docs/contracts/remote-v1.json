@@ -1,0 +1,1010 @@
+{
+  "contractVersion": 1,
+  "protocolName": "pi-gui-remote",
+  "status": "design-contract",
+  "transport": {
+    "scheme": "https",
+    "defaultEnabled": false,
+    "existingLocalApiForwarding": false,
+    "pairing": {
+      "codeFormat": "6-digit decimal CSPRNG code; never logged or stored in plaintext",
+      "ttlSeconds": 120,
+      "maxAttemptsPerWindow": 5,
+      "singleUse": true,
+      "requiresDesktopLocalConfirmation": true,
+      "defaultScopes": [
+        "projects.read",
+        "sessions.read"
+      ],
+      "attemptWindowSeconds": 600,
+      "codeEntropyBits": 19.93,
+      "verification": "rate limited and single use; code is shown locally and is not credential by itself; exact TLS service fingerprint plus device key possession proof and desktop confirmation required",
+      "pairingSessionId": {
+        "encoding": "base64url-no-padding-16-random-bytes",
+        "carriedInQrAndExchangeBody": true,
+        "expiresWithPairCode": true
+      },
+      "codeGeneration": "CSPRNG; six decimal digits; display once in trusted desktop UI and QR; never include in logs",
+      "pairingCodeStorage": "HMAC-SHA256(installation-secret, pairingSessionId || pairingCode); secret created locally with restrictive file ACL; compare using constant-time equality; never persist plaintext pairing code",
+      "perSessionAttemptLimit": 5,
+      "maxPendingSessions": 8
+    },
+    "tls": {
+      "minimum": "TLS 1.2",
+      "desktopServiceFingerprintRequired": true,
+      "redirects": "forbidden",
+      "hostnameOrPinnedFingerprintMustMatch": true
+    }
+  },
+  "signedRequestHeaders": [
+    "x-pi-remote-device",
+    "x-pi-remote-request-id",
+    "x-pi-remote-timestamp",
+    "x-pi-remote-nonce",
+    "x-pi-remote-body-sha256",
+    "x-pi-remote-signature"
+  ],
+  "requestEnvelope": {
+    "type": "object",
+    "required": [
+      "protocolVersion",
+      "operation",
+      "payload"
+    ],
+    "additionalProperties": false,
+    "properties": {
+      "protocolVersion": {
+        "type": "integer",
+        "const": 1
+      },
+      "operation": {
+        "type": "string",
+        "enum": [
+          "projects.list",
+          "sessions.list",
+          "runtime.create",
+          "runtime.snapshot",
+          "chat.send",
+          "chat.stop",
+          "approvals.list",
+          "approvals.respond"
+        ]
+      },
+      "ownerRevision": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "payload": {
+        "type": "object"
+      }
+    }
+  },
+  "pairExchange": {
+    "method": "POST",
+    "path": "/remote/v1/pair/exchange",
+    "body": {
+      "type": "object",
+      "required": [
+        "pairCode",
+        "deviceName",
+        "devicePublicKey",
+        "clientNonce",
+        "serviceFingerprint",
+        "proofSignature",
+        "pairingSessionId"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "pairCode": {
+          "type": "string",
+          "pattern": "^[0-9]{6}$"
+        },
+        "deviceName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 48
+        },
+        "devicePublicKey": {
+          "type": "string",
+          "minLength": 43,
+          "maxLength": 43,
+          "pattern": "^[A-Za-z0-9_-]{43}$"
+        },
+        "clientNonce": {
+          "type": "string",
+          "minLength": 43,
+          "maxLength": 43,
+          "pattern": "^[A-Za-z0-9_-]{43}$"
+        },
+        "serviceFingerprint": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "proofSignature": {
+          "type": "string",
+          "minLength": 86,
+          "maxLength": 86,
+          "pattern": "^[A-Za-z0-9_-]{86}$"
+        },
+        "pairingSessionId": {
+          "type": "string",
+          "minLength": 22,
+          "maxLength": 22,
+          "pattern": "^[A-Za-z0-9_-]{22}$"
+        }
+      }
+    },
+    "authorization": "TLS peer certificate fingerprint must match the desktop QR/bootstrap fingerprint; client proves possession of device private key; desktop locally confirms device and scopes",
+    "responseFields": [
+      "deviceId",
+      "serverNonce",
+      "grantedScopes"
+    ],
+    "defaultScopes": [
+      "projects.read",
+      "sessions.read"
+    ],
+    "publicKeyAlgorithm": "Ed25519-raw-public-key",
+    "responseSchema": {
+      "type": "object",
+      "required": [
+        "deviceId",
+        "serverNonce",
+        "grantedScopes",
+        "expiresAt",
+        "serverSignature"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "deviceId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{8,128}$"
+        },
+        "serverNonce": {
+          "type": "string",
+          "minLength": 43,
+          "maxLength": 43,
+          "pattern": "^[A-Za-z0-9_-]{43}$"
+        },
+        "grantedScopes": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 6,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "projects.read",
+              "sessions.read",
+              "sessions.create",
+              "approvals.read",
+              "chat.send",
+              "chat.stop",
+              "approvals.respond"
+            ]
+          }
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "serverSignature": {
+          "type": "string",
+          "minLength": 86,
+          "maxLength": 86,
+          "pattern": "^[A-Za-z0-9_-]{86}$",
+          "description": "Ed25519 signature over remote-v1-pair-response, clientNonce and canonical unsigned response; clientNonce from request is the correlation binding"
+        }
+      }
+    },
+    "bodyEncoding": "UTF-8 canonical JSON with sorted keys; reject duplicate keys and non-canonical bodies",
+    "proofMessage": "remote-v1-pair + newline + pairingSessionId + newline + pairCode + newline + deviceName + newline + devicePublicKey + newline + clientNonce + newline + serviceFingerprint"
+  },
+  "responseEnvelope": {
+    "successRequired": [
+      "protocolVersion",
+      "requestId",
+      "operation",
+      "serverRevision",
+      "result"
+    ],
+    "errorRequired": [
+      "protocolVersion",
+      "requestId",
+      "error"
+    ],
+    "errorFields": [
+      "code",
+      "retryable"
+    ],
+    "rawErrorMessage": false,
+    "errorCodePattern": "^(?:unauthorized|pairing_required|pairing_expired|pairing_rejected|rate_limited|scope_denied|stale_owner|stale_revision|unknown_resource|operation_rejected|replay_rejected|cursor_expired|sequence_gap|server_busy|unavailable|invalid_request|payload_invalid|internal_error)$",
+    "errorCodes": [
+      "unauthorized",
+      "pairing_required",
+      "pairing_expired",
+      "pairing_rejected",
+      "rate_limited",
+      "scope_denied",
+      "stale_owner",
+      "stale_revision",
+      "unknown_resource",
+      "operation_rejected",
+      "replay_rejected",
+      "cursor_expired",
+      "sequence_gap",
+      "server_busy",
+      "unavailable",
+      "invalid_request",
+      "payload_invalid",
+      "internal_error"
+    ]
+  },
+  "scopeVocabulary": [
+    "projects.read",
+    "sessions.read",
+    "sessions.create",
+    "approvals.read",
+    "chat.send",
+    "chat.stop",
+    "approvals.respond"
+  ],
+  "operations": [
+    {
+      "id": "projects.list",
+      "method": "GET",
+      "path": "/remote/v1/projects",
+      "scope": "projects.read",
+      "payload": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {}
+      },
+      "result": {
+        "type": "object",
+        "required": [
+          "projects"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "projects": {
+            "type": "array",
+            "maxItems": 500,
+            "items": {
+              "type": "object",
+              "required": [
+                "projectId",
+                "displayName"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "projectId": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9_-]{8,128}$"
+                },
+                "displayName": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "sessions.list",
+      "method": "GET",
+      "path": "/remote/v1/projects/{projectId}/sessions",
+      "scope": "sessions.read",
+      "payload": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {}
+      },
+      "pathParameters": {
+        "projectId": "opaque-id"
+      },
+      "result": {
+        "type": "object",
+        "required": [
+          "sessions"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "sessions": {
+            "type": "array",
+            "maxItems": 200,
+            "items": {
+              "type": "object",
+              "required": [
+                "sessionId",
+                "displayName",
+                "updatedAt"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "sessionId": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9_-]{8,128}$"
+                },
+                "displayName": {
+                  "type": "string",
+                  "maxLength": 120
+                },
+                "updatedAt": {
+                  "type": "string",
+                  "maxLength": 40
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "runtime.create",
+      "method": "POST",
+      "path": "/remote/v1/projects/{projectId}/conversations",
+      "scope": "sessions.create",
+      "ownerRevisionRequired": true,
+      "payload": {
+        "type": "object",
+        "required": [
+          "clientConversationId"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "clientConversationId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "pathParameters": {
+        "projectId": "opaque-id"
+      },
+      "effect": "create-independent-runtime-conversation-without-changing-classic-cwd",
+      "result": {
+        "type": "object",
+        "required": [
+          "conversationId",
+          "ownerRevision"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "conversationId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{8,128}$"
+          },
+          "ownerRevision": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "runtime.snapshot",
+      "method": "GET",
+      "path": "/remote/v1/conversations/{conversationId}/snapshot",
+      "scope": "sessions.read",
+      "payload": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {}
+      },
+      "pathParameters": {
+        "conversationId": "opaque-id"
+      },
+      "result": {
+        "type": "object",
+        "required": [
+          "ownerRevision",
+          "status",
+          "messages"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "ownerRevision": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "idle",
+              "running",
+              "stopping",
+              "error",
+              "unknown"
+            ]
+          },
+          "messages": {
+            "type": "array",
+            "maxItems": 500,
+            "items": {
+              "type": "object",
+              "required": [
+                "messageId",
+                "role",
+                "text"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "messageId": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9_-]{8,128}$"
+                },
+                "role": {
+                  "type": "string",
+                  "enum": [
+                    "user",
+                    "assistant"
+                  ]
+                },
+                "text": {
+                  "type": "string",
+                  "maxLength": 32768
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "chat.send",
+      "method": "POST",
+      "path": "/remote/v1/conversations/{conversationId}/messages",
+      "scope": "chat.send",
+      "ownerRevisionRequired": true,
+      "payload": {
+        "type": "object",
+        "required": [
+          "clientMessageId",
+          "text"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "clientMessageId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100000
+          }
+        }
+      },
+      "pathParameters": {
+        "conversationId": "opaque-id"
+      },
+      "result": {
+        "type": "object",
+        "required": [
+          "clientMessageId",
+          "accepted",
+          "ownerRevision"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "clientMessageId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "accepted": {
+            "type": "boolean"
+          },
+          "ownerRevision": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "chat.stop",
+      "method": "POST",
+      "path": "/remote/v1/conversations/{conversationId}/stop",
+      "scope": "chat.stop",
+      "ownerRevisionRequired": true,
+      "payload": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {}
+      },
+      "pathParameters": {
+        "conversationId": "opaque-id"
+      },
+      "effect": "reuse-desktop-stop-barrier",
+      "result": {
+        "type": "object",
+        "required": [
+          "stopped",
+          "ownerRevision"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "stopped": {
+            "type": "boolean"
+          },
+          "ownerRevision": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "approvals.list",
+      "method": "GET",
+      "path": "/remote/v1/conversations/{conversationId}/approvals",
+      "scope": "approvals.read",
+      "payload": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {}
+      },
+      "pathParameters": {
+        "conversationId": "opaque-id"
+      },
+      "result": {
+        "type": "object",
+        "required": [
+          "approvals"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "approvals": {
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "type": "object",
+              "required": [
+                "requestId",
+                "method",
+                "title",
+                "message"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "requestId": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9_-]{8,128}$"
+                },
+                "method": {
+                  "type": "string",
+                  "enum": [
+                    "select",
+                    "confirm",
+                    "input",
+                    "editor"
+                  ]
+                },
+                "title": {
+                  "type": "string",
+                  "maxLength": 200
+                },
+                "message": {
+                  "type": "string",
+                  "maxLength": 600
+                },
+                "options": {
+                  "type": "array",
+                  "maxItems": 20,
+                  "items": {
+                    "type": "string",
+                    "maxLength": 80
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "approvals.respond",
+      "method": "POST",
+      "path": "/remote/v1/conversations/{conversationId}/approvals/{requestId}/respond",
+      "scope": "approvals.respond",
+      "ownerRevisionRequired": true,
+      "payload": {
+        "type": "object",
+        "required": [
+          "method",
+          "decision"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "method": {
+            "type": "string",
+            "enum": [
+              "select",
+              "confirm",
+              "input",
+              "editor"
+            ]
+          },
+          "decision": {
+            "type": "string",
+            "enum": [
+              "allow",
+              "deny",
+              "cancel",
+              "answer"
+            ]
+          },
+          "value": {
+            "type": "string",
+            "maxLength": 2000
+          }
+        }
+      },
+      "pathParameters": {
+        "conversationId": "opaque-id",
+        "requestId": "opaque-id"
+      },
+      "effect": "relay-only-to-current-pi-pending-extension-ui-request",
+      "result": {
+        "type": "object",
+        "required": [
+          "accepted",
+          "ownerRevision"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "accepted": {
+            "type": "boolean"
+          },
+          "ownerRevision": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    }
+  ],
+  "eventStream": {
+    "method": "GET",
+    "path": "/remote/v1/events",
+    "scope": "sessions.read",
+    "queryParameters": [
+      "cursor"
+    ],
+    "cursorMaxLength": 128,
+    "perDeviceBacklog": true,
+    "mustFilterByCurrentResourceOwner": true,
+    "mustRevalidateAuthorizationBeforeReplay": true,
+    "gapBehavior": "explicit-reset-snapshot",
+    "rawDesktopSseForwarding": false,
+    "events": {
+      "type": "array",
+      "maxItems": 6,
+      "items": {
+        "type": "string",
+        "enum": [
+          "snapshot",
+          "message.append",
+          "conversation.status",
+          "approval.pending",
+          "approval.settled",
+          "reset"
+        ]
+      }
+    },
+    "eventEnvelope": {
+      "type": "object",
+      "required": [
+        "protocolVersion",
+        "sequence",
+        "conversationId",
+        "ownerRevision",
+        "event",
+        "payload"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "protocolVersion": {
+          "type": "integer",
+          "const": 1
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "conversationId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{8,128}$"
+        },
+        "event": {
+          "type": "string",
+          "enum": [
+            "snapshot",
+            "message.append",
+            "conversation.status",
+            "approval.pending",
+            "approval.settled",
+            "reset"
+          ]
+        },
+        "payload": {
+          "type": "object"
+        },
+        "ownerRevision": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "eventPayloadSchemas": {
+      "snapshot": {
+        "type": "object",
+        "required": [
+          "ownerRevision",
+          "status",
+          "messages"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "ownerRevision": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "idle",
+              "running",
+              "stopping",
+              "error",
+              "unknown"
+            ]
+          },
+          "messages": {
+            "type": "array",
+            "maxItems": 500,
+            "items": {
+              "type": "object",
+              "required": [
+                "messageId",
+                "role",
+                "text"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "messageId": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9_-]{8,128}$"
+                },
+                "role": {
+                  "type": "string",
+                  "enum": [
+                    "user",
+                    "assistant"
+                  ]
+                },
+                "text": {
+                  "type": "string",
+                  "maxLength": 32768
+                }
+              }
+            }
+          }
+        }
+      },
+      "message.append": {
+        "type": "object",
+        "required": [
+          "messageId",
+          "role",
+          "text"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "messageId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{8,128}$"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "user",
+              "assistant"
+            ]
+          },
+          "text": {
+            "type": "string",
+            "maxLength": 32768
+          }
+        }
+      },
+      "conversation.status": {
+        "type": "object",
+        "required": [
+          "status",
+          "ownerRevision"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "idle",
+              "running",
+              "stopping",
+              "error",
+              "unknown"
+            ]
+          },
+          "ownerRevision": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      },
+      "approval.pending": {
+        "type": "object",
+        "required": [
+          "requestId",
+          "method",
+          "title",
+          "message"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "requestId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{8,128}$"
+          },
+          "method": {
+            "type": "string",
+            "enum": [
+              "select",
+              "confirm",
+              "input",
+              "editor"
+            ]
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "message": {
+            "type": "string",
+            "maxLength": 600
+          },
+          "options": {
+            "type": "array",
+            "maxItems": 20,
+            "items": {
+              "type": "string",
+              "maxLength": 80
+            }
+          }
+        }
+      },
+      "approval.settled": {
+        "type": "object",
+        "required": [
+          "requestId",
+          "status"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "requestId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{8,128}$"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "allowed",
+              "denied",
+              "cancelled",
+              "answered",
+              "expired"
+            ]
+          }
+        }
+      },
+      "reset": {
+        "type": "object",
+        "required": [
+          "ownerRevision",
+          "reason"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "ownerRevision": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "reason": {
+            "type": "string",
+            "enum": [
+              "cursor_expired",
+              "sequence_gap",
+              "authorization_changed",
+              "owner_changed"
+            ]
+          }
+        }
+      }
+    },
+    "cursorPattern": "^[A-Za-z0-9_-]{1,128}$"
+  },
+  "forbiddenCapabilities": [
+    "generic-rpc",
+    "shell",
+    "terminal",
+    "filesystem",
+    "arbitrary-path",
+    "provider-credentials",
+    "raw-desktop-token",
+    "arbitrary-url-proxy",
+    "public-relay"
+  ],
+  "securityInvariants": [
+    "remote-default-disabled",
+    "separate-listener-and-authentication-boundary",
+    "server-resolves-project-and-session-ownership",
+    "device-revocation-closes-live-stream-and-rejects-new-requests",
+    "unknown-version-operation-field-owner-or-replay-state-fails-closed",
+    "no-raw-pi-rpc-sse-errors-config-or-credentials-in-mobile-projection",
+    "approval-is-only-a-single-response-to-a-live-pi-request",
+    "independent-security-review-before-enable-or-acceptance"
+  ],
+  "signedRequest": {
+    "algorithm": "Ed25519",
+    "devicePublicKeyEncoding": "base64url-no-padding-32-byte-key",
+    "timestampFormat": "unix-milliseconds-decimal",
+    "maximumClockSkewSeconds": 60,
+    "nonceEncoding": "base64url-no-padding-32-random-bytes",
+    "signatureEncoding": "base64url-no-padding-64-byte-signature",
+    "bodyDigest": "SHA-256 over exact canonical UTF-8 JSON body bytes; GET signs empty body",
+    "contentType": "application/json; charset=utf-8",
+    "bodyEncoding": "UTF-8 canonical JSON: lexicographically sorted object keys, compact separators, JSON escaping, array order preserved; reject duplicate keys and non-canonical bodies",
+    "signedMessage": "protocolVersion + newline + requestId + newline + method + newline + canonical path-and-query + newline + timestamp + newline + nonce + newline + lowercase-hex-body-sha256",
+    "replayStore": "atomic per-device nonce store; reject reused nonce and timestamp outside skew window",
+    "validationNote": "Client utility verifies message construction and Ed25519 in fixtures only. Gateway must independently enforce TLS/service pinning, Ed25519, timestamp skew and atomic replay persistence before route dispatch.",
+    "nonceRetentionSeconds": 120,
+    "rawPayloadExposedToErrorsOrLogs": false
+  },
+  "limits": {
+    "maxRequestBytes": 262144,
+    "maxResponseBytes": 1048576,
+    "maxOperationsPerMinutePerDevice": 120,
+    "maxConcurrentStreamsPerDevice": 2,
+    "maxConcurrentStreamsTotal": 8,
+    "signatureClockSkewSeconds": 60,
+    "maxNonceEntriesPerDevice": 4096,
+    "maxPendingPairings": 8,
+    "maxDevices": 32,
+    "maxApprovalValueBytes": 2000,
+    "maxMessageBytes": 100000
+  },
+  "remoteSetting": {
+    "defaultEnabled": false,
+    "storage": "desktop userData private metadata; permissions/ACL platform-specific and independently tested",
+    "listener": "independent TLS listener; exact bind/advertisement address not frozen until M0 platform threat review",
+    "pairingQr": "contains service endpoint, certificate fingerprint, short-lived code; never contains device private key or desktop local token"
+  },
+  "localAdminControl": {
+    "listener": "existing authenticated loopback desktop UI only",
+    "remoteAccessible": false,
+    "operations": [
+      "remote.status",
+      "remote.enable",
+      "remote.pairing.create",
+      "remote.pairing.cancel",
+      "remote.devices.list",
+      "remote.devices.revoke"
+    ],
+    "pairCodePlaintextPersistence": false,
+    "devicePrivateKeyStoredOnDesktop": false
+  }
+}
