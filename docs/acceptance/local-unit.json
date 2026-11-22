@@ -2,15 +2,15 @@
   "schemaVersion": 2,
   "kind": "unit",
   "taskId": "M0-architecture",
-  "commit": "dd6c1bfe87b8e88c70d68db4e868fcb21dc25a63",
-  "sourceFingerprint": "ce7e65aeca954fa73f8c65ee6c64eab50610fb80757e2408f6e1ac5a5a36cd0d",
-  "startedAt": "2026-11-22T03:23:44.350Z",
-  "finishedAt": "2026-11-22T03:24:31.646Z",
+  "commit": "31ad7461da517fb2d7486f4a95ccbc8e32384c4c",
+  "sourceFingerprint": "f6f079de8ce485dc61b29fccfe3f725e2b87b073eeaf39a2256ee25129e7b532",
+  "startedAt": "2026-11-22T03:38:03.506Z",
+  "finishedAt": "2026-11-22T03:38:49.089Z",
   "passed": true,
   "details": {
     "command": "npm test",
     "exitCode": 0,
     "logPath": "docs/acceptance/local-unit-output.txt",
-    "logSha256": "fbcb5bf01bfbf80e3ff3f83368f292985c9fcf9236d955c8ad0e01ab7222115b"
+    "logSha256": "5ec40f1416bac98f54e6ce1b39c006a8cac2feb52d73ea6741e3db93746cf019"
   }
 }
