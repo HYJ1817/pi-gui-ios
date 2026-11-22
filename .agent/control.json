@@ -1,8 +1,8 @@
 {
   "schemaVersion": 2,
   "kind": "control",
-  "revision": 490,
-  "updatedAt": "2026-11-22T03:54:47.171Z",
+  "revision": 491,
+  "updatedAt": "2026-11-22T03:56:20.325Z",
   "data": {
     "phase": "M0",
     "currentTask": "M0-architecture",
@@ -1030,13 +1030,19 @@
       {
         "taskId": "delegate-task:f5374050-4996-4746-aa7f-a4b1a2081fac",
         "role": "m0-r6-combined-functional-security-review",
-        "status": "working",
+        "status": "cancelled",
         "sourceCommit": "5621c6bdb7151dc1a1e409c18e527a15829c8e88"
+      },
+      {
+        "taskId": "delegate-task:3f8260b2-f246-440a-9aa1-fbb79a297dcf",
+        "role": "m0-combined-functional-security-review",
+        "status": "working",
+        "sourceCommit": "d30227c73fa218311ee660f82e92f6445c2e0780"
       }
     ]
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "c9485fa56c40dd074203f0b008a5009c1c88c5e0dab35631c4d33832a39445ef"
+    "digest": "73da0d5f5738e4b489fb403cd6d832091f805a7d589f71053c86e4619a2b1042"
   }
 }
