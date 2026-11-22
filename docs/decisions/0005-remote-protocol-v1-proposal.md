@@ -123,7 +123,7 @@ Scope 候选（需在 M0 逐项定稿）：`projects.read`、`sessions.read`、`
 
 **仍为 unknown（不得视为已选）**：TLS 证书引导/自签 vs Tailscale HTTPS（pinned-fingerprint 已定为合同要求，但具体证书/私网引导方案未定）；iOS SecureStore 在 SideStore 重签下的密钥生命周期；设备记录在 Windows 上的 ACL 与重启持久性；审批在 Classic vs Runtime 两条路径的最终覆盖差异；独立功能审查与独立安全审查证据（工具缺失时按边界记为 pending，不伪造）。
 
-**独立评审后的加固（contract 当前内容，非额外承诺）**：首轮独立功能/安全评审均以 fail 返四，已按发现补齐——transport.tls 改为强制 bootstrap 指纹 pin（拒绝 hostname-only），QR 同时携带 TLS 指纹与桌面 Ed25519 服务公钥用于配对应答验签；`deviceGrants` 服务端设备→资源授予（default-deny，列表过滤，原子准入复检 device/scope/grant/owner/revision）；事件帧签名 + 每事件 scope（approval.* 要 `approvals.read`）+ cursor 绑定 (deviceId, streamGeneration)；`projectionPolicy` 自由文本值级泄漏扫描；approvals.respond 方法×决策×value 矩阵；signed message 绑定 deviceId+serviceId；严格 UTF-8/重复参数/cursor 语法；nonce 保留跨 skew 窗口且容量/掉状态 fail-closed；pairing 会话预校验先于本地确认、预算/原子消费/应答新鲜度；幂等 client id 语义；pre-auth 统一 `unauthorized` 闭合映射；版本仅走 versioned route。仍待独立复审确认修复有效。
+**独立评审后的加固（contract 当前内容，非额外承诺）**：首轮独立功能/安全评审均以 fail 返四，已按发现补齐——transport.tls 改为强制 bootstrap 指纹 pin（拒绝 hostname-only），QR 同时携带 TLS 指纹与桌面 Ed25519 服务公钥用于配对应答验签；`deviceGrants` 服务端设备→资源授予（default-deny，列表过滤，原子准入复检 device/scope/grant/owner/revision）；事件帧签名 + 每事件 scope（approval.* 要 `approvals.read`）+ cursor 绑定 (deviceId, streamGeneration, serviceId)；`projectionPolicy` 自由文本值级泄漏扫描；approvals.respond 方法×决策×value 矩阵；signed message 绑定 deviceId+serviceId；严格 UTF-8/重复参数/cursor 语法；nonce 保留跨 skew 窗口且容量/掉状态 fail-closed；pairing 会话预校验先于本地确认、预算/原子消费/应答新鲜度；幂等 client id 语义；pre-auth 统一 `unauthorized` 闭合映射；版本仅走 versioned route。仍待独立复审确认修复有效。
 
 ## 阶段状态与允许动作
 

@@ -177,7 +177,8 @@
         "serverNonce",
         "grantedScopes",
         "expiresAt",
-        "serverSignature"
+        "serverSignature",
+        "replayEpoch"
       ],
       "additionalProperties": false,
       "properties": {
@@ -194,7 +195,7 @@
         "grantedScopes": {
           "type": "array",
           "minItems": 2,
-          "maxItems": 6,
+          "maxItems": 7,
           "uniqueItems": true,
           "items": {
             "type": "string",
@@ -219,6 +220,11 @@
           "maxLength": 86,
           "pattern": "^[A-Za-z0-9_-]{86}$",
           "description": "Ed25519 signature over remote-v1-pair-response, clientNonce and canonical unsigned response; clientNonce from request is the correlation binding"
+        },
+        "replayEpoch": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "The device record replayEpoch committed by the registration transaction; the client must send it in x-pi-remote-epoch until the next re-pair."
         }
       }
     },
@@ -240,7 +246,10 @@
     "approvalBinding": "Local confirmation produces a one-time approvalId bound to the FULL verified transcript (pairingSessionId, pairCode, deviceName, devicePublicKey, clientNonce, serviceFingerprint, proofSignature) and the exact approved scope set. Registration consumes (approvalId + code + session) atomically, rechecking expiry, capacity and device-key uniqueness in the same transaction.",
     "responseConsumption": "Client verification requires a live outstanding exchange for the pinned service: the echoed requestId must equal the outstanding clientNonce, grantedScopes must equal the approved set, expiresAt must be future, then the outstanding exchange is retired atomically. A valid unexpired response presented twice is rejected the second time.",
     "expiresAtFormat": "RFC3339 UTC instant YYYY-MM-DDTHH:MM:SS[.fff]Z (fractional seconds permitted) with strict calendar validation; impossible dates are rejected before normalization or comparison.",
-    "approvedScopeSource": "The desktop approval binds the exact scope set; the client-side expected set for response comparison is its own requestedScopes from the outstanding exchange (server never widens beyond what confirmation approved)."
+    "approvedScopeSource": "The desktop approval binds the exact scope set; the client-side expected set for response comparison is its own requestedScopes from the outstanding exchange (server never widens beyond what confirmation approved).",
+    "scopeAgreement": "Exact canonical set agreement: request.requestedScopes, the scopes shown at local confirmation, the registered grants and response.grantedScopes are byte-identical sets. Subset/widened/duplicate-containing sets are rejected before registration.",
+    "outstandingExchange": "verifyPairExchangeResponse resolves a LIVE outstanding exchange from trusted server-issued state: it must carry the pinned serviceFingerprint, an expiresAtMs still in the future, the device public key presented, and the unique requestedScopes set; the exchange is atomically retired in the same transaction that registers the device and commits replayEpoch.",
+    "registration": "The atomic registration transaction binds deviceId+publicKey, the exact approved scope set, expiresAt and the freshly allocated replayEpoch; a second presentation, expired exchange, wrong-service exchange or conflicting registration fails closed."
   },
   "responseEnvelope": {
     "successRequired": [
@@ -260,7 +269,7 @@
       "retryable"
     ],
     "rawErrorMessage": false,
-    "errorCodePattern": "^(?:unauthorized|pairing_required|pairing_expired|pairing_rejected|rate_limited|scope_denied|stale_owner|stale_revision|unknown_resource|operation_rejected|replay_rejected|cursor_expired|sequence_gap|server_busy|unavailable|invalid_request|payload_invalid|internal_error)$",
+    "errorCodePattern": "^(?:unauthorized|pairing_required|pairing_expired|pairing_rejected|rate_limited|scope_denied|stale_owner|stale_revision|unknown_resource|operation_rejected|replay_rejected|sequence_gap|server_busy|unavailable|invalid_request|payload_invalid|internal_error)$",
     "errorCodes": [
       "unauthorized",
       "pairing_required",
@@ -273,7 +282,6 @@
       "unknown_resource",
       "operation_rejected",
       "replay_rejected",
-      "cursor_expired",
       "sequence_gap",
       "server_busy",
       "unavailable",
@@ -302,7 +310,9 @@
       },
       "preAuthenticationDetail": "Internal codes such as signature_expired, signature_invalid, device_identity_mismatch, replay_store_unavailable, body_parse_mismatch are NEVER sent; they map per internalCodeMapping to a closed wire code."
     },
-    "requestIdCorrelation": "When a signed request fails before a valid requestId is established, or a pairing exchange has no request UUID, the wire error echoes a fixed all-zero UUID (00000000-0000-0000-0000-000000000000) in requestId; internal correlation uses the attempt log, never a reflected attacker value."
+    "requestIdCorrelation": "When a signed request fails before a valid requestId is established, or a pairing exchange has no request UUID, the wire error echoes a fixed all-zero UUID (00000000-0000-0000-0000-000000000000) in requestId; internal correlation uses the attempt log, never a reflected attacker value.",
+    "requestIdPolicy": "requestId is a required string UUID echoing the signed request. The all-zero UUID is permitted ONLY on pre-authentication failures where the wire code is 'unauthorized' (correlation impossible); success responses and authenticated errors always echo the real request id. Non-string or array requestId values are rejected before matching.",
+    "wireErrorStageAware": "wireErrorCode(code, stage): for stage 'preauth' every failure maps to 'unauthorized'; for stage 'authenticated' the internal-to-wire closed map applies via own-property lookup with 'internal_error' fallback."
   },
   "scopeVocabulary": [
     "projects.read",
@@ -357,11 +367,14 @@
           },
           "registryRevision": {
             "type": "integer",
-            "minimum": 0
+            "minimum": 0,
+            "description": "Monotonic revision of the whole project registry at read time; it is the runtime.create precondition for every project in this response."
           }
         }
       },
-      "registryRevision": "The registry revision a runtime.create on any listed project must echo as ownerRevision; the only sanctioned source of the create precondition."
+      "registryRevision": "The registry revision a runtime.create on any listed project must echo as ownerRevision; the only sanctioned source of the create precondition.",
+      "ownerRequirement": "collection",
+      "ownerNamespaces": []
     },
     {
       "id": "sessions.list",
@@ -391,7 +404,8 @@
               "required": [
                 "sessionId",
                 "displayName",
-                "updatedAt"
+                "updatedAt",
+                "projectId"
               ],
               "additionalProperties": false,
               "properties": {
@@ -406,12 +420,38 @@
                 "updatedAt": {
                   "type": "string",
                   "maxLength": 40
+                },
+                "projectId": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9_-]{8,128}$"
+                },
+                "activeConversations": {
+                  "type": "array",
+                  "maxItems": 64,
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "conversationId"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                      "conversationId": {
+                        "type": "string",
+                        "pattern": "^[A-Za-z0-9_-]{8,128}$"
+                      }
+                    }
+                  },
+                  "description": "Live conversation handles this session currently owns; the only supported way to rediscover a conversation id."
                 }
               }
             }
           }
         }
-      }
+      },
+      "ownerRequirement": "project",
+      "ownerNamespaces": [
+        "runtime"
+      ]
     },
     {
       "id": "runtime.create",
@@ -456,13 +496,17 @@
       },
       "precondition": {
         "ownerRevision": "For a create, ownerRevision is the revision of the parent project's runtime registry, not of a conversation that does not yet exist. The server reads the registry revision for the granted project and requires it to match, so a create cannot be admitted against a stale or replaced runtime generation.",
-        "source": "projects.list.result.registryRevision only; no other read exposes the parent registry revision."
+        "source": "projects.list.result.registryRevision: the single registry revision covering every listed project at read time. A live conversation id is rediscovered only via sessions.list[].activeConversations."
       },
       "identityMapping": {
         "clientConversationId": "client-generated idempotency key for the create, not a server identity",
         "conversationId": "server-issued opaque id returned in the create result; the only handle usable in /conversations/{conversationId}/...",
         "sessionId": "sessions.list returns historical session records for read-only listing; a listed sessionId is NOT a conversationId and cannot be used in conversation routes. In v1, only conversations created through runtime.create (or listed as active) are addressable; opening an existing listed session as a live conversation is not part of v1."
-      }
+      },
+      "ownerRequirement": "project",
+      "ownerNamespaces": [
+        "runtime"
+      ]
     },
     {
       "id": "runtime.snapshot",
@@ -547,7 +591,11 @@
           }
         }
       },
-      "watermark": "cursor+streamGeneration+sequence are the atomic watermark of the returned state; the client resumes the event stream from this cursor and expects the same logical generation to continue on reconnect."
+      "watermark": "cursor+streamGeneration+sequence are the atomic watermark of the returned state; the client resumes the event stream from this cursor and expects the same logical generation to continue on reconnect.",
+      "ownerRequirement": "conversation",
+      "ownerNamespaces": [
+        "runtime"
+      ]
     },
     {
       "id": "chat.send",
@@ -570,7 +618,7 @@
           "text": {
             "type": "string",
             "minLength": 1,
-            "maxUtf8Bytes": 32768
+            "maxSerializedJsonBytes": 8192
           }
         }
       },
@@ -598,7 +646,11 @@
             "minimum": 0
           }
         }
-      }
+      },
+      "ownerRequirement": "conversation",
+      "ownerNamespaces": [
+        "runtime"
+      ]
     },
     {
       "id": "chat.stop",
@@ -631,7 +683,11 @@
             "minimum": 0
           }
         }
-      }
+      },
+      "ownerRequirement": "conversation",
+      "ownerNamespaces": [
+        "runtime"
+      ]
     },
     {
       "id": "approvals.list",
@@ -707,13 +763,19 @@
                         "maxLength": 200
                       }
                     }
-                  }
+                  },
+                  "uniqueItemsBy": "optionId",
+                  "description": "For method=select exactly the option set Pi offered; optionId is opaque and unique within the dialog, label is display text."
                 }
               }
             }
           }
         }
-      }
+      },
+      "ownerRequirement": "conversation",
+      "ownerNamespaces": [
+        "runtime"
+      ]
     },
     {
       "id": "approvals.respond",
@@ -821,8 +883,15 @@
         "values": "For select, value must be one of the dialog's offered option ids; confirm/input/editor follow the decisionMatrix value rules.",
         "consume": "Exactly one response is admitted; consuming the dialog and relaying are one transaction. A stale, already-settled, cancelled or owner-changed dialog rejects with stale_owner, and the rejection never reaches Pi.",
         "optionId": "For select, payload.value is an opaque optionId (never the display label); the server matches it against the live dialog's offered option ids.",
-        "transaction": "settleApproval performs ONE transaction: recheck live dialog pending, owner, expiry and offered option, then consume and relay exactly once. The validated {requestId,owner,method,decision,value} tuple is what is relayed."
-      }
+        "transaction": "settleApproval performs ONE atomic claim-and-enqueue transaction: recheck live dialog pending + expiry + exact option set + typed owner + dialog revision, then consume AND enqueue the exact {requestId,owner,method,decision,value} tuple to Pi. It succeeds only when the response is durably enqueued; a relay failure leaves the dialog pending and resolves unavailable (retryable). A consumed-but-undelivered state cannot exist.",
+        "dialogRecord": "The pendingDialog record must carry requestId, typed owner (namespace+identity+projectId), method, pending=true, a finite expiresAtMs and a monotonic revision; options are opaque {optionId,label} records (never bare labels).",
+        "expiry": "A dialog with missing or malformed expiry is treated as unavailable, not live.",
+        "optionIds": "For select, value matches an optionId exactly; display labels are never accepted as answers."
+      },
+      "ownerRequirement": "approval",
+      "ownerNamespaces": [
+        "runtime"
+      ]
     }
   ],
   "eventStream": {
@@ -960,10 +1029,13 @@
                 },
                 "text": {
                   "type": "string",
-                  "maxUtf8Bytes": 32768
+                  "maxSerializedJsonBytes": 8192
                 }
               }
             }
+          },
+          "snapshotTruncated": {
+            "type": "boolean"
           }
         }
       },
@@ -989,7 +1061,7 @@
           },
           "text": {
             "type": "string",
-            "maxUtf8Bytes": 32768
+            "maxSerializedJsonBytes": 8192
           }
         }
       },
@@ -1045,7 +1117,7 @@
           },
           "options": {
             "type": "array",
-            "maxItems": 50,
+            "maxItems": 20,
             "items": {
               "type": "object",
               "required": [
@@ -1063,7 +1135,9 @@
                   "maxLength": 200
                 }
               }
-            }
+            },
+            "uniqueItemsBy": "optionId",
+            "description": "For method=select exactly the option set Pi offered; optionId is opaque and unique within the dialog, label is display text."
           }
         }
       },
@@ -1124,9 +1198,11 @@
       "algorithm": "Ed25519 (desktop service key)",
       "frameMessage": "protocolVersion + newline + deviceId + newline + serviceId + newline + streamGeneration + newline + sequence + newline + conversationId + newline + ownerRevision + newline + cursor + newline + event + newline + payload-digest",
       "streamGeneration": "Server-issued per-subscription monotonically increasing generation bound to the authenticated device; frames carry it and clients reject frames for other generations or devices.",
-      "cursorBinding": "Cursor encodes (deviceId, streamGeneration, lastSequence); foreign/expired cursors rejected with cursor_expired; sequence gaps produce explicit reset, never silent replay.",
+      "cursorBinding": "Cursor encodes (deviceId, streamGeneration, lastSequence); it is validated only for THIS subscription. Stale/foreign cursors produce a new-generation reset, malformed cursors reject the subscribe.",
       "authorizationRecheck": "Server revalidates device-active, per-event scope and current resource owner immediately before delivering each frame and each replayed/backlog frame; a frame whose scope or owner changed is dropped and the stream reset.",
-      "acceptance": "Structural validity is necessary but not sufficient: a frame is applied only if verified with the PINNED service key for the authenticated device, the device's scope covers the event's per-event scope, streamGeneration and sequence equal the expected values, and the current grant+owner still authorize the resource. Otherwise the frame is dropped and the stream reset."
+      "acceptance": "Structural validity is necessary but not sufficient: a frame is applied only if verified with the PINNED service key for the authenticated device, the device's scope covers the event's per-event scope, streamGeneration and sequence equal the expected values, and the current grant+owner still authorize the resource. Otherwise the frame is dropped and the stream reset.",
+      "resetMonotonic": "A reset frame is accepted only when it advances the expected position: fresh subscribe (no expected position) or streamGeneration strictly greater than expectedStreamGeneration. A stale or duplicate reset is rejected.",
+      "resourceAuthorization": "authorizeResource is MANDATORY for every ordinary frame and receives {deviceId, serviceId, conversationId, ownerRevision, event}; it re-verifies current grant+owner+revision immediately before the frame is applied. A reset frame does not carry it but must satisfy resetMonotonic."
     },
     "budgets": {
       "maxEventFrameBytes": 65536,
@@ -1144,8 +1220,18 @@
     "ownerRevisionAuthority": "The envelope-level ownerRevision is the single authoritative owner revision; payloads never carry a competing value.",
     "generationSemantics": "A reconnect with a valid cursor CONTINUES the prior streamGeneration and replays backlog newer than the cursor (after scope+owner recheck); a fresh subscription or an emitted reset starts a new streamGeneration. Ordinary frames are accepted only at the expected (generation, sequence); a reset frame establishes the new expected position and is not itself subject to a prior expected check.",
     "frameBudget": "canonical serialized frame must be <= maxEventFrameBytes; an oversized event is never signed, queued or delivered - the stream emits reset instead.",
-    "cursorFailure": "Malformed, foreign or oversized cursors fail subscribe-time validation as invalid_request (wire unauthorized). A well-formed but expired or stale cursor opens the stream and immediately yields exactly one reset event, never silent replay.",
-    "transcriptBounds": "message text, snapshot text and chat.send text all use maxTranscriptUtf8Bytes so an accepted message always fits a frame and a recovery snapshot; oversized submissions are rejected, never truncated silently."
+    "cursorFailure": "Unified rule: malformed/oversized -> invalid_request; well-formed but stale/foreign/expired -> new generation + one reset event. See cursorTransitionTable.",
+    "transcriptBounds": "chat.send text, message text and snapshot text are all bounded by maxTranscriptSerializedBytes measured on their JSON-serialized UTF-8 representation (the same bytes carried inside a frame), guaranteeing an accepted message always fits maxEventFrameBytes and a recovery snapshot. Oversized submissions are rejected, never silently truncated.",
+    "cursorTransitionTable": {
+      "absent": "Fresh subscribe: open a new streamGeneration for this subscription, start at the live head (or backlog head), no reset.",
+      "valid": "Cursor bound to this device AND this live streamGeneration: continue the SAME generation, replay backlog newer than cursor.",
+      "wellformedStale": "Well-formed cursor bound to this device but expired, generation-dead or below the retained floor: open a NEW greater streamGeneration and deliver exactly one reset event (reason=cursor_expired) before live frames.",
+      "foreign": "Well-formed but bound to another device: treated exactly like wellformedStale - new generation + reset; never a cross-device error leak.",
+      "malformed": "Pattern/length/encoding-invalid or oversized cursor: subscribe rejected invalid_request (wire unauthorized); stream never opens."
+    },
+    "concurrency": "Each subscription owns an isolated (streamGeneration, sequence, cursor) space; generations are per-subscription monotonic. Backlog budgets are shared per device. A reset applies to its own subscription only; device/grant/owner revocation resets every subscription for that resource or device.",
+    "errorCodes": null,
+    "snapshotWindow": "runtime.snapshot returns the newest messages within maxSnapshotMessages (256) AND the snapshot serialized-byte budget; if older history does not fit it is omitted from the head and the returned watermark (cursor+streamGeneration+sequence) still always permits forward recovery. A truncated snapshot sets snapshotTruncated=true."
   },
   "forbiddenCapabilities": [
     "generic-rpc",
@@ -1164,7 +1250,10 @@
     "singleTransaction": "Device-active check, scope check, resource-grant check, full-owner resolution and revision recheck happen inside ONE admission transaction; a concurrent revocation/owner change cannot interleave between them.",
     "typedResource": "The opaque resource id is resolved to a typed resource under an authorized project and the correct owner namespace (Classic cwd+session-header or Runtime backend+workspace-epoch+conversation+generation); a syntactically valid id of the wrong type/namespace is unknown_resource.",
     "ownerProof": "resolveOwner must return a fully-typed owner (namespace + identity + revision) proved from desktop state, never a bare current flag; owner-less or untyped results reject.",
-    "listFiltering": "projects.list and sessions.list filter each returned item through the same device grants; an ungranted item is absent, not redacted."
+    "listFiltering": "projects.list and sessions.list filter each returned item through the same device grants; an ungranted item is absent, not redacted.",
+    "ownerRequirement": "Each operation names an admission class: 'collection' (device+scope only; items are filtered per-grant - projects.list, events.subscribe), 'project' (owner resolved to the signed projectId), 'conversation' (owner resolved to the signed conversationId AND its owning project grant), 'approval' (owner resolved to the signed conversationId and the live dialog requestId). resolveOwner must return the full typed owner including projectId and the target conversationId/dialogId; admission compares those identities against the signed path and rejects mismatches or a namespace outside ownerNamespaces.",
+    "collectionAdmission": "projects.list and events.subscribe have no single resource owner: admission is device+scope only. projects.list rows and event frames are each authorized/filtered individually against current grants and owner before projection/delivery; an ungranted item is absent, not redacted.",
+    "admissionToken": "Admission produces a versioned admission token binding (deviceId, replayEpoch, scope, ownerEpoch, ownerRevision, projectId, resourceId, requestId, issuedAtMs). The effect must commit through commitAdmission which re-resolves the CURRENT owner/device and compares the token fields in a second atomic recheck at dispatch; a revoked device/grant or rolled owner between admission and dispatch rejects (stale_owner/stale_revision)."
   },
   "securityInvariants": [
     "remote-default-disabled",
@@ -1190,15 +1279,16 @@
     "replayStore": "atomic per-device nonce store; reject reused nonce and timestamp outside skew window",
     "validationNote": "Client utility verifies message construction and Ed25519 in fixtures only. Gateway must independently enforce TLS/service pinning, Ed25519, timestamp skew and atomic replay persistence before route dispatch.",
     "rawPayloadExposedToErrorsOrLogs": false,
-    "serviceId": "Canonical id derived from the bootstrap pin: 'svc-' + lowercase-hex(certFingerprint)[0:16]. The client obtains it only via the trusted QR/local channel; it is bound into every signed message and frame.",
+    "serviceId": "'svc-' + lowercase-hex(certFingerprint)[0:16], derived by the validator from the active trusted certificate pin; never accepted from the request.",
     "replay": {
       "model": "Atomic per-device nonce store consulted and written in one transaction before dispatch; a rejected or missing store fails closed.",
       "retentionSeconds": 180,
-      "retentionRule": "Each accepted nonce is retained until its signed timestamp is strictly older than now minus maximumClockSkewSeconds, so a still-fresh request can never re-enter.",
-      "acceptanceClock": "The server persists a monotonic acceptedTimestampFloor per device = max(seen). A request whose timestamp is below the persisted floor is rejected even inside the skew window; the floor never decreases, so a clock rollback or replay-state rebuild cannot re-admit an already-passed instant.",
+      "retentionRule": "A nonce is retained while its signed timestamp is >= acceptedTimestampFloor OR still inside the skew window. A nonce may be evicted only when timestamp < floor AND timestamp < effectiveNow - retentionSeconds; a nonce at the floor is never evicted while it could still pass the floor check.",
+      "acceptanceClock": "acceptedTimestampFloor is strictly monotonic max(seen); a request with timestamp STRICTLY below the floor is rejected even inside skew. Requests with timestamp equal to the floor still need a live nonce match, which is guaranteed by retentionRule.",
       "atCapacity": "fail_closed - new requests rejected with replay_rejected, never evict-live-nonce",
       "stateLoss": "Intact persisted replay state (nonces + acceptedTimestampFloor) is required for admission. On lost or corrupt state the device's authentication epoch is bumped (replayEpoch++); nonces and timestamps from the prior epoch are invalid and the device must re-pair before new requests are admitted - no silent accumulation.",
-      "clockChange": "Skew is measured against the server-accepted window; a wall-clock jump cannot extend admissible lifetime beyond retentionSeconds nor move the persisted floor backward."
+      "clockChange": "Skew is measured against the server-accepted window; a wall-clock jump cannot extend admissible lifetime beyond retentionSeconds nor move the persisted floor backward.",
+      "effectiveClock": "Server admission uses an effective clock = max(wallNow, persisted acceptedTimestampFloor); a wall-clock rollback can never widen the admissible window."
     },
     "rawTarget": {
       "utf8": "strict - request-target and body decoded with strict UTF-8; malformed or overlong byte sequences are rejected before normalization, never lossy-decoded then compared.",
@@ -1206,7 +1296,8 @@
       "duplicateHeader": "reject - repeated signed-header names are rejected before verification.",
       "cursorGrammar": "Malformed/foreign/oversized cursor on subscribe -> invalid_request (unauthorized wire); well-formed but expired/stale -> stream opens and delivers exactly one reset event."
     },
-    "replayEpochBinding": "x-pi-remote-epoch carries the device record's replayEpoch; a signature under an older epoch is rejected. re-pair and replay-state loss bump the epoch."
+    "replayEpochBinding": "x-pi-remote-epoch carries the device record's replayEpoch; a signature under an older epoch is rejected. re-pair and replay-state loss bump the epoch.",
+    "deviceRecordRequirements": "The device record must be complete and consistent BEFORE signature work: active===true, revoked!==true, expiresAt present+strictly future, replayEpoch present+safe-integer>=1, grantedScopes subset of vocabulary. serviceId must equal canonicalServiceId(serviceFingerprint) = 'svc-'+fingerprint[0:16] derived from the trusted pin - a caller-supplied noncanonical id is rejected."
   },
   "limits": {
     "maxRequestBytes": 262144,
@@ -1229,7 +1320,8 @@
     "maxChatTextUtf8Bytes": 32768,
     "maxApprovalValueUtf8Bytes": 2000,
     "maxGrantedScopes": 7,
-    "maxTranscriptUtf8Bytes": 32768
+    "maxTranscriptUtf8Bytes": 32768,
+    "maxTranscriptSerializedBytes": 8192
   },
   "remoteSetting": {
     "defaultEnabled": false,
@@ -1265,22 +1357,26 @@
     "test": "Synthetic secret/path/error markers must be asserted absent from responses, events and logs.",
     "fieldSources": {
       "project.displayName": "desktop project registry display name; redact on forbidden-value match",
-      "session.title": "session metadata title; redact on forbidden-value match",
       "message.text": "user/assistant transcript text; permitted raw conversation content but scanned for credential/token patterns before emission",
       "approval.title": "Pi dialog title; redact on forbidden-value match",
       "approval.message": "Pi dialog message; redact on forbidden-value match",
       "approval.options": "Pi dialog option labels; redact each on forbidden-value match",
       "error": "fixed closed code + retryable only; never a message field",
-      "enforcement": "Projection is applied to every response and event BEFORE signing, queueing or emission; a field that fails policy is omitted/redacted, never reflected."
-    }
+      "enforcement": "Projection is applied to every response and event BEFORE signing, queueing or emission; a field that fails policy is omitted/redacted, never reflected.",
+      "session.displayName": "session metadata title; redact on forbidden-value match",
+      "session.updatedAt": "derived RFC3339 instant emitted by the desktop session record; normalized to UTC Z",
+      "transcriptException": "The raw-conversation-content exception applies ONLY to these projected field paths: message.append.payload.text and runtime.snapshot.messages[].text. Even there, credential/token value patterns are still scanned and redacted; every other field gets full forbidden-value scanning (paths, credentials, env dumps, raw diagnostics)."
+    },
+    "optionConsistency": "One approval option schema and one bound (20) applies to approval.pending, approvals.list and the respond precondition; a select dialog always has >=1 options with unique optionIds. A dialog whose options exceed the bound is not projected (fails closed) rather than offering an incomplete set.",
+    "valueScanPatterns": "absolute POSIX path (leading '/', '~/', or '/.../' segment), drive path [A-Za-z]:[\\/], UNC \\\\, PI_GUI_TOKEN, api[_-]?key|token|secret|password values, Bearer <token>, private-key PEM markers, raw Pi RPC payload, environment dumps"
   },
   "idempotency": {
     "clientIds": "runtime.create uses clientConversationId; chat.send uses clientMessageId. Both are idempotency keys within the enclosing resource, not server identities.",
-    "namespace": "A mutation outcome is namespaced under (deviceId, resourceId, ownerEpoch). Because it is bound to the owner epoch, it lives as long as the owner it was admitted under - a wall-clock horizon cannot make a live-owner retry indistinguishable from a new request.",
-    "retry": "A retry (fresh nonce, same client id) under a CURRENT owner returns the durable recorded outcome or joins the live in-flight operation without a duplicate side effect.",
-    "conflict": "A same client id with a different payload is rejected payload_invalid.",
+    "namespace": "A mutation outcome is namespaced under (deviceId, resourceId, ownerEpoch). A retry is recognized ONLY under the same ownerEpoch resolved from the CURRENT owner record; under a rolled owner epoch the client id is simply a fresh key, never ambiguous.",
+    "mutationRecord": "{operationId, resourceId, clientId, payloadSha256, admittedOwnerEpoch, outcome, at} recorded in the same transaction as dispatch; a retry (fresh nonce, same client id, same epoch) returns the recorded outcome or joins the in-flight operation; same id + different payload -> payload_invalid.",
+    "evictionRule": "Outcomes are NEVER evicted while their ownerEpoch is live. Store capacity overflow refuses NEW mutations with operation_rejected (fail closed) rather than evicting a live tombstone; tombstones retire only with the owner epoch itself.",
     "underAuthorization": "Idempotent resolution happens under CURRENT device authorization (grant+scope+owner still valid); a replay of a now-unauthorized mutation resolves to the current authorization failure.",
-    "epochRolled": "When the owner epoch rolled and the tombstone was legitimately evicted with it, the server rejects with operation_rejected rather than risk a duplicate side effect - this is the fail-closed boundary."
+    "epochRolled": "After an owner-epoch roll the old outcome is unreachable (fresh namespace); this is by construction, not a retained-tombstone race."
   },
   "versionNegotiation": "v1 uses versioned routes (/remote/v1/...) only; there is no manifest endpoint. An unknown major version or path is rejected fail-closed; no silent downgrade or best-match routing.",
   "deviceLifecycle": {
@@ -1288,5 +1384,12 @@
     "rotation": "Rotating the TLS certificate or desktop service key invalidates all device bindings minted under the old pin and closes their live streams; devices must re-pair against the new bootstrap. Prior pins are never silently updated.",
     "revocation": "Device revocation is an authoritative transaction: mark revoked, reject all new requests, close that device's streams, and invalidate in-flight admission and outstanding approvals.",
     "replayEpoch": "Every device record carries replayEpoch, bumped on replay-state loss or re-pair; requests signed under an older epoch are rejected."
+  },
+  "transportAdapter": {
+    "stage": "Runs BEFORE object construction: the raw request-target string and raw header list are validated before any parsed {headers,query} object exists.",
+    "rawTarget": "validateRawTarget(rawTarget) enforces: strict UTF-8 decode of the raw bytes (reject malformed/overlong/BOM), valid percent-encoding (%XY uppercase or lowercase, no % at end, decoded octets valid UTF-8), exactly one '?' boundary, no repeated decoded parameter name, no blank name, at most 16 parameters, path matches an allowed charset. Signed target, routing and query use this same single parsed result.",
+    "rawHeaders": "Repeated header names are rejected before folding into an object; signed-header presence is checked on the raw list.",
+    "body": "rawBody must be the exact bytes used for bodySha256; strict UTF-8, no BOM, canonical JSON (sorted keys, no duplicate keys) before schema checks.",
+    "streamResetReserved": "The literal 'stream-reset' is rejected as a path-parameter value on every route."
   }
 }
