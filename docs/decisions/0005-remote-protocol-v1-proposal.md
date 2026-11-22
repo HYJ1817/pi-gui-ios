@@ -109,7 +109,7 @@ Scope 候选（需在 M0 逐项定稿）：`projects.read`、`sessions.read`、`
 
 ## 设计收敛（machine contract 草案）
 
-以上威胁模型与候选已收敛为机器可读合同 `docs/contracts/remote-v1.json`（status=`design-contract`），并由 `scripts/lib/remote-protocol-contract.mjs` + `tests/remote-contract.test.mjs`（27 项，`verify.mjs protocol-contract`）提供合成测试。该合同**仍是设计合同**：不冻结 API、不代表独立安全审查通过、不授权 M1 实现。权威签名消息与当前语义以 `docs/contracts/remote-v1.json` 为准（本条是叙述性摘要）。当前固定的设计点：
+以上威胁模型与候选已收敛为机器可读合同 `docs/contracts/remote-v1.json`（status=`design-contract`），并由 `scripts/lib/remote-protocol-contract.mjs` + `tests/remote-contract.test.mjs`（31 项，`verify.mjs protocol-contract`）提供合成测试。该合同**仍是设计合同**：不冻结 API、不代表独立安全审查通过、不授权 M1 实现。权威签名消息与当前语义以 `docs/contracts/remote-v1.json` 为准（本条是叙述性摘要）。当前固定的设计点：
 
 - **传输与身份**：独立 listener + HTTPS；不修改现有 `/api` 的 loopback+token 规则；远程默认关闭、只能由本机本地管理面开启（`remoteSetting`、`localAdminControl`）。
 - **配对**：POST 单次配对交换，6 位码 + `pairingSessionId` + Ed25519 设备密钥证明（`proofSignature` 签名 `remote-v1-pair\n` 域分隔消息）+ `serviceFingerprint`；默认仅授予读取 scope，写 scope 需桌面用户逐项启用；限 `maxPendingPairings`/`maxDevices`、原子消费、率限。

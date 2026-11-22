@@ -472,7 +472,8 @@
       "ownerRequirement": "project",
       "ownerNamespaces": [
         "runtime"
-      ]
+      ],
+      "projectionNote": "Every returned item.projectId MUST equal the signed {projectId} path parameter the request addressed (grant check AND address match); the gateway must not mix sessions across projects. filterGrantedResources validates grant presence; the projection layer additionally enforces this address equality."
     },
     {
       "id": "runtime.create",
@@ -609,6 +610,9 @@
           "sequence": {
             "type": "integer",
             "minimum": 1
+          },
+          "snapshotTruncated": {
+            "type": "boolean"
           }
         }
       },
@@ -1385,7 +1389,8 @@
     },
     "optionConsistency": "One approval option schema and bound (20) applies to approval.pending, approvals.list and respond; select always has >=1 options with unique optionIds ({1,128} chars). A select answer matches an offered optionId by the same {1,128} rule - the answer is no stricter than the option.",
     "valueScanPatterns": "absolute POSIX path (leading '/', '~/', or '/.../' segment), drive path [A-Za-z]:[\\/], UNC \\\\, PI_GUI_TOKEN, api[_-]?key|token|secret|password values, Bearer <token>, private-key PEM markers, raw Pi RPC payload, environment dumps",
-    "transcriptException": "The raw-conversation-content exception applies ONLY to: message.append.payload.text, runtime.snapshot.result.messages[].text, and event snapshot.payload.messages[].text. Even there credential/token value patterns are still scanned and redacted; every other field gets full forbidden-value scanning."
+    "transcriptException": "The raw-conversation-content exception applies ONLY to: message.append.payload.text, runtime.snapshot.result.messages[].text, and event snapshot.payload.messages[].text. Even there credential/token value patterns are still scanned and redacted; every other field gets full forbidden-value scanning.",
+    "valueScanOutOfScope": "Intentionally not scanned (declared out of projection scan scope): drive-relative paths 'C:relative', POSIX home-expansion '~user/x', and ordinary URLs (scheme://host/path). Only absolute POSIX, drive-absolute, UNC/URI-wrapped absolute, and credential/env-dump shapes are scanned; relative or scheme-wrapped URLs are not."
   },
   "idempotency": {
     "clientIds": "runtime.create uses clientConversationId; chat.send uses clientMessageId. Both are idempotency keys within the enclosing resource, not server identities.",

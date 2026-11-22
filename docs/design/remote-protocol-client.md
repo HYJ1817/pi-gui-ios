@@ -52,7 +52,7 @@ client 只接受 `responseEnvelope`：`{protocolVersion,requestId,operation,serv
 
 ## 配对 client
 
-`pair.exchange`（POST `/remote/v1/pair/exchange`，**唯一未认证**入口）只在桌面本地用户显式开启配对窗口后进行：`reservePairBudget → validatePairingSession → recordPairAttempt → verifyPairProof（设备 Ed25519 proof 绑定 code/displayName/deviceKey/nonce/serviceFp）→ verifyPairCode → confirmLocally → atomic 注册`。响应仅在 `outstandingExchange`（含 `serviceFingerprint`+`devicePublicKey`+nonce+精确 `requestedScopes==grantedScopes`+`replayEpoch`）原子核对后消费，单次退役。client 据此获得 `deviceId`、`grantedScopes`、`replayEpoch=1`、pin 住的 `serviceFingerprint` 与桌面服务公钥。
+`pair.exchange`（POST `/remote/v1/pair/exchange`，**唯一未认证**入口）只在桌面本地用户显式开启配对窗口后进行：`reservePairBudget → validatePairingSession → recordPairAttempt → verifyPairProof（设备 Ed25519 proof 绑定 code/displayName/deviceKey/nonce/serviceFp）→ verifyPairCode → confirmLocally → atomic 注册`。响应仅在 `outstandingExchange`（含 `serviceFingerprint`+`devicePublicKey`+nonce+精确 `requestedScopes==grantedScopes`+`replayEpoch`）原子核对后消费，单次退役。client 据此获得 `deviceId`、`grantedScopes`、**由注册事务分配的 `replayEpoch`（re-pair 会递增，不能硬编码为 1）**、pin 住的 `serviceFingerprint` 与桌面服务公钥；`replayEpoch` 在 `x-pi-remote-epoch` 里回显，直到下一次 re-pair。
 
 ## 错误与安全姿态
 

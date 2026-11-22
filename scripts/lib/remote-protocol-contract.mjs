@@ -93,13 +93,15 @@ function validateSchema(value,schema,depth=0) {
 const FORBIDDEN_VALUE=new RegExp([
   /(?:^|[^A-Za-z0-9_.\\/~])\/(?!\/)/.source,                     // absolute POSIX path start or '/seg' after any non-path char
   /\w+:\/\/+[A-Za-z]:[\\/]/.source,                                  // URI-scheme drive path (file:///C:/x)
-  /(?:^|[^A-Za-z0-9_.~\/])(?:[A-Za-z]:[\\/]|\\\\|~[\\/]|\\(?![\\w]))/.source, // drive / UNC / ~ / single-\ root path
+  /\w+:\/\/+\/(?:[A-Za-z0-9._~-]+\/)*[A-Za-z0-9._~-]+/.source,        // URI-scheme POSIX path (file:///etc/x)
+  /\/\/+[A-Za-z0-9._~-]+\//.source,                                   // forward-slash network/UNC path (//srv/share, smb://h/s)
+  /(?:^|[^A-Za-z0-9_.~\/])(?:[A-Za-z]:[\\/]|\\\\|~[\\/]|\\(?=[A-Za-z]))/.source, // drive / UNC / ~ / single-\ root path (\\Windows caught)
   /(?:^|[^A-Za-z0-9_.~\/])(?:home|Users|etc|private|var|opt|root|tmp|usr|bin|srv|mnt|data)[\\/][A-Za-z0-9._-]/.source,
   /(?:PI_GUI_TOKEN|api[_-]?key|oauth[_-]?token|-----BEGIN [A-Z ]*PRIVATE KEY-----)/.source,
   /(?:[Bb]earer\s+[A-Za-z0-9._-]{8,}|sk-[A-Za-z0-9]{8,})/.source,
-  /(?:password|passwd|secret|credential|token|api[_-]?key)\s*[:=]\s*["']?[^\s,;"']+/i.source,
-  /\b[A-Z][A-Z0-9_]{2,}(?:_KEY|_TOKEN|_SECRET|_PASSWORD|_CREDENTIAL)=["']?\S+/.source,
-  /(?:^|[^A-Za-z0-9_])[A-Z][A-Z0-9_]{2,}=["']?[^\s,;"']+/.source,        // generic env-dump NAME=["]value
+  /["']?(?:password|passwd|secret|credential|token|api[_-]?key)["']?\s*[:=]\s*["']?[^\s,;"']+/i.source,
+  /["']?\b[A-Z][A-Z0-9_]{2,}(?:_KEY|_TOKEN|_SECRET|_PASSWORD|_CREDENTIAL)["']?=["']?\S+/.source,
+  /(?:^|[^A-Za-z0-9_])[A-Z][A-Z0-9_]{2,}["']?=["']?[^\s,;"']+/.source,   // generic env-dump NAME=["]value
   /(?:^|[^A-Za-z0-9_.~\/])\\\\[A-Za-z0-9._-]+[\\]/.source,             // embedded UNC \\srv\dir after any non-path char
   /(?:ENOENT|ECONNREFUSED|stack trace|at [A-Za-z]+ \(|Error: )/.source,
 ].join('|'),'i');
@@ -107,8 +109,8 @@ const CREDENTIAL_VALUE=new RegExp([
   /(?:PI_GUI_TOKEN|-----BEGIN [A-Z ]*PRIVATE KEY-----)/.source,
   /(?:[Bb]earer\s+[A-Za-z0-9._-]{8,}|sk-[A-Za-z0-9]{8,})/.source,
   // assignment-shaped secrets: key=value / key: value / env dump NAME=value
-  /(?:api[_-]?key|oauth[_-]?token|secret|credential|password|passwd|token)\s*[:=]\s*["']?[^\s,;"']+/i.source,
-  /\b[A-Z][A-Z0-9_]{3,}(?:_KEY|_TOKEN|_SECRET|_PASSWORD)=["']?\S+/.source,
+  /["']?(?:api[_-]?key|oauth[_-]?token|secret|credential|password|passwd|token)["']?\s*[:=]\s*["']?[^\s,;"']+/i.source,
+  /["']?\b[A-Z][A-Z0-9_]{3,}(?:_KEY|_TOKEN|_SECRET|_PASSWORD)["']?=["']?\S+/.source,
 ].join('|'),'i');
 // Transcript exception paths: only these dotted key paths carry raw conversation
 // text that tolerates ordinary prose; they are still credential-scanned.
