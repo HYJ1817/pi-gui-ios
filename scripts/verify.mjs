@@ -9,8 +9,11 @@ const commands = {
   bundle: { program: 'npm', args: ['run', 'export:ios'], label: 'npm run export:ios' },
   doctor: { program: process.execPath, args: ['node_modules/expo-doctor/build/index.js'], label: 'node node_modules/expo-doctor/build/index.js' },
   'protocol-contract': { program: process.execPath, args: ['--test', 'tests/remote-contract.test.mjs'], label: 'node --test tests/remote-contract.test.mjs' },
+  // M1-remote integration: runs the desktop worktree's canonical remote/v1
+  // suites (contract 33 + gateway e2e 11) pinned to authority desktop.commit.
+  integration: { program: process.execPath, args: ['scripts/desktop-remote-verify.mjs'], label: 'node scripts/desktop-remote-verify.mjs' },
 };
-const command = commands[kind]; if (!command) throw new Error('Use unit, typecheck, bundle, doctor, protocol-contract');
+const command = commands[kind]; if (!command) throw new Error('Use unit, typecheck, bundle, doctor, protocol-contract, integration');
 const startedAt = new Date().toISOString(), fingerprint = sourceFingerprint(), commit = snapshot().commit;
 if (!commit) throw new Error('Commit the initial source before producing acceptance reports');
 const npmCli = command.program === 'npm' ? [process.env.npm_execpath, resolve(dirname(process.execPath), 'node_modules/npm/bin/npm-cli.js'), resolve(dirname(process.execPath), '../lib/node_modules/npm/bin/npm-cli.js')].find(path => path?.endsWith('npm-cli.js') && existsSync(path)) : null;
