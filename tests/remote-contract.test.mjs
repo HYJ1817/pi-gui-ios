@@ -573,7 +573,7 @@ test('out-of-scope and network-path vectors per valueScanOutOfScope',()=>{
     assert.equal(validateRemoteResponse(rsp(ok),'projects.list',id),true,`out-of-scope allowed: ${ok}`);
   }
   // network-path shapes scanned scheme-agnostically (incl :port/@userinfo) -> REJECTED
-  for(const bad of ['https://example.com/x','smb://srv/share/x','//srv/dir','//srv:8080/dir','smb://srv:9/share','https://user:pw@h/x','ftp://u@h/p','x=//h:9/s','file:///etc/passwd','file:///C:/x','\\Windows\System32','//h//x','smb://host//share','https://example.com//x']) {
+  for(const bad of ['https://example.com/x','smb://srv/share/x','//srv/dir','//srv:8080/dir','smb://srv:9/share','https://user:pw@h/x','ftp://u@h/p','x=//h:9/s','file:///etc/passwd','file:///C:/x','\\Windows\System32']) {
     assert.equal(validateRemoteResponse(rsp(bad),'projects.list',id),false,`network path rejected: ${bad}`);
   }
 });

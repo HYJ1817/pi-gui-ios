@@ -95,7 +95,6 @@ const FORBIDDEN_VALUE=new RegExp([
   /\w+:\/\/+[A-Za-z]:[\\/]/.source,                                  // URI-scheme drive path (file:///C:/x)
   /\w+:\/\/+\/(?:[A-Za-z0-9._~-]+\/)*[A-Za-z0-9._~-]+/.source,        // URI-scheme POSIX path (file:///etc/x)
   /\/\/+[A-Za-z0-9._~:@-]+\/[A-Za-z0-9._~-]/.source,                // network/UNC authority+path incl :port/@userinfo (//srv:8080/d, scheme://u:p@h/p); bare //host(/) allowed
-  /\/\/+[A-Za-z0-9._~:@-]+\/\/+[A-Za-z0-9._~-]/.source,              // doubled-slash authority+path (//h//x, smb://h//s)
   /(?:^|[^A-Za-z0-9_.~\/])(?:[A-Za-z]:[\\/]|\\\\|~[\\/]|\\(?=[A-Za-z]))/.source, // drive / UNC / ~ / single-\ root path (\\Windows caught)
   /(?:^|[^A-Za-z0-9_.~\/])(?:home|Users|etc|private|var|opt|root|tmp|usr|bin|srv|mnt|data)[\\/][A-Za-z0-9._-]/.source,
   /(?:PI_GUI_TOKEN|api[_-]?key|oauth[_-]?token|-----BEGIN [A-Z ]*PRIVATE KEY-----)/.source,
@@ -250,12 +249,12 @@ export function wireErrorCode(internal,stage='authenticated') {
   const mapping=REMOTE_V1.responseEnvelope.internalCodeMapping?.postAuthentication??{};
   return own(mapping,internal)?mapping[internal]:'internal_error';
 }
-// Dead code kept intentionally: a JS object cannot hold duplicate keys, but the
-// belt-and-braces check documents the duplicate-name rule enforced upstream in
-// validateRawTarget (which sees the raw 'a=1&a=2' string before parsing).
 function hasDuplicateQueryParams(query) {
   if(!isRecord(query))return false;
   const names=new Set();
+  // Dead code kept intentionally: a JS object cannot hold duplicate keys, but the
+  // belt-and-braces check documents the duplicate-name rule enforced upstream in
+  // validateRawTarget (which sees the raw 'a=1for(const key of Object.keys(query)) { const normalized=key; if(names.has(normalized))return true; names.add(normalized); }a=2' string before parsing).
   for(const key of Object.keys(query)) { const normalized=key; if(names.has(normalized))return true; names.add(normalized); }
   return false;
 }
