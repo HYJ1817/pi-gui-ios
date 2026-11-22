@@ -1,20 +1,20 @@
-✔ remote v1 contract is explicitly draft, HTTPS-only and disabled by default (1.2002ms)
-✔ operation ids, scopes and methods are unique and closed (0.1854ms)
-✔ pair exchange accepts only a short-lived-code payload shape (1.5519ms)
-✔ project and session reads accept only opaque ids and empty payloads (0.8642ms)
-✔ runtime creation requires a revision and does not allow classic cwd/path fields (0.4649ms)
-✔ chat send is bounded, revision-bound and not a command proxy (1.6199ms)
-✔ exact signed body bytes and parsed request body must agree (0.2259ms)
-✔ stop uses a typed operation and requires current owner revision (0.2277ms)
-✔ approval response is bound to a real opaque request id and closed method/decision (0.3201ms)
-✔ signature canonicalization binds protocol, request identity, path/query, timestamp, nonce and body digest (0.2843ms)
-✔ Ed25519 request signature, skew and atomic replay gate are exercised with synthetic keys (3.3878ms)
-✔ pair proof binds code, displayed name, device key, nonce and service fingerprint (2.8581ms)
-✔ signed operation requests require all device-authentication header shapes (0.2173ms)
-✔ event stream accepts only bounded cursor and signed device headers (0.1354ms)
-✔ per-device event envelope has event-specific closed payloads and forbids path/payload leakage (0.1323ms)
-✔ request envelope rejects unknown version, fields and duplicate transport paths (0.1958ms)
-✔ responses use operation-specific closed projections and never carry raw errors/secrets/paths (0.2115ms)
+✔ remote v1 contract is explicitly draft, HTTPS-only and disabled by default (1.1644ms)
+✔ operation ids, scopes and methods are unique and closed (0.1742ms)
+✔ pair exchange accepts only a short-lived-code payload shape (1.5055ms)
+✔ project and session reads accept only opaque ids and empty payloads (0.8443ms)
+✔ runtime creation requires a revision and does not allow classic cwd/path fields (0.5253ms)
+✔ chat send is bounded, revision-bound and not a command proxy (1.5206ms)
+✔ exact signed body bytes and parsed request body must agree (0.2371ms)
+✔ stop uses a typed operation and requires current owner revision (0.2062ms)
+✔ approval response is bound to a real opaque request id and closed method/decision (0.295ms)
+✔ signature canonicalization binds protocol, request identity, path/query, timestamp, nonce and body digest (0.2673ms)
+✔ Ed25519 request signature, skew and atomic replay gate are exercised with synthetic keys (3.7635ms)
+✔ pair proof binds code, displayed name, device key, nonce and service fingerprint (2.5322ms)
+✔ signed operation requests require all device-authentication header shapes (0.4836ms)
+✔ event stream accepts only bounded cursor and signed device headers (0.1582ms)
+✔ per-device event envelope has event-specific closed payloads and forbids path/payload leakage (0.1341ms)
+✔ request envelope rejects unknown version, fields and duplicate transport paths (0.4908ms)
+✔ responses use operation-specific closed projections and never carry raw errors/secrets/paths (0.3066ms)
 ℹ tests 17
 ℹ suites 0
 ℹ pass 17
@@ -22,4 +22,4 @@
 ℹ cancelled 0
 ℹ skipped 0
 ℹ todo 0
-ℹ duration_ms 132.4566
+ℹ duration_ms 127.5228

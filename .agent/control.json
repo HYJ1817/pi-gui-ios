@@ -1,8 +1,8 @@
 {
   "schemaVersion": 2,
   "kind": "control",
-  "revision": 436,
-  "updatedAt": "2026-11-22T02:39:40.627Z",
+  "revision": 444,
+  "updatedAt": "2026-11-22T02:44:40.427Z",
   "data": {
     "phase": "M0",
     "currentTask": "M0-architecture",
@@ -683,7 +683,24 @@
           "protocol-contract"
         ],
         "acceptance": "Owner-waived design-only progression while M-1 remains blocked. Draft architecture/protocol/threat model only; M0 acceptance still requires source evidence, protocol contract, unit tests and independent functional/security reviews. No M1 remote implementation or completion credit until all M0 gates pass.",
-        "evidence": [],
+        "evidence": [
+          {
+            "kind": "protocol-contract",
+            "path": "docs/acceptance/local-protocol-contract.json",
+            "sha256": "ff4078f27f24e8cf90b40374c904bc0feed0e41699f4dadd75acfc90f6741cd7",
+            "sourceFingerprint": "8d3a4bb43fd7eca0a76e5a1c1cb8bc917cba14ba3b5dd0f47cf516e22fd0f006",
+            "commit": "2a13a1d4dd5b6d92ba933427599449c792b542c0",
+            "at": "2026-11-22T02:44:39.576Z"
+          },
+          {
+            "kind": "unit",
+            "path": "docs/acceptance/local-unit.json",
+            "sha256": "8dbf063072adaac9608065eadd70a07de5edb46e377638376dce7a30e4a1c2cd",
+            "sourceFingerprint": "8d3a4bb43fd7eca0a76e5a1c1cb8bc917cba14ba3b5dd0f47cf516e22fd0f006",
+            "commit": "2a13a1d4dd5b6d92ba933427599449c792b542c0",
+            "at": "2026-11-22T02:44:40.391Z"
+          }
+        ],
         "updatedAt": "2026-11-21T13:47:29.393Z"
       },
       {
@@ -790,39 +807,36 @@
       }
     ],
     "checkpoint": {
-      "id": "v2-2026-11-22T02-39-40-627Z-34f83e53-722f-4211-ab8b-84030c1742c6",
-      "path": ".agent/checkpoints/v2-2026-11-22T02-39-40-627Z-34f83e53-722f-4211-ab8b-84030c1742c6.json",
-      "sha256": "c1b535ebb1f81750b9a87fbe32e0f3b621c19e18a990bb78b453573bd883d1f6",
-      "authorityDigest": "50be6c1076469ce0e5814ec5e414dcb6ba6a08d315133dbc5271320eb984bfe1",
-      "at": "2026-11-22T02:39:40.627Z",
+      "id": "v2-2026-11-22T02-44-40-427Z-4d05db3b-69a2-4e47-af9e-489aaaad7802",
+      "path": ".agent/checkpoints/v2-2026-11-22T02-44-40-427Z-4d05db3b-69a2-4e47-af9e-489aaaad7802.json",
+      "sha256": "e9e68f080423386b26d1987ed3b0b9a2ad59d5e4d39e826e55fd6862e688a885",
+      "authorityDigest": "1dd3582bfda105fc5c10f34b0e9ac24ac767a8df028529500e765b2c4bf41347",
+      "at": "2026-11-22T02:44:40.427Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "0b3745e4d71da50bbbf1bcf9b58bccdf450c54ce",
+        "commit": "2a13a1d4dd5b6d92ba933427599449c792b542c0",
         "dirty": [
           "M .agent/HANDOFF.md",
           " M .agent/control.json",
           " M .agent/state.json",
           " M .agent/tasks.json",
-          " M AGENTS.md",
           " M PROGRESS.md",
-          " M ROADMAP.md",
-          " M docs/acceptance/owner-waiver-m0-design-progression.md",
-          " M docs/architecture.md",
-          " M scripts/verify.mjs",
-          "?? .agent/checkpoints/v2-2026-11-21T13-57-54-053Z-af0ea517-04d2-4d18-b3f3-8a2a2762e5b3.json",
-          "?? .agent/checkpoints/v2-2026-11-21T14-13-44-294Z-8eb27176-2008-4d3f-8dfe-1bd93724993a.json",
-          "?? .agent/checkpoints/v2-2026-11-21T14-16-43-654Z-7f2f881d-950a-4c92-8e64-5c543b0b64f5.json",
-          "?? .agent/checkpoints/v2-2026-11-21T14-19-52-753Z-70288f67-a7bb-4f34-a70f-73465772c7d3.json",
-          "?? docs/acceptance/local-protocol-contract-output.txt",
-          "?? docs/acceptance/local-protocol-contract.json",
-          "?? docs/contracts/",
-          "?? docs/decisions/0006-final-device-acceptance-and-deferrals.md",
-          "?? scripts/lib/remote-protocol-contract.mjs",
-          "?? tests/remote-contract.test.mjs"
+          " M docs/acceptance/local-protocol-contract-output.txt",
+          " M docs/acceptance/local-protocol-contract.json",
+          " M docs/acceptance/local-unit-output.txt",
+          " M docs/acceptance/local-unit.json",
+          " M docs/acceptance/t3-vendor-inspection.json",
+          " M docs/contracts/remote-v1.json",
+          " M tests/remote-contract.test.mjs",
+          "?? .agent/checkpoints/v2-2026-11-22T02-42-03-094Z-d11f5321-1365-4858-b1aa-7ec92d41e7e1.json",
+          "?? .agent/checkpoints/v2-2026-11-22T02-42-50-659Z-c3050903-d317-4e5f-8038-715497740e16.json",
+          "?? .agent/checkpoints/v2-2026-11-22T02-43-48-941Z-ff9e25b1-c501-461d-b5a2-2d5cf4bef561.json",
+          "?? .agent/checkpoints/v2-2026-11-22T02-44-37-239Z-85975c3f-b662-480d-8bee-96a39f08f219.json",
+          "?? .agent/checkpoints/v2-2026-11-22T02-44-39-615Z-e05d8d41-f7a2-4b13-80f2-baeeb9118d1d.json"
         ]
       },
-      "sourceFingerprint": "9ea35b2663b1c5453e80d411d172535ad5841a2c7461b8259690a5a6e4f278af",
-      "note": "实际运行 node --test tests/remote-contract.test.mjs，exit=0"
+      "sourceFingerprint": "8d3a4bb43fd7eca0a76e5a1c1cb8bc917cba14ba3b5dd0f47cf516e22fd0f006",
+      "note": "agent-task evidence M0-architecture"
     },
     "nextAction": "真机/SideStore 验收统一移至全部软件实现、自动化/Simulator/IPA/审查完成后的最终一次清单，由用户亲自操作；中途不请求设备、不等待设备。Agent 对普通问题自主排障，三轮同类失败后记录 deferred/unverified 并继续无依赖工作。M-1 基础验证保持 blocked；M0 design 已先行，继续收敛协议/安全合同，不启用远程入口。",
     "delegates": [
@@ -896,6 +910,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "59ac2dfd3985ce2d7bdc5073557e8d5afc1859c22d2842a3c6f1d019a82c8d26"
+    "digest": "bddde97ebb6e7d3026f57f1f2b937d5e6e09b946bf86791b25d5495e4251f7ba"
   }
 }

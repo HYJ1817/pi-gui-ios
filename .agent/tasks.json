@@ -1,11 +1,11 @@
 {
   "schemaVersion": 2,
   "kind": "tasks",
-  "revision": 436,
-  "updatedAt": "2026-11-22T02:39:40.627Z",
+  "revision": 444,
+  "updatedAt": "2026-11-22T02:44:40.427Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "59ac2dfd3985ce2d7bdc5073557e8d5afc1859c22d2842a3c6f1d019a82c8d26",
+    "parentDigest": "bddde97ebb6e7d3026f57f1f2b937d5e6e09b946bf86791b25d5495e4251f7ba",
     "tasks": [
       {
         "id": "M-1-infrastructure",
@@ -570,7 +570,24 @@
           "protocol-contract"
         ],
         "acceptance": "Owner-waived design-only progression while M-1 remains blocked. Draft architecture/protocol/threat model only; M0 acceptance still requires source evidence, protocol contract, unit tests and independent functional/security reviews. No M1 remote implementation or completion credit until all M0 gates pass.",
-        "evidence": [],
+        "evidence": [
+          {
+            "kind": "protocol-contract",
+            "path": "docs/acceptance/local-protocol-contract.json",
+            "sha256": "ff4078f27f24e8cf90b40374c904bc0feed0e41699f4dadd75acfc90f6741cd7",
+            "sourceFingerprint": "8d3a4bb43fd7eca0a76e5a1c1cb8bc917cba14ba3b5dd0f47cf516e22fd0f006",
+            "commit": "2a13a1d4dd5b6d92ba933427599449c792b542c0",
+            "at": "2026-11-22T02:44:39.576Z"
+          },
+          {
+            "kind": "unit",
+            "path": "docs/acceptance/local-unit.json",
+            "sha256": "8dbf063072adaac9608065eadd70a07de5edb46e377638376dce7a30e4a1c2cd",
+            "sourceFingerprint": "8d3a4bb43fd7eca0a76e5a1c1cb8bc917cba14ba3b5dd0f47cf516e22fd0f006",
+            "commit": "2a13a1d4dd5b6d92ba933427599449c792b542c0",
+            "at": "2026-11-22T02:44:40.391Z"
+          }
+        ],
         "updatedAt": "2026-11-21T13:47:29.393Z"
       },
       {
@@ -679,6 +696,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "f347ba5b8a56104bbbf2a38185b1049054a7d01bfa60585b9c093b87abf652b0"
+    "digest": "ac65ee43ba42e2d231574e34ce3bee61444fa5377a6431aa3b2cda4dd970212c"
   }
 }
