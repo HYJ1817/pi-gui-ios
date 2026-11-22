@@ -1,11 +1,11 @@
 {
   "schemaVersion": 2,
   "kind": "state",
-  "revision": 514,
-  "updatedAt": "2026-11-22T04:25:26.857Z",
+  "revision": 515,
+  "updatedAt": "2026-11-22T04:25:38.109Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "780d103540e1f6b59567d3433846cd84ee9210e59be7553d408f1e805cda5fe4",
+    "parentDigest": "62da9d9612629baaf80cd267ded4607fc23efe0317d3a7bcc4f9defd94c3d3ce",
     "phase": "M0",
     "currentTask": "M0-architecture",
     "branch": "agent/m-1-bootstrap",
@@ -310,11 +310,17 @@
         "role": "m0-combined-functional-security-review",
         "status": "completed",
         "sourceCommit": "f21ddcb80de0c414d422b8eddf8253407346ef55"
+      },
+      {
+        "taskId": "delegate-task:7d44a3d2-3dcf-4e5b-baae-0348420a73e1",
+        "role": "m0-combined-functional-security-review",
+        "status": "working",
+        "sourceCommit": "231b931cd02fc5e833ea8368158939299217cc04"
       }
     ]
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "6f624dcd3e35d9f02d20ca301e2a6c8545c775650134bdd12751f6e9520f10e7"
+    "digest": "85915ee68b0901fadaa84d6f5463a99383e53dd7e7ca56a65da50fea405992d7"
   }
 }
