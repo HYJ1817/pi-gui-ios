@@ -300,15 +300,40 @@
         "stale_owner": "stale_owner",
         "stale_revision": "stale_revision",
         "unknown_resource": "unknown_resource",
-        "cursor_expired": "cursor_expired",
         "sequence_gap": "sequence_gap",
         "rate_limited": "rate_limited",
         "server_busy": "server_busy",
         "unavailable": "unavailable",
         "payload_invalid": "payload_invalid",
-        "invalid_request": "invalid_request"
+        "invalid_request": "invalid_request",
+        "service_identity_invalid": "unauthorized",
+        "device_grants_invalid": "unauthorized",
+        "grant_store_unavailable": "unavailable",
+        "relay_failed": "unavailable",
+        "operation_rejected": "operation_rejected",
+        "frame_invalid": "invalid_request",
+        "frame_context_required": "unavailable",
+        "frame_signature_invalid": "unauthorized"
       },
-      "preAuthenticationDetail": "Internal codes such as signature_expired, signature_invalid, device_identity_mismatch, replay_store_unavailable, body_parse_mismatch are NEVER sent; they map per internalCodeMapping to a closed wire code."
+      "preAuthenticationDetail": "Internal codes such as signature_expired, signature_invalid, device_identity_mismatch, replay_store_unavailable, body_parse_mismatch are NEVER sent; they map per internalCodeMapping to a closed wire code.",
+      "pairExchange": {
+        "route_mismatch": "unauthorized",
+        "pair_headers_invalid": "unauthorized",
+        "pair_payload_invalid": "payload_invalid",
+        "service_fingerprint_mismatch": "unauthorized",
+        "pair_rate_limited": "rate_limited",
+        "pairing_session_invalid": "pairing_expired",
+        "pairing_rejected": "pairing_rejected",
+        "pair_proof_invalid": "unauthorized",
+        "scopes_invalid": "payload_invalid",
+        "desktop_confirmation_required": "unavailable",
+        "pair_response_invalid": "internal_error",
+        "pair_signing_failed": "internal_error",
+        "pair_store_unavailable": "unavailable",
+        "pair_code_consumed_or_limited": "pairing_rejected",
+        "pair_rate_limiter_unavailable": "unavailable",
+        "query_invalid": "unauthorized"
+      }
     },
     "requestIdCorrelation": "When a signed request fails before a valid requestId is established, or a pairing exchange has no request UUID, the wire error echoes a fixed all-zero UUID (00000000-0000-0000-0000-000000000000) in requestId; internal correlation uses the attempt log, never a reflected attacker value.",
     "requestIdPolicy": "requestId is a required string UUID echoing the signed request. The all-zero UUID is permitted ONLY on pre-authentication failures where the wire code is 'unauthorized' (correlation impossible); success responses and authenticated errors always echo the real request id. Non-string or array requestId values are rejected before matching.",
@@ -764,8 +789,7 @@
                       }
                     }
                   },
-                  "uniqueItemsBy": "optionId",
-                  "description": "For method=select exactly the option set Pi offered; optionId is opaque and unique within the dialog, label is display text."
+                  "uniqueItemsBy": "optionId"
                 }
               }
             }
@@ -1136,8 +1160,7 @@
                 }
               }
             },
-            "uniqueItemsBy": "optionId",
-            "description": "For method=select exactly the option set Pi offered; optionId is opaque and unique within the dialog, label is display text."
+            "uniqueItemsBy": "optionId"
           }
         }
       },
@@ -1294,7 +1317,7 @@
       "utf8": "strict - request-target and body decoded with strict UTF-8; malformed or overlong byte sequences are rejected before normalization, never lossy-decoded then compared.",
       "duplicateQueryParameter": "reject - the raw request-target is parsed and any repeated parameter name, blank name, or ambiguous percent-encoding is rejected; signing and routing use the same single parsed target.",
       "duplicateHeader": "reject - repeated signed-header names are rejected before verification.",
-      "cursorGrammar": "Malformed/foreign/oversized cursor on subscribe -> invalid_request (unauthorized wire); well-formed but expired/stale -> stream opens and delivers exactly one reset event."
+      "cursorGrammar": "Malformed/oversized cursor on subscribe -> invalid_request (unauthorized wire). Well-formed but stale, expired or FOREIGN cursor -> new generation + exactly one reset event (no cross-device disclosure). See eventStream.cursorTransitionTable."
     },
     "replayEpochBinding": "x-pi-remote-epoch carries the device record's replayEpoch; a signature under an older epoch is rejected. re-pair and replay-state loss bump the epoch.",
     "deviceRecordRequirements": "The device record must be complete and consistent BEFORE signature work: active===true, revoked!==true, expiresAt present+strictly future, replayEpoch present+safe-integer>=1, grantedScopes subset of vocabulary. serviceId must equal canonicalServiceId(serviceFingerprint) = 'svc-'+fingerprint[0:16] derived from the trusted pin - a caller-supplied noncanonical id is rejected."
@@ -1367,8 +1390,9 @@
       "session.updatedAt": "derived RFC3339 instant emitted by the desktop session record; normalized to UTC Z",
       "transcriptException": "The raw-conversation-content exception applies ONLY to these projected field paths: message.append.payload.text and runtime.snapshot.messages[].text. Even there, credential/token value patterns are still scanned and redacted; every other field gets full forbidden-value scanning (paths, credentials, env dumps, raw diagnostics)."
     },
-    "optionConsistency": "One approval option schema and one bound (20) applies to approval.pending, approvals.list and the respond precondition; a select dialog always has >=1 options with unique optionIds. A dialog whose options exceed the bound is not projected (fails closed) rather than offering an incomplete set.",
-    "valueScanPatterns": "absolute POSIX path (leading '/', '~/', or '/.../' segment), drive path [A-Za-z]:[\\/], UNC \\\\, PI_GUI_TOKEN, api[_-]?key|token|secret|password values, Bearer <token>, private-key PEM markers, raw Pi RPC payload, environment dumps"
+    "optionConsistency": "One approval option schema and bound (20) applies to approval.pending, approvals.list and respond; select always has >=1 options with unique optionIds ({1,128} chars). A select answer matches an offered optionId by the same {1,128} rule - the answer is no stricter than the option.",
+    "valueScanPatterns": "absolute POSIX path (leading '/', '~/', or '/.../' segment), drive path [A-Za-z]:[\\/], UNC \\\\, PI_GUI_TOKEN, api[_-]?key|token|secret|password values, Bearer <token>, private-key PEM markers, raw Pi RPC payload, environment dumps",
+    "transcriptException": "The raw-conversation-content exception applies ONLY to: message.append.payload.text, runtime.snapshot.result.messages[].text, and event snapshot.payload.messages[].text. Even there credential/token value patterns are still scanned and redacted; every other field gets full forbidden-value scanning."
   },
   "idempotency": {
     "clientIds": "runtime.create uses clientConversationId; chat.send uses clientMessageId. Both are idempotency keys within the enclosing resource, not server identities.",

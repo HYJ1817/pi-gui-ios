@@ -109,14 +109,14 @@ Scope 候选（需在 M0 逐项定稿）：`projects.read`、`sessions.read`、`
 
 ## 设计收敛（machine contract 草案）
 
-以上威胁模型与候选已收敛为机器可读合同 `docs/contracts/remote-v1.json`（status=draft），并由 `scripts/lib/remote-protocol-contract.mjs` + `tests/remote-contract.test.mjs`（17 项，`verify.mjs protocol-contract`）提供合成测试。该合同**仍是草案**：不冻结 API、不代表独立安全审查通过、不授权 M1 实现。当前固定的设计点：
+以上威胁模型与候选已收敛为机器可读合同 `docs/contracts/remote-v1.json`（status=`design-contract`），并由 `scripts/lib/remote-protocol-contract.mjs` + `tests/remote-contract.test.mjs`（27 项，`verify.mjs protocol-contract`）提供合成测试。该合同**仍是设计合同**：不冻结 API、不代表独立安全审查通过、不授权 M1 实现。权威签名消息与当前语义以 `docs/contracts/remote-v1.json` 为准（本条是叙述性摘要）。当前固定的设计点：
 
 - **传输与身份**：独立 listener + HTTPS；不修改现有 `/api` 的 loopback+token 规则；远程默认关闭、只能由本机本地管理面开启（`remoteSetting`、`localAdminControl`）。
 - **配对**：POST 单次配对交换，6 位码 + `pairingSessionId` + Ed25519 设备密钥证明（`proofSignature` 签名 `remote-v1-pair\n` 域分隔消息）+ `serviceFingerprint`；默认仅授予读取 scope，写 scope 需桌面用户逐项启用；限 `maxPendingPairings`/`maxDevices`、原子消费、率限。
-- **签名请求**：6 个签名头（device/request-id/timestamp/nonce/body-sha256/signature，另有固定 content-type/accept 规则），消息 = `version\ndeviceId\nserviceId\nrequestId\nMETHOD\npath?canonicalQuery\ntimestamp\nnonce\nbodySha256`；Ed25519；`signatureClockSkewSeconds=60`；每设备原子 nonce 存储 + 单调 acceptedTimestampFloor（replay 容量/掉状态 fail-closed，跨 skew 窗口保留）。版本协商仅 versioned route（无 manifest）。
+- **签名请求**：7 个签名头（device/epoch/request-id/timestamp/nonce/body-sha256/signature，另有固定 content-type/accept 规则），消息 = `version\ndeviceId\nserviceId\nreplayEpoch\nrequestId\nMETHOD\npath?canonicalQuery\ntimestamp\nnonce\nbodySha256`（权威定义见 `signedRequest.signedMessage`）；Ed25519；`signatureClockSkewSeconds=60`；每设备原子 nonce 存储 + 单调 acceptedTimestampFloor（replay 容量/掉状态 fail-closed，跨 skew 窗口保留）。版本协商仅 versioned route（无 manifest）。
 - **操作闭集（8 个）**：`GET projects`、`GET projects/{projectId}/sessions`、`POST projects/{projectId}/conversations`、`GET conversations/{conversationId}/snapshot`、`POST messages`、`POST stop`、`GET approvals`、`POST approvals/{requestId}/respond`。路径参数只接受不透明 ID 模式；POST body 必须是 canonical JSON（排序键、紧凑分隔符）以便 body digest 可验。
 - **事件流**：单设备 cursor、6 种闭集事件（`snapshot/message.append/conversation.status/approval.pending/approval.settled/reset`），gap→显式 reset，per-device backlog 上限，`mustFilterByCurrentResourceOwner` 与 `mustRevalidateAuthorizationBeforeReplay` 为合同要求。
-- **错误码闭集（18 个）**：`unauthorized/pairing_*/rate_limited/scope_denied/stale_owner/stale_revision/unknown_resource/operation_rejected/replay_rejected/cursor_expired/sequence_gap/server_busy/unavailable/invalid_request/payload_invalid/internal_error`；不允许回传原始错误文本/路径/凭据。
+- **错误码闭集（17 个）**：`unauthorized/pairing_*/rate_limited/scope_denied/stale_owner/stale_revision/unknown_resource/operation_rejected/replay_rejected/sequence_gap/server_busy/unavailable/invalid_request/payload_invalid/internal_error`（`cursor_expired` 仅为 reset reason，不再是 wire error）；不允许回传原始错误文本/路径/凭据。
 - **Scope 词表（7 项）**：`projects.read / sessions.read / sessions.create / chat.send / chat.stop / approvals.read / approvals.respond`；服务端每次操作重验 scope 与 owner。
 
 **桌面装配点（worktree 对照，非改动授权）**：在干净 worktree `C:/pi-GUI-remote-protocol`（`feat/mobile-remote-protocol-v1` @ `3850e781`，main CI 44918456748 通过）上复核组合根。装配候选仍是 `server.js` 组合根处新增第二个 HTTP server（独立 listener、独立 router、不共享本地 `auth.js` token 路径），与 `af0432a0` 基线 `server.js:1719,1875` 一致；不改动现有 `/api/*` 分派。桌面仓库未做任何提交。该 worktree 的 `npm test` 在本机 Windows 有 3 个 `prepareCredentialStorage` 环境性失败（Windows 权限语义，与远程工作无关），记录为 deferred/unverified。

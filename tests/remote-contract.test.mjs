@@ -225,7 +225,7 @@ test('pair proof binds code, displayed name, device key, nonce and service finge
   assert.equal(approved.ok,true); assert.equal(registered,1); assert.equal(attempts,1); assert.deepEqual(confirmed.requestedScopes,scopes);
   assert.equal(confirmed.pairCode,'042817'); assert.equal(confirmed.clientNonce,body.clientNonce); assert.equal(typeof confirmed.proofTranscript,'string');
   // response needs a live outstanding exchange; retired atomically; single-use
-  const outstanding={clientNonce:body.clientNonce,requestedScopes:scopes,expiresAtMs:Date.now()+60000,serviceFingerprint:fingerprint,desktopPublicKey:desktop.publicKeyRaw};
+  const outstanding={clientNonce:body.clientNonce,requestedScopes:scopes,expiresAtMs:Date.now()+60000,serviceFingerprint:fingerprint,desktopPublicKey:desktop.publicKeyRaw,devicePublicKey:body.devicePublicKey};
   let retired=0;
   assert.equal(verifyPairExchangeResponse(approved.response,desktop.publicKeyRaw,approved.requestId,{outstandingExchange:outstanding,retireExchange:()=>{retired++;return true;},serviceFingerprint:fingerprint}),true);
   assert.equal(retired,1);
@@ -242,11 +242,17 @@ test('pair proof binds code, displayed name, device key, nonce and service finge
   let sessionLookedUp=false;
   assert.equal(authorizePairExchange({request,expectedServiceFingerprint:fingerprint,peerId:'peer-1',reservePairBudget:()=>false,validatePairingSession:()=>{sessionLookedUp=true;return true;},recordPairAttempt:()=>true,verifyPairCode:()=>true,confirmLocally:()=>'a',consumePairingCodeAndRegisterDevice:()=>true,grantedScopes:scopes,deviceId:'d_12345678',serverNonce:Buffer.alloc(32,4).toString('base64url'),expiresAt,desktopPrivateKey:privateRaw}).code,'pair_rate_limited');
   assert.equal(sessionLookedUp,false);
-  // wrong code: attempt charged but confirmation never reached
+  // wrong code with a VALID proof: attempt charged, proof passes, code fails -> pairing_rejected
   let prompted2=false;
-  const badCode={...request,body:{...request.body,pairCode:'999999'}};
+  const badBody={...request.body,pairCode:'999999'};
+  badBody.proofSignature=sign(null,Buffer.from(buildPairProofMessage(badBody),'utf8'),pair.privateKey).toString('base64url');
+  const badCode={...request,body:badBody};
   badCode.rawBody=canonicalJson(badCode.body);
   assert.equal(authorizePairExchange({request:badCode,expectedServiceFingerprint:fingerprint,peerId:'peer-1',reservePairBudget:()=>true,validatePairingSession:()=>true,recordPairAttempt:()=>true,verifyPairCode:()=>false,confirmLocally:()=>{prompted2=true;return 'a';},consumePairingCodeAndRegisterDevice:()=>true,grantedScopes:scopes,deviceId:'device_12345678',serverNonce:Buffer.alloc(32,4).toString('base64url'),expiresAt,desktopPrivateKey:privateRaw}).code,'pairing_rejected');
+  // a wrong code with an INVALID proof is rejected as pair_proof_invalid (no correct/wrong-code oracle)
+  const badProof={...request,body:{...request.body,pairCode:'999999'}};
+  badProof.rawBody=canonicalJson(badProof.body);
+  assert.equal(authorizePairExchange({request:badProof,expectedServiceFingerprint:fingerprint,peerId:'peer-1',reservePairBudget:()=>true,validatePairingSession:()=>true,recordPairAttempt:()=>true,verifyPairCode:()=>false,confirmLocally:()=>'a',consumePairingCodeAndRegisterDevice:()=>true,grantedScopes:scopes,deviceId:'device_12345678',serverNonce:Buffer.alloc(32,4).toString('base64url'),expiresAt,desktopPrivateKey:privateRaw}).code,'pair_proof_invalid');
   assert.equal(prompted2,false);
   // live session must exist BEFORE confirmation
   let prompted=false;
@@ -365,7 +371,7 @@ test('device grants and owner recheck gate admission (IDOR / stale owner / subst
   const ownedConvo='conversation_12345678';
   const send=(path,ownerRev=3)=>signedRequest(request('chat.send',path,{clientMessageId:id,text:'x'},{ownerRevision:ownerRev}),pair,Buffer.alloc(32,10).toString('base64url'),ts);
   const baseArgs={device,serviceId:SERVICE_ID,serviceFingerprint:SERVICE_FP,nowMs:Number(ts),consumeNonce:()=>true};
-  const granted=()=>({current:true,revision:3,namespace:'runtime',identity:'rt-1',projectId:'project_12345678',conversationId:ownedConvo});
+  const granted=()=>({current:true,revision:3,epoch:9,namespace:'runtime',identity:'rt-1',projectId:'project_12345678',conversationId:ownedConvo});
   // conversation in a granted project + current full owner admits
   const ok=authorizeRemoteOperation({...baseArgs,request:send(`/remote/v1/conversations/${ownedConvo}/messages`),resolveOwner:()=>granted()});
   assert.equal(ok.ok,true); assert.equal(ok.owner.namespace,'runtime');
@@ -404,8 +410,8 @@ test('approval settlement resolves and consumes a live Pi dialog exactly once',(
   const device={deviceId:'device_abc12345',devicePublicKey:pair.publicKeyRaw,grantedScopes:['approvals.respond'],active:true,replayEpoch:1,expiresAt:new Date(Date.now()+3600000).toISOString(),grants:{'project_12345678':true}};
   const ts=Date.now().toString();
   const respond=(method='confirm',decision='allow',value)=>signedRequest(request('approvals.respond',`/remote/v1/conversations/conversation_12345678/approvals/${reqId}/respond`,{method,decision,...(value===undefined?{}:{value})},{ownerRevision:5}),pair,Buffer.alloc(32,14).toString('base64url'),ts);
-  const owner={current:true,revision:5,namespace:'runtime',identity:'rt-1',projectId:'project_12345678',conversationId:'conversation_12345678'};
-  const dialog={requestId:reqId,owner:'rt-1',pending:true,method:'confirm',expiresAtMs:Date.now()+60000};
+  const owner={current:true,revision:5,epoch:9,namespace:'runtime',identity:'rt-1',projectId:'project_12345678',conversationId:'conversation_12345678',dialogId:reqId};
+  const dialog={requestId:reqId,owner:'rt-1',pending:true,method:'confirm',expiresAtMs:Date.now()+60000,revision:0,projectId:'project_12345678'};
   let consumed=0;
   const base={device,serviceId:SERVICE_ID,serviceFingerprint:SERVICE_FP,deviceResolveOwner:()=>owner,pendingDialog:dialog,consumeDialog:({requestId,owner,method,decision,value})=>{consumed++;assert.equal(requestId,reqId);assert.equal(owner,'rt-1');assert.equal(method,'confirm');assert.equal(decision,'allow');const ok=consumed===1;if(ok)dialog.pending=false;return ok;},nowMs:Number(ts),consumeNonce:()=>true};
   const ok=settleApproval({...base,request:respond()});
@@ -413,7 +419,7 @@ test('approval settlement resolves and consumes a live Pi dialog exactly once',(
   // duplicate settlement: dialog already consumed -> second consume returns false
   assert.equal(settleApproval({...base,request:respond()}).code,'stale_owner');
   // wrong method vs authoritative dialog, stale owner, non-pending, option not offered
-  const selectDialog=options=>({requestId:reqId,owner:'rt-1',pending:true,method:'select',expiresAtMs:Date.now()+60000,options});
+  const selectDialog=options=>({requestId:reqId,owner:'rt-1',pending:true,method:'select',expiresAtMs:Date.now()+60000,revision:0,projectId:'project_12345678',options});
   assert.equal(settleApproval({...base,request:respond('select','answer','opt_xxx000'),pendingDialog:selectDialog([{optionId:'opt_aaa000',label:'A'}])}).code,'payload_invalid');
   // bare display label is never accepted as an answer
   assert.equal(settleApproval({...base,request:respond('select','answer','Label text'),pendingDialog:selectDialog([{optionId:'opt_xxx000',label:'Label text'}])}).code,'payload_invalid');
@@ -465,8 +471,8 @@ test('raw transport adapter rejects duplicate names, bad encoding, BOM and reser
 });
 
 test('admission token recheck binds owner, device epoch and project at commit',()=>{
-  const device={deviceId:'device_abc12345',devicePublicKey:'k',active:true,replayEpoch:1,grantedScopes:['chat.send'],grants:{project_12345678:true}};
-  const owner={current:true,revision:3,epoch:9,projectId:'project_12345678',namespace:'runtime',identity:'rt-1'};
+  const device={deviceId:'device_abc12345',devicePublicKey:'k',active:true,replayEpoch:1,expiresAt:new Date(Date.now()+3600000).toISOString(),grantedScopes:['chat.send'],grants:{project_12345678:true}};
+  const owner={current:true,revision:3,epoch:9,projectId:'project_12345678',namespace:'runtime',identity:'rt-1',conversationId:'conversation_12345678'};
   const token={deviceId:'device_abc12345',replayEpoch:1,scope:'chat.send',ownerEpoch:9,ownerRevision:3,projectId:'project_12345678',resourceId:'conversation_12345678',requestId:id,issuedAtMs:Date.now()};
   assert.equal(commitAdmission({admissionToken:token,device,resolveOwner:()=>owner}).ok,true);
   assert.equal(commitAdmission({admissionToken:token,device:{...device,revoked:true},resolveOwner:()=>owner}).code,'device_inactive');

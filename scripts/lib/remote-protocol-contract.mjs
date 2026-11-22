@@ -24,11 +24,15 @@ const DER_ED25519_PREFIX=Buffer.from('302a300506032b6570032100','hex');
 const DER_ED25519_PRIVATE_PREFIX=Buffer.from('302e020100300506032b657004220420','hex');
 
 const MAX_JSON_DEPTH = REMOTE_V1.limits?.maxJsonDepth ?? 16;
-function canonicalJson(value,depth=0) {
-  if(depth>MAX_JSON_DEPTH)return null;
-  if(Array.isArray(value)){const items=value.map(item=>canonicalJson(item,depth+1));return items.some(item=>item===null)?null:`[${items.join(',')}]`;}
-  if(isRecord(value)){const parts=Object.keys(value).sort().map(key=>{const inner=canonicalJson(value[key],depth+1);return inner===null?null:`${JSON.stringify(key)}:${inner}`;});return parts.some(part=>part===null)?null:`{${parts.join(',')}}`;}
-  return JSON.stringify(value);
+// Total canonicalizer: never throws. Cycles, BigInt and non-serializable inputs
+// return null (fail closed) instead of crashing the validation path.
+function canonicalJson(value,depth=0,seen=new Set()) {
+  try {
+    if(depth>MAX_JSON_DEPTH)return null;
+    if(Array.isArray(value)){if(seen.has(value))return null;seen.add(value);const items=value.map(item=>canonicalJson(item,depth+1,seen));seen.delete(value);return items.some(item=>item===null)?null:`[${items.join(',')}]`;}
+    if(isRecord(value)){if(seen.has(value))return null;seen.add(value);const parts=Object.keys(value).sort().map(key=>{const inner=canonicalJson(value[key],depth+1,seen);return inner===null?null:`${JSON.stringify(key)}:${inner}`;});seen.delete(value);return parts.some(part=>part===null)?null:`{${parts.join(',')}}`;}
+    return JSON.stringify(value) ?? null;
+  } catch { return null; }
 }
 function strictUtf8(bytes) { try { return new TextDecoder('utf-8',{fatal:true}).decode(bytes); } catch { return null; } }
 function b64url(bytes) {return Buffer.from(bytes).toString('base64url');}
@@ -92,7 +96,9 @@ const FORBIDDEN_VALUE=new RegExp([
   /(?:^|[^A-Za-z])(?:home|Users|etc|private|var|opt|root|tmp|usr|bin|srv|mnt|data)[\\/][A-Za-z0-9._-]/.source,
   /(?:PI_GUI_TOKEN|api[_-]?key|oauth[_-]?token|-----BEGIN [A-Z ]*PRIVATE KEY-----)/.source,
   /(?:[Bb]earer\s+[A-Za-z0-9._-]{8,}|sk-[A-Za-z0-9]{8,})/.source,
-  /(?:password|passwd|secret|credential|env[A-Z0-9_]*\s*=)/i.source,
+  /(?:password|passwd|secret|credential|token|api[_-]?key)\s*[:=]\s*[^\s,;"']+/i.source,
+  /\b[A-Z][A-Z0-9_]{2,}(?:_KEY|_TOKEN|_SECRET|_PASSWORD|_CREDENTIAL)=\S+/.source,
+  /(?:^|[\s(\[{])\\\\[A-Za-z0-9._-]+[\\]/.source,                    // embedded UNC \\srv\dir
   /(?:ENOENT|ECONNREFUSED|stack trace|at [A-Za-z]+ \(|Error: )/.source,
 ].join('|'),'i');
 const CREDENTIAL_VALUE=new RegExp([
@@ -104,7 +110,7 @@ const CREDENTIAL_VALUE=new RegExp([
 ].join('|'),'i');
 // Transcript exception paths: only these dotted key paths carry raw conversation
 // text that tolerates ordinary prose; they are still credential-scanned.
-const TRANSCRIPT_TEXT_PATHS=new Set(['payload.text','messages.text']);
+const TRANSCRIPT_TEXT_PATHS=new Set(['payload.text','messages.text','payload.messages.text','result.messages.text']);
 function hasForbiddenValue(value,depth=0,path=[]) {
   if(depth>MAX_JSON_DEPTH)return true;
   if(typeof value==='string') {
@@ -222,7 +228,7 @@ export function buildSignatureMessage({protocolVersion,deviceId,serviceId,replay
   const target=canonicalQuery?`${path}?${canonicalQuery}`:path;
   return [String(protocolVersion),deviceId,serviceId,String(replayEpoch),requestId,String(method).toUpperCase(),target,timestamp,nonce,bodySha256].join('\n');
 }
-const PRE_AUTHENTICATION_CODES=new Set(['route_mismatch','pair_headers_invalid','signature_headers_missing','signature_headers_invalid','get_body_forbidden','body_bytes_required','body_parse_mismatch','request_too_large','request_invalid','query_invalid','operation_route_mismatch','envelope_invalid','cursor_invalid','replay_store_unavailable','signature_expired','signature_invalid','device_identity_mismatch','device_inactive']);
+const PRE_AUTHENTICATION_CODES=new Set(['route_mismatch','pair_headers_invalid','signature_headers_missing','signature_headers_invalid','get_body_forbidden','body_bytes_required','body_parse_mismatch','request_too_large','request_invalid','query_invalid','operation_route_mismatch','envelope_invalid','cursor_invalid','replay_store_unavailable','signature_expired','signature_invalid','device_identity_mismatch','device_inactive','service_identity_invalid','device_grants_invalid','grant_store_unavailable']);
 export function wireErrorCode(internal,stage='authenticated') {
   if(stage!=='authenticated'||PRE_AUTHENTICATION_CODES.has(internal))return 'unauthorized';
   const mapping=REMOTE_V1.responseEnvelope.internalCodeMapping?.postAuthentication??{};
@@ -260,7 +266,7 @@ export function validateRawTarget(rawTarget) {
     return text;
   };
   const path=decodeStrict(rawPath);
-  if(path===null||!path.startsWith('/')||path.includes('\\')||path.includes('//')||/[\x00-\x20]/.test(path))return {ok:false,code:'target_invalid'};
+  if(path===null||path.includes('\uFFFD')||!path.startsWith('/')||path.includes('\\')||path.includes('//')||/[\x00-\x20]/.test(path))return {ok:false,code:'target_invalid'};
   if(path.split('/').some(seg=>seg==='stream-reset'))return {ok:false,code:'target_invalid'};
   const params=[];
   if(rawQuery!==null) {
@@ -272,7 +278,8 @@ export function validateRawTarget(rawTarget) {
       const rawName=eq<0?part:part.slice(0,eq);
       const rawValue=eq<0?'':part.slice(eq+1);
       const name=decodeStrict(rawName),value=decodeStrict(rawValue);
-      if(name===null||value===null||name.length===0||name.length>64)return {ok:false,code:'target_invalid'};
+      if(name===null||value===null||name.includes('\uFFFD')||value.includes('\uFFFD'))return {ok:false,code:'target_invalid'};
+      if(name.length===0||name.length>64)return {ok:false,code:'target_invalid'};
       if(value.length>512)return {ok:false,code:'target_invalid'};
       params.push([name,value]);
     }
@@ -372,12 +379,14 @@ export function authorizePairExchange({request,expectedServiceFingerprint,peerId
   let allowed;try {allowed=recordPairAttempt({peerId,pairingSessionId:request.body.pairingSessionId,deviceKeyFingerprint:keyFingerprint});}catch{return {ok:false,code:'pair_rate_limiter_unavailable'};}
   if(allowed&&typeof allowed.then==='function')return {ok:false,code:'pair_rate_limiter_unavailable'};
   if(allowed!==true)return {ok:false,code:'pair_rate_limited'};
-  // Verify the code AFTER the attempt is charged, still before confirmation.
+  // Verify the device-key PROOF before the code: an attacker without the key
+  // cannot use the correct/wrong-code distinction as a guessing oracle.
+  if(!verifyPairProof(request.body))return {ok:false,code:'pair_proof_invalid'};
+  // Verify the code AFTER the attempt is charged and the proof holds, still before confirmation.
   if(typeof verifyPairCode!=='function')return {ok:false,code:'pair_store_unavailable'};
   let codeOk;try {codeOk=verifyPairCode({pairingSessionId:request.body.pairingSessionId,pairCode:request.body.pairCode});}catch{return {ok:false,code:'pair_store_unavailable'};}
   if(codeOk&&typeof codeOk.then==='function')return {ok:false,code:'pair_store_unavailable'};
   if(codeOk!==true)return {ok:false,code:'pairing_rejected'};
-  if(!verifyPairProof(request.body))return {ok:false,code:'pair_proof_invalid'};
   // Exact canonical scope agreement: the registered grant set must EQUAL the
   // client's signed requestedScopes and the confirmation-approved set.
   const requestedScopes=request.body.requestedScopes;
@@ -422,8 +431,11 @@ export function verifyPairExchangeResponse(response,desktopPublicKey,requestId,{
   // A live outstanding exchange for the pinned service is mandatory and must
   // bind this exact service, key, unique scope set and a live deadline.
   if(!isRecord(outstandingExchange)||outstandingExchange.clientNonce!==requestId)return false;
+  // The outstanding record must carry the pinned serviceFingerprint and the
+  // presented device public key (contract-required completeness).
+  if(!HEX_SHA256.test(outstandingExchange.serviceFingerprint??''))return false;
+  if(!decodeB64url(outstandingExchange.devicePublicKey,32))return false;
   if(serviceFingerprint!==undefined&&outstandingExchange.serviceFingerprint!==serviceFingerprint)return false;
-  if(outstandingExchange.serviceFingerprint!==undefined&&!HEX_SHA256.test(outstandingExchange.serviceFingerprint))return false;
   if(!Number.isSafeInteger(outstandingExchange.expiresAtMs)||outstandingExchange.expiresAtMs<=nowMs)return false;
   if(outstandingExchange.desktopPublicKey!==undefined&&outstandingExchange.desktopPublicKey!==desktopPublicKey)return false;
   // Compare the response scopes to the outstanding exchange's UNIQUE requestedScopes.
@@ -475,10 +487,13 @@ export function authorizeRemoteOperation({request,device,serviceId,serviceFinger
     ||!OPAQUE_ID.test(owner.projectId??''))
     return {ok:false,code:'stale_owner',wire:'stale_owner'};
   if(allowedNamespaces.length>0&&!allowedNamespaces.includes(owner.namespace))return {ok:false,code:'stale_owner',wire:'stale_owner'};
+  // A resource owner must carry a safe-integer epoch so commitAdmission and the
+  // idempotency namespace can detect an owner roll (no epochless TOCTOU).
+  if(!Number.isSafeInteger(owner.epoch)||owner.epoch<0)return {ok:false,code:'stale_owner',wire:'stale_owner'};
   // The resolved resource identity must match the signed path, not just any grant.
   if(ownerRequirement==='project'&&owner.projectId!==params.projectId)return {ok:false,code:'unknown_resource',wire:'unknown_resource'};
   if((ownerRequirement==='conversation'||ownerRequirement==='approval')&&owner.conversationId!==params.conversationId)return {ok:false,code:'unknown_resource',wire:'unknown_resource'};
-  if(ownerRequirement==='approval'&&owner.dialogId!==undefined&&owner.dialogId!==params.requestId)return {ok:false,code:'unknown_resource',wire:'unknown_resource'};
+  if(ownerRequirement==='approval'&&owner.dialogId!==params.requestId)return {ok:false,code:'unknown_resource',wire:'unknown_resource'};
   // The grant is checked against the AUTHORITATIVE project the owner resolved to.
   if(device.grants[owner.projectId]!==true)return {ok:false,code:'unknown_resource',wire:'unknown_resource'};
   if(owner.revision===undefined||!Number.isSafeInteger(owner.revision))return {ok:false,code:'stale_owner',wire:'stale_owner'};
@@ -488,15 +503,27 @@ export function authorizeRemoteOperation({request,device,serviceId,serviceFinger
 }
 // Versioned admission token recheck at effect commit: re-resolve the CURRENT
 // device and owner and compare every bound field before dispatch.
-export function commitAdmission({admissionToken,device,resolveOwner}) {
+export function commitAdmission({admissionToken,device,resolveOwner,nowMs=Date.now()}) {
   if(!isRecord(admissionToken)||!isRecord(device))return {ok:false,code:'stale_owner'};
-  if(device.deviceId!==admissionToken.deviceId||device.active!==true||device.revoked===true)return {ok:false,code:'device_inactive'};
-  if(Number.isSafeInteger(device.replayEpoch)&&device.replayEpoch!==admissionToken.replayEpoch)return {ok:false,code:'signature_invalid'};
-  if(admissionToken.ownerEpoch!==undefined||admissionToken.projectId!==undefined) {
+  // Full device-record revalidation: the same completeness gate as admission.
+  const recordComplete=typeof device.deviceId==='string'&&typeof device.devicePublicKey==='string'
+    &&Array.isArray(device.grantedScopes)&&device.active===true&&device.revoked!==true
+    &&Number.isSafeInteger(device.replayEpoch)&&device.replayEpoch>=1
+    &&typeof device.expiresAt==='string'&&Number.isFinite(Date.parse(device.expiresAt))&&Date.parse(device.expiresAt)>nowMs;
+  if(!recordComplete)return {ok:false,code:'device_inactive'};
+  if(device.deviceId!==admissionToken.deviceId)return {ok:false,code:'device_inactive'};
+  if(device.replayEpoch!==admissionToken.replayEpoch)return {ok:false,code:'signature_invalid'};
+  // Scope still granted at commit (scope revocation between admission and dispatch closes it)
+  if(!device.grantedScopes.includes(admissionToken.scope))return {ok:false,code:'scope_denied'};
+  // Resource-bound token: re-resolve the CURRENT owner and compare project + resource + revision + epoch.
+  if(admissionToken.projectId!==undefined) {
+    if(!isRecord(device.grants)||device.grants[admissionToken.projectId]!==true)return {ok:false,code:'unknown_resource'};
     if(typeof resolveOwner!=='function')return {ok:false,code:'stale_owner'};
     let owner;try {owner=resolveOwner({deviceId:device.deviceId,projectId:admissionToken.projectId,resourceId:admissionToken.resourceId});}catch{return {ok:false,code:'stale_owner'};}
     if(owner&&typeof owner.then==='function')return {ok:false,code:'stale_owner'};
     if(!isRecord(owner)||owner.current!==true||owner.projectId!==admissionToken.projectId)return {ok:false,code:'stale_owner'};
+    // The resolved resource must still be the one the token names (no substitution).
+    if(admissionToken.resourceId!==undefined&&admissionToken.resourceId!==admissionToken.projectId&&owner.conversationId!==undefined&&owner.conversationId!==admissionToken.resourceId)return {ok:false,code:'unknown_resource'};
     if(admissionToken.ownerRevision!==undefined&&owner.revision!==admissionToken.ownerRevision)return {ok:false,code:'stale_revision'};
     if(admissionToken.ownerEpoch!==undefined&&owner.epoch!==admissionToken.ownerEpoch)return {ok:false,code:'stale_owner'};
   }
@@ -545,12 +572,14 @@ export function settleApproval({request,device,serviceId,serviceFingerprint,devi
     &&pendingDialog.owner===admission.owner?.identity
     &&pendingDialog.pending===true&&pendingDialog.method===payload.method
     &&Number.isSafeInteger(pendingDialog.expiresAtMs)&&pendingDialog.expiresAtMs>nowMs
-    &&(pendingDialog.namespace===undefined||pendingDialog.namespace===admission.owner?.namespace);
+    &&(pendingDialog.namespace===undefined||pendingDialog.namespace===admission.owner?.namespace)
+    &&Number.isSafeInteger(pendingDialog.revision)&&pendingDialog.revision>=0
+    &&OPAQUE_ID.test(pendingDialog.projectId??'')&&pendingDialog.projectId===admission.owner?.projectId;
   if(!dialogLive)return {ok:false,code:'stale_owner',wire:'stale_owner'};
   if(payload.method==='select') {
     const offered=pendingDialog.options;
     const validOptions=Array.isArray(offered)&&offered.length>0
-      &&offered.every(opt=>isRecord(opt)&&OPAQUE_ID.test(opt.optionId??''))
+      &&offered.every(opt=>isRecord(opt)&&/^[A-Za-z0-9_-]{1,128}$/.test(opt.optionId??''))
       &&new Set(offered.map(opt=>opt.optionId)).size===offered.length;
     if(!validOptions||!offered.some(opt=>opt.optionId===payload.value))return {ok:false,code:'payload_invalid',wire:'payload_invalid'};
   }
@@ -624,31 +653,36 @@ export function validateApprovalPayload(payload) {
   const valueRule=matrix.valueOn?.[payload.decision];
   if(valueRule==='required'&&typeof payload.value!=='string')return false;
   if(valueRule==='forbidden'&&payload.value!==undefined)return false;
-  if(payload.method==='select'&&payload.decision==='answer'&&!OPAQUE_ID.test(payload.value??''))return false;
+  if(payload.method==='select'&&payload.decision==='answer'&&!/^[A-Za-z0-9_-]{1,128}$/.test(payload.value??''))return false;
   return true;
 }
 const ZERO_UUID='00000000-0000-0000-0000-000000000000';
 export function validateRemoteResponse(response,operationId=null,requestId=null) {
   if(!isRecord(response)||response.protocolVersion!==REMOTE_V1.contractVersion)return false;
   const rid=response.requestId;
-  // requestId must be a primitive UUID string (never an array/object). The zero
-  // sentinel (version-0, not matched by the UUID pattern) is reserved for
-  // uncorrelated pre-auth unauthorized errors only; everything else echoes a real id.
+  // requestId must be a primitive UUID string (never an array/object).
   if(typeof rid!=='string')return false;
-  const isError=isRecord(response.error)&&!own(response,'result');
-  if(rid===ZERO_UUID)return isError&&response.error.code==='unauthorized'
-    &&typeof response.error.retryable==='boolean'&&Object.keys(response).sort().join(',')==='error,protocolVersion,requestId';
-  if(!UUID.test(rid))return false;
-  if(requestId!==null&&rid!==requestId)return false;
+  // Shared checks always run: serialized size + forbidden-key/value scan.
   const serialized=canonicalJson(response);
   if(serialized===null||Buffer.byteLength(serialized,'utf8')>(REMOTE_V1.limits?.maxSerializedResponseBytes??1048576))return false;
+  if(hasForbiddenKey(response)||hasForbiddenValue(response))return false;
+  const isError=own(response,'error')&&!own(response,'result');
+  // The zero sentinel is ONLY a closed uncorrelated unauthorized error with a
+  // fully-validated error object - never a free-form bypass.
+  if(rid===ZERO_UUID) {
+    return isError&&Object.keys(response).sort().join(',')==='error,protocolVersion,requestId'
+      &&Object.keys(response.error).sort().join(',')==='code,retryable'
+      &&response.error.code==='unauthorized'&&typeof response.error.retryable==='boolean';
+  }
+  if(!UUID.test(rid))return false;
+  if(requestId!==null&&rid!==requestId)return false;
   if(own(response,'result')) {
     if(Object.keys(response).sort().join(',')!=='operation,protocolVersion,requestId,result,serverRevision'||typeof response.operation!=='string'
       ||(operationId!==null&&response.operation!==operationId)||!Number.isSafeInteger(response.serverRevision)||response.serverRevision<0)return false;
     const operation=REMOTE_V1.operations.find(item=>item.id===response.operation);
-    return !!operation&&validateSchema(response.result,operation.result)&&!hasForbiddenKey(response.result)&&!hasForbiddenValue(response.result);
+    return !!operation&&validateSchema(response.result,operation.result);
   }
-  if(!isRecord(response.error)||Object.keys(response.error).sort().join(',')!=='code,retryable')return false;
+  if(!isError||!isRecord(response.error)||Object.keys(response.error).sort().join(',')!=='code,retryable')return false;
   return typeof response.error.code==='string'&&REMOTE_V1.responseEnvelope.errorCodes.includes(response.error.code)
     &&typeof response.error.retryable==='boolean'&&Object.keys(response).sort().join(',')==='error,protocolVersion,requestId';
 }
