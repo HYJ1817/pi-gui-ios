@@ -1,23 +1,23 @@
 {
   "schemaVersion": 2,
   "kind": "state",
-  "revision": 499,
-  "updatedAt": "2026-11-22T04:08:02.604Z",
+  "revision": 506,
+  "updatedAt": "2026-11-22T04:17:11.051Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "9175676828cf4cb7d96a51f247eb318af65687859d85ee960f879fbf358a6c49",
+    "parentDigest": "bc61f8b1af456144fa6f8ea5d239d63826de91f5bea785c48112a5b34391bb40",
     "phase": "M0",
     "currentTask": "M0-architecture",
     "branch": "agent/m-1-bootstrap",
     "checkpoint": {
-      "id": "v2-2026-11-22T04-07-47-296Z-a49bc3fa-3a4e-47c9-9a8d-fb264d1f7f13",
-      "path": ".agent/checkpoints/v2-2026-11-22T04-07-47-296Z-a49bc3fa-3a4e-47c9-9a8d-fb264d1f7f13.json",
-      "sha256": "a9cceb26ffac08d7ef6757200aff21d0d2f946325fc127d9bc6c1f674842cc5f",
-      "authorityDigest": "6fc492b120a3917ff265f955481ca9efe72f716b876b0f6e75df439a1d6e46ce",
-      "at": "2026-11-22T04:07:47.296Z",
+      "id": "v2-2026-11-22T04-17-08-192Z-623e22da-5f72-4ddf-a625-990232359e0c",
+      "path": ".agent/checkpoints/v2-2026-11-22T04-17-08-192Z-623e22da-5f72-4ddf-a625-990232359e0c.json",
+      "sha256": "526031ae2f0d383bb559cd24a6d2410de28d9c40880b04cafcaf980ba0143225",
+      "authorityDigest": "17ecc4537414cf6ca7eaf63e7870f868692516b757133d743a0796b99440b2d1",
+      "at": "2026-11-22T04:17:08.192Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "a27c521f0ded4972dae3bdc75f33ab1609a68de2",
+        "commit": "f21ddcb80de0c414d422b8eddf8253407346ef55",
         "dirty": [
           "M .agent/HANDOFF.md",
           " M .agent/control.json",
@@ -28,12 +28,12 @@
           " M docs/acceptance/local-protocol-contract.json",
           " M docs/acceptance/local-unit-output.txt",
           " M docs/acceptance/local-unit.json",
-          "?? .agent/checkpoints/v2-2026-11-22T04-07-44-323Z-8657fbc2-be53-41db-97b2-77e774ef06e7.json",
-          "?? .agent/checkpoints/v2-2026-11-22T04-07-45-607Z-c7ea901d-08fc-46f4-98da-ce0be0074a98.json",
-          "?? .agent/checkpoints/v2-2026-11-22T04-07-46-452Z-9d6b5426-7f4e-44f3-859b-ad502596b60f.json"
+          "?? .agent/checkpoints/v2-2026-11-22T04-17-05-032Z-071fd6ec-4594-482a-91ff-4ec5805a5976.json",
+          "?? .agent/checkpoints/v2-2026-11-22T04-17-06-288Z-dcd37afb-da7a-4ee6-8cc1-b0767694c4c5.json",
+          "?? .agent/checkpoints/v2-2026-11-22T04-17-07-268Z-c4540bd3-b170-4de2-8d23-983101578050.json"
         ]
       },
-      "sourceFingerprint": "c4ae4e23f91806519d41322c74c2bc44a425ddae83c279faf9bd35560fb352de",
+      "sourceFingerprint": "0f93f014420617980682760a04c667bbaad6f7d44a7038f80b0ca2c99658cefb",
       "note": "agent-task evidence M0-architecture"
     },
     "blockers": [
@@ -302,13 +302,13 @@
       {
         "taskId": "delegate-task:38371d08-8687-4535-aabd-c3169c9311a0",
         "role": "m0-combined-functional-security-review",
-        "status": "working",
+        "status": "completed",
         "sourceCommit": "a27c521f0ded4972dae3bdc75f33ab1609a68de2"
       }
     ]
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "84bc24a66ab388175090a55b06ed9f7e704f0c540470acd54c95ea457e06def6"
+    "digest": "c4410a1c66d50ea140bdb2a64bc9b635ad45ff5338000926b2d57bb4610b0866"
   }
 }
