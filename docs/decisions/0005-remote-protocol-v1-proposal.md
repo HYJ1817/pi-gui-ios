@@ -30,7 +30,7 @@ Pi GUI Mobile
 
 | 面 | 初步资源/操作 | 约束 |
 |---|---|---|
-| 协商 | `GET /remote/v1/manifest` | 返回协议版本、桌面能力闭集与服务身份，不含路径、凭据或运行环境原文；版本不匹配 fail closed。 |
+| 协商 | 仅 versioned route（`/remote/v1/...`） | 无 manifest；未知 major version/path 一律 fail closed。服务身份由配对引导信道的 pin 提供，不经远程端点。 |
 | 配对 | 创建一次性配对 ticket、显式确认设备、查询/撤销设备 | 仅桌面本地用户主动打开远程开关后允许；ticket 短有效期、单次消费；并发消费只有一个成功。设备有独立身份、最小 scope、可单独撤销。 |
 | 项目 | 列表、选定项目摘要 | 客户端只传 opaque project id；桌面从登记表解析路径。没有任意路径列举/读取。 |
 | 会话 | 列表、打开、创建/聚焦、历史快照 | 每次请求由桌面重验项目与 session 所有权、workspace epoch 和 runtime owner；跨项目/已过期 owner 拒绝。只返回字段白名单。 |
@@ -113,7 +113,7 @@ Scope 候选（需在 M0 逐项定稿）：`projects.read`、`sessions.read`、`
 
 - **传输与身份**：独立 listener + HTTPS；不修改现有 `/api` 的 loopback+token 规则；远程默认关闭、只能由本机本地管理面开启（`remoteSetting`、`localAdminControl`）。
 - **配对**：POST 单次配对交换，6 位码 + `pairingSessionId` + Ed25519 设备密钥证明（`proofSignature` 签名 `remote-v1-pair\n` 域分隔消息）+ `serviceFingerprint`；默认仅授予读取 scope，写 scope 需桌面用户逐项启用；限 `maxPendingPairings`/`maxDevices`、原子消费、率限。
-- **签名请求**：7 个签名头（device/request-id/timestamp/nonce/body-sha256/signature + 固定 content-type 规则），消息 = `version\nrequestId\nMETHOD\npath?canonicalQuery\ntimestamp\nnonce\nbodySha256`；Ed25519；`signatureClockSkewSeconds=60`；每设备有界原子 nonce 存储（`maxNonceEntriesPerDevice=4096`）作重放闸门。
+- **签名请求**：6 个签名头（device/request-id/timestamp/nonce/body-sha256/signature，另有固定 content-type/accept 规则），消息 = `version\ndeviceId\nserviceId\nrequestId\nMETHOD\npath?canonicalQuery\ntimestamp\nnonce\nbodySha256`；Ed25519；`signatureClockSkewSeconds=60`；每设备原子 nonce 存储 + 单调 acceptedTimestampFloor（replay 容量/掉状态 fail-closed，跨 skew 窗口保留）。版本协商仅 versioned route（无 manifest）。
 - **操作闭集（8 个）**：`GET projects`、`GET projects/{projectId}/sessions`、`POST projects/{projectId}/conversations`、`GET conversations/{conversationId}/snapshot`、`POST messages`、`POST stop`、`GET approvals`、`POST approvals/{requestId}/respond`。路径参数只接受不透明 ID 模式；POST body 必须是 canonical JSON（排序键、紧凑分隔符）以便 body digest 可验。
 - **事件流**：单设备 cursor、6 种闭集事件（`snapshot/message.append/conversation.status/approval.pending/approval.settled/reset`），gap→显式 reset，per-device backlog 上限，`mustFilterByCurrentResourceOwner` 与 `mustRevalidateAuthorizationBeforeReplay` 为合同要求。
 - **错误码闭集（18 个）**：`unauthorized/pairing_*/rate_limited/scope_denied/stale_owner/stale_revision/unknown_resource/operation_rejected/replay_rejected/cursor_expired/sequence_gap/server_busy/unavailable/invalid_request/payload_invalid/internal_error`；不允许回传原始错误文本/路径/凭据。

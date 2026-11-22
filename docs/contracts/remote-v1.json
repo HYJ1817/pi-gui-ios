@@ -208,15 +208,19 @@
     "liveSessionPrevalidation": "Server MUST validate the pairingSessionId exists, is unexpired and not consumed, and that pairCode matches its stored HMAC BEFORE any local confirmation prompt. Unknown or expired sessions are rejected without prompting and without allocating confirmation state.",
     "attemptBudgets": {
       "perPairingSession": "5 attempts before invalidation",
-      "perPeer": "rate-limited per client IP/connection within attemptWindowSeconds",
-      "serviceWide": "bounded global in-flight pairing exchanges (maxPendingSessions); new sessions beyond budget rejected"
+      "perPeer": "rate-limited per server-derived peer (connection source IP/socket) within attemptWindowSeconds; charged on EVERY submitted code, including wrong ones",
+      "serviceWide": "bounded global in-flight pairing exchanges (maxPendingSessions) AND a global code-attempt budget per window; new sessions or attempts beyond budget rejected"
     },
     "desktopApprovalBinding": "Local confirmation binds the one-time approval to the exact pairingSessionId, pairCode, devicePublicKey, deviceName and the granted scope set displayed. Confirmation consumed atomically with code consumption and device registration in a single transaction; approval cannot be reused across a different proof or scope set.",
     "clientResponseVerification": "Client verifies the pairing response serverSignature with the pinned desktop service public key, checks expiresAt is in the future relative to its own clock, matches the echoed requestId/clientNonce and grantedScopes to its outstanding exchange, then retires that outstanding exchange. Any mismatch discards the registration.",
     "keyUniqueness": "A registered devicePublicKey must not already be bound to a different deviceId; duplicate keys across registrations are rejected. Rotation creates a new pairing exchange and revokes the prior binding atomically.",
     "expiresAtValidation": "Server validates expiresAt is a well-formed RFC3339/ISO instant and strictly in the future BEFORE signing or registering; a response that fails its own responseSchema is never produced.",
     "responseScopeParity": "grantedScopes in the response must equal exactly the scope set the desktop confirmation approved; a subset or superset is a contract violation.",
-    "queryParameters": []
+    "queryParameters": [],
+    "budgetReservation": "Server reserves per-peer and service-wide attempt budget BEFORE validating the session or code, using server-derived peer identity (connection source), never client-supplied fields. Every failed guess against a live session consumes budget; budget exhaustion rejects before any session lookup detail is revealed.",
+    "approvalBinding": "Local confirmation produces a one-time approvalId bound to the FULL verified transcript (pairingSessionId, pairCode, deviceName, devicePublicKey, clientNonce, serviceFingerprint, proofSignature) and the exact approved scope set. Registration consumes (approvalId + code + session) atomically, rechecking expiry, capacity and device-key uniqueness in the same transaction.",
+    "responseConsumption": "Client verification requires a live outstanding exchange for the pinned service: the echoed requestId must equal the outstanding clientNonce, grantedScopes must equal the approved set, expiresAt must be future, then the outstanding exchange is retired atomically. A valid unexpired response presented twice is rejected the second time.",
+    "expiresAtFormat": "RFC3339 UTC instant YYYY-MM-DDTHH:MM:SSZ with strict calendar validation; impossible dates (e.g. Feb 30) are rejected before any normalization or comparison."
   },
   "responseEnvelope": {
     "successRequired": [
@@ -303,7 +307,8 @@
       "result": {
         "type": "object",
         "required": [
-          "projects"
+          "projects",
+          "registryRevision"
         ],
         "additionalProperties": false,
         "properties": {
@@ -329,9 +334,14 @@
                 }
               }
             }
+          },
+          "registryRevision": {
+            "type": "integer",
+            "minimum": 0
           }
         }
-      }
+      },
+      "registryRevision": "The registry revision a runtime.create on any listed project must echo as ownerRevision; the only sanctioned source of the create precondition."
     },
     {
       "id": "sessions.list",
@@ -452,7 +462,9 @@
         "required": [
           "ownerRevision",
           "status",
-          "messages"
+          "messages",
+          "cursor",
+          "streamGeneration"
         ],
         "additionalProperties": false,
         "properties": {
@@ -499,9 +511,18 @@
                 }
               }
             }
+          },
+          "cursor": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{1,128}$"
+          },
+          "streamGeneration": {
+            "type": "integer",
+            "minimum": 1
           }
         }
-      }
+      },
+      "watermark": "cursor+streamGeneration are the atomic watermark of the returned state; the client can resume the event stream from this cursor and expect the same logical generation to continue on reconnect."
     },
     {
       "id": "chat.send",
@@ -689,7 +710,7 @@
           },
           "value": {
             "type": "string",
-            "maxLength": 2000
+            "maxUtf8Bytes": 2000
           }
         }
       },
@@ -755,7 +776,12 @@
           }
         }
       },
-      "settlementRule": "At settlement the server matches requestId + current owner to the live Pi dialog, validates method/decision/value against its authoritative method and offered options, and admits exactly one response; a second, stale-owner, expired or mismatched submission is rejected."
+      "settlementRule": "At settlement the server matches requestId + current owner to the live Pi dialog, validates method/decision/value against its authoritative method and offered options, and admits exactly one response; a second, stale-owner, expired or mismatched submission is rejected.",
+      "settlement": {
+        "admission": "At settlement the server atomically resolves the live Pi dialog: requestId must match a currently-pending extension_ui_request, the owner must be current and match, the revision must match, and the method must equal the dialog's authoritative method.",
+        "values": "For select, value must be one of the dialog's offered option ids; confirm/input/editor follow the decisionMatrix value rules.",
+        "consume": "Exactly one response is admitted; consuming the dialog and relaying are one transaction. A stale, already-settled, cancelled or owner-changed dialog rejects with stale_owner, and the rejection never reaches Pi."
+      }
     }
   ],
   "eventStream": {
@@ -845,7 +871,8 @@
           "maxLength": 86,
           "pattern": "^[A-Za-z0-9_-]{86}$"
         }
-      }
+      },
+      "resetConversationId": "For event='reset' the conversationId is the literal 'stream-reset' (matches the opaque-id pattern) because a stream-wide reset has no single conversation."
     },
     "eventPayloadSchemas": {
       "snapshot": {
@@ -1039,10 +1066,11 @@
     "frameAuthentication": {
       "signed": true,
       "algorithm": "Ed25519 (desktop service key)",
-      "frameMessage": "protocolVersion + newline + deviceId + newline + streamGeneration + newline + sequence + newline + event + newline + payload-digest",
+      "frameMessage": "protocolVersion + newline + deviceId + newline + streamGeneration + newline + sequence + newline + conversationId + newline + ownerRevision + newline + cursor + newline + event + newline + payload-digest",
       "streamGeneration": "Server-issued per-subscription monotonically increasing generation bound to the authenticated device; frames carry it and clients reject frames for other generations or devices.",
       "cursorBinding": "Cursor encodes (deviceId, streamGeneration, lastSequence); foreign/expired cursors rejected with cursor_expired; sequence gaps produce explicit reset, never silent replay.",
-      "authorizationRecheck": "Server revalidates device-active, per-event scope and current resource owner immediately before delivering each frame and each replayed/backlog frame; a frame whose scope or owner changed is dropped and the stream reset."
+      "authorizationRecheck": "Server revalidates device-active, per-event scope and current resource owner immediately before delivering each frame and each replayed/backlog frame; a frame whose scope or owner changed is dropped and the stream reset.",
+      "acceptance": "Structural validity is necessary but not sufficient: a frame is applied only if verified with the PINNED service key for the authenticated device, the device's scope covers the event's per-event scope, streamGeneration and sequence equal the expected values, and the current grant+owner still authorize the resource. Otherwise the frame is dropped and the stream reset."
     },
     "budgets": {
       "maxEventFrameBytes": 65536,
@@ -1057,7 +1085,10 @@
       "replay": "On subscribe with a valid cursor the server replays backlog newer than it (after per-event scope + owner recheck); a gap, expired, foreign or malformed cursor yields an explicit reset event before any new frames.",
       "resetScope": "A reset applies to the whole device stream, not a single conversation. When no conversation remains authorized the stream delivers reset followed by only frames for currently-authorized resources; it never delivers frames for revoked/ungranted resources."
     },
-    "ownerRevisionAuthority": "The envelope-level ownerRevision is the single authoritative owner revision; payloads never carry a competing value."
+    "ownerRevisionAuthority": "The envelope-level ownerRevision is the single authoritative owner revision; payloads never carry a competing value.",
+    "generationSemantics": "A reconnect with a valid cursor CONTINUES the prior streamGeneration and replays backlog newer than the cursor (after scope+owner recheck); a fresh subscription or a reset starts a new streamGeneration. A malformed, foreign or expired cursor yields exactly one reset event, never an error frame and never silent replay.",
+    "frameBudget": "canonical serialized frame must be <= maxEventFrameBytes; an oversized event is never signed, queued or delivered - the stream emits reset instead.",
+    "cursorFailure": "On SUBSCRIBE the signed request validator enforces cursorPattern: a malformed foreign/oversized cursor is rejected as invalid_request (unauthorized on the wire). A well-formed but expired or stale cursor opens the stream and immediately yields a reset event, never silent replay."
   },
   "forbiddenCapabilities": [
     "generic-rpc",
@@ -1072,8 +1103,11 @@
   ],
   "admissionRules": {
     "order": "strict-UTF8+transport -> route match -> signature verify -> scope check -> device-grant check -> owner+revision recheck -> dispatch. Earlier failures never reach later stages and never dispatch.",
-    "deviceRecord": "The active key, granted scopes, resource grants and revocation state are loaded from a single authoritative device record; independent caller-supplied values are never trusted.",
-    "ownerNamespaces": "Classic (single-runtime cwd + session header) and Runtime (backend + workspace-epoch + conversation + generation) owners are distinct and not interchangeable; a remote request must resolve to exactly one and it must be current."
+    "deviceRecord": "The active key, granted scopes, resource grants, expiry, replayEpoch and revocation state are loaded from a single authoritative device record; caller-supplied grants, keys or scope lists are never trusted.",
+    "singleTransaction": "Device-active check, scope check, resource-grant check, full-owner resolution and revision recheck happen inside ONE admission transaction; a concurrent revocation/owner change cannot interleave between them.",
+    "typedResource": "The opaque resource id is resolved to a typed resource under an authorized project and the correct owner namespace (Classic cwd+session-header or Runtime backend+workspace-epoch+conversation+generation); a syntactically valid id of the wrong type/namespace is unknown_resource.",
+    "ownerProof": "resolveOwner must return a fully-typed owner (namespace + identity + revision) proved from desktop state, never a bare current flag; owner-less or untyped results reject.",
+    "listFiltering": "projects.list and sessions.list filter each returned item through the same device grants; an ungranted item is absent, not redacted."
   },
   "securityInvariants": [
     "remote-default-disabled",
@@ -1098,16 +1132,16 @@
     "signedMessage": "protocolVersion + newline + deviceId + newline + serviceId + newline + requestId + newline + method + newline + canonical path-and-query + newline + timestamp + newline + nonce + newline + lowercase-hex-body-sha256",
     "replayStore": "atomic per-device nonce store; reject reused nonce and timestamp outside skew window",
     "validationNote": "Client utility verifies message construction and Ed25519 in fixtures only. Gateway must independently enforce TLS/service pinning, Ed25519, timestamp skew and atomic replay persistence before route dispatch.",
-    "nonceRetentionSeconds": 120,
     "rawPayloadExposedToErrorsOrLogs": false,
-    "serviceId": "Opaque service instance identifier bound to the bootstrap pin; included in the signed message so a signature is valid only for the device record and service it was made for.",
+    "serviceId": "Canonical id derived from the bootstrap pin: 'svc-' + lowercase-hex(certFingerprint)[0:16]. The client obtains it only via the trusted QR/local channel; it is bound into every signed message and frame.",
     "replay": {
       "model": "Atomic per-device nonce store consulted and written in one transaction before dispatch; a rejected or missing store fails closed.",
       "retentionSeconds": 180,
       "retentionRule": "Each accepted nonce is retained until its signed timestamp is strictly older than now minus maximumClockSkewSeconds, so a still-fresh request can never re-enter.",
+      "acceptanceClock": "The server persists a monotonic acceptedTimestampFloor per device = max(seen). A request whose timestamp is below the persisted floor is rejected even inside the skew window; the floor never decreases, so a clock rollback or replay-state rebuild cannot re-admit an already-passed instant.",
       "atCapacity": "fail_closed - new requests rejected with replay_rejected, never evict-live-nonce",
-      "stateLoss": "On restart without intact replay state the device is treated as unauthenticated until fresh nonces accumulate; partial/corrupt state fails closed, not fail-open.",
-      "clockChange": "Skew is measured against the server-accepted timestamp window; wall-clock jumps cannot extend a nonce's admissible lifetime beyond retentionSeconds."
+      "stateLoss": "Intact persisted replay state (nonces + acceptedTimestampFloor) is required for admission. On lost or corrupt state the device's authentication epoch is bumped (replayEpoch++); nonces and timestamps from the prior epoch are invalid and the device must re-pair before new requests are admitted - no silent accumulation.",
+      "clockChange": "Skew is measured against the server-accepted window; a wall-clock jump cannot extend admissible lifetime beyond retentionSeconds nor move the persisted floor backward."
     },
     "rawTarget": {
       "utf8": "strict - request-target and body decoded with strict UTF-8; malformed or overlong byte sequences are rejected before normalization, never lossy-decoded then compared.",
@@ -1168,14 +1202,32 @@
     "fields": "Every remotely visible free-text field (project/session display names, message text, approval title/message/options, error surfaces) has a defined permitted source.",
     "valueScan": "In addition to forbidden key names, serialized response and event STRING VALUES are scanned for forbidden value patterns before emission: absolute filesystem paths (drive-letter, UNC, POSIX root), PI_GUI_TOKEN, API-key/bearer patterns, raw Pi RPC/error payloads, environment dumps.",
     "onMatch": "omit-field-or-redact - never reflect the raw value; a response that cannot be safely projected is replaced by a fixed safe placeholder or fails closed.",
-    "test": "Synthetic secret/path/error markers must be asserted absent from responses, events and logs."
+    "test": "Synthetic secret/path/error markers must be asserted absent from responses, events and logs.",
+    "fieldSources": {
+      "project.displayName": "desktop project registry display name; redact on forbidden-value match",
+      "session.title": "session metadata title; redact on forbidden-value match",
+      "message.text": "user/assistant transcript text; permitted raw conversation content but scanned for credential/token patterns before emission",
+      "approval.title": "Pi dialog title; redact on forbidden-value match",
+      "approval.message": "Pi dialog message; redact on forbidden-value match",
+      "approval.options": "Pi dialog option labels; redact each on forbidden-value match",
+      "error": "fixed closed code + retryable only; never a message field",
+      "enforcement": "Projection is applied to every response and event BEFORE signing, queueing or emission; a field that fails policy is omitted/redacted, never reflected."
+    }
   },
   "idempotency": {
     "clientIds": "runtime.create uses clientConversationId; chat.send uses clientMessageId. Both are idempotency keys within the enclosing resource, not server identities.",
-    "retry": "Retrying a mutation with a FRESH nonce and the same client id returns the original outcome (a stored result or the live in-flight operation) without dispatching a duplicate side effect.",
-    "lifetime": "Idempotency records are retained at least as long as the request's admissible window and bound to (deviceId, resource, clientId).",
+    "retryHorizonSeconds": 86400,
+    "retry": "A retry (fresh nonce, same client id) inside the horizon returns the durable recorded outcome or the live in-flight operation without dispatching a duplicate side effect.",
+    "tombstone": "Completed mutation outcomes persist as tombstones for the horizon so a late retry still resolves to the original result rather than re-dispatching.",
     "conflict": "A same client id with a different payload is rejected payload_invalid, not silently re-used.",
-    "lostResponse": "After a lost response the client retries with a fresh nonce and same client id; it either receives the original result or a definitive state, never a second execution."
+    "underAuthorization": "Idempotent resolution happens under CURRENT device authorization (grant+scope+owner still valid); a replay of a now-unauthorized mutation resolves to the current authorization failure.",
+    "failClosedOnExpiry": "When the idempotency record is evicted and the server cannot prove the request is a retry of a completed mutation, it rejects with operation_rejected rather than risk a duplicate side effect."
   },
-  "versionNegotiation": "v1 uses versioned routes (/remote/v1/...) only; there is no manifest endpoint. An unknown major version or path is rejected fail-closed; no silent downgrade or best-match routing."
+  "versionNegotiation": "v1 uses versioned routes (/remote/v1/...) only; there is no manifest endpoint. An unknown major version or path is rejected fail-closed; no silent downgrade or best-match routing.",
+  "deviceLifecycle": {
+    "expiresAt": "A registered device carries expiresAt (the pairing response value). Signed requests from a device at/past expiry are rejected (device_inactive); expiry never auto-extends.",
+    "rotation": "Rotating the TLS certificate or desktop service key invalidates all device bindings minted under the old pin and closes their live streams; devices must re-pair against the new bootstrap. Prior pins are never silently updated.",
+    "revocation": "Device revocation is an authoritative transaction: mark revoked, reject all new requests, close that device's streams, and invalidate in-flight admission and outstanding approvals.",
+    "replayEpoch": "Every device record carries replayEpoch, bumped on replay-state loss or re-pair; requests signed under an older epoch are rejected."
+  }
 }

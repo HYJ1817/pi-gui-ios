@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash, generateKeyPairSync, sign } from 'node:crypto';
-import { REMOTE_V1, authorizePairExchange, authorizeRemoteOperation, buildEventFrameMessage, buildPairProofMessage, buildSignatureMessage, requiredEventScope, validateApprovalPayload, validateEventEnvelope, validatePairExchange, validatePairExchangeResponse, validateRemoteRequest, validateRemoteResponse, verifyPairExchangeProof, verifyPairExchangeResponse, verifyRemoteSignature, wireErrorCode } from '../scripts/lib/remote-protocol-contract.mjs';
+import { REMOTE_V1, acceptEventFrame, authorizePairExchange, authorizeRemoteOperation, buildEventFrameMessage, buildPairProofMessage, buildSignatureMessage, filterGrantedResources, requiredEventScope, settleApproval, validateApprovalPayload, validateEventEnvelope, validatePairExchange, validatePairExchangeResponse, validateRemoteRequest, validateRemoteResponse, verifyPairExchangeProof, verifyPairExchangeResponse, verifyRemoteSignature, wireErrorCode } from '../scripts/lib/remote-protocol-contract.mjs';
 
 const id='4b1f3561-33e1-4aa1-8a54-8dc176cd5367';
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
@@ -210,22 +210,31 @@ test('pair proof binds code, displayed name, device key, nonce and service finge
   let registered=0,confirmed=null,attempts=0;
   const scopes=['projects.read','sessions.read'];
   const expiresAt=new Date(Date.now()+120000).toISOString();
-  const approved=authorizePairExchange({request,expectedServiceFingerprint:fingerprint,validatePairingSession:()=>true,recordPairAttempt:context=>{attempts++;assert.equal(context.pairingSessionId,body.pairingSessionId);return attempts<=5;},confirmLocally:context=>{confirmed=context;return true;},
-    consumePairingCodeAndRegisterDevice:record=>{registered++;assert.equal(record.pairCode,'042817');assert.deepEqual(record.grantedScopes,scopes);return true;},
-    grantedScopes:scopes,deviceId:'device_12345678',serverNonce:Buffer.alloc(32,4).toString('base64url'),expiresAt,desktopPrivateKey:privateRaw});
+  const approvalFor=()=>({peerId:'peer-1',reservePairBudget:()=>true,validatePairingSession:()=>true,recordPairAttempt:context=>{attempts++;assert.equal(context.peerId,'peer-1');assert.equal(context.pairingSessionId,body.pairingSessionId);return attempts<=5;},confirmLocally:context=>{confirmed=context;return 'approval_01';},consumePairingCodeAndRegisterDevice:record=>{registered++;assert.equal(record.pairCode,'042817');assert.equal(record.approvalId,'approval_01');assert.deepEqual(record.grantedScopes,scopes);return true;}});
+  const approved=authorizePairExchange({request,expectedServiceFingerprint:fingerprint,...approvalFor(),grantedScopes:scopes,deviceId:'device_12345678',serverNonce:Buffer.alloc(32,4).toString('base64url'),expiresAt,desktopPrivateKey:privateRaw});
   assert.equal(approved.ok,true); assert.equal(registered,1); assert.equal(attempts,1); assert.deepEqual(confirmed.requestedScopes,scopes);
-  assert.equal(confirmed.pairCode,'042817'); assert.equal(confirmed.devicePublicKey,body.devicePublicKey);
-  assert.equal(verifyPairExchangeResponse(approved.response,desktop.publicKeyRaw,approved.requestId),true);
-  assert.equal(verifyPairExchangeResponse(approved.response,desktop.publicKeyRaw,approved.requestId,{expectedClientNonce:body.clientNonce}),true);
-  assert.equal(verifyPairExchangeResponse(approved.response,desktop.publicKeyRaw,approved.requestId,{expectedClientNonce:'wrong'.repeat(15)}),false);
-  assert.equal(verifyPairExchangeResponse(approved.response,testKeyPair().publicKeyRaw,approved.requestId),false);
+  assert.equal(confirmed.pairCode,'042817'); assert.equal(confirmed.clientNonce,body.clientNonce); assert.equal(typeof confirmed.proofTranscript,'string');
+  // response needs a live outstanding exchange; retired atomically
+  const outstanding={clientNonce:body.clientNonce,approvedScopes:scopes};
+  let retired=0;
+  assert.equal(verifyPairExchangeResponse(approved.response,desktop.publicKeyRaw,approved.requestId,{outstandingExchange:outstanding,retireExchange:()=>{retired++;return true;}}),true);
+  assert.equal(retired,1);
+  // second presentation without outstanding state is rejected
+  assert.equal(verifyPairExchangeResponse(approved.response,desktop.publicKeyRaw,approved.requestId,{outstandingExchange:{clientNonce:'x'.repeat(43)},retireExchange:()=>true}),false);
+  assert.equal(verifyPairExchangeResponse(approved.response,desktop.publicKeyRaw,approved.requestId,{outstandingExchange:{clientNonce:body.clientNonce,approvedScopes:['chat.send']},retireExchange:()=>true}),false);
+  assert.equal(verifyPairExchangeResponse(approved.response,testKeyPair().publicKeyRaw,approved.requestId,{outstandingExchange:outstanding,retireExchange:()=>true}),false);
+  // budget is reserved BEFORE session validation; session lookup not reached on exhaustion
+  let sessionLookedUp=false;
+  assert.equal(authorizePairExchange({request,expectedServiceFingerprint:fingerprint,peerId:'peer-1',reservePairBudget:()=>false,validatePairingSession:()=>{sessionLookedUp=true;return true;},recordPairAttempt:()=>true,confirmLocally:()=>'a',consumePairingCodeAndRegisterDevice:()=>true,grantedScopes:scopes,deviceId:'d_12345678',serverNonce:Buffer.alloc(32,4).toString('base64url'),expiresAt,desktopPrivateKey:privateRaw}).code,'pair_rate_limited');
+  assert.equal(sessionLookedUp,false);
   // live session must be validated BEFORE confirmation; confirmation not reached on bad session
   let prompted=false;
-  assert.equal(authorizePairExchange({request,expectedServiceFingerprint:fingerprint,validatePairingSession:()=>false,recordPairAttempt:()=>true,confirmLocally:()=>{prompted=true;return true;},consumePairingCodeAndRegisterDevice:()=>true,grantedScopes:scopes,deviceId:'device_12345678',serverNonce:Buffer.alloc(32,4).toString('base64url'),expiresAt,desktopPrivateKey:privateRaw}).code,'pairing_session_invalid');
+  assert.equal(authorizePairExchange({request,expectedServiceFingerprint:fingerprint,peerId:'peer-1',reservePairBudget:()=>true,validatePairingSession:()=>false,recordPairAttempt:()=>true,confirmLocally:()=>{prompted=true;return 'a';},consumePairingCodeAndRegisterDevice:()=>true,grantedScopes:scopes,deviceId:'device_12345678',serverNonce:Buffer.alloc(32,4).toString('base64url'),expiresAt,desktopPrivateKey:privateRaw}).code,'pairing_session_invalid');
   assert.equal(prompted,false);
+  // confirmation must return an approvalId bound to the transcript; bare true rejected
+  assert.equal(authorizePairExchange({request,expectedServiceFingerprint:fingerprint,peerId:'peer-1',reservePairBudget:()=>true,validatePairingSession:()=>true,recordPairAttempt:()=>true,confirmLocally:()=>true,consumePairingCodeAndRegisterDevice:()=>true,grantedScopes:scopes,deviceId:'device_12345678',serverNonce:Buffer.alloc(32,4).toString('base64url'),expiresAt,desktopPrivateKey:privateRaw}).code,'desktop_confirmation_required');
   // past expiresAt rejected before signing/registering
-  assert.equal(authorizePairExchange({request,expectedServiceFingerprint:fingerprint,validatePairingSession:()=>true,recordPairAttempt:()=>true,confirmLocally:()=>true,consumePairingCodeAndRegisterDevice:()=>{throw Error('must not register')},grantedScopes:scopes,deviceId:'device_12345678',serverNonce:Buffer.alloc(32,4).toString('base64url'),expiresAt:'2020-01-01T00:00:00Z',desktopPrivateKey:privateRaw}).code,'pair_response_invalid');
-  assert.equal(authorizePairExchange({request,expectedServiceFingerprint:fingerprint,validatePairingSession:()=>true,recordPairAttempt:()=>true,confirmLocally:()=>false,consumePairingCodeAndRegisterDevice:()=>{throw Error('must not register')},grantedScopes:scopes,deviceId:'device_12345678',serverNonce:Buffer.alloc(32,4).toString('base64url'),expiresAt,desktopPrivateKey:privateRaw}).code,'desktop_confirmation_required');
+  assert.equal(authorizePairExchange({request,expectedServiceFingerprint:fingerprint,peerId:'peer-1',reservePairBudget:()=>true,validatePairingSession:()=>true,recordPairAttempt:()=>true,confirmLocally:()=>'a',consumePairingCodeAndRegisterDevice:()=>{throw Error('must not register')},grantedScopes:scopes,deviceId:'device_12345678',serverNonce:Buffer.alloc(32,4).toString('base64url'),expiresAt:'2020-01-01T00:00:00Z',desktopPrivateKey:privateRaw}).code,'pair_response_invalid');
 });
 test('signed operation requests require all device-authentication header shapes',()=>{
   const base=request('projects.list','/remote/v1/projects');
@@ -256,29 +265,35 @@ test('event stream accepts only a pattern-bound cursor and signed device headers
 test('event frames carry generation/cursor/signature, per-event scopes and closed payloads',()=>{
   const desktop=testKeyPair();
   const base={protocolVersion:1,sequence:1,conversationId:'conversation_12345678',ownerRevision:2,streamGeneration:1,cursor:'cur_abc123',event:'message.append',payload:{messageId:'message_12345678',role:'assistant',text:'hello'}};
-  const unsigned={...base};
-  const message=buildEventFrameMessage(unsigned,'device_abc12345');
-  base.frameSignature=sign(null,Buffer.from(message,'utf8'),desktop.privateKey).toString('base64url');
-  assert.equal(validateEventEnvelope(base,'device_abc12345',desktop.publicKeyRaw,['sessions.read']),true);
+  base.frameSignature=sign(null,Buffer.from(buildEventFrameMessage(base,'device_abc12345'),'utf8'),desktop.privateKey).toString('base64url');
+  assert.equal(validateEventEnvelope(base),true);
+  assert.equal(acceptEventFrame({event:base,deviceId:'device_abc12345',desktopPublicKey:desktop.publicKeyRaw,deviceScopes:['sessions.read'],expectedStreamGeneration:1,expectedSequence:1}).ok,true);
   // approval events require approvals.read even when conversation is owned
   assert.equal(requiredEventScope('approval.pending'),'approvals.read');
   const approval={...base,event:'approval.pending',payload:{requestId:'req_12345678',method:'confirm',title:'t',message:'m'}};
   approval.frameSignature=sign(null,Buffer.from(buildEventFrameMessage(approval,'device_abc12345'),'utf8'),desktop.privateKey).toString('base64url');
-  assert.equal(validateEventEnvelope(approval,'device_abc12345',desktop.publicKeyRaw,['sessions.read','approvals.read']),true);
-  assert.equal(validateEventEnvelope(approval,'device_abc12345',desktop.publicKeyRaw,['sessions.read']),false);
-  // wrong key/device/generation rejected
-  assert.equal(validateEventEnvelope(base,'device_abc12345',testKeyPair().publicKeyRaw,['sessions.read']),false);
-  assert.equal(validateEventEnvelope(base,'device_other001',desktop.publicKeyRaw,['sessions.read']),false);
-  const gen={...base,streamGeneration:2};gen.frameSignature=base.frameSignature;
-  assert.equal(validateEventEnvelope(gen,'device_abc12345',desktop.publicKeyRaw,['sessions.read']),false);
+  assert.equal(acceptEventFrame({event:approval,deviceId:'device_abc12345',desktopPublicKey:desktop.publicKeyRaw,deviceScopes:['sessions.read','approvals.read'],expectedStreamGeneration:1,expectedSequence:1}).ok,true);
+  assert.equal(acceptEventFrame({event:approval,deviceId:'device_abc12345',desktopPublicKey:desktop.publicKeyRaw,deviceScopes:['sessions.read'],expectedStreamGeneration:1,expectedSequence:1}).code,'scope_denied');
+  // wrong key/device/generation/sequence rejected
+  assert.equal(acceptEventFrame({event:base,deviceId:'device_abc12345',desktopPublicKey:testKeyPair().publicKeyRaw,deviceScopes:['sessions.read']}).code,'frame_signature_invalid');
+  assert.equal(acceptEventFrame({event:base,deviceId:'device_other001',desktopPublicKey:desktop.publicKeyRaw,deviceScopes:['sessions.read']}).code,'frame_signature_invalid');
+  assert.equal(acceptEventFrame({event:base,deviceId:'device_abc12345',desktopPublicKey:desktop.publicKeyRaw,deviceScopes:['sessions.read'],expectedStreamGeneration:2}).code,'sequence_gap');
+  assert.equal(acceptEventFrame({event:base,deviceId:'device_abc12345',desktopPublicKey:desktop.publicKeyRaw,deviceScopes:['sessions.read'],expectedSequence:2}).code,'sequence_gap');
   // missing frame fields, unknown event, forbidden key, payload ownerRevision conflict
   const noSig={...base};delete noSig.frameSignature;
   assert.equal(validateEventEnvelope(noSig),false);
-  assert.equal(validateEventEnvelope({...base,event:'arbitrary.tool'},'device_abc12345',null,['sessions.read']),false);
+  assert.equal(validateEventEnvelope({...base,event:'arbitrary.tool'}),false);
   const leak={...base,payload:{messageId:'m_12345678',role:'assistant',text:'x',sessionPath:'C:/secret'}};
-  assert.equal(validateEventEnvelope(leak,'device_abc12345',null,['sessions.read']),false);
+  assert.equal(validateEventEnvelope(leak),false);
   const conflict={...base,payload:{messageId:'m_12345678',role:'assistant',text:'x',ownerRevision:9}};
-  assert.equal(validateEventEnvelope(conflict,'device_abc12345',null,['sessions.read']),false);
+  assert.equal(validateEventEnvelope(conflict),false);
+  // stream-wide reset uses the reserved reset conversation id and a closed reason
+  const reset={...base,event:'reset',conversationId:'stream-reset',payload:{reason:'authorization_changed'}};
+  reset.frameSignature=sign(null,Buffer.from(buildEventFrameMessage(reset,'device_abc12345'),'utf8'),desktop.privateKey).toString('base64url');
+  assert.equal(validateEventEnvelope(reset),true);
+  assert.equal(validateEventEnvelope({...reset,conversationId:'conversation_12345678'}),false);
+  assert.equal(validateEventEnvelope({...reset,payload:{reason:'unexpected'}}),false);
+  // owner-filtered replay: a frame signed for an ungranted conversation stays invalid at acceptance
 });
 
 test('request envelope rejects unknown version, fields and duplicate transport paths',()=>{
@@ -290,10 +305,11 @@ test('request envelope rejects unknown version, fields and duplicate transport p
 });
 
 test('responses use operation-specific closed projections and never carry raw errors/secrets/paths',()=>{
-  const projectResult={projects:[{projectId:'project_12345678',displayName:'Demo'}]};
+  const projectResult={projects:[{projectId:'project_12345678',displayName:'Demo'}],registryRevision:3};
   assert.equal(validateRemoteResponse({protocolVersion:1,requestId:id,operation:'projects.list',serverRevision:7,result:projectResult},'projects.list',id),true);
-  assert.equal(validateRemoteResponse({protocolVersion:1,requestId:id,operation:'projects.list',serverRevision:7,result:{projects:[{projectId:'project_12345678',displayName:'Demo',path:'C:/secret'}]}},'projects.list',id),false);
-  assert.equal(validateRemoteResponse({protocolVersion:1,requestId:id,operation:'projects.list',serverRevision:7,result:{projects:[{projectId:'project_12345678',displayName:'Demo'}],accessToken:'secret'}},'projects.list',id),false);
+  assert.equal(validateRemoteResponse({protocolVersion:1,requestId:id,operation:'projects.list',serverRevision:7,result:{projects:[{projectId:'project_12345678',displayName:'Demo',path:'C:/secret'}],registryRevision:3}},'projects.list',id),false);
+  assert.equal(validateRemoteResponse({protocolVersion:1,requestId:id,operation:'projects.list',serverRevision:7,result:{projects:[{projectId:'project_12345678',displayName:'C:/absolute'}],registryRevision:3}},'projects.list',id),false);
+  assert.equal(validateRemoteResponse({protocolVersion:1,requestId:id,operation:'projects.list',serverRevision:7,result:{projects:[{projectId:'project_12345678',displayName:'Demo'}],registryRevision:3,accessToken:'secret'}},'projects.list',id),false);
   assert.equal(validateRemoteResponse({protocolVersion:1,requestId:id,operation:'chat.send',serverRevision:7,result:{accepted:true,ownerRevision:7,clientMessageId:id}},'projects.list',id),false);
   assert.equal(validateRemoteResponse({protocolVersion:1,requestId:id,error:{code:'stale_owner',retryable:true}},null,id),true);
   assert.equal(validateRemoteResponse({protocolVersion:1,requestId:id,error:{code:'failed',retryable:false,message:'raw detail'}},null,id),false);
@@ -301,25 +317,32 @@ test('responses use operation-specific closed projections and never carry raw er
   assert.equal(validateRemoteResponse({protocolVersion:1,requestId:'4b1f3561-33e1-4aa1-8a54-8dc176cd5368',error:{code:'stale_owner',retryable:true}},null,id),false);
 });
 
-test('device grants and owner recheck gate admission (IDOR / stale owner)',()=>{
+test('device grants and owner recheck gate admission (IDOR / stale owner / substitution)',()=>{
   const pair=testKeyPair();
-  const device={deviceId:'device_abc12345',devicePublicKey:pair.publicKeyRaw,grantedScopes:['sessions.read','chat.send'],active:true};
+  const device={deviceId:'device_abc12345',devicePublicKey:pair.publicKeyRaw,grantedScopes:['sessions.read','chat.send'],active:true,grants:{'project_12345678':true,'conversation_12345678':true}};
   const ts=Date.now().toString();
   const ownedConvo='conversation_12345678';
-  const grants=new Set(['project_12345678',ownedConvo]);
   const send=(path,ownerRev=3)=>signedRequest(request('chat.send',path,{clientMessageId:id,text:'x'},{ownerRevision:ownerRev}),pair,Buffer.alloc(32,10).toString('base64url'),ts);
-  const baseArgs={device,serviceId:SERVICE_ID,nowMs:Number(ts),consumeNonce:()=>true,deviceGrants:grants};
-  // granted conversation + current owner admits
-  const ok=authorizeRemoteOperation({...baseArgs,request:send(`/remote/v1/conversations/${ownedConvo}/messages`),resolveOwner:()=>({current:true,revision:3,namespace:'runtime'})});
-  assert.equal(ok.ok,true);
+  const baseArgs={device,serviceId:SERVICE_ID,nowMs:Number(ts),consumeNonce:()=>true};
+  // granted conversation + current full owner admits
+  const ok=authorizeRemoteOperation({...baseArgs,request:send(`/remote/v1/conversations/${ownedConvo}/messages`),resolveOwner:()=>({current:true,revision:3,namespace:'runtime',identity:'rt-1'})});
+  assert.equal(ok.ok,true); assert.equal(ok.owner.namespace,'runtime');
   // ungranted conversation = IDOR, rejected before owner resolution
   let resolveCalled=false;
-  const idor=authorizeRemoteOperation({...baseArgs,request:send('/remote/v1/conversations/conversation_other00/messages'),resolveOwner:()=>{resolveCalled=true;return {current:true,revision:3};}});
+  const idor=authorizeRemoteOperation({...baseArgs,request:send('/remote/v1/conversations/conversation_other00/messages'),resolveOwner:()=>{resolveCalled=true;return {current:true,revision:3,namespace:'runtime',identity:'rt-1'};}});
   assert.equal(idor.code,'unknown_resource'); assert.equal(resolveCalled,false);
-  // stale owner / stale revision rejected
-  assert.equal(authorizeRemoteOperation({...baseArgs,request:send(`/remote/v1/conversations/${ownedConvo}/messages`),resolveOwner:()=>({current:false})}).code,'stale_owner');
-  assert.equal(authorizeRemoteOperation({...baseArgs,request:send(`/remote/v1/conversations/${ownedConvo}/messages`,4),resolveOwner:()=>({current:true,revision:9,namespace:'runtime'})}).code,'stale_revision');
+  // stale owner / stale revision / substitution rejected
+  assert.equal(authorizeRemoteOperation({...baseArgs,request:send(`/remote/v1/conversations/${ownedConvo}/messages`),resolveOwner:()=>({current:false,namespace:'runtime',revision:3,identity:'rt-1'})}).code,'stale_owner');
+  assert.equal(authorizeRemoteOperation({...baseArgs,request:send(`/remote/v1/conversations/${ownedConvo}/messages`,4),resolveOwner:()=>({current:true,revision:9,namespace:'runtime',identity:'rt-1'})}).code,'stale_revision');
+  // untyped owner (missing namespace/identity) rejected as stale
+  assert.equal(authorizeRemoteOperation({...baseArgs,request:send(`/remote/v1/conversations/${ownedConvo}/messages`),resolveOwner:()=>({current:true,revision:3})}).code,'stale_owner');
   assert.equal(authorizeRemoteOperation({...baseArgs,request:send(`/remote/v1/conversations/${ownedConvo}/messages`),resolveOwner:()=>{throw Error('gone')}}).code,'stale_owner');
+  // grant store absent fails closed
+  const noGrants={...device,grants:undefined};
+  assert.equal(authorizeRemoteOperation({...baseArgs,device:noGrants,request:send(`/remote/v1/conversations/${ownedConvo}/messages`),resolveOwner:()=>({current:true,revision:3,namespace:'runtime',identity:'rt-1'})}).code,'grant_store_unavailable');
+  // list filtering through same grants
+  const items=[{projectId:'project_12345678',displayName:'A'},{projectId:'project_other00',displayName:'B'},{displayName:'no-id'}];
+  assert.deepEqual(filterGrantedResources(items,device).map(i=>i.displayName),['A']);
 });
 
 test('approval payload enforces the per-method decision/value matrix',()=>{
@@ -330,6 +353,27 @@ test('approval payload enforces the per-method decision/value matrix',()=>{
   assert.equal(validateApprovalPayload({method:'input',decision:'answer'}),false);
   assert.equal(validateApprovalPayload({method:'input',decision:'cancel',value:'x'}),false);
   assert.equal(validateApprovalPayload({method:'editor',decision:'answer',value:'x'}),true);
+});
+
+test('approval settlement resolves and consumes a live Pi dialog exactly once',()=>{
+  const pair=testKeyPair();
+  const reqId='req_pending_01';
+  const device={deviceId:'device_abc12345',devicePublicKey:pair.publicKeyRaw,grantedScopes:['approvals.respond'],active:true,grants:{'conversation_12345678':true}};
+  const ts=Date.now().toString();
+  const respond=(method='confirm',decision='allow',value)=>signedRequest(request('approvals.respond',`/remote/v1/conversations/conversation_12345678/approvals/${reqId}/respond`,{method,decision,...(value===undefined?{}:{value})},{ownerRevision:5}),pair,Buffer.alloc(32,14).toString('base64url'),ts);
+  const owner={current:true,revision:5,namespace:'runtime',identity:'rt-1'};
+  const dialog={requestId:reqId,owner:'rt-1',pending:true,method:'confirm'};
+  let consumed=0;
+  const base={device,serviceId:SERVICE_ID,deviceResolveOwner:()=>owner,pendingDialog:dialog,consumeDialog:()=>{consumed++;return consumed===1;},nowMs:Number(ts),consumeNonce:()=>true};
+  const ok=settleApproval({...base,request:respond()});
+  assert.equal(ok.ok,true); assert.equal(consumed,1);
+  // duplicate settlement: dialog already consumed -> second consume returns false
+  assert.equal(settleApproval({...base,request:respond()}).code,'stale_owner');
+  // wrong method vs authoritative dialog, stale owner, non-pending, option not offered
+  assert.equal(settleApproval({...base,request:respond('select','answer','opt_x'),pendingDialog:{...dialog,method:'select',options:['opt_a']}}).code,'payload_invalid');
+  assert.equal(settleApproval({...base,request:respond('select','answer','opt_x'),pendingDialog:{...dialog,method:'select',options:['opt_x']},consumeDialog:()=>true}).ok,true);
+  assert.equal(settleApproval({...base,request:respond(),pendingDialog:{...dialog,owner:'rt-2'}}).code,'stale_owner');
+  assert.equal(settleApproval({...base,request:respond(),pendingDialog:{...dialog,pending:false}}).code,'stale_owner');
 });
 
 test('pre-auth failures map to a closed wire code and internal codes never leak',()=>{
