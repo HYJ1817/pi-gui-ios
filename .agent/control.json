@@ -1,8 +1,8 @@
 {
   "schemaVersion": 2,
   "kind": "control",
-  "revision": 507,
-  "updatedAt": "2026-11-22T04:17:22.571Z",
+  "revision": 514,
+  "updatedAt": "2026-11-22T04:25:26.857Z",
   "data": {
     "phase": "M0",
     "currentTask": "M0-architecture",
@@ -795,6 +795,22 @@
             "sourceFingerprint": "0f93f014420617980682760a04c667bbaad6f7d44a7038f80b0ca2c99658cefb",
             "commit": "f21ddcb80de0c414d422b8eddf8253407346ef55",
             "at": "2026-11-22T04:17:08.154Z"
+          },
+          {
+            "kind": "unit",
+            "path": "docs/acceptance/local-unit.json",
+            "sha256": "5209dfa8d71abbae3d783f1c216e1a8f98047900fab85788971a8248486d47f9",
+            "sourceFingerprint": "0793b8189efbc75f18a3bf66612186efd72b16b62720afee900197285840a0cd",
+            "commit": "231b931cd02fc5e833ea8368158939299217cc04",
+            "at": "2026-11-22T04:25:23.868Z"
+          },
+          {
+            "kind": "protocol-contract",
+            "path": "docs/acceptance/local-protocol-contract.json",
+            "sha256": "a8abf4e4e10741fd19fc04a86c411a02f41cdb50a569a40f4f16ea60a0455b6a",
+            "sourceFingerprint": "0793b8189efbc75f18a3bf66612186efd72b16b62720afee900197285840a0cd",
+            "commit": "231b931cd02fc5e833ea8368158939299217cc04",
+            "at": "2026-11-22T04:25:24.692Z"
           }
         ],
         "updatedAt": "2026-11-21T13:47:29.393Z"
@@ -903,14 +919,14 @@
       }
     ],
     "checkpoint": {
-      "id": "v2-2026-11-22T04-17-08-192Z-623e22da-5f72-4ddf-a625-990232359e0c",
-      "path": ".agent/checkpoints/v2-2026-11-22T04-17-08-192Z-623e22da-5f72-4ddf-a625-990232359e0c.json",
-      "sha256": "526031ae2f0d383bb559cd24a6d2410de28d9c40880b04cafcaf980ba0143225",
-      "authorityDigest": "17ecc4537414cf6ca7eaf63e7870f868692516b757133d743a0796b99440b2d1",
-      "at": "2026-11-22T04:17:08.192Z",
+      "id": "v2-2026-11-22T04-25-24-736Z-3d97a417-7e38-46c0-8f57-8cfc75163489",
+      "path": ".agent/checkpoints/v2-2026-11-22T04-25-24-736Z-3d97a417-7e38-46c0-8f57-8cfc75163489.json",
+      "sha256": "e723b9bcfd3259ca3529e28c383a4da9c51755490c3de7954fdea664a3907770",
+      "authorityDigest": "9e211bad861765906d5f30b23cde6c77137d3ac5889d961f00ee03cb62c74044",
+      "at": "2026-11-22T04:25:24.736Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "f21ddcb80de0c414d422b8eddf8253407346ef55",
+        "commit": "231b931cd02fc5e833ea8368158939299217cc04",
         "dirty": [
           "M .agent/HANDOFF.md",
           " M .agent/control.json",
@@ -921,12 +937,12 @@
           " M docs/acceptance/local-protocol-contract.json",
           " M docs/acceptance/local-unit-output.txt",
           " M docs/acceptance/local-unit.json",
-          "?? .agent/checkpoints/v2-2026-11-22T04-17-05-032Z-071fd6ec-4594-482a-91ff-4ec5805a5976.json",
-          "?? .agent/checkpoints/v2-2026-11-22T04-17-06-288Z-dcd37afb-da7a-4ee6-8cc1-b0767694c4c5.json",
-          "?? .agent/checkpoints/v2-2026-11-22T04-17-07-268Z-c4540bd3-b170-4de2-8d23-983101578050.json"
+          "?? .agent/checkpoints/v2-2026-11-22T04-25-21-751Z-5ffd0232-58b7-458f-9558-d47d0f50d607.json",
+          "?? .agent/checkpoints/v2-2026-11-22T04-25-23-083Z-f7cd8fd0-31e2-4a7d-8949-41d0bdad7cab.json",
+          "?? .agent/checkpoints/v2-2026-11-22T04-25-23-913Z-c1af4ee3-5972-4ed4-9d51-f480d6303a88.json"
         ]
       },
-      "sourceFingerprint": "0f93f014420617980682760a04c667bbaad6f7d44a7038f80b0ca2c99658cefb",
+      "sourceFingerprint": "0793b8189efbc75f18a3bf66612186efd72b16b62720afee900197285840a0cd",
       "note": "agent-task evidence M0-architecture"
     },
     "nextAction": "真机/SideStore 验收统一移至全部软件实现、自动化/Simulator/IPA/审查完成后的最终一次清单，由用户亲自操作；中途不请求设备、不等待设备。Agent 对普通问题自主排障，三轮同类失败后记录 deferred/unverified 并继续无依赖工作。M-1 基础验证保持 blocked；M0 design 已先行，继续收敛协议/安全合同，不启用远程入口。",
@@ -1090,13 +1106,13 @@
       {
         "taskId": "delegate-task:b178522b-1a92-4153-864f-8cc1858fc06e",
         "role": "m0-combined-functional-security-review",
-        "status": "working",
+        "status": "completed",
         "sourceCommit": "f21ddcb80de0c414d422b8eddf8253407346ef55"
       }
     ]
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "f53b2436f2e0a7d8e741ec138f75bd72693d02027f049f09d543d3dade594dba"
+    "digest": "780d103540e1f6b59567d3433846cd84ee9210e59be7553d408f1e805cda5fe4"
   }
 }
