@@ -1,23 +1,23 @@
 {
   "schemaVersion": 2,
   "kind": "state",
-  "revision": 528,
-  "updatedAt": "2026-11-22T04:33:29.222Z",
+  "revision": 535,
+  "updatedAt": "2026-11-22T04:41:38.070Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "bb31f60cc7407664a46ba2506b78534f9c875e3a4e6f2d483da6ac1b678f3f24",
+    "parentDigest": "08256174bfe98580a1b99b5490fd7d6fce3dc9979da0898cfb1fb62d322e9653",
     "phase": "M0",
     "currentTask": "M0-architecture",
     "branch": "agent/m-1-bootstrap",
     "checkpoint": {
-      "id": "v2-2026-11-22T04-33-13-248Z-17265dfe-54aa-4d83-b49b-14dac45f203b",
-      "path": ".agent/checkpoints/v2-2026-11-22T04-33-13-248Z-17265dfe-54aa-4d83-b49b-14dac45f203b.json",
-      "sha256": "c73dec6208d4b257de8802ac4cb972296210141bdd9df987b394aac0d18fdd8e",
-      "authorityDigest": "367ca566aa4fa344ef3cdae7970ec06e6a8adca97b27c232ab179772d07648f8",
-      "at": "2026-11-22T04:33:13.248Z",
+      "id": "v2-2026-11-22T04-41-35-177Z-fb262da2-05ea-4cca-ac39-e6d152d8dc00",
+      "path": ".agent/checkpoints/v2-2026-11-22T04-41-35-177Z-fb262da2-05ea-4cca-ac39-e6d152d8dc00.json",
+      "sha256": "835e5303bf11089d1f12dcdc4f4d1b2e0ac3c4aeba424f325b9d8c069170fa59",
+      "authorityDigest": "0b971f68be8f1f26c0f99cba305b67982fd25adba5b44deae3236697c06b2dc2",
+      "at": "2026-11-22T04:41:35.177Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "70fb91b4e14df2a81d63c88a8e47787e8915faca",
+        "commit": "aff74a7f66d2882189184550b0e19ce3949d7a47",
         "dirty": [
           "M .agent/HANDOFF.md",
           " M .agent/control.json",
@@ -26,20 +26,15 @@
           " M PROGRESS.md",
           " M docs/acceptance/local-protocol-contract-output.txt",
           " M docs/acceptance/local-protocol-contract.json",
-          " M docs/acceptance/local-typecheck.json",
           " M docs/acceptance/local-unit-output.txt",
           " M docs/acceptance/local-unit.json",
-          "?? .agent/checkpoints/v2-2026-11-22T04-30-44-806Z-478ff3b5-d778-4bf9-abe5-fba887247bc2.json",
-          "?? .agent/checkpoints/v2-2026-11-22T04-30-48-087Z-f8f5fdbe-4a0f-4c01-822a-3589072bc438.json",
-          "?? .agent/checkpoints/v2-2026-11-22T04-32-58-320Z-429f77ae-8458-4378-9bc8-3c1ad027dbcc.json",
-          "?? .agent/checkpoints/v2-2026-11-22T04-32-59-583Z-8731d2a3-1c1a-4e01-9885-d6a3a83d2c49.json",
-          "?? .agent/checkpoints/v2-2026-11-22T04-33-02-802Z-20072313-8883-447e-86ab-1077dd55bca5.json",
-          "?? .agent/checkpoints/v2-2026-11-22T04-33-03-636Z-cb84ab1e-41b4-4da2-be69-68711057e4fa.json",
-          "?? .agent/checkpoints/v2-2026-11-22T04-33-04-605Z-e7441fda-24d6-45f0-99ae-46bb2dd9f8aa.json"
+          "?? .agent/checkpoints/v2-2026-11-22T04-41-32-038Z-24a83443-e66f-49b6-ae3e-f84f2fe2caa5.json",
+          "?? .agent/checkpoints/v2-2026-11-22T04-41-33-392Z-15c81e22-0c49-41b1-8f58-eebd04c0a63d.json",
+          "?? .agent/checkpoints/v2-2026-11-22T04-41-34-350Z-2f913fd5-52a0-494f-aece-b87166e3a0fc.json"
         ]
       },
-      "sourceFingerprint": "9ae0244435de8bb66dd89fa34d3865e93c2ec1f9fa2cf643cd7cc5a762a06335",
-      "note": "agent-task evidence M2-shell"
+      "sourceFingerprint": "f08e9dc98f3f45b4edf3fc71843db0861b3ef292dd1d93a4aa480f9b41847291",
+      "note": "agent-task evidence M0-architecture"
     },
     "blockers": [
       "M-1 owner-waiver locked run 44906133898/1 failed before Pods install (NATIVE_DEPENDENCIES_REJECTED); a malformed local Gemfile hash was found and corrected, but the owner directed us not to retry. Candidate lock set is removed from the active repo and remains available only as ignored local artifact. M-1 remains blocked; no Simulator/UI/IPA result.",
@@ -325,13 +320,13 @@
       {
         "taskId": "delegate-task:752f4e6f-bf0d-4020-9d00-16e52da26c73",
         "role": "m0-combined-functional-security-review",
-        "status": "working",
+        "status": "completed",
         "sourceCommit": "70fb91b4e14df2a81d63c88a8e47787e8915faca"
       }
     ]
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "c1f4bb4807c28393ddf4bfa708f8c9578f250b2f807801f072a4d4c736b7b998"
+    "digest": "f7f84aef674d4c39eac237b6ded3311b973855e60295e11638db81bb39f7dd8d"
   }
 }
