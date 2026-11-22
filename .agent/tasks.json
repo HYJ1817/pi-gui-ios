@@ -1,11 +1,11 @@
 {
   "schemaVersion": 2,
   "kind": "tasks",
-  "revision": 557,
-  "updatedAt": "2026-11-22T05:01:27.533Z",
+  "revision": 580,
+  "updatedAt": "2026-11-22T05:04:19.176Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "d18feed9b7f4a7a1e4f512c61628fe0d3c30626be56ce0479ef87ed3286a152c",
+    "parentDigest": "4cc0482221c3cc6d263451bec594bd2fc3552033012c27f48eccab3cb1465f81",
     "tasks": [
       {
         "id": "M-1-infrastructure",
@@ -25,7 +25,7 @@
           "independent-security",
           "independent-handoff"
         ],
-        "acceptance": "所有自动化、真实UI及独立审查通过；另须完成T3当前main技术栈逐项分析与关键选型实际验证，ExpoRouter非硬约束、优先ReactNavigation；不包含SideStore人工验收",
+        "acceptance": "所有自动化、真实UI及独立审查通过；另须完成T3当前main技术栈逐项分析与关键选型实际验证，ExpoRouter非硬约束、优先ReactNavigation；不包含SideStore人工验收 [deferred/unverified: owner-waiver locked run 44906133898/1 failed before Pods install (NATIVE_DEPENDENCIES_REJECTED); malformed local Gemfile hash was corrected but owner directed no retry; candidate lock set removed from repo and kept only as ignored artifact. No Simulator/UI/IPA result. Kept blocked per ADR 0006 while independent software work proceeds.]",
         "evidence": [
           {
             "kind": "unit",
@@ -561,7 +561,7 @@
         "id": "M0-architecture",
         "phase": "M0",
         "title": "冻结架构、协议和安全模型",
-        "status": "in_progress",
+        "status": "completed",
         "dependsOn": [],
         "requiredEvidence": [
           "unit",
@@ -569,7 +569,7 @@
           "independent-security",
           "protocol-contract"
         ],
-        "acceptance": "Owner-waived design-only progression while M-1 remains blocked. Draft architecture/protocol/threat model only; M0 acceptance still requires source evidence, protocol contract, unit tests and independent functional/security reviews. No M1 remote implementation or completion credit until all M0 gates pass.",
+        "acceptance": "Architecture/protocol/security model frozen at contract v1 (docs/contracts/remote-v1.json status frozen-v1); all M0 gates passed: protocol-contract synthetic suite, full unit suite, combined independent functional and security reviews on frozen HEAD 447d98f. Remote entry remains default-disabled; implementation proceeds under M1-remote per ROADMAP. M-1 blockers are recorded on the M-1 task as deferred/unverified per ADR 0006 and do not block M0 acceptance.",
         "evidence": [
           {
             "kind": "protocol-contract",
@@ -778,15 +778,47 @@
             "sourceFingerprint": "f08e9dc98f3f45b4edf3fc71843db0861b3ef292dd1d93a4aa480f9b41847291",
             "commit": "f13f42446c6be54993b0b0fb304c3092580492a0",
             "at": "2026-11-22T04:48:28.555Z"
+          },
+          {
+            "kind": "unit",
+            "path": "docs/acceptance/local-unit.json",
+            "sha256": "ed3fc11eae0d3f00442cffc6ab444eb580bc790457c8b2eab059698e90036f14",
+            "sourceFingerprint": "2741833c73b7a8bba5ee544d59c5695d3958a80478970a13eb11a3f5731abf41",
+            "commit": "447d98f3f4f40401d03b5f225a037cfc5d1848a8",
+            "at": "2026-11-22T05:02:33.721Z"
+          },
+          {
+            "kind": "protocol-contract",
+            "path": "docs/acceptance/local-protocol-contract.json",
+            "sha256": "a3faa4a529bb92ccb40837daaa9c48eeb808f55ddbb5353e93cd370d576aa7e8",
+            "sourceFingerprint": "2741833c73b7a8bba5ee544d59c5695d3958a80478970a13eb11a3f5731abf41",
+            "commit": "447d98f3f4f40401d03b5f225a037cfc5d1848a8",
+            "at": "2026-11-22T05:02:34.553Z"
+          },
+          {
+            "kind": "independent-review",
+            "path": "docs/acceptance/review-447d98f-review.json",
+            "sha256": "6668ca60bdd2d0f62db25881ae467d741c0c392104800f8efec240c8557b26cd",
+            "sourceFingerprint": "2741833c73b7a8bba5ee544d59c5695d3958a80478970a13eb11a3f5731abf41",
+            "commit": "447d98f3f4f40401d03b5f225a037cfc5d1848a8",
+            "at": "2026-11-22T05:03:54.064Z"
+          },
+          {
+            "kind": "independent-security",
+            "path": "docs/acceptance/review-447d98f-security.json",
+            "sha256": "6b46aa39d6dbb5fd61d2416e5bd1a8a5b96d50849e13cb2f722ce8a1362841e0",
+            "sourceFingerprint": "2741833c73b7a8bba5ee544d59c5695d3958a80478970a13eb11a3f5731abf41",
+            "commit": "447d98f3f4f40401d03b5f225a037cfc5d1848a8",
+            "at": "2026-11-22T05:03:54.956Z"
           }
         ],
-        "updatedAt": "2026-11-21T13:47:29.393Z"
+        "updatedAt": "2026-11-22T05:04:14.175Z"
       },
       {
         "id": "M1-remote",
         "phase": "M1",
         "title": "桌面远程授权、配对、撤销",
-        "status": "pending",
+        "status": "in_progress",
         "dependsOn": [
           "M0-architecture"
         ],
@@ -797,7 +829,8 @@
           "independent-security"
         ],
         "acceptance": "隔离入口、TLS、重放、撤销断连、最小权限及桌面 canonical 验证",
-        "evidence": []
+        "evidence": [],
+        "updatedAt": "2026-11-22T05:04:18.571Z"
       },
       {
         "id": "M2-shell",
@@ -897,6 +930,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "92ea3548e328b66c0eea905499a30af07fac93e5f755d9069315149655d80b0a"
+    "digest": "8e1520ecda7a4d0359ac4770917d88b0fb4615a9c26eea47c50005be4a85b705"
   }
 }

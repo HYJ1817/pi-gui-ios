@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 2,
+  "kind": "independent-security",
+  "taskId": "M0-architecture",
+  "commit": "447d98f3f4f40401d03b5f225a037cfc5d1848a8",
+  "sourceFingerprint": "2741833c73b7a8bba5ee544d59c5695d3958a80478970a13eb11a3f5731abf41",
+  "startedAt": "2026-11-22T05:03:38.043Z",
+  "finishedAt": "2026-11-22T05:03:38.043Z",
+  "passed": true,
+  "details": {
+    "receiptPath": "docs/acceptance/review-447d98f-receipt.json",
+    "receiptSha256": "2cf815658235f68f0897a9336449e72419d17f736822ced7dbba53df6f9f0f1a",
+    "scope": "Combined functional+security independent re-review of the M0 remote-protocol contract, validator and design docs on frozen HEAD 447d98f (diff-only change vs reviewed aff74a7: status design-contract->frozen-v1 plus prose/test convergence)."
+  }
+}

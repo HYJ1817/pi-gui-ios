@@ -1,18 +1,18 @@
 {
   "schemaVersion": 2,
   "kind": "control",
-  "revision": 557,
-  "updatedAt": "2026-11-22T05:01:27.533Z",
+  "revision": 580,
+  "updatedAt": "2026-11-22T05:04:19.176Z",
   "data": {
-    "phase": "M0",
-    "currentTask": "M0-architecture",
+    "phase": "M1",
+    "currentTask": "M1-remote",
     "branch": "agent/m-1-bootstrap",
     "protocolVersion": 1,
     "desktop": {
       "repo": "HYJ1817/pi-gui",
-      "branch": "main",
-      "commit": "af0432a0bc3b04c717a63ede3cc457e859401833",
-      "protocolVersion": null
+      "branch": "feat/mobile-remote-protocol-v1",
+      "commit": "e7b5fa05ff55710fed6e85679845288fad31795d",
+      "protocolVersion": 1
     },
     "ci": [
       {
@@ -115,10 +115,7 @@
         "url": "https://github.com/HYJ1817/pi-gui-ios/actions/runs/44911181329"
       }
     ],
-    "blockers": [
-      "M-1 owner-waiver locked run 44906133898/1 failed before Pods install (NATIVE_DEPENDENCIES_REJECTED); a malformed local Gemfile hash was found and corrected, but the owner directed us not to retry. Candidate lock set is removed from the active repo and remains available only as ignored local artifact. M-1 remains blocked; no Simulator/UI/IPA result.",
-      "Owner waiver permits M0 design work only while M-1-infrastructure remains blocked and M-1-device pending. M0 cannot be accepted and M1 remote implementation cannot start until its protocol/unit/independent functional/security gates pass; this is not an M-1 completion waiver."
-    ],
+    "blockers": [],
     "tasks": [
       {
         "id": "M-1-infrastructure",
@@ -138,7 +135,7 @@
           "independent-security",
           "independent-handoff"
         ],
-        "acceptance": "所有自动化、真实UI及独立审查通过；另须完成T3当前main技术栈逐项分析与关键选型实际验证，ExpoRouter非硬约束、优先ReactNavigation；不包含SideStore人工验收",
+        "acceptance": "所有自动化、真实UI及独立审查通过；另须完成T3当前main技术栈逐项分析与关键选型实际验证，ExpoRouter非硬约束、优先ReactNavigation；不包含SideStore人工验收 [deferred/unverified: owner-waiver locked run 44906133898/1 failed before Pods install (NATIVE_DEPENDENCIES_REJECTED); malformed local Gemfile hash was corrected but owner directed no retry; candidate lock set removed from repo and kept only as ignored artifact. No Simulator/UI/IPA result. Kept blocked per ADR 0006 while independent software work proceeds.]",
         "evidence": [
           {
             "kind": "unit",
@@ -674,7 +671,7 @@
         "id": "M0-architecture",
         "phase": "M0",
         "title": "冻结架构、协议和安全模型",
-        "status": "in_progress",
+        "status": "completed",
         "dependsOn": [],
         "requiredEvidence": [
           "unit",
@@ -682,7 +679,7 @@
           "independent-security",
           "protocol-contract"
         ],
-        "acceptance": "Owner-waived design-only progression while M-1 remains blocked. Draft architecture/protocol/threat model only; M0 acceptance still requires source evidence, protocol contract, unit tests and independent functional/security reviews. No M1 remote implementation or completion credit until all M0 gates pass.",
+        "acceptance": "Architecture/protocol/security model frozen at contract v1 (docs/contracts/remote-v1.json status frozen-v1); all M0 gates passed: protocol-contract synthetic suite, full unit suite, combined independent functional and security reviews on frozen HEAD 447d98f. Remote entry remains default-disabled; implementation proceeds under M1-remote per ROADMAP. M-1 blockers are recorded on the M-1 task as deferred/unverified per ADR 0006 and do not block M0 acceptance.",
         "evidence": [
           {
             "kind": "protocol-contract",
@@ -891,15 +888,47 @@
             "sourceFingerprint": "f08e9dc98f3f45b4edf3fc71843db0861b3ef292dd1d93a4aa480f9b41847291",
             "commit": "f13f42446c6be54993b0b0fb304c3092580492a0",
             "at": "2026-11-22T04:48:28.555Z"
+          },
+          {
+            "kind": "unit",
+            "path": "docs/acceptance/local-unit.json",
+            "sha256": "ed3fc11eae0d3f00442cffc6ab444eb580bc790457c8b2eab059698e90036f14",
+            "sourceFingerprint": "2741833c73b7a8bba5ee544d59c5695d3958a80478970a13eb11a3f5731abf41",
+            "commit": "447d98f3f4f40401d03b5f225a037cfc5d1848a8",
+            "at": "2026-11-22T05:02:33.721Z"
+          },
+          {
+            "kind": "protocol-contract",
+            "path": "docs/acceptance/local-protocol-contract.json",
+            "sha256": "a3faa4a529bb92ccb40837daaa9c48eeb808f55ddbb5353e93cd370d576aa7e8",
+            "sourceFingerprint": "2741833c73b7a8bba5ee544d59c5695d3958a80478970a13eb11a3f5731abf41",
+            "commit": "447d98f3f4f40401d03b5f225a037cfc5d1848a8",
+            "at": "2026-11-22T05:02:34.553Z"
+          },
+          {
+            "kind": "independent-review",
+            "path": "docs/acceptance/review-447d98f-review.json",
+            "sha256": "6668ca60bdd2d0f62db25881ae467d741c0c392104800f8efec240c8557b26cd",
+            "sourceFingerprint": "2741833c73b7a8bba5ee544d59c5695d3958a80478970a13eb11a3f5731abf41",
+            "commit": "447d98f3f4f40401d03b5f225a037cfc5d1848a8",
+            "at": "2026-11-22T05:03:54.064Z"
+          },
+          {
+            "kind": "independent-security",
+            "path": "docs/acceptance/review-447d98f-security.json",
+            "sha256": "6b46aa39d6dbb5fd61d2416e5bd1a8a5b96d50849e13cb2f722ce8a1362841e0",
+            "sourceFingerprint": "2741833c73b7a8bba5ee544d59c5695d3958a80478970a13eb11a3f5731abf41",
+            "commit": "447d98f3f4f40401d03b5f225a037cfc5d1848a8",
+            "at": "2026-11-22T05:03:54.956Z"
           }
         ],
-        "updatedAt": "2026-11-21T13:47:29.393Z"
+        "updatedAt": "2026-11-22T05:04:14.175Z"
       },
       {
         "id": "M1-remote",
         "phase": "M1",
         "title": "桌面远程授权、配对、撤销",
-        "status": "pending",
+        "status": "in_progress",
         "dependsOn": [
           "M0-architecture"
         ],
@@ -910,7 +939,8 @@
           "independent-security"
         ],
         "acceptance": "隔离入口、TLS、重放、撤销断连、最小权限及桌面 canonical 验证",
-        "evidence": []
+        "evidence": [],
+        "updatedAt": "2026-11-22T05:04:18.571Z"
       },
       {
         "id": "M2-shell",
@@ -1008,14 +1038,14 @@
       }
     ],
     "checkpoint": {
-      "id": "v2-2026-11-22T05-01-27-533Z-dc9547a8-6fbc-440f-b3fd-e6891c0ee403",
-      "path": ".agent/checkpoints/v2-2026-11-22T05-01-27-533Z-dc9547a8-6fbc-440f-b3fd-e6891c0ee403.json",
-      "sha256": "e4f83225c7c88e35f9cd2abf9a1e32b2e7b79262a539a60abdf806a210a6e7e9",
-      "authorityDigest": "d0f66701e6cb4197f30e53f8bfc5fe77c81b7dc3fd817f734cbb941815deda51",
-      "at": "2026-11-22T05:01:27.533Z",
+      "id": "v2-2026-11-22T05-04-19-176Z-86523f3f-fc97-458d-9bdd-8de4da4a2956",
+      "path": ".agent/checkpoints/v2-2026-11-22T05-04-19-176Z-86523f3f-fc97-458d-9bdd-8de4da4a2956.json",
+      "sha256": "d8a3a1f8ec1b62a7c2aee5cb74accdb305446a6ed316c334e3689eceb8f2bb9e",
+      "authorityDigest": "570dcbe604b25599d48952978850abed84fe9f4d6d3709e70bde7cea873ee8ab",
+      "at": "2026-11-22T05:04:19.176Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "f13f42446c6be54993b0b0fb304c3092580492a0",
+        "commit": "447d98f3f4f40401d03b5f225a037cfc5d1848a8",
         "dirty": [
           "M .agent/HANDOFF.md",
           " M .agent/control.json",
@@ -1026,27 +1056,26 @@
           " M docs/acceptance/local-protocol-contract.json",
           " M docs/acceptance/local-unit-output.txt",
           " M docs/acceptance/local-unit.json",
-          " M docs/architecture.md",
-          " M docs/contracts/remote-v1.json",
-          " M docs/decisions/0005-remote-protocol-v1-proposal.md",
-          " M docs/design/mobile-ui-integration.md",
-          " M docs/design/remote-event-model.md",
-          " M docs/design/remote-protocol-client.md",
-          " M docs/design/secure-credential-store.md",
-          " M docs/remote-protocol.md",
-          " M tests/remote-contract.test.mjs",
-          "?? .agent/checkpoints/v2-2026-11-22T04-48-25-394Z-c5187345-c200-4b83-a3d9-b0662e947107.json",
-          "?? .agent/checkpoints/v2-2026-11-22T04-48-26-711Z-bfcf643f-a87b-4fbc-9e86-a8e47cc5d462.json",
-          "?? .agent/checkpoints/v2-2026-11-22T04-48-27-719Z-797534e8-47cc-4d08-b8fe-a96f427a2cb4.json",
-          "?? .agent/checkpoints/v2-2026-11-22T04-48-28-600Z-72c3f038-5052-46fd-bd15-44a31a880995.json",
-          "?? .agent/checkpoints/v2-2026-11-22T05-00-11-710Z-258595d6-1988-4c7c-8651-6453da02a4fb.json",
-          "?? .agent/checkpoints/v2-2026-11-22T05-01-24-736Z-6dd5f2b1-c85f-411b-8ba3-4d81d4b8b6e9.json"
+          "?? .agent/checkpoints/v2-2026-11-22T05-02-29-414Z-f9f18a1c-6691-452f-a4c9-06f6381e09c2.json",
+          "?? .agent/checkpoints/v2-2026-11-22T05-02-30-702Z-4b2d817a-4ab8-47ee-86b8-5465a200ee28.json",
+          "?? .agent/checkpoints/v2-2026-11-22T05-02-33-767Z-3a0fe506-d0a4-47f0-88e5-4772d6e6692a.json",
+          "?? .agent/checkpoints/v2-2026-11-22T05-02-34-595Z-a306328f-fa5f-42e6-b0f2-fba6c19f601b.json",
+          "?? .agent/checkpoints/v2-2026-11-22T05-03-54-110Z-fd723873-4afc-4e90-b6b8-26836650bb27.json",
+          "?? .agent/checkpoints/v2-2026-11-22T05-03-55-005Z-e5acfe3b-8315-4dd4-8c7d-ae01573dc973.json",
+          "?? .agent/checkpoints/v2-2026-11-22T05-04-10-904Z-e934b542-5aa6-4a6a-baf7-80d5bb47fdea.json",
+          "?? .agent/checkpoints/v2-2026-11-22T05-04-11-500Z-eda07cb4-56db-4b2e-bfb0-7fd5c27c9e4a.json",
+          "?? .agent/checkpoints/v2-2026-11-22T05-04-12-793Z-a7176d14-576b-4d55-9e47-479119376dbb.json",
+          "?? .agent/checkpoints/v2-2026-11-22T05-04-14-225Z-c06d5587-e1d1-4c12-986f-eec6aa276672.json",
+          "?? .agent/checkpoints/v2-2026-11-22T05-04-18-620Z-54f4dce7-c8fb-4f71-90d3-73ab5531416e.json",
+          "?? docs/acceptance/review-447d98f-receipt.json",
+          "?? docs/acceptance/review-447d98f-review.json",
+          "?? docs/acceptance/review-447d98f-security.json"
         ]
       },
       "sourceFingerprint": "2741833c73b7a8bba5ee544d59c5695d3958a80478970a13eb11a3f5731abf41",
-      "note": "实际运行 node --test tests/remote-contract.test.mjs，exit=0"
+      "note": "M0 accepted+completed（全部4类证据+独立功能/安全评审PASS on 447d98f，合同 frozen-v1）；桌面协议声明 HYJ1817/pi-gui@e7b5fa05 protocolVersion=1；blockers 移入 M-1 任务记录；转入 M1-remote。"
     },
-    "nextAction": "真机/SideStore 验收统一移至全部软件实现、自动化/Simulator/IPA/审查完成后的最终一次清单，由用户亲自操作；中途不请求设备、不等待设备。Agent 对普通问题自主排障，三轮同类失败后记录 deferred/unverified 并继续无依赖工作。M-1 基础验证保持 blocked；M0 design 已先行，继续收敛协议/安全合同，不启用远程入口。",
+    "nextAction": "M0-architecture 全部门禁通过，合同冻结 v1。桌面协议声明已记录于 HYJ1817/pi-gui@e7b5fa05（feat/mobile-remote-protocol-v1，server/remote/contract-v1.json 逐字节镜像 + WIP 网关骨架）。M-1-infrastructure 保持 blocked/deferred（CI 44906133898/1 Pods 阶段失败，owner 禁止重试）；M-1-device 留最终一次设备清单。下一步：M1-remote——桌面 server/remote 按合同逐项对齐（pair 交换字段/签名响应/错误码映射/事件帧），canonical 负向测试，独立功能+安全审查。真机不请求不阻塞。",
     "delegates": [
       {
         "taskId": "node:delegated-task:command%3Amcp%3Ac31b83bb-4e95-4301-8a91-f13f8295d85a%3Adelegate-task%3A4b75cf04-9360-469c-87e1-321a7e4b3149",
@@ -1227,11 +1256,17 @@
         "role": "m0-combined-functional-security-review",
         "status": "completed",
         "sourceCommit": "aff74a7f66d2882189184550b0e19ce3949d7a47"
+      },
+      {
+        "taskId": "node:delegated-task:command%3Amcp%3Aab66ad2a-7018-4f36-97aa-0571bf8a148e%3Adelegate-task%3Af2c9defd-336f-459a-976c-e75441309a33",
+        "role": "m0-combined-functional-security-review-frozen-447d98f",
+        "status": "completed",
+        "sourceCommit": "447d98f3f4f40401d03b5f225a037cfc5d1848a8"
       }
     ]
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "d18feed9b7f4a7a1e4f512c61628fe0d3c30626be56ce0479ef87ed3286a152c"
+    "digest": "4cc0482221c3cc6d263451bec594bd2fc3552033012c27f48eccab3cb1465f81"
   }
 }
