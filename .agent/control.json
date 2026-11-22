@@ -1,8 +1,8 @@
 {
   "schemaVersion": 2,
   "kind": "control",
-  "revision": 605,
-  "updatedAt": "2026-11-22T13:50:55.489Z",
+  "revision": 609,
+  "updatedAt": "2026-11-22T14:05:13.842Z",
   "data": {
     "phase": "M1",
     "currentTask": "M1-remote",
@@ -11,7 +11,7 @@
     "desktop": {
       "repo": "HYJ1817/pi-gui",
       "branch": "feat/mobile-remote-protocol-v1",
-      "commit": "1d8ac5d2e5c8a0ac7d2dda7fc9e41a1bca253076",
+      "commit": "74b53edbefbfb99543746296b35c4a8205dd7ef0",
       "protocolVersion": 1
     },
     "ci": [
@@ -1087,14 +1087,14 @@
       }
     ],
     "checkpoint": {
-      "id": "v2-2026-11-22T13-26-52-110Z-8fdffbdf-3171-46ad-a37e-b015510ed034",
-      "path": ".agent/checkpoints/v2-2026-11-22T13-26-52-110Z-8fdffbdf-3171-46ad-a37e-b015510ed034.json",
-      "sha256": "3e7884063b78a0662bd05f9261a9b01fbe17ca334d6ca262f3175e02f0df327c",
-      "authorityDigest": "a51fbbaf5e1a356f1cdcad5176145357b636a267f9ae96a32dfdd89c02c66b35",
-      "at": "2026-11-22T13:26:52.110Z",
+      "id": "v2-2026-11-22T13-51-33-637Z-bd433d92-9564-4e20-a9fb-b81a4b4a740f",
+      "path": ".agent/checkpoints/v2-2026-11-22T13-51-33-637Z-bd433d92-9564-4e20-a9fb-b81a4b4a740f.json",
+      "sha256": "a4c2af6341305f1308ed8f1a9ee6886f88a4ec7ea331bed1190c41075d3d24a3",
+      "authorityDigest": "1cb0758dc6ce2796c92466a72008cf0058a43f8782b7f52fbebf574cb600e608",
+      "at": "2026-11-22T13:51:33.637Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "14973c4fa705311b05c879666ebb559992f37461",
+        "commit": "e28b5a8096d02084eb45649a59991aa200c32856",
         "dirty": [
           "M .agent/HANDOFF.md",
           " M .agent/control.json",
@@ -1116,6 +1116,7 @@
           "?? .agent/checkpoints/v2-2026-11-22T13-25-50-887Z-d8401d80-9f18-482b-be3c-50fed7ca9f2d.json",
           "?? .agent/checkpoints/v2-2026-11-22T13-26-38-281Z-d2e7d461-1677-4333-a6ae-78859188f4d0.json",
           "?? .agent/checkpoints/v2-2026-11-22T13-26-39-361Z-09be7e27-d959-4b97-9f27-1f2d9ed55d1e.json",
+          "?? .agent/checkpoints/v2-2026-11-22T13-26-52-110Z-8fdffbdf-3171-46ad-a37e-b015510ed034.json",
           "?? docs/acceptance/local-integration-output.txt",
           "?? docs/acceptance/local-integration.json",
           "?? docs/acceptance/m0-local-protocol-contract.json",
@@ -1127,7 +1128,7 @@
         ]
       },
       "sourceFingerprint": "ceeb588d13e8e5c610d52edd8e9aec1c2fb0ca0bfbc4cc54985bcfbb85c8a5b0",
-      "note": "M0 依赖全部证据在 14973c4 重章并通过（unit+protocol-contract+independent-review+security PASS receipt m0-review-14973c4-*）；M1-remote 仅剩两 review delegate（6b89e4b0 实现审查）进行中。"
+      "note": "M1-remote 审查修复落地(desktop 1d8ac5d2)：cert持久化/本机管理面/授权撤销reset/reset递归护栏；旧审查取消，v2独立审查已启动"
     },
     "nextAction": "M1-remote 桌面实现已提交 pi-gui@d244f3e1（remote/v1 全对齐；contract 33+gateway 11 绿）。unit+integration 证据已在 14973c4 导入；M0 依赖 unit+protocol-contract 已在新指纹重章导入。剩：两个 delegate 独立审查（taskId 6b89e4b0=M1-remote 实现审查，a83336bb=M0 合同重审）完成后把 receipt+report 写入 docs/acceptance/review-14973c4-*.json，evidence 导入 M1-remote 与 M0-architecture，validate 全绿后 transition M1-remote->completed。",
     "delegates": [
@@ -1318,21 +1319,21 @@
         "sourceCommit": "447d98f3f4f40401d03b5f225a037cfc5d1848a8"
       },
       {
-        "taskId": "node:delegated-task:command%3Amcp%3A5a55819e-c86d-47c8-848e-e3f0fbb88082%3Adelegate-task%3A6b89e4b0-66ea-4896-b434-98151210fea9",
-        "role": "m1-remote-combined-functional-security-review",
-        "status": "working",
-        "sourceCommit": "14973c4fa705311b05c879666ebb559992f37461"
-      },
-      {
         "taskId": "node:delegated-task:command%3Amcp%3A5a55819e-c86d-47c8-848e-e3f0fbb88082%3Adelegate-task%3Aa83336bb-fe4c-40e1-8ef8-423688489bfb",
         "role": "m0-contract-rereview-14973c4",
         "status": "completed",
         "sourceCommit": "14973c4fa705311b05c879666ebb559992f37461"
+      },
+      {
+        "taskId": "node:delegated-task:command%3Amcp%3A5a55819e-c86d-47c8-848e-e3f0fbb88082%3Adelegate-task%3A3adb7d89-8301-4520-a490-40e854e52333",
+        "role": "m1-remote-confirmation-review-v3",
+        "status": "working",
+        "sourceCommit": "e28b5a8096d02084eb45649a59991aa200c32856"
       }
     ]
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "db2165a757762261685338f0f4b4f74ec7ffc87708b85417210dc1a66d649f43"
+    "digest": "aebc04bf478f8fa18b984e49a8793d12c58b483b6bebee9f253bb066bb55b01c"
   }
 }
