@@ -23,11 +23,14 @@ const bytesOf=value=>Buffer.isBuffer(value)?value:typeof value==='string'?Buffer
 const DER_ED25519_PREFIX=Buffer.from('302a300506032b6570032100','hex');
 const DER_ED25519_PRIVATE_PREFIX=Buffer.from('302e020100300506032b657004220420','hex');
 
-function canonicalJson(value) {
-  if(Array.isArray(value))return `[${value.map(canonicalJson).join(',')}]`;
-  if(isRecord(value))return `{${Object.keys(value).sort().map(key=>`${JSON.stringify(key)}:${canonicalJson(value[key])}`).join(',')}}`;
+const MAX_JSON_DEPTH = REMOTE_V1.limits?.maxJsonDepth ?? 16;
+function canonicalJson(value,depth=0) {
+  if(depth>MAX_JSON_DEPTH)return null;
+  if(Array.isArray(value)){const items=value.map(item=>canonicalJson(item,depth+1));return items.some(item=>item===null)?null:`[${items.join(',')}]`;}
+  if(isRecord(value)){const parts=Object.keys(value).sort().map(key=>{const inner=canonicalJson(value[key],depth+1);return inner===null?null:`${JSON.stringify(key)}:${inner}`;});return parts.some(part=>part===null)?null:`{${parts.join(',')}}`;}
   return JSON.stringify(value);
 }
+function strictUtf8(bytes) { try { return new TextDecoder('utf-8',{fatal:true}).decode(bytes); } catch { return null; } }
 function b64url(bytes) {return Buffer.from(bytes).toString('base64url');}
 function decodeB64url(text,expectedBytes) {
   if(typeof text!=='string'||!/^[A-Za-z0-9_-]+$/.test(text))return null;
@@ -61,6 +64,7 @@ function validateSchema(value,schema,depth=0) {
   }
   if(schema.type==='string') {
     if(typeof value!=='string'||(schema.minLength!==undefined&&value.length<schema.minLength)||(schema.maxLength!==undefined&&value.length>schema.maxLength)
+      ||(schema.maxUtf8Bytes!==undefined&&Buffer.byteLength(value,'utf8')>schema.maxUtf8Bytes)
       ||(schema.pattern&&!new RegExp(schema.pattern).test(value))||(schema.enum&&!schema.enum.includes(value)))return false;
     if(schema.format==='uuid')return UUID.test(value);
     if(schema.format==='date-time')return Number.isFinite(Date.parse(value))&&/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?Z$/.test(value);
@@ -120,10 +124,12 @@ function validateBodyBytes(request) {
     if(request.body!==undefined&&request.body!==null)return {ok:false,code:'get_body_forbidden'};
     return {ok:true,bytes,digest:sha256(bytes)};
   }
+  const text=strictUtf8(bytes);
+  if(text===null)return {ok:false,code:'body_parse_mismatch'};
   if(!isRecord(request.body))return {ok:false,code:'body_parse_mismatch'};
-  let parsed;try {parsed=JSON.parse(bytes.toString('utf8'));}catch{return {ok:false,code:'body_parse_mismatch'};}
+  let parsed;try {parsed=JSON.parse(text);}catch{return {ok:false,code:'body_parse_mismatch'};}
   const canonical=canonicalJson(parsed);
-  if(canonical!==canonicalJson(request.body)||bytes.toString('utf8')!==canonical)return {ok:false,code:'body_parse_mismatch'};
+  if(canonical===null||canonical!==canonicalJson(request.body)||text!==canonical)return {ok:false,code:'body_parse_mismatch'};
   return {ok:true,bytes,digest:sha256(bytes)};
 }
 function ed25519PublicKey(rawKey) {
@@ -159,62 +165,103 @@ export function verifyPairProof(body) {
   const message=buildPairProofMessage(body);
   return message!==null&&verifyEd25519(body.devicePublicKey,body.proofSignature,message);
 }
-export function buildSignatureMessage({protocolVersion,requestId,method,path,query={},timestamp,nonce,bodySha256}) {
+export function buildPairProofFields(body) {
+  if(!isRecord(body))return null;
+  const {proofSignature,...fields}=body;
+  return fields;
+}
+export function buildSignatureMessage({protocolVersion,deviceId,serviceId,requestId,method,path,query={},timestamp,nonce,bodySha256}) {
   if(!isRecord(query)||Object.values(query).some(value=>typeof value!=='string'))return null;
+  if(!OPAQUE_ID.test(deviceId??'')||typeof serviceId!=='string'||serviceId.length===0)return null;
   const canonicalQuery=Object.keys(query).sort().map(key=>`${encodeURIComponent(key)}=${encodeURIComponent(query[key])}`).join('&');
   const target=canonicalQuery?`${path}?${canonicalQuery}`:path;
-  return [String(protocolVersion),requestId,String(method).toUpperCase(),target,timestamp,nonce,bodySha256].join('\n');
+  return [String(protocolVersion),deviceId,serviceId,requestId,String(method).toUpperCase(),target,timestamp,nonce,bodySha256].join('\n');
 }
-export function verifyRemoteSignature({request,devicePublicKey,registeredDeviceId,grantedScopes,nowMs=Date.now(),consumeNonce}) {
-  const shape=validateRemoteRequest(request);if(!shape.ok)return shape;
+const PRE_AUTHENTICATION_CODES=new Set(['route_mismatch','pair_headers_invalid','signature_headers_missing','signature_headers_invalid','get_body_forbidden','body_bytes_required','body_parse_mismatch','request_too_large','request_invalid','query_invalid','operation_route_mismatch','envelope_invalid','cursor_invalid','replay_store_unavailable','signature_expired','signature_invalid','device_identity_mismatch','device_inactive']);
+export function wireErrorCode(internal) {
+  const mapping=REMOTE_V1.responseEnvelope.internalCodeMapping?.postAuthentication??{};
+  if(PRE_AUTHENTICATION_CODES.has(internal))return 'unauthorized';
+  return mapping[internal] ?? 'unauthorized';
+}
+function hasDuplicateQueryParams(query) {
+  if(!isRecord(query))return false;
+  const names=new Set();
+  for(const key of Object.keys(query)) { const normalized=key; if(names.has(normalized))return true; names.add(normalized); }
+  return false;
+}
+function validateCursor(cursor) {
+  if(cursor===undefined)return {ok:true};
+  if(typeof cursor!=='string'||!new RegExp(REMOTE_V1.eventStream.cursorPattern).test(cursor)||cursor.length>REMOTE_V1.eventStream.cursorMaxLength)return {ok:false,code:'cursor_invalid'};
+  return {ok:true,cursor};
+}
+export function verifyRemoteSignature({request,device,serviceId,nowMs=Date.now(),consumeNonce}) {
+  const shape=validateRemoteRequest(request);if(!shape.ok)return {ok:false,code:shape.code,wire:wireErrorCode(shape.code)};
+  if(!isRecord(device)||typeof device.deviceId!=='string'||typeof device.devicePublicKey!=='string'||!Array.isArray(device.grantedScopes)||device.active!==true)return {ok:false,code:'device_inactive',wire:'unauthorized'};
   const headers=Object.fromEntries(Object.entries(request.headers).map(([key,value])=>[key.toLowerCase(),value]));
-  if(typeof registeredDeviceId!=='string'||registeredDeviceId!==headers['x-pi-remote-device'])return {ok:false,code:'device_identity_mismatch'};
-  const requiredScope=shape.scope ?? REMOTE_V1.eventStream.scope;
-  if(!Array.isArray(grantedScopes)||!grantedScopes.includes(requiredScope))return {ok:false,code:'scope_denied'};
+  if(device.deviceId!==headers['x-pi-remote-device'])return {ok:false,code:'device_identity_mismatch',wire:'unauthorized'};
+  if(!device.grantedScopes.every(scope=>REMOTE_V1.scopeVocabulary.includes(scope)))return {ok:false,code:'device_grants_invalid',wire:'unauthorized'};
+  if(!Number.isSafeInteger(nowMs)||!Number.isFinite(nowMs))return {ok:false,code:'signature_expired',wire:'unauthorized'};
   const timestamp=Number(headers['x-pi-remote-timestamp']);
-  if(!Number.isSafeInteger(timestamp)||Math.abs(nowMs-timestamp)>REMOTE_V1.signedRequest.maximumClockSkewSeconds*1000)return {ok:false,code:'signature_expired'};
-  const message=buildSignatureMessage({protocolVersion:REMOTE_V1.contractVersion,requestId:headers['x-pi-remote-request-id'],method:request.method,path:request.path,query:request.query??{},timestamp:headers['x-pi-remote-timestamp'],nonce:headers['x-pi-remote-nonce'],bodySha256:headers['x-pi-remote-body-sha256']});
-  if(!message||!verifyEd25519(devicePublicKey,headers['x-pi-remote-signature'],message))return {ok:false,code:'signature_invalid'};
-  if(typeof consumeNonce!=='function')return {ok:false,code:'replay_store_unavailable'};
-  // consumeNonce must atomically persist (deviceId, nonce) before request dispatch.
-  const consumed=consumeNonce(headers['x-pi-remote-device'],headers['x-pi-remote-nonce'],timestamp);
-  if(consumed&&typeof consumed.then==='function')return {ok:false,code:'async_replay_store_unsupported'};
-  if(consumed!==true)return {ok:false,code:'request_replayed'};
-  return {ok:true,operation:shape.operation,scope:requiredScope,requestId:shape.requestId,deviceId:registeredDeviceId,pathParameters:shape.pathParameters};
+  if(!Number.isSafeInteger(timestamp)||Math.abs(nowMs-timestamp)>REMOTE_V1.signedRequest.maximumClockSkewSeconds*1000)return {ok:false,code:'signature_expired',wire:'unauthorized'};
+  const message=buildSignatureMessage({protocolVersion:REMOTE_V1.contractVersion,deviceId:device.deviceId,serviceId,requestId:headers['x-pi-remote-request-id'],method:request.method,path:request.path,query:request.query??{},timestamp:headers['x-pi-remote-timestamp'],nonce:headers['x-pi-remote-nonce'],bodySha256:headers['x-pi-remote-body-sha256']});
+  if(!message||!verifyEd25519(device.devicePublicKey,headers['x-pi-remote-signature'],message))return {ok:false,code:'signature_invalid',wire:'unauthorized'};
+  const requiredScope=shape.scope ?? REMOTE_V1.eventStream.scope;
+  if(!device.grantedScopes.includes(requiredScope))return {ok:false,code:'scope_denied',wire:'scope_denied'};
+  if(typeof consumeNonce!=='function')return {ok:false,code:'replay_store_unavailable',wire:'unauthorized'};
+  let consumed;
+  try { consumed=consumeNonce(device.deviceId,headers['x-pi-remote-nonce'],timestamp); } catch { return {ok:false,code:'replay_store_unavailable',wire:'unauthorized'}; }
+  if(consumed&&typeof consumed.then==='function')return {ok:false,code:'replay_store_unavailable',wire:'unauthorized'};
+  if(consumed!==true)return {ok:false,code:'request_replayed',wire:'replay_rejected'};
+  return {ok:true,operation:shape.operation,scope:requiredScope,requestId:shape.requestId,deviceId:device.deviceId,pathParameters:shape.pathParameters,cursor:shape.cursor};
 }
 
 export function validatePairExchange(request) {
   if(!isRecord(request)||request.method!==REMOTE_V1.pairExchange.method||request.path!==REMOTE_V1.pairExchange.path)return {ok:false,code:'route_mismatch'};
+  const query=request.query===undefined?{}:request.query;
+  if(!isRecord(query)||Object.keys(query).length!==0)return {ok:false,code:'query_invalid'};
   const transport=validatePairTransportHeaders(request.headers);if(!transport.ok)return transport;
   const body=validateBodyBytes(request);if(!body.ok)return body;
   if(!validateSchema(request.body,REMOTE_V1.pairExchange.body)||hasForbiddenKey(request.body))return {ok:false,code:'pair_payload_invalid'};
   return {ok:true,code:'pair_shape_valid'};
 }
-export function validatePairExchangeResponse(response) {return validateSchema(response,REMOTE_V1.pairExchange.responseSchema)&&!hasForbiddenKey(response);}
+export function validatePairExchangeResponse(response) {
+  if(!validateSchema(response,REMOTE_V1.pairExchange.responseSchema)||hasForbiddenKey(response))return false;
+  const scopes=response.grantedScopes;
+  return Array.isArray(scopes)&&scopes.length===2&&scopes.includes('projects.read')&&scopes.includes('sessions.read');
+}
 export function verifyPairExchangeProof(request,expectedServiceFingerprint) {
   const shape=validatePairExchange(request);if(!shape.ok)return shape;
   if(request.body.serviceFingerprint!==expectedServiceFingerprint)return {ok:false,code:'service_fingerprint_mismatch'};
   if(!verifyPairProof(request.body))return {ok:false,code:'pair_proof_invalid'};
   return {ok:true,code:'device_proof_valid_not_authorized'};
 }
-export function authorizePairExchange({request,expectedServiceFingerprint,recordPairAttempt,confirmLocally,consumePairingCodeAndRegisterDevice,grantedScopes,deviceId,serverNonce,expiresAt,desktopPrivateKey}) {
+export function authorizePairExchange({request,expectedServiceFingerprint,validatePairingSession,recordPairAttempt,confirmLocally,consumePairingCodeAndRegisterDevice,grantedScopes,deviceId,serverNonce,expiresAt,desktopPrivateKey,nowMs=Date.now()}) {
   const shape=validatePairExchange(request);if(!shape.ok)return shape;
   if(request.body.serviceFingerprint!==expectedServiceFingerprint)return {ok:false,code:'service_fingerprint_mismatch'};
+  // Validate the live pairing session and code BEFORE any local confirmation prompt.
+  if(typeof validatePairingSession!=='function')return {ok:false,code:'pair_store_unavailable'};
+  let liveSession;
+  try { liveSession=validatePairingSession({pairingSessionId:request.body.pairingSessionId,pairCode:request.body.pairCode}); } catch { return {ok:false,code:'pair_store_unavailable'}; }
+  if(liveSession&&typeof liveSession.then==='function')return {ok:false,code:'pair_store_unavailable'};
+  if(liveSession!==true)return {ok:false,code:'pairing_session_invalid'};
   if(typeof recordPairAttempt!=='function'||typeof request.body.pairingSessionId!=='string')return {ok:false,code:'pair_rate_limiter_unavailable'};
   const keyFingerprint=sha256(Buffer.from(request.body.devicePublicKey,'base64url'));
   let allowed;try {allowed=recordPairAttempt({pairingSessionId:request.body.pairingSessionId,deviceKeyFingerprint:keyFingerprint});}catch{return {ok:false,code:'pair_rate_limiter_unavailable'};}
-  if(allowed&&typeof allowed.then==='function')return {ok:false,code:'async_pair_limiter_unsupported'};
+  if(allowed&&typeof allowed.then==='function')return {ok:false,code:'pair_rate_limiter_unavailable'};
   if(allowed!==true)return {ok:false,code:'pair_rate_limited'};
   if(!verifyPairProof(request.body))return {ok:false,code:'pair_proof_invalid'};
   if(!Array.isArray(grantedScopes)||new Set(grantedScopes).size!==grantedScopes.length
     ||!['projects.read','sessions.read'].every(scope=>grantedScopes.includes(scope))
     ||grantedScopes.some(scope=>!REMOTE_V1.scopeVocabulary.includes(scope))||grantedScopes.length>6)return {ok:false,code:'scopes_invalid'};
   if(typeof confirmLocally!=='function')return {ok:false,code:'desktop_confirmation_required'};
-  const confirmation={pairingSessionId:request.body.pairingSessionId,deviceName:request.body.deviceName,deviceKeyFingerprint:keyFingerprint,serviceFingerprint:request.body.serviceFingerprint,requestedScopes:[...grantedScopes]};
+  const confirmation={pairingSessionId:request.body.pairingSessionId,pairCode:request.body.pairCode,deviceName:request.body.deviceName,devicePublicKey:request.body.devicePublicKey,deviceKeyFingerprint:keyFingerprint,serviceFingerprint:request.body.serviceFingerprint,requestedScopes:[...grantedScopes]};
   if(confirmLocally(confirmation)!==true)return {ok:false,code:'desktop_confirmation_required'};
-  if(!OPAQUE_ID.test(deviceId??'')||!decodeB64url(serverNonce,32)||!Number.isFinite(Date.parse(expiresAt??'')))return {ok:false,code:'pair_response_invalid'};
+  // expiresAt must be a well-formed instant and strictly in the future.
+  const expiryMs=Date.parse(expiresAt??'');
+  if(!OPAQUE_ID.test(deviceId??'')||!decodeB64url(serverNonce,32)||!Number.isFinite(expiryMs)||!(Number.isSafeInteger(nowMs)&&expiryMs>nowMs))return {ok:false,code:'pair_response_invalid'};
   if(typeof consumePairingCodeAndRegisterDevice!=='function')return {ok:false,code:'pair_store_unavailable'};
   const unsigned={deviceId,serverNonce,grantedScopes,expiresAt};
+  if(!validatePairExchangeResponse({...unsigned,serverSignature:'0'.repeat(86)}))return {ok:false,code:'pair_response_invalid'};
   const responseRequestId=request.body.clientNonce;
   const serverSignature=signEd25519(desktopPrivateKey,['remote-v1-pair-response',responseRequestId,canonicalJson(unsigned)].join('\n'));
   if(!serverSignature)return {ok:false,code:'pair_signing_failed'};
@@ -223,24 +270,48 @@ export function authorizePairExchange({request,expectedServiceFingerprint,record
   let persisted;
   try {persisted=consumePairingCodeAndRegisterDevice({pairingSessionId:request.body.pairingSessionId,pairCode:request.body.pairCode,deviceId,devicePublicKey:request.body.devicePublicKey,grantedScopes,expiresAt});}
   catch {return {ok:false,code:'pair_store_unavailable'};}
-  if(persisted&&typeof persisted.then==='function')return {ok:false,code:'async_pair_store_unsupported'};
+  if(persisted&&typeof persisted.then==='function')return {ok:false,code:'pair_store_unavailable'};
   if(persisted!==true)return {ok:false,code:'pair_code_consumed_or_limited'};
   return {ok:true,code:'device_registered',requestId:responseRequestId,response:{...unsigned,serverSignature}};
 }
-export function verifyPairExchangeResponse(response,desktopPublicKey,requestId) {
+export function verifyPairExchangeResponse(response,desktopPublicKey,requestId,{expectedClientNonce,nowMs=Date.now()}={}) {
   if(!validatePairExchangeResponse(response)||!/^([A-Za-z0-9_-]{43})$/.test(requestId??''))return false;
+  if(expectedClientNonce!==undefined&&requestId!==expectedClientNonce)return false;
+  const expiryMs=Date.parse(response.expiresAt);
+  if(!Number.isFinite(expiryMs)||!(Number.isSafeInteger(nowMs)&&expiryMs>nowMs))return false;
   const {serverSignature,...unsigned}=response;
   const message=['remote-v1-pair-response',requestId,canonicalJson(unsigned)].join('\n');
   return verifyEd25519(desktopPublicKey,serverSignature,message);
 }
+export function authorizeRemoteOperation({request,device,serviceId,deviceGrants,resolveOwner,nowMs=Date.now(),consumeNonce}) {
+  const verification=verifyRemoteSignature({request,device,serviceId,nowMs,consumeNonce});
+  if(!verification.ok)return verification;
+  // Device-to-resource grant: server-owned map deviceId -> set of authorized
+  // resource ids (project ids for project-scoped ops, conversation ids for
+  // conversation-scoped ops). Default-deny.
+  if(!isRecord(deviceGrants)||typeof deviceGrants.has!=='function')return {ok:false,code:'grant_store_unavailable',wire:'unauthorized'};
+  const params=verification.pathParameters??{};
+  const resourceId=params.projectId??params.conversationId??null;
+  if(resourceId!==null&&deviceGrants.has(resourceId)!==true)return {ok:false,code:'unknown_resource',wire:'unknown_resource'};
+  if(typeof resolveOwner==='function') {
+    // Atomic owner + revision recheck before dispatch.
+    let owner;
+    try { owner=resolveOwner({deviceId:device.deviceId,operation:verification.operation,pathParameters:params,ownerRevision:request.body?.ownerRevision}); } catch { return {ok:false,code:'stale_owner',wire:'stale_owner'}; }
+    if(owner&&typeof owner.then==='function')return {ok:false,code:'stale_owner',wire:'stale_owner'};
+    if(!isRecord(owner)||owner.current!==true)return {ok:false,code:'stale_owner',wire:'stale_owner'};
+    if(request.body?.ownerRevision!==undefined&&owner.revision!==undefined&&owner.revision!==request.body.ownerRevision)return {ok:false,code:'stale_revision',wire:'stale_revision'};
+    return {...verification,owner};
+  }
+  return verification;
+}
 export function validateRemoteRequest(request) {
   if(!isRecord(request)||typeof request.method!=='string'||typeof request.path!=='string')return {ok:false,code:'request_invalid'};
   const query=request.query===undefined?{}:request.query;
-  if(!isRecord(query)||hasForbiddenKey(query))return {ok:false,code:'query_invalid'};
-  let operation=null,operationId='events.stream';
+  if(!isRecord(query)||hasForbiddenKey(query)||hasDuplicateQueryParams(query))return {ok:false,code:'query_invalid'};
+  let operation=null,operationId='events.stream',cursorCheck=null;
   if(request.path===REMOTE_V1.eventStream.path&&request.method===REMOTE_V1.eventStream.method) {
     if(Object.keys(query).some(key=>!REMOTE_V1.eventStream.queryParameters.includes(key)))return {ok:false,code:'query_invalid'};
-    if(own(query,'cursor')&&(typeof query.cursor!=='string'||query.cursor.length>REMOTE_V1.eventStream.cursorMaxLength))return {ok:false,code:'query_invalid'};
+    cursorCheck=validateCursor(query.cursor);if(!cursorCheck.ok)return cursorCheck;
   } else {
     operation=REMOTE_V1.operations.find(item=>item.method===request.method&&routeMatches(item.path,request.path));
     if(!operation)return {ok:false,code:'operation_route_mismatch'};
@@ -249,7 +320,7 @@ export function validateRemoteRequest(request) {
   const body=validateBodyBytes(request);if(!body.ok)return body;
   const auth=validateSignatureHeaders(request.headers,body.digest,request.method,operationId==='events.stream');if(!auth.ok)return auth;
   const requestId=auth.headers['x-pi-remote-request-id'];
-  if(operationId==='events.stream')return {ok:true,code:'event_stream_shape_valid',operation:operationId,requestId,resource:query.cursor??null};
+  if(operationId==='events.stream')return {ok:true,code:'event_stream_shape_valid',operation:operationId,requestId,resource:query.cursor??null,cursor:cursorCheck?.cursor};
   if(request.method==='GET') {
     const params={};routeMatches(operation.path,request.path,params);
     return {ok:true,code:'request_shape_valid',operation:operation.id,requestId,scope:operation.scope,pathParameters:params};
@@ -262,13 +333,42 @@ export function validateRemoteRequest(request) {
   const params={};routeMatches(operation.path,request.path,params);
   return {ok:true,code:'request_shape_valid',operation:operation.id,requestId,scope:operation.scope,pathParameters:params};
 }
-export function validateEventEnvelope(event) {
+export function requiredEventScope(eventName) {
+  return REMOTE_V1.eventStream.perEventScopes?.[eventName] ?? null;
+}
+export function buildEventFrameMessage(event,deviceId) {
+  if(!isRecord(event)||!OPAQUE_ID.test(deviceId??''))return null;
+  const payloadDigest=sha256(Buffer.from(canonicalJson(event.payload)??'','utf8'));
+  return [String(REMOTE_V1.contractVersion),deviceId,String(event.streamGeneration),String(event.sequence),event.event,payloadDigest].join('\n');
+}
+export function validateEventEnvelope(event,deviceId=null,desktopPublicKey=null,deviceScopes=null) {
   if(!validateSchema(event,REMOTE_V1.eventStream.eventEnvelope)||hasForbiddenKey(event))return false;
   const payloadSchema=REMOTE_V1.eventStream.eventPayloadSchemas[event.event];
-  return !!payloadSchema&&validateSchema(event.payload,payloadSchema)&&!hasForbiddenKey(event.payload);
+  if(!payloadSchema||!validateSchema(event.payload,payloadSchema)||hasForbiddenKey(event.payload))return false;
+  const requiredScope=requiredEventScope(event.event);
+  if(!requiredScope)return false;
+  if(deviceScopes!==null&&(!Array.isArray(deviceScopes)||!deviceScopes.includes(requiredScope)))return false;
+  if(desktopPublicKey!==null) {
+    const message=buildEventFrameMessage({...event},deviceId);
+    if(!message||!verifyEd25519(desktopPublicKey,event.frameSignature,message))return false;
+  }
+  return true;
+}
+export function validateApprovalPayload(payload) {
+  if(!isRecord(payload))return false;
+  const op=REMOTE_V1.operations.find(item=>item.id==='approvals.respond');
+  if(!op||!validateSchema(payload,op.payload)||hasForbiddenKey(payload))return false;
+  const matrix=op.decisionMatrix?.[payload.method];
+  if(!matrix||!matrix.decision.includes(payload.decision))return false;
+  const valueRule=matrix.valueOn?.[payload.decision];
+  if(valueRule==='required'&&typeof payload.value!=='string')return false;
+  if(valueRule==='forbidden'&&payload.value!==undefined)return false;
+  return true;
 }
 export function validateRemoteResponse(response,operationId=null,requestId=null) {
   if(!isRecord(response)||response.protocolVersion!==REMOTE_V1.contractVersion||!UUID.test(response.requestId??'')||(requestId!==null&&response.requestId!==requestId))return false;
+  const serialized=canonicalJson(response);
+  if(serialized===null||Buffer.byteLength(serialized,'utf8')>(REMOTE_V1.limits?.maxSerializedResponseBytes??1048576))return false;
   if(own(response,'result')) {
     if(Object.keys(response).sort().join(',')!=='operation,protocolVersion,requestId,result,serverRevision'||typeof response.operation!=='string'
       ||(operationId!==null&&response.operation!==operationId)||!Number.isSafeInteger(response.serverRevision)||response.serverRevision<0)return false;

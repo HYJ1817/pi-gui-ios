@@ -121,7 +121,9 @@ Scope 候选（需在 M0 逐项定稿）：`projects.read`、`sessions.read`、`
 
 **桌面装配点（worktree 对照，非改动授权）**：在干净 worktree `C:/pi-GUI-remote-protocol`（`feat/mobile-remote-protocol-v1` @ `3850e781`，main CI 44918456748 通过）上复核组合根。装配候选仍是 `server.js` 组合根处新增第二个 HTTP server（独立 listener、独立 router、不共享本地 `auth.js` token 路径），与 `af0432a0` 基线 `server.js:1719,1875` 一致；不改动现有 `/api/*` 分派。桌面仓库未做任何提交。该 worktree 的 `npm test` 在本机 Windows 有 3 个 `prepareCredentialStorage` 环境性失败（Windows 权限语义，与远程工作无关），记录为 deferred/unverified。
 
-**仍为 unknown（不得视为已选）**：TLS 证书引导/自签 vs Tailscale HTTPS；iOS SecureStore 在 SideStore 重签下的密钥生命周期；设备记录在 Windows 上的 ACL 与重启持久性；审批在 Classic vs Runtime 两条路径的最终覆盖差异；独立功能审查与独立安全审查证据（工具缺失时按边界记为 pending，不伪造）。
+**仍为 unknown（不得视为已选）**：TLS 证书引导/自签 vs Tailscale HTTPS（pinned-fingerprint 已定为合同要求，但具体证书/私网引导方案未定）；iOS SecureStore 在 SideStore 重签下的密钥生命周期；设备记录在 Windows 上的 ACL 与重启持久性；审批在 Classic vs Runtime 两条路径的最终覆盖差异；独立功能审查与独立安全审查证据（工具缺失时按边界记为 pending，不伪造）。
+
+**独立评审后的加固（contract 当前内容，非额外承诺）**：首轮独立功能/安全评审均以 fail 返四，已按发现补齐——transport.tls 改为强制 bootstrap 指纹 pin（拒绝 hostname-only），QR 同时携带 TLS 指纹与桌面 Ed25519 服务公钥用于配对应答验签；`deviceGrants` 服务端设备→资源授予（default-deny，列表过滤，原子准入复检 device/scope/grant/owner/revision）；事件帧签名 + 每事件 scope（approval.* 要 `approvals.read`）+ cursor 绑定 (deviceId, streamGeneration)；`projectionPolicy` 自由文本值级泄漏扫描；approvals.respond 方法×决策×value 矩阵；signed message 绑定 deviceId+serviceId；严格 UTF-8/重复参数/cursor 语法；nonce 保留跨 skew 窗口且容量/掉状态 fail-closed；pairing 会话预校验先于本地确认、预算/原子消费/应答新鲜度；幂等 client id 语义；pre-auth 统一 `unauthorized` 闭合映射；版本仅走 versioned route。仍待独立复审确认修复有效。
 
 ## 阶段状态与允许动作
 

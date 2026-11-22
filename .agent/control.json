@@ -1,8 +1,8 @@
 {
   "schemaVersion": 2,
   "kind": "control",
-  "revision": 448,
-  "updatedAt": "2026-11-22T02:57:14.417Z",
+  "revision": 451,
+  "updatedAt": "2026-11-22T03:04:01.410Z",
   "data": {
     "phase": "M0",
     "currentTask": "M0-architecture",
@@ -807,24 +807,34 @@
       }
     ],
     "checkpoint": {
-      "id": "v2-2026-11-22T02-57-14-417Z-dfa16ebc-e160-42c2-8cc6-b957b1a89668",
-      "path": ".agent/checkpoints/v2-2026-11-22T02-57-14-417Z-dfa16ebc-e160-42c2-8cc6-b957b1a89668.json",
-      "sha256": "e846c7b3e16170e3043daf99cdbf0969c832ab5cc05660cd5d2225367574e1d6",
-      "authorityDigest": "460212e6a1beb23e2f754c2f3860920bab80a7acf63c09c029ab1a0dde823060",
-      "at": "2026-11-22T02:57:14.417Z",
+      "id": "v2-2026-11-22T03-04-01-410Z-c42ebf06-738a-4e66-9288-47c68163008d",
+      "path": ".agent/checkpoints/v2-2026-11-22T03-04-01-410Z-c42ebf06-738a-4e66-9288-47c68163008d.json",
+      "sha256": "ed7e25f8b653ec47b8f2216280b145ec8554180ba35cc192280431179a39cd28",
+      "authorityDigest": "5ef7a56c95c2a80e15ae20dfc0fd6fb95cfecf66078210b62383bb103985ef7e",
+      "at": "2026-11-22T03:04:01.410Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "04aa9121f1f590370e1d4a15c856e15c0a6294a3",
+        "commit": "6820d421390dacdafde25cf20c31b13d6aa03fdc",
         "dirty": [
           "M .agent/HANDOFF.md",
           " M .agent/control.json",
           " M .agent/state.json",
           " M .agent/tasks.json",
-          " M PROGRESS.md"
+          " M PROGRESS.md",
+          " M docs/acceptance/local-protocol-contract-output.txt",
+          " M docs/acceptance/local-protocol-contract.json",
+          " M docs/acceptance/local-unit-output.txt",
+          " M docs/acceptance/local-unit.json",
+          " M docs/contracts/remote-v1.json",
+          " M docs/decisions/0005-remote-protocol-v1-proposal.md",
+          " M scripts/lib/remote-protocol-contract.mjs",
+          " M tests/remote-contract.test.mjs",
+          "?? .agent/checkpoints/v2-2026-11-22T03-03-09-854Z-5d8cd243-8fa7-4b28-8927-5173acde2ed5.json",
+          "?? .agent/checkpoints/v2-2026-11-22T03-03-12-887Z-2767cd10-0718-408c-8f7f-055a61a6efd0.json"
         ]
       },
-      "sourceFingerprint": "8d3a4bb43fd7eca0a76e5a1c1cb8bc917cba14ba3b5dd0f47cf516e22fd0f006",
-      "note": "xingchiapi 503 failed; retried reviews on codex gpt-6.2-sol"
+      "sourceFingerprint": "e1ad4729574052d9b1a3f291e2307fcf012f9039cc1c3e1ac098879cddc4ae31",
+      "note": "实际运行 npm test，exit=0"
     },
     "nextAction": "真机/SideStore 验收统一移至全部软件实现、自动化/Simulator/IPA/审查完成后的最终一次清单，由用户亲自操作；中途不请求设备、不等待设备。Agent 对普通问题自主排障，三轮同类失败后记录 deferred/unverified 并继续无依赖工作。M-1 基础验证保持 blocked；M0 design 已先行，继续收敛协议/安全合同，不启用远程入口。",
     "delegates": [
@@ -922,6 +932,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "a7196d823b94a7a719424175c8b0a89694733b1c95c2598246c2f9eb867852f9"
+    "digest": "b15152629cacefc5bfbbf55dbced197911645ebc2613efe019cf5fe0664f7ed3"
   }
 }
