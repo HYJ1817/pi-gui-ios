@@ -1,6 +1,6 @@
-# M0 设计 · 移动凭据与密钥存储（proposal / 未冻结）
+# M0 设计 · 移动凭据与密钥存储（M0 已冻结 v1 · 远程仍默认关闭）
 
-状态：**design-only**，不授权实现。权威安全边界见 `docs/contracts/remote-v1.json` 与 `docs/security.md`。本文拟定移动端持有/不持有的秘密及其存储。
+状态：**M0 冻结 v1**，实现由 M1 起按任务推进。权威安全边界见 `docs/contracts/remote-v1.json` 与 `docs/security.md`。本文拟定移动端持有/不持有的秘密及其存储。
 
 ## 持有的秘密（仅这些）
 

@@ -1,6 +1,6 @@
-# M0 设计 · 移动 UI 集成边界（proposal / 未冻结）
+# M0 设计 · 移动 UI 集成边界（M0 已冻结 v1 · 远程仍默认关闭）
 
-状态：**design-only**，不授权实现。约定 UI 如何经由类型化 Remote Client（`remote-protocol-client.md`）+ 事件模型（`remote-event-model.md`）呈现远程数据。权威协议见 `docs/contracts/remote-v1.json`。
+状态：**M0 冻结 v1**，实现由 M2/M3 起按任务推进。约定 UI 如何经由类型化 Remote Client（`remote-protocol-client.md`）+ 事件模型（`remote-event-model.md`）呈现远程数据。权威协议见 `docs/contracts/remote-v1.json`。
 
 ## 分层
 

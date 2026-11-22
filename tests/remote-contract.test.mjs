@@ -61,9 +61,9 @@ function replaceBody(base,body) {
   return {...base,headers:{...base.headers,'x-pi-remote-body-sha256':hash(rawBody)},rawBody,body};
 }
 
-test('remote v1 contract is explicitly draft, HTTPS-only and disabled by default',()=>{
+test('remote v1 contract is frozen v1, HTTPS-only and disabled by default',()=>{
   assert.equal(REMOTE_V1.contractVersion,1);
-  assert.equal(REMOTE_V1.status,'design-contract');
+  assert.equal(REMOTE_V1.status,'frozen-v1');
   assert.equal(REMOTE_V1.transport.scheme,'https');
   assert.equal(REMOTE_V1.transport.defaultEnabled,false);
   assert.equal(REMOTE_V1.transport.existingLocalApiForwarding,false);

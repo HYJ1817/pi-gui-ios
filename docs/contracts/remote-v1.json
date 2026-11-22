@@ -1,7 +1,7 @@
 {
   "contractVersion": 1,
   "protocolName": "pi-gui-remote",
-  "status": "design-contract",
+  "status": "frozen-v1",
   "transport": {
     "scheme": "https",
     "defaultEnabled": false,

@@ -1,6 +1,6 @@
-# M0 远程协议与安全边界提案（未冻结）
+# M0 远程协议与安全边界（M0 冻结 v1）
 
-状态：**proposal / non-gating design work**。为响应“不要继续卡在 M-1”的要求，先推进不依赖实现的 M0 架构准备；不改变权威任务状态、不绕过 ROADMAP 依赖、不代表 M0 已开始或通过。M-1 原生锁验证停止于 CI 44906133898/1 的 Pods prepare；M-1-device 尚未执行。本文不是已批准 API v1，也不授权桌面仓库改动、真机操作或业务实现。
+状态：**frozen-v1（M0 收敛冻结）**。为响应“不要继续卡在 M-1”的要求先行推进的 M0 架构准备已收敛：合同 `docs/contracts/remote-v1.json` status=`frozen-v1`，合成测试与独立功能/安全评审均已通过。冻结的是合同与设计边界；**不表示远程实现完成、不启用远程入口、不代表 M-1 完成**。M-1 原生锁验证停止于 CI 44906133898/1 的 Pods prepare；M-1-device 留待最终设备清单。远程实现由 M1-remote 起按任务推进，桌面改动只在独立 worktree/分支进行。
 
 ## 依据与现有抽象
 
@@ -107,9 +107,9 @@ Scope 候选（需在 M0 逐项定稿）：`projects.read`、`sessions.read`、`
 - 审批在旧 Classic 路径与 Runtime Registry 的覆盖差异；不得仅凭存在 `/api/command` 推断所有调用都有同等 admission。
 - fixture 集成和 threat model；安全审查应覆盖伪造/重放/跨项目访问/epoch 漂移/并发配对/撤销竞态/过期审批/日志泄漏。
 
-## 设计收敛（machine contract 草案）
+## 设计收敛（machine contract 草案→冻结）
 
-以上威胁模型与候选已收敛为机器可读合同 `docs/contracts/remote-v1.json`（status=`design-contract`），并由 `scripts/lib/remote-protocol-contract.mjs` + `tests/remote-contract.test.mjs`（33 项，`verify.mjs protocol-contract`）提供合成测试。该合同**仍是设计合同**：不冻结 API、不代表独立安全审查通过、不授权 M1 实现。权威签名消息与当前语义以 `docs/contracts/remote-v1.json` 为准（本条是叙述性摘要）。当前固定的设计点：
+以上威胁模型与候选已收敛为机器可读合同 `docs/contracts/remote-v1.json`（status=`frozen-v1`），并由 `scripts/lib/remote-protocol-contract.mjs` + `tests/remote-contract.test.mjs`（`verify.mjs protocol-contract`）提供合成测试。权威签名消息与当前语义以 `docs/contracts/remote-v1.json` 为准（本条是叙述性摘要）。当前固定的设计点：
 
 - **传输与身份**：独立 listener + HTTPS；不修改现有 `/api` 的 loopback+token 规则；远程默认关闭、只能由本机本地管理面开启（`remoteSetting`、`localAdminControl`）。
 - **配对**：POST 单次配对交换，6 位码 + `pairingSessionId` + Ed25519 设备密钥证明（`proofSignature` 签名 `remote-v1-pair\n` 域分隔消息）+ `serviceFingerprint`；默认仅授予读取 scope，写 scope 需桌面用户逐项启用；限 `maxPendingPairings`/`maxDevices`、原子消费、率限。
@@ -119,7 +119,7 @@ Scope 候选（需在 M0 逐项定稿）：`projects.read`、`sessions.read`、`
 - **错误码闭集（17 个）**：`unauthorized/pairing_*/rate_limited/scope_denied/stale_owner/stale_revision/unknown_resource/operation_rejected/replay_rejected/sequence_gap/server_busy/unavailable/invalid_request/payload_invalid/internal_error`（`cursor_expired` 仅为 reset reason，不再是 wire error）；不允许回传原始错误文本/路径/凭据。
 - **Scope 词表（7 项）**：`projects.read / sessions.read / sessions.create / chat.send / chat.stop / approvals.read / approvals.respond`；服务端每次操作重验 scope 与 owner。
 
-**桌面装配点（worktree 对照，非改动授权）**：在干净 worktree `C:/pi-GUI-remote-protocol`（`feat/mobile-remote-protocol-v1` @ `3850e781`，main CI 44918456748 通过）上复核组合根。装配候选仍是 `server.js` 组合根处新增第二个 HTTP server（独立 listener、独立 router、不共享本地 `auth.js` token 路径），与 `af0432a0` 基线 `server.js:1719,1875` 一致；不改动现有 `/api/*` 分派。桌面仓库未做任何提交。该 worktree 的 `npm test` 在本机 Windows 有 3 个 `prepareCredentialStorage` 环境性失败（Windows 权限语义，与远程工作无关），记录为 deferred/unverified。
+**桌面装配点（worktree 对照）**：在独立 worktree `C:/pi-GUI-remote-protocol`（`feat/mobile-remote-protocol-v1`，基线为更新后 main）装配：组合根 `server.js` 处新增第二个 HTTP server（独立 listener、独立 router、不共享本地 `auth.js` token 路径），与 `af0432a0` 基线 `server.js:1719,1875` 一致；不改动现有 `/api/*` 分派。`server/remote/` 为 M1-remote 的实现载体；本工作分支上的早期草稿代码按合同逐项对齐前不视为任何协议事实。该 worktree 的 `npm test` 在本机 Windows 有 3 个 `prepareCredentialStorage` 环境性失败（Windows 权限语义，与远程工作无关），记录为 deferred/unverified。
 
 **仍为 unknown（不得视为已选）**：TLS 证书引导/自签 vs Tailscale HTTPS（pinned-fingerprint 已定为合同要求，但具体证书/私网引导方案未定）；iOS SecureStore 在 SideStore 重签下的密钥生命周期；设备记录在 Windows 上的 ACL 与重启持久性；审批在 Classic vs Runtime 两条路径的最终覆盖差异；独立功能审查与独立安全审查证据（工具缺失时按边界记为 pending，不伪造）。
 
@@ -127,4 +127,4 @@ Scope 候选（需在 M0 逐项定稿）：`projects.read`、`sessions.read`、`
 
 ## 阶段状态与允许动作
 
-负责人已授权对 M0 做 **design-only** 例外推进；这只表示可以在 M-1 尚未完成时读双方源码、收敛 proposal、威胁模型与合同草案。正式依赖仍未满足：M-1-infrastructure = blocked，M-1-device = pending；M0 不得据此标记 accepted/completed。只有 M0 所需 protocol/unit/独立功能/安全审查证据满足后，才可考虑 M1 实现。此草案不冻结 API v1、不授权 M1 实现，不改动桌面 dirty 工作区。
+负责人已授权持续自主开发（2026-11-21/22）：M0 的 protocol/unit/独立功能/安全审查证据已全部满足后，合同冻结为 v1，M0 按门禁进入验收；M-1-infrastructure = blocked、M-1-device = pending 保持如实记录但不阻断 M0 之外的软件工作。后续软件实现（M1-remote 起）按 ROADMAP 依赖推进，真机验收仍统一在最后一次性清单。远程入口保持默认关闭；不改动桌面主工作区 `C:/pi-GUI` 的 dirty 状态，桌面实现只在 `C:/pi-GUI-remote-protocol` worktree 进行。

@@ -1,6 +1,6 @@
-# M0 设计 · 远程事件/投影模型（proposal / 未冻结）
+# M0 设计 · 远程事件/投影模型（M0 已冻结 v1 · 远程仍默认关闭）
 
-状态：**design-only**。权威定义是 `docs/contracts/remote-v1.json` 的 `eventStream`/`projectionPolicy`。本文说明移动端如何消费事件并映射到 UI 状态。
+状态：**M0 冻结 v1**。权威定义是 `docs/contracts/remote-v1.json` 的 `eventStream`/`projectionPolicy`。本文说明移动端如何消费事件并映射到 UI 状态。
 
 ## 源 → 投影 → 移动端
 

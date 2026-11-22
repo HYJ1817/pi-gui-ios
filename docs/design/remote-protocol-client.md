@@ -1,6 +1,6 @@
-# M0 设计 · 类型化 Remote Client（proposal / 未冻结）
+# M0 设计 · 类型化 Remote Client（M0 已冻结 v1 · 远程仍默认关闭）
 
-状态：**design-only**，不授权实现。权威协议定义是 `docs/contracts/remote-v1.json`（status `design-contract`）+ `scripts/lib/remote-protocol-contract.mjs`（参考验证器，桌面权威端语义）。本文描述移动端 client 的拟定形状；所有安全细节以合同为准。
+状态：**M0 冻结 v1**，实现由 M1 起按任务推进。权威协议定义是 `docs/contracts/remote-v1.json`（status `frozen-v1`）+ `scripts/lib/remote-protocol-contract.mjs`（参考验证器，桌面权威端语义）。本文描述移动端 client 的拟定形状；所有安全细节以合同为准。
 
 ## 目标与非目标
 

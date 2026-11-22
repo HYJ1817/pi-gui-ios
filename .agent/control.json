@@ -1,8 +1,8 @@
 {
   "schemaVersion": 2,
   "kind": "control",
-  "revision": 548,
-  "updatedAt": "2026-11-22T04:47:29.810Z",
+  "revision": 557,
+  "updatedAt": "2026-11-22T05:01:27.533Z",
   "data": {
     "phase": "M0",
     "currentTask": "M0-architecture",
@@ -875,6 +875,22 @@
             "sourceFingerprint": "f08e9dc98f3f45b4edf3fc71843db0861b3ef292dd1d93a4aa480f9b41847291",
             "commit": "aff74a7f66d2882189184550b0e19ce3949d7a47",
             "at": "2026-11-22T04:47:29.765Z"
+          },
+          {
+            "kind": "unit",
+            "path": "docs/acceptance/local-unit.json",
+            "sha256": "f7bc8a123fa6fd75108336670563585de67e28be433ebaf7050c2ec5b655095e",
+            "sourceFingerprint": "f08e9dc98f3f45b4edf3fc71843db0861b3ef292dd1d93a4aa480f9b41847291",
+            "commit": "f13f42446c6be54993b0b0fb304c3092580492a0",
+            "at": "2026-11-22T04:48:27.674Z"
+          },
+          {
+            "kind": "protocol-contract",
+            "path": "docs/acceptance/local-protocol-contract.json",
+            "sha256": "e2fa45d51414de7b6bb5ca9d42804cdb62b9c539064b9615eccdbea33e2a1319",
+            "sourceFingerprint": "f08e9dc98f3f45b4edf3fc71843db0861b3ef292dd1d93a4aa480f9b41847291",
+            "commit": "f13f42446c6be54993b0b0fb304c3092580492a0",
+            "at": "2026-11-22T04:48:28.555Z"
           }
         ],
         "updatedAt": "2026-11-21T13:47:29.393Z"
@@ -992,14 +1008,14 @@
       }
     ],
     "checkpoint": {
-      "id": "v2-2026-11-22T04-47-29-810Z-22010a96-7e89-424b-9714-cc536de15565",
-      "path": ".agent/checkpoints/v2-2026-11-22T04-47-29-810Z-22010a96-7e89-424b-9714-cc536de15565.json",
-      "sha256": "88ceaded6a82eb6922b0a7fcf861ffb02ec7e8af8830cbcfb4139c5276e59090",
-      "authorityDigest": "9a0e82543bd0a16c0a180ca1795759c97ae809327cfb47b4b1978981a99b9d8c",
-      "at": "2026-11-22T04:47:29.810Z",
+      "id": "v2-2026-11-22T05-01-27-533Z-dc9547a8-6fbc-440f-b3fd-e6891c0ee403",
+      "path": ".agent/checkpoints/v2-2026-11-22T05-01-27-533Z-dc9547a8-6fbc-440f-b3fd-e6891c0ee403.json",
+      "sha256": "e4f83225c7c88e35f9cd2abf9a1e32b2e7b79262a539a60abdf806a210a6e7e9",
+      "authorityDigest": "d0f66701e6cb4197f30e53f8bfc5fe77c81b7dc3fd817f734cbb941815deda51",
+      "at": "2026-11-22T05:01:27.533Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "67036c908071f1f04460c67238b8a20e3c7b1da6",
+        "commit": "f13f42446c6be54993b0b0fb304c3092580492a0",
         "dirty": [
           "M .agent/HANDOFF.md",
           " M .agent/control.json",
@@ -1010,18 +1026,25 @@
           " M docs/acceptance/local-protocol-contract.json",
           " M docs/acceptance/local-unit-output.txt",
           " M docs/acceptance/local-unit.json",
-          "?? .agent/checkpoints/v2-2026-11-22T04-46-24-484Z-c6081ea4-17a7-44b5-8d31-2b646c3cd2e9.json",
-          "?? .agent/checkpoints/v2-2026-11-22T04-46-25-798Z-9b7b0a67-22cb-4738-9057-20e13570ef64.json",
-          "?? .agent/checkpoints/v2-2026-11-22T04-46-26-672Z-ec08861a-36cf-401a-9ab9-415f9cb6ea50.json",
-          "?? .agent/checkpoints/v2-2026-11-22T04-46-27-542Z-eccd5796-c55b-49c3-81df-fd6278daaaa9.json",
-          "?? .agent/checkpoints/v2-2026-11-22T04-47-28-958Z-e5ced9d4-87ed-4fb6-8099-bc19bb8efcc2.json",
-          "?? docs/acceptance/review-aff74a7-receipt.json",
-          "?? docs/acceptance/review-aff74a7-review.json",
-          "?? docs/acceptance/review-aff74a7-security.json"
+          " M docs/architecture.md",
+          " M docs/contracts/remote-v1.json",
+          " M docs/decisions/0005-remote-protocol-v1-proposal.md",
+          " M docs/design/mobile-ui-integration.md",
+          " M docs/design/remote-event-model.md",
+          " M docs/design/remote-protocol-client.md",
+          " M docs/design/secure-credential-store.md",
+          " M docs/remote-protocol.md",
+          " M tests/remote-contract.test.mjs",
+          "?? .agent/checkpoints/v2-2026-11-22T04-48-25-394Z-c5187345-c200-4b83-a3d9-b0662e947107.json",
+          "?? .agent/checkpoints/v2-2026-11-22T04-48-26-711Z-bfcf643f-a87b-4fbc-9e86-a8e47cc5d462.json",
+          "?? .agent/checkpoints/v2-2026-11-22T04-48-27-719Z-797534e8-47cc-4d08-b8fe-a96f427a2cb4.json",
+          "?? .agent/checkpoints/v2-2026-11-22T04-48-28-600Z-72c3f038-5052-46fd-bd15-44a31a880995.json",
+          "?? .agent/checkpoints/v2-2026-11-22T05-00-11-710Z-258595d6-1988-4c7c-8651-6453da02a4fb.json",
+          "?? .agent/checkpoints/v2-2026-11-22T05-01-24-736Z-6dd5f2b1-c85f-411b-8ba3-4d81d4b8b6e9.json"
         ]
       },
-      "sourceFingerprint": "f08e9dc98f3f45b4edf3fc71843db0861b3ef292dd1d93a4aa480f9b41847291",
-      "note": "agent-task evidence M0-architecture"
+      "sourceFingerprint": "2741833c73b7a8bba5ee544d59c5695d3958a80478970a13eb11a3f5731abf41",
+      "note": "实际运行 node --test tests/remote-contract.test.mjs，exit=0"
     },
     "nextAction": "真机/SideStore 验收统一移至全部软件实现、自动化/Simulator/IPA/审查完成后的最终一次清单，由用户亲自操作；中途不请求设备、不等待设备。Agent 对普通问题自主排障，三轮同类失败后记录 deferred/unverified 并继续无依赖工作。M-1 基础验证保持 blocked；M0 design 已先行，继续收敛协议/安全合同，不启用远程入口。",
     "delegates": [
@@ -1209,6 +1232,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "124be2c70bb738f2b151086d2070b51a5a33d423bdd05ac513c3f9a329f71580"
+    "digest": "d18feed9b7f4a7a1e4f512c61628fe0d3c30626be56ce0479ef87ed3286a152c"
   }
 }
