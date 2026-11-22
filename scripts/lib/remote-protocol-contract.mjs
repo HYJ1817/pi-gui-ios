@@ -92,22 +92,23 @@ function validateSchema(value,schema,depth=0) {
 // drive, UNC, ~) anywhere in a non-transcript string, plus raw diagnostic text.
 const FORBIDDEN_VALUE=new RegExp([
   /(?:^|[^A-Za-z0-9_.\\/~])\/(?!\/)/.source,                     // absolute POSIX path start or '/seg' after any non-path char
-  /(?:^|[^A-Za-z0-9_.\\/~])(?:[A-Za-z]:[\\/]|\\\\|~[\\/])/.source, // drive / UNC / ~ path after any non-path char
-  /(?:^|[^A-Za-z0-9_.\\/~])(?:home|Users|etc|private|var|opt|root|tmp|usr|bin|srv|mnt|data)[\\/][A-Za-z0-9._-]/.source,
+  /\w+:\/\/+[A-Za-z]:[\\/]/.source,                                  // URI-scheme drive path (file:///C:/x)
+  /(?:^|[^A-Za-z0-9_.~\/])(?:[A-Za-z]:[\\/]|\\\\|~[\\/]|\\(?![\\w]))/.source, // drive / UNC / ~ / single-\ root path
+  /(?:^|[^A-Za-z0-9_.~\/])(?:home|Users|etc|private|var|opt|root|tmp|usr|bin|srv|mnt|data)[\\/][A-Za-z0-9._-]/.source,
   /(?:PI_GUI_TOKEN|api[_-]?key|oauth[_-]?token|-----BEGIN [A-Z ]*PRIVATE KEY-----)/.source,
   /(?:[Bb]earer\s+[A-Za-z0-9._-]{8,}|sk-[A-Za-z0-9]{8,})/.source,
-  /(?:password|passwd|secret|credential|token|api[_-]?key)\s*[:=]\s*[^\s,;"']+/i.source,
-  /\b[A-Z][A-Z0-9_]{2,}(?:_KEY|_TOKEN|_SECRET|_PASSWORD|_CREDENTIAL)=\S+/.source,
-  /(?:^|[^A-Za-z0-9_])[A-Z][A-Z0-9_]{2,}=[^\s,;"']+/.source,             // generic env-dump NAME=value
-  /(?:^|[^A-Za-z0-9_.\\/~])\\\\[A-Za-z0-9._-]+[\\]/.source,            // embedded UNC \\srv\dir after any non-path char
+  /(?:password|passwd|secret|credential|token|api[_-]?key)\s*[:=]\s*["']?[^\s,;"']+/i.source,
+  /\b[A-Z][A-Z0-9_]{2,}(?:_KEY|_TOKEN|_SECRET|_PASSWORD|_CREDENTIAL)=["']?\S+/.source,
+  /(?:^|[^A-Za-z0-9_])[A-Z][A-Z0-9_]{2,}=["']?[^\s,;"']+/.source,        // generic env-dump NAME=["]value
+  /(?:^|[^A-Za-z0-9_.~\/])\\\\[A-Za-z0-9._-]+[\\]/.source,             // embedded UNC \\srv\dir after any non-path char
   /(?:ENOENT|ECONNREFUSED|stack trace|at [A-Za-z]+ \(|Error: )/.source,
 ].join('|'),'i');
 const CREDENTIAL_VALUE=new RegExp([
   /(?:PI_GUI_TOKEN|-----BEGIN [A-Z ]*PRIVATE KEY-----)/.source,
   /(?:[Bb]earer\s+[A-Za-z0-9._-]{8,}|sk-[A-Za-z0-9]{8,})/.source,
   // assignment-shaped secrets: key=value / key: value / env dump NAME=value
-  /(?:api[_-]?key|oauth[_-]?token|secret|credential|password|passwd|token)\s*[:=]\s*[^\s,;"']+/i.source,
-  /\b[A-Z][A-Z0-9_]{3,}(?:_KEY|_TOKEN|_SECRET|_PASSWORD)=\S+/.source,
+  /(?:api[_-]?key|oauth[_-]?token|secret|credential|password|passwd|token)\s*[:=]\s*["']?[^\s,;"']+/i.source,
+  /\b[A-Z][A-Z0-9_]{3,}(?:_KEY|_TOKEN|_SECRET|_PASSWORD)=["']?\S+/.source,
 ].join('|'),'i');
 // Transcript exception paths: only these dotted key paths carry raw conversation
 // text that tolerates ordinary prose; they are still credential-scanned.
@@ -229,7 +230,7 @@ export function buildSignatureMessage({protocolVersion,deviceId,serviceId,replay
   const target=canonicalQuery?`${path}?${canonicalQuery}`:path;
   return [String(protocolVersion),deviceId,serviceId,String(replayEpoch),requestId,String(method).toUpperCase(),target,timestamp,nonce,bodySha256].join('\n');
 }
-const PRE_AUTHENTICATION_CODES=new Set(['route_mismatch','pair_headers_invalid','signature_headers_missing','signature_headers_invalid','get_body_forbidden','body_bytes_required','body_parse_mismatch','request_too_large','request_invalid','query_invalid','operation_route_mismatch','envelope_invalid','cursor_invalid','replay_store_unavailable','signature_expired','signature_invalid','device_identity_mismatch','device_inactive','service_identity_invalid','device_grants_invalid','grant_store_unavailable']);
+const PRE_AUTHENTICATION_CODES=new Set(['route_mismatch','pair_headers_invalid','signature_headers_missing','signature_headers_invalid','get_body_forbidden','body_bytes_required','body_parse_mismatch','request_too_large','request_invalid','query_invalid','operation_route_mismatch','envelope_invalid','cursor_invalid','replay_store_unavailable','signature_expired','signature_invalid','device_identity_mismatch','device_inactive','service_identity_invalid','device_grants_invalid','grant_store_unavailable','owner_revision_required','owner_revision_invalid']);
 export function wireErrorCode(internal,stage='authenticated') {
   if(PRE_AUTHENTICATION_CODES.has(internal))return 'unauthorized';
   // Pair-exchange failures resolve through their own closed map; anything
@@ -419,19 +420,22 @@ export function authorizePairExchange({request,expectedServiceFingerprint,peerId
   const expiryMs=Date.parse(expiresAt??'');
   if(!OPAQUE_ID.test(deviceId??'')||!decodeB64url(serverNonce,32)||!Number.isFinite(expiryMs)||!(Number.isSafeInteger(nowMs)&&expiryMs>nowMs))return {ok:false,code:'pair_response_invalid'};
   if(typeof consumePairingCodeAndRegisterDevice!=='function')return {ok:false,code:'pair_store_unavailable'};
-  const replayEpoch=1;
-  const unsigned={deviceId,serverNonce,grantedScopes,replayEpoch,expiresAt};
-  if(!validatePairExchangeResponse({...unsigned,serverSignature:'0'.repeat(86)}))return {ok:false,code:'pair_response_invalid'};
   const responseRequestId=request.body.clientNonce;
-  const serverSignature=signEd25519(desktopPrivateKey,['remote-v1-pair-response',responseRequestId,canonicalJson(unsigned)].join('\n'));
-  if(!serverSignature)return {ok:false,code:'pair_signing_failed'};
   // Atomically consume approvalId + code + session and register the device,
   // rechecking expiry, capacity and device-key uniqueness in one transaction.
+  // The transaction ALLOCATES and returns the committed replayEpoch (re-pairs bump
+  // it); the response is signed only AFTER commit so the client stores the real epoch.
   let persisted;
-  try {persisted=consumePairingCodeAndRegisterDevice({approvalId,pairingSessionId:request.body.pairingSessionId,pairCode:request.body.pairCode,deviceId,devicePublicKey:request.body.devicePublicKey,grantedScopes,replayEpoch,expiresAt,proofTranscript});}
+  try {persisted=consumePairingCodeAndRegisterDevice({approvalId,pairingSessionId:request.body.pairingSessionId,pairCode:request.body.pairCode,deviceId,devicePublicKey:request.body.devicePublicKey,grantedScopes,expiresAt,proofTranscript});}
   catch {return {ok:false,code:'pair_store_unavailable'};}
   if(persisted&&typeof persisted.then==='function')return {ok:false,code:'pair_store_unavailable'};
-  if(persisted!==true)return {ok:false,code:'pair_code_consumed_or_limited'};
+  const committedEpoch=isRecord(persisted)?persisted.replayEpoch:undefined;
+  if(persisted===false||persisted===null||persisted===undefined)return {ok:false,code:'pair_code_consumed_or_limited'};
+  if(!Number.isSafeInteger(committedEpoch)||committedEpoch<1)return {ok:false,code:'pair_store_unavailable'};
+  const unsigned={deviceId,serverNonce,grantedScopes,replayEpoch:committedEpoch,expiresAt};
+  if(!validatePairExchangeResponse({...unsigned,serverSignature:'0'.repeat(86)}))return {ok:false,code:'pair_response_invalid'};
+  const serverSignature=signEd25519(desktopPrivateKey,['remote-v1-pair-response',responseRequestId,canonicalJson(unsigned)].join('\n'));
+  if(!serverSignature)return {ok:false,code:'pair_signing_failed'};
   return {ok:true,code:'device_registered',requestId:responseRequestId,response:{...unsigned,serverSignature}};
 }
 export function verifyPairExchangeResponse(response,desktopPublicKey,requestId,{outstandingExchange,retireExchange,serviceFingerprint,nowMs=Date.now()}={}) {
@@ -508,7 +512,7 @@ export function authorizeRemoteOperation({request,device,serviceId,serviceFinger
   if(device.grants[owner.projectId]!==true)return {ok:false,code:'unknown_resource',wire:'unknown_resource'};
   if(owner.revision===undefined||!Number.isSafeInteger(owner.revision))return {ok:false,code:'stale_owner',wire:'stale_owner'};
   if(request.body?.ownerRevision!==undefined&&owner.revision!==request.body.ownerRevision)return {ok:false,code:'stale_revision',wire:'stale_revision'};
-  const admissionToken={deviceId:device.deviceId,replayEpoch:device.replayEpoch,scope:verification.scope,ownerEpoch:owner.epoch,ownerRevision:owner.revision,projectId:owner.projectId,resourceId:owner.conversationId??owner.projectId,requestId:verification.requestId,issuedAtMs:nowMs};
+  const admissionToken={deviceId:device.deviceId,replayEpoch:device.replayEpoch,scope:verification.scope,ownerEpoch:owner.epoch,ownerRevision:owner.revision,ownerIdentity:owner.identity,ownerNamespace:owner.namespace,projectId:owner.projectId,resourceId:owner.conversationId??owner.projectId,requestId:verification.requestId,issuedAtMs:nowMs};
   return {...verification,owner,admissionToken};
 }
 // Versioned admission token recheck at effect commit: re-resolve the CURRENT
@@ -533,7 +537,12 @@ export function commitAdmission({admissionToken,device,resolveOwner,nowMs=Date.n
     if(owner&&typeof owner.then==='function')return {ok:false,code:'stale_owner'};
     if(!isRecord(owner)||owner.current!==true||owner.projectId!==admissionToken.projectId)return {ok:false,code:'stale_owner'};
     // The resolved resource must still be the one the token names (no substitution).
-    if(admissionToken.resourceId!==undefined&&admissionToken.resourceId!==admissionToken.projectId&&owner.conversationId!==undefined&&owner.conversationId!==admissionToken.resourceId)return {ok:false,code:'unknown_resource'};
+    // A conversation-bound token REQUIRES the re-resolved owner to name that same
+    // conversation — an owner missing conversationId cannot satisfy it.
+    if(admissionToken.resourceId!==undefined&&admissionToken.resourceId!==admissionToken.projectId&&owner.conversationId!==admissionToken.resourceId)return {ok:false,code:'unknown_resource'};
+    // Owner identity/namespace/epoch/revision bound at admission must all still match.
+    if(admissionToken.ownerIdentity!==undefined&&owner.identity!==admissionToken.ownerIdentity)return {ok:false,code:'stale_owner'};
+    if(admissionToken.ownerNamespace!==undefined&&owner.namespace!==admissionToken.ownerNamespace)return {ok:false,code:'stale_owner'};
     if(admissionToken.ownerRevision!==undefined&&owner.revision!==admissionToken.ownerRevision)return {ok:false,code:'stale_revision'};
     if(admissionToken.ownerEpoch!==undefined&&owner.epoch!==admissionToken.ownerEpoch)return {ok:false,code:'stale_owner'};
   }
@@ -574,7 +583,7 @@ export function validateRemoteRequest(request) {
 export function settleApproval({request,device,serviceId,serviceFingerprint,deviceResolveOwner,pendingDialog,consumeDialog,nowMs=Date.now(),consumeNonce}) {
   const admission=authorizeRemoteOperation({request,device,serviceId,serviceFingerprint,resolveOwner:deviceResolveOwner,nowMs,consumeNonce});
   if(!admission.ok)return admission;
-  if(admission.operation!=='approvals.respond')return {ok:false,code:'operation_rejected',wire:'unauthorized'};
+  if(admission.operation!=='approvals.respond')return {ok:false,code:'operation_rejected',wire:'operation_rejected'};
   const payload=request.body.payload,requestId=admission.pathParameters?.requestId;
   // Live dialog must be a complete authoritative record: pending, finite future
   // expiry, matching method and opaque option ids (never bare labels).

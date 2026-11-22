@@ -42,12 +42,12 @@ client 只接受 `responseEnvelope`：`{protocolVersion,requestId,operation,serv
 | `approvals.list` | `approvals.read` | conversation | `conversationId` |
 | `approvals.respond` | `approvals.respond` | approval | `requestId`+body |
 
-`runtime.create`/`runtime.snapshot`/`chat.send`/`chat.stop`/`events.subscribe` 的 query 仅允许 `projectId`/`conversationId`/`cursor`（闭集 `queryParameters`），值各自受 `^[a-z0-9]+-[a-z0-9-]{6,}$` 或 `cursorPattern` 约束。
+8 个业务 op **不接收 query 参数**——`projectId`/`conversationId`/`requestId` 都是 `pathParameters`（路径模板内），值受 opaque 模式 `^[A-Za-z0-9_-]{8,128}$` 约束；唯一带 query 的是 `events.subscribe` 的 `cursor`（受 `cursorPattern`）。签名 tuple 里的 `path?canonicalQuery` 是已校验的 raw target，不是客户端可自由拼的 query。
 
 ## 事件流 client
 
 - `events.subscribe`（GET `/remote/v1/events`，query 仅 `cursor`）建立签名 SSE/WebSocket **设备级**事件流——不在订阅请求里指定 project/conversation；目标资源由服务端按 grant/owner 投影，帧内 `conversationId`/`ownerRevision` 携带归属。client 校验每个 `eventEnvelope` 的 `frameAuthentication.frameMessage`（Ed25519，**PINNED service key**），检查 `streamGeneration`/`sequence`/`conversationId`/`ownerRevision`/`cursor` 单调绑定本订阅与设备。
-- `payload` 仅 6 个闭集 schema：`snapshot`、`message.append`、`conversation.status`、`approval.pending`、`approval.settled`、`reset`。`snapshot` 的 `payload.messages[].text` 与 `message.append.payload.text` 是投影转录文本（仍过凭据扫描/限长 `maxTranscriptSerializedBytes=8192`/`maxChatTextUtf8Bytes=32768`）。
+- `payload` 仅 6 个闭集 schema：`snapshot`、`message.append`、`conversation.status`、`approval.pending`、`approval.settled`、`reset`。`snapshot` 的 `payload.messages[].text` 与 `message.append.payload.text` 是投影转录文本（凭据扫描 + `maxSerializedJsonBytes=8192`）；`snapshot`/`conversation.status` 不携带 `revision` 字段（`ownerRevision` 在信封上）。
 - cursor 语义遵循 `cursorTransitionTable`： malformed→`invalid_request`；wellformed-stale/expired/foreign→新 `streamGeneration`+一次性 `reset`（client 用 `reset` 快照重新对齐，不得跨设备猜游标）。`maxConcurrentStreamsPerDevice=2`。
 
 ## 配对 client
@@ -58,7 +58,7 @@ client 只接受 `responseEnvelope`：`{protocolVersion,requestId,operation,serv
 
 - 失败即闭合：任何 transport/校验异常映射为本地失败，不构造回退通道。
 - client 不缓存 `pairingSessionId`/`pairCode` 之外的长效秘密；`replayEpoch` 随签名头单调递增（设备本地持久化）。
-- `chat.send` body ≤ `maxChatTextUtf8Bytes`；`approvals.respond` select 仅 `optionId`，confirm 仅 `allow/deny/cancel`。
+- `chat.send` `payload.text` ≤ `maxSerializedJsonBytes=8192`；`approvals.respond` 按 `decisionMatrix`：select 仅 `answer`+`optionId`，confirm 仅 `allow/deny`，input/editor 是 `answer`(带值)/`cancel`。
 - 所有输入先经与 `remote-protocol-contract.mjs` 同源的 schema/UTF-8/限长/禁值扫描，再签名发送——但**权威校验始终在桌面**；client 校验只用于早期失败与 UX。
 
 ## 待验证项（M1 决定）

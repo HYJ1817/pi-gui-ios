@@ -25,9 +25,9 @@
 
 | event | 语义 | UI 用途 |
 |---|---|---|
-| `snapshot` | `payload.messages[]` + `payload.status` + `payload.revision` | 会话首屏/重置后的状态基线 |
-| `message.append` | `payload.text`（投影转录，≤32768B，过凭据扫描） | 流式追加消息 |
-| `conversation.status` | `payload.status`,`payload.revision` | 运行/空闲/停止态 |
+| `snapshot` | `payload.messages[]` + `payload.status`（+`snapshotTruncated`） | 会话首屏/重置后的状态基线 |
+| `message.append` | `payload.text`（投影转录，`maxSerializedJsonBytes=8192`，过凭据扫描） | 流式追加消息 |
+| `conversation.status` | `payload.status` | 运行/空闲/停止态 |
 | `approval.pending` | `payload.method`,`payload.options[{optionId,label}]` | 弹出待决审批 |
 | `approval.settled` | `payload.requestId`,`payload.status` | 移除已决审批 |
 | `reset` | `payload.reason` | 订阅重建基线（`cursor_expired`/`sequence_gap`/`authorization_changed`/`owner_changed`） |

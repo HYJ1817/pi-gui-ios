@@ -220,7 +220,7 @@ test('pair proof binds code, displayed name, device key, nonce and service finge
   let registered=0,confirmed=null,attempts=0;
   const scopes=['projects.read','sessions.read'];
   const expiresAt=new Date(Date.now()+120000).toISOString();
-  const approvalFor=()=>({peerId:'peer-1',reservePairBudget:()=>true,validatePairingSession:()=>true,recordPairAttempt:context=>{attempts++;assert.equal(context.peerId,'peer-1');assert.equal(context.pairingSessionId,body.pairingSessionId);return attempts<=5;},verifyPairCode:ctx=>{assert.equal(ctx.pairingSessionId,body.pairingSessionId);return ctx.pairCode==='042817';},confirmLocally:context=>{confirmed=context;return 'approval_01';},consumePairingCodeAndRegisterDevice:record=>{registered++;assert.equal(record.pairCode,'042817');assert.equal(record.approvalId,'approval_01');assert.deepEqual(record.grantedScopes,scopes);return true;}});
+  const approvalFor=()=>({peerId:'peer-1',reservePairBudget:()=>true,validatePairingSession:()=>true,recordPairAttempt:context=>{attempts++;assert.equal(context.peerId,'peer-1');assert.equal(context.pairingSessionId,body.pairingSessionId);return attempts<=5;},verifyPairCode:ctx=>{assert.equal(ctx.pairingSessionId,body.pairingSessionId);return ctx.pairCode==='042817';},confirmLocally:context=>{confirmed=context;return 'approval_01';},consumePairingCodeAndRegisterDevice:record=>{registered++;assert.equal(record.pairCode,'042817');assert.equal(record.approvalId,'approval_01');assert.deepEqual(record.grantedScopes,scopes);assert.equal(record.replayEpoch,undefined);return {replayEpoch:1};}});
   const approved=authorizePairExchange({request,expectedServiceFingerprint:fingerprint,...approvalFor(),grantedScopes:scopes,deviceId:'device_12345678',serverNonce:Buffer.alloc(32,4).toString('base64url'),expiresAt,desktopPrivateKey:privateRaw});
   assert.equal(approved.ok,true); assert.equal(registered,1); assert.equal(attempts,1); assert.deepEqual(confirmed.requestedScopes,scopes);
   assert.equal(confirmed.pairCode,'042817'); assert.equal(confirmed.clientNonce,body.clientNonce); assert.equal(typeof confirmed.proofTranscript,'string');
@@ -445,7 +445,7 @@ test('UTF-8 byte limits and duplicate query params are enforced',()=>{
   const pair=testKeyPair();
   const device={deviceId:'device_abc12345',devicePublicKey:pair.publicKeyRaw,grantedScopes:['chat.send'],active:true};
   // multibyte text at/over byte limit
-  const heavy='\u4e2d'.repeat(Math.ceil(REMOTE_V1.limits.maxChatTextUtf8Bytes/3));
+  const heavy='\u4e2d'.repeat(Math.ceil(REMOTE_V1.limits.maxTranscriptSerializedBytes/3));
   const over=request('chat.send','/remote/v1/conversations/conversation_12345678/messages',{clientMessageId:id,text:heavy},{ownerRevision:1});
   assert.equal(validateRemoteRequest(over).ok,false);
   // undeclared query parameter rejected (wire-level duplicate params rejected per contract)
