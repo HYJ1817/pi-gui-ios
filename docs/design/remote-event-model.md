@@ -15,7 +15,7 @@
 
 ## 事件帧（`eventStream.eventEnvelope`）
 
-每帧：`{protocolVersion, requestId(frame), deviceId, serviceId, streamGeneration, sequence, conversationId, ownerRevision, cursor, event, payload}`。
+每帧（`eventEnvelope`，`additionalProperties:false`）：`{protocolVersion, sequence, conversationId, event, payload, ownerRevision, streamGeneration, cursor, frameSignature}`。设备/服务身份不走帧字段——帧签名消息里绑定 `deviceId`/`serviceId`，由 `frameAuthentication` 验签证明，信封本身不携带。
 
 - `frameAuthentication.frameMessage` 由桌面服务 Ed25519 签名；client 用**已 pin 的 `serviceFingerprint`/serviceId 对应公钥**验签。
 - `frameAuthentication.authorizationRecheck`/`resourceAuthorization`：服务端在投递/重放每帧前重验 device-active、per-event scope、当前 resource owner、ownerRevision；失配 → 丢帧 + reset。
@@ -29,8 +29,8 @@
 | `message.append` | `payload.text`（投影转录，≤32768B，过凭据扫描） | 流式追加消息 |
 | `conversation.status` | `payload.status`,`payload.revision` | 运行/空闲/停止态 |
 | `approval.pending` | `payload.method`,`payload.options[{optionId,label}]` | 弹出待决审批 |
-| `approval.settled` | `payload.requestId`,`payload.method`,`payload.decision` | 移除已决审批 |
-| `reset` | `payload.reason` | 订阅重建基线（cursor stale/foreign/expired/revoked/replaced/overflow） |
+| `approval.settled` | `payload.requestId`,`payload.status` | 移除已决审批 |
+| `reset` | `payload.reason` | 订阅重建基线（`cursor_expired`/`sequence_gap`/`authorization_changed`/`owner_changed`） |
 
 `approval.pending.options.optionId` 与 `approvals.respond` 的 `optionId` 同源（`{1,128}` 唯一）；`projectionPolicy.optionConsistency` 保证 answer 不比 option 严。
 

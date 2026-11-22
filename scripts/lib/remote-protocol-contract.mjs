@@ -91,14 +91,15 @@ function validateSchema(value,schema,depth=0) {
 // Forbidden values: credentials/Pi secrets AND filesystem paths (absolute POSIX,
 // drive, UNC, ~) anywhere in a non-transcript string, plus raw diagnostic text.
 const FORBIDDEN_VALUE=new RegExp([
-  /(?:^|[\s(\[{])\/(?!\/)/.source,                                  // absolute POSIX path start or '/seg'
-  /(?:^|[\s(\[{])(?:[A-Za-z]:[\\/]|\\\\|~[\\/])/.source,      // drive / UNC / ~ path
-  /(?:^|[^A-Za-z])(?:home|Users|etc|private|var|opt|root|tmp|usr|bin|srv|mnt|data)[\\/][A-Za-z0-9._-]/.source,
+  /(?:^|[^A-Za-z0-9_.\\/~])\/(?!\/)/.source,                     // absolute POSIX path start or '/seg' after any non-path char
+  /(?:^|[^A-Za-z0-9_.\\/~])(?:[A-Za-z]:[\\/]|\\\\|~[\\/])/.source, // drive / UNC / ~ path after any non-path char
+  /(?:^|[^A-Za-z0-9_.\\/~])(?:home|Users|etc|private|var|opt|root|tmp|usr|bin|srv|mnt|data)[\\/][A-Za-z0-9._-]/.source,
   /(?:PI_GUI_TOKEN|api[_-]?key|oauth[_-]?token|-----BEGIN [A-Z ]*PRIVATE KEY-----)/.source,
   /(?:[Bb]earer\s+[A-Za-z0-9._-]{8,}|sk-[A-Za-z0-9]{8,})/.source,
   /(?:password|passwd|secret|credential|token|api[_-]?key)\s*[:=]\s*[^\s,;"']+/i.source,
   /\b[A-Z][A-Z0-9_]{2,}(?:_KEY|_TOKEN|_SECRET|_PASSWORD|_CREDENTIAL)=\S+/.source,
-  /(?:^|[\s(\[{])\\\\[A-Za-z0-9._-]+[\\]/.source,                    // embedded UNC \\srv\dir
+  /(?:^|[^A-Za-z0-9_])[A-Z][A-Z0-9_]{2,}=[^\s,;"']+/.source,             // generic env-dump NAME=value
+  /(?:^|[^A-Za-z0-9_.\\/~])\\\\[A-Za-z0-9._-]+[\\]/.source,            // embedded UNC \\srv\dir after any non-path char
   /(?:ENOENT|ECONNREFUSED|stack trace|at [A-Za-z]+ \(|Error: )/.source,
 ].join('|'),'i');
 const CREDENTIAL_VALUE=new RegExp([
@@ -230,7 +231,14 @@ export function buildSignatureMessage({protocolVersion,deviceId,serviceId,replay
 }
 const PRE_AUTHENTICATION_CODES=new Set(['route_mismatch','pair_headers_invalid','signature_headers_missing','signature_headers_invalid','get_body_forbidden','body_bytes_required','body_parse_mismatch','request_too_large','request_invalid','query_invalid','operation_route_mismatch','envelope_invalid','cursor_invalid','replay_store_unavailable','signature_expired','signature_invalid','device_identity_mismatch','device_inactive','service_identity_invalid','device_grants_invalid','grant_store_unavailable']);
 export function wireErrorCode(internal,stage='authenticated') {
-  if(stage!=='authenticated'||PRE_AUTHENTICATION_CODES.has(internal))return 'unauthorized';
+  if(PRE_AUTHENTICATION_CODES.has(internal))return 'unauthorized';
+  // Pair-exchange failures resolve through their own closed map; anything
+  // unmapped collapses to internal_error (fail closed, no internal detail leak).
+  if(stage==='pair') {
+    const pairMap=REMOTE_V1.responseEnvelope.internalCodeMapping?.pairExchange??{};
+    return own(pairMap,internal)?pairMap[internal]:'internal_error';
+  }
+  if(stage!=='authenticated')return 'unauthorized';
   const mapping=REMOTE_V1.responseEnvelope.internalCodeMapping?.postAuthentication??{};
   return own(mapping,internal)?mapping[internal]:'internal_error';
 }
@@ -266,7 +274,9 @@ export function validateRawTarget(rawTarget) {
     return text;
   };
   const path=decodeStrict(rawPath);
-  if(path===null||path.includes('\uFFFD')||!path.startsWith('/')||path.includes('\\')||path.includes('//')||/[\x00-\x20]/.test(path))return {ok:false,code:'target_invalid'};
+  // Path charset gate (transportAdapter.rawTarget): ASCII-printable only; rejects
+  // non-ASCII, control chars, DEL, '#' and replacement chars before route matching.
+  if(path===null||path.includes('\uFFFD')||!path.startsWith('/')||path.includes('\\')||path.includes('//')||path.includes('#')||/[^\x21-\x7E]/.test(path))return {ok:false,code:'target_invalid'};
   if(path.split('/').some(seg=>seg==='stream-reset'))return {ok:false,code:'target_invalid'};
   const params=[];
   if(rawQuery!==null) {
@@ -618,7 +628,7 @@ export function validateEventEnvelope(event) {
 // Full acceptance: pinned service key + authenticated device + scope + expected stream position.
 // Ordinary frames require the expected (generation, sequence); a 'reset' frame
 // establishes a new expected position and is not subject to a prior check.
-export function acceptEventFrame({event,deviceId,serviceId,desktopPublicKey,deviceScopes,expectedStreamGeneration,expectedSequence,authorizeResource,freshSubscribe}) {
+export function acceptEventFrame({event,deviceId,serviceId,desktopPublicKey,deviceScopes,expectedStreamGeneration,expectedSequence,authorizeResource}) {
   if(!validateEventEnvelope(event))return {ok:false,code:'frame_invalid'};
   if(typeof desktopPublicKey!=='string'||!OPAQUE_ID.test(deviceId??'')||typeof serviceId!=='string'||serviceId.length===0)return {ok:false,code:'frame_context_required'};
   const message=buildEventFrameMessage(event,deviceId,serviceId);
@@ -627,10 +637,10 @@ export function acceptEventFrame({event,deviceId,serviceId,desktopPublicKey,devi
   if(!Array.isArray(deviceScopes)||!deviceScopes.includes(requiredScope))return {ok:false,code:'scope_denied'};
   if(event.event==='reset') {
     if(event.conversationId!=='stream-reset')return {ok:false,code:'frame_invalid'};
-    // A reset must ADVANCE the position: fresh subscribe (no expected position)
-    // or a strictly greater streamGeneration. Stale/duplicate resets rejected.
-    const fresh=freshSubscribe===true||expectedStreamGeneration===undefined;
-    if(!fresh&&!(event.streamGeneration>expectedStreamGeneration))return {ok:false,code:'sequence_gap'};
+    // A reset must ADVANCE the position: the ONLY fresh-subscribe condition is
+    // expectedStreamGeneration===undefined; otherwise the generation must be
+    // strictly greater. Stale/duplicate resets are rejected (no bypass flag).
+    if(expectedStreamGeneration!==undefined&&!(event.streamGeneration>expectedStreamGeneration))return {ok:false,code:'sequence_gap'};
     return {ok:true,newExpectedPosition:{streamGeneration:event.streamGeneration,sequence:event.sequence}};
   }
   if(event.conversationId==='stream-reset')return {ok:false,code:'frame_invalid'};

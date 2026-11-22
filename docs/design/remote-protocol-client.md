@@ -34,19 +34,19 @@ client 只接受 `responseEnvelope`：`{protocolVersion,requestId,operation,serv
 | op | scope | owner | 关键约束 |
 |---|---|---|---|
 | `projects.list` | `projects.read` | collection | 无参数 |
-| `sessions.list` | `projects.read` | project | `projectId` |
-| `runtime.create` | `runtime.create` | project | `projectId`(+query) |
+| `sessions.list` | `sessions.read` | project | `projectId` |
+| `runtime.create` | `sessions.create` | project | `projectId`(+query) |
 | `runtime.snapshot` | `sessions.read` | conversation | `conversationId` |
 | `chat.send` | `chat.send` | conversation | `conversationId`+body |
 | `chat.stop` | `chat.stop` | conversation | `conversationId` |
-| `approvals.list` | `approvals.read` | project | `projectId` |
+| `approvals.list` | `approvals.read` | conversation | `conversationId` |
 | `approvals.respond` | `approvals.respond` | approval | `requestId`+body |
 
 `runtime.create`/`runtime.snapshot`/`chat.send`/`chat.stop`/`events.subscribe` 的 query 仅允许 `projectId`/`conversationId`/`cursor`（闭集 `queryParameters`），值各自受 `^[a-z0-9]+-[a-z0-9-]{6,}$` 或 `cursorPattern` 约束。
 
 ## 事件流 client
 
-- `events.subscribe`（GET + query `projectId,conversationId,cursor`）建立签名 SSE/WebSocket 流。client 校验每个 `eventEnvelope` 的 `frameAuthentication.frameMessage`（Ed25519，**PINNED service key**），检查 `streamGeneration`/`sequence`/`conversationId`/`ownerRevision`/`cursor` 单调绑定本订阅与设备。
+- `events.subscribe`（GET `/remote/v1/events`，query 仅 `cursor`）建立签名 SSE/WebSocket **设备级**事件流——不在订阅请求里指定 project/conversation；目标资源由服务端按 grant/owner 投影，帧内 `conversationId`/`ownerRevision` 携带归属。client 校验每个 `eventEnvelope` 的 `frameAuthentication.frameMessage`（Ed25519，**PINNED service key**），检查 `streamGeneration`/`sequence`/`conversationId`/`ownerRevision`/`cursor` 单调绑定本订阅与设备。
 - `payload` 仅 6 个闭集 schema：`snapshot`、`message.append`、`conversation.status`、`approval.pending`、`approval.settled`、`reset`。`snapshot` 的 `payload.messages[].text` 与 `message.append.payload.text` 是投影转录文本（仍过凭据扫描/限长 `maxTranscriptSerializedBytes=8192`/`maxChatTextUtf8Bytes=32768`）。
 - cursor 语义遵循 `cursorTransitionTable`： malformed→`invalid_request`；wellformed-stale/expired/foreign→新 `streamGeneration`+一次性 `reset`（client 用 `reset` 快照重新对齐，不得跨设备猜游标）。`maxConcurrentStreamsPerDevice=2`。
 

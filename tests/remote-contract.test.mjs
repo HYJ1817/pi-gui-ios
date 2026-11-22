@@ -519,3 +519,49 @@ test('forbidden values: embedded POSIX/drive paths, credentials; transcript only
   const ap={...frame,event:'approval.pending',payload:{requestId:'req_aaaaaaaa',method:'confirm',title:'open /etc/x',message:'m'}};
   assert.equal(validateEventEnvelope(ap),false);
 });
+
+test('wireErrorCode pair-stage resolves the closed pairExchange map',()=>{
+  // every internal pair code resolves to its documented wire code (closed fallback)
+  for(const [internal,wire] of Object.entries(REMOTE_V1.responseEnvelope.internalCodeMapping.pairExchange)) {
+    const preauth=['route_mismatch','pair_headers_invalid','query_invalid'].includes(internal);
+    assert.equal(wireErrorCode(internal,'pair'),preauth?'unauthorized':wire,internal);
+  }
+  assert.equal(wireErrorCode('pairing_session_invalid','pair'),'pairing_expired');
+  assert.equal(wireErrorCode('pair_rate_limited','pair'),'rate_limited');
+  assert.equal(wireErrorCode('pair_code_consumed_or_limited','pair'),'pairing_rejected');
+  assert.equal(wireErrorCode('made_up_pair_code','pair'),'internal_error');
+  assert.equal(wireErrorCode('signature_invalid','pair'),'unauthorized');
+});
+
+test('forbidden-value boundary matrix: paths and env dumps after any delimiter',()=>{
+  const rsp=name=>({protocolVersion:1,requestId:id,operation:'projects.list',serverRevision:1,result:{projects:[{projectId:'project_12345678',displayName:name}],registryRevision:1}});
+  for(const name of ['k=C:/x','"C:/q"',';C:/q','path=C:\\x','k=\\\\files\\dir','=\\\\backup\\d','x=/foo/bar','(C:/q','WINDIR=C:\\Windows','USER=admin','KEY=abc','HTTP_PROXY=http://h:8080','MY_KEY=abc123']) {
+    assert.equal(validateRemoteResponse(rsp(name),'projects.list',id),false,name);
+  }
+  // legitimate names still pass
+  assert.equal(validateRemoteResponse(rsp('Demo project'),'projects.list',id),true);
+  assert.equal(validateRemoteResponse(rsp('a/b relative'),'projects.list',id),true);
+});
+
+test('raw target charset gate: non-ASCII, DEL, and # rejected before routing',()=>{
+  assert.equal(validateRawTarget('/remote/v1/projects').ok,true);
+  assert.equal(validateRawTarget('/remote/v1/e中v').ok,false);
+  assert.equal(validateRawTarget('/remote/v1/a b').ok,false);
+  assert.equal(validateRawTarget('/remote/v1/a\x7f').ok,false);
+  assert.equal(validateRawTarget('/remote/v1/a#b').ok,false);
+});
+
+test('reset occupies its sequence; next frame is reset.sequence+1, no freshSubscribe bypass',()=>{
+  const mk=(seq,gen)=>({protocolVersion:1,sequence:seq,conversationId:'stream-reset',ownerRevision:1,streamGeneration:gen,cursor:'cursor_aaaaaaaa',event:'reset',payload:{reason:'cursor_expired'}});
+  const desktop=testKeyPair();
+  const signFrame=f=>{f.frameSignature=sign(null,Buffer.from(buildEventFrameMessage(f,'device_abc12345','svc-1'),'utf8'),desktop.privateKey).toString('base64url');return f;};
+  const pub=desktop.publicKeyRaw;
+  // fresh subscribe accepts reset at any generation
+  const r1=acceptEventFrame({event:signFrame(mk(7,3)),deviceId:'device_abc12345',serviceId:'svc-1',desktopPublicKey:pub,deviceScopes:['sessions.read']});
+  assert.equal(r1.ok,true); assert.deepEqual(r1.newExpectedPosition,{streamGeneration:3,sequence:7});
+  // established stream: a reset at a LOWER/equal generation is rejected (no bypass flag)
+  assert.equal(acceptEventFrame({event:signFrame(mk(1,3)),deviceId:'device_abc12345',serviceId:'svc-1',desktopPublicKey:pub,deviceScopes:['sessions.read'],expectedStreamGeneration:5,expectedSequence:2}).code,'sequence_gap');
+  // greater generation accepted; next ordinary frame expected at reset.sequence+1
+  const r2=acceptEventFrame({event:signFrame(mk(9,6)),deviceId:'device_abc12345',serviceId:'svc-1',desktopPublicKey:pub,deviceScopes:['sessions.read'],expectedStreamGeneration:5,expectedSequence:2});
+  assert.equal(r2.ok,true); assert.deepEqual(r2.newExpectedPosition,{streamGeneration:6,sequence:9});
+});
