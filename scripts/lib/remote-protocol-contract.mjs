@@ -94,7 +94,7 @@ const FORBIDDEN_VALUE=new RegExp([
   /(?:^|[^A-Za-z0-9_.\\/~])\/(?!\/)/.source,                     // absolute POSIX path start or '/seg' after any non-path char
   /\w+:\/\/+[A-Za-z]:[\\/]/.source,                                  // URI-scheme drive path (file:///C:/x)
   /\w+:\/\/+\/(?:[A-Za-z0-9._~-]+\/)*[A-Za-z0-9._~-]+/.source,        // URI-scheme POSIX path (file:///etc/x)
-  /\/\/+[A-Za-z0-9._~-]+\/[A-Za-z0-9._~-]/.source,                   // network/UNC host+path (//srv/share, smb://h/s, scheme://h/p); bare //host/ allowed
+  /\/\/+[A-Za-z0-9._~:@-]+\/[A-Za-z0-9._~-]/.source,                // network/UNC authority+path incl :port/@userinfo (//srv:8080/d, scheme://u:p@h/p); bare //host(/) allowed
   /(?:^|[^A-Za-z0-9_.~\/])(?:[A-Za-z]:[\\/]|\\\\|~[\\/]|\\(?=[A-Za-z]))/.source, // drive / UNC / ~ / single-\ root path (\\Windows caught)
   /(?:^|[^A-Za-z0-9_.~\/])(?:home|Users|etc|private|var|opt|root|tmp|usr|bin|srv|mnt|data)[\\/][A-Za-z0-9._-]/.source,
   /(?:PI_GUI_TOKEN|api[_-]?key|oauth[_-]?token|-----BEGIN [A-Z ]*PRIVATE KEY-----)/.source,
@@ -110,7 +110,7 @@ const CREDENTIAL_VALUE=new RegExp([
   /(?:[Bb]earer\s+[A-Za-z0-9._-]{8,}|sk-[A-Za-z0-9]{8,})/.source,
   // assignment-shaped secrets: key=value / key: value / env dump NAME=value
   /["']?(?:api[_-]?key|oauth[_-]?token|secret|credential|password|passwd|token)["']?\s*[:=]\s*["']?[^\s,;"']+/i.source,
-  /["']?\b[A-Z][A-Z0-9_]{3,}(?:_KEY|_TOKEN|_SECRET|_PASSWORD)["']?=["']?\S+/.source,
+  /["']?\b[A-Z][A-Z0-9_]{2,}(?:_KEY|_TOKEN|_SECRET|_PASSWORD|_CREDENTIAL)["']?=["']?\S+/.source,
 ].join('|'),'i');
 // Transcript exception paths: only these dotted key paths carry raw conversation
 // text that tolerates ordinary prose; they are still credential-scanned.
@@ -252,6 +252,9 @@ export function wireErrorCode(internal,stage='authenticated') {
 function hasDuplicateQueryParams(query) {
   if(!isRecord(query))return false;
   const names=new Set();
+  // Dead code kept intentionally: a JS object cannot hold duplicate keys, but the
+  // belt-and-braces check documents the duplicate-name rule enforced upstream in
+  // validateRawTarget (which sees the raw 'a=1for(const key of Object.keys(query)) { const normalized=key; if(names.has(normalized))return true; names.add(normalized); }a=2' string before parsing).
   for(const key of Object.keys(query)) { const normalized=key; if(names.has(normalized))return true; names.add(normalized); }
   return false;
 }
@@ -597,7 +600,7 @@ export function settleApproval({request,device,serviceId,serviceFingerprint,devi
     &&pendingDialog.owner===admission.owner?.identity
     &&pendingDialog.pending===true&&pendingDialog.method===payload.method
     &&Number.isSafeInteger(pendingDialog.expiresAtMs)&&pendingDialog.expiresAtMs>nowMs
-    &&(pendingDialog.namespace===undefined||pendingDialog.namespace===admission.owner?.namespace)
+    &&pendingDialog.namespace===admission.owner?.namespace
     &&Number.isSafeInteger(pendingDialog.revision)&&pendingDialog.revision>=0
     &&OPAQUE_ID.test(pendingDialog.projectId??'')&&pendingDialog.projectId===admission.owner?.projectId;
   if(!dialogLive)return {ok:false,code:'stale_owner',wire:'stale_owner'};
@@ -656,7 +659,9 @@ export function acceptEventFrame({event,deviceId,serviceId,desktopPublicKey,devi
     // expectedStreamGeneration===undefined; otherwise the generation must be
     // strictly greater. Stale/duplicate resets are rejected (no bypass flag).
     if(expectedStreamGeneration!==undefined&&!(event.streamGeneration>expectedStreamGeneration))return {ok:false,code:'sequence_gap'};
-    return {ok:true,newExpectedPosition:{streamGeneration:event.streamGeneration,sequence:event.sequence}};
+    // lastAcceptedPosition: the reset OCCUPIES its sequence; callers must feed
+    // sequence+1 as the next expected sequence (contract resetSequence).
+    return {ok:true,lastAcceptedPosition:{streamGeneration:event.streamGeneration,sequence:event.sequence}};
   }
   if(event.conversationId==='stream-reset')return {ok:false,code:'frame_invalid'};
   if(expectedStreamGeneration===undefined||expectedSequence===undefined)return {ok:false,code:'frame_context_required'};

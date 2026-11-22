@@ -1,6 +1,6 @@
 # Remote API v1 · 草案，未实现
 
-> 权威定义：`docs/contracts/remote-v1.json`（status `design-contract`）+ 参考验证器 `scripts/lib/remote-protocol-contract.mjs` + 31 项合成测试 `tests/remote-contract.test.mjs`。移动 client/凭据/事件/UI 设计稿见 `docs/design/`（均 proposal）。本文件为早期叙述性草案，细节以合同为准。
+> 权威定义：`docs/contracts/remote-v1.json`（status `design-contract`）+ 参考验证器 `scripts/lib/remote-protocol-contract.mjs` + 33 项合成测试 `tests/remote-contract.test.mjs`。移动 client/凭据/事件/UI 设计稿见 `docs/design/`（均 proposal）。本文件为早期叙述性草案，细节以合同为准。
 
 协议名 pi-gui-remote，拟定 major 1。M-1 不发真实网络请求，desktop protocol 为 null（未实现），不得把 null 当兼容。与桌面 main af0432a0bc3b04c717a63ede3cc457e859401833 协调；未来独立桌面分支/commit/集成报告入控制层。
 

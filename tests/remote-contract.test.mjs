@@ -324,7 +324,7 @@ test('event frames carry generation/cursor/signature, per-event scopes and close
   assert.equal(validateEventEnvelope({...reset,conversationId:'conversation_12345678'}),false);
   assert.equal(validateEventEnvelope({...reset,payload:{reason:'unexpected'}}),false);
   // reset establishes the new expected position; not subject to prior sequence
-  assert.equal(acceptEventFrame({event:reset,deviceId:'device_abc12345',serviceId:SERVICE_ID,desktopPublicKey:desktop.publicKeyRaw,deviceScopes:['sessions.read']}).newExpectedPosition.streamGeneration,1);
+  assert.equal(acceptEventFrame({event:reset,deviceId:'device_abc12345',serviceId:SERVICE_ID,desktopPublicKey:desktop.publicKeyRaw,deviceScopes:['sessions.read']}).lastAcceptedPosition.streamGeneration,1);
   // 'stream-reset' reserved in ordinary frames (signature verified over its own conversationId first)
   const badReset={...base,conversationId:'stream-reset'};
   badReset.frameSignature=sign(null,Buffer.from(buildEventFrameMessage(badReset,'device_abc12345',SERVICE_ID),'utf8'),desktop.privateKey).toString('base64url');
@@ -411,7 +411,7 @@ test('approval settlement resolves and consumes a live Pi dialog exactly once',(
   const ts=Date.now().toString();
   const respond=(method='confirm',decision='allow',value)=>signedRequest(request('approvals.respond',`/remote/v1/conversations/conversation_12345678/approvals/${reqId}/respond`,{method,decision,...(value===undefined?{}:{value})},{ownerRevision:5}),pair,Buffer.alloc(32,14).toString('base64url'),ts);
   const owner={current:true,revision:5,epoch:9,namespace:'runtime',identity:'rt-1',projectId:'project_12345678',conversationId:'conversation_12345678',dialogId:reqId};
-  const dialog={requestId:reqId,owner:'rt-1',pending:true,method:'confirm',expiresAtMs:Date.now()+60000,revision:0,projectId:'project_12345678'};
+  const dialog={requestId:reqId,owner:'rt-1',pending:true,method:'confirm',expiresAtMs:Date.now()+60000,revision:0,projectId:'project_12345678',namespace:'runtime'};
   let consumed=0;
   const base={device,serviceId:SERVICE_ID,serviceFingerprint:SERVICE_FP,deviceResolveOwner:()=>owner,pendingDialog:dialog,consumeDialog:({requestId,owner,method,decision,value})=>{consumed++;assert.equal(requestId,reqId);assert.equal(owner,'rt-1');assert.equal(method,'confirm');assert.equal(decision,'allow');const ok=consumed===1;if(ok)dialog.pending=false;return ok;},nowMs:Number(ts),consumeNonce:()=>true};
   const ok=settleApproval({...base,request:respond()});
@@ -419,7 +419,7 @@ test('approval settlement resolves and consumes a live Pi dialog exactly once',(
   // duplicate settlement: dialog already consumed -> second consume returns false
   assert.equal(settleApproval({...base,request:respond()}).code,'stale_owner');
   // wrong method vs authoritative dialog, stale owner, non-pending, option not offered
-  const selectDialog=options=>({requestId:reqId,owner:'rt-1',pending:true,method:'select',expiresAtMs:Date.now()+60000,revision:0,projectId:'project_12345678',options});
+  const selectDialog=options=>({requestId:reqId,owner:'rt-1',pending:true,method:'select',expiresAtMs:Date.now()+60000,revision:0,projectId:'project_12345678',namespace:'runtime',options});
   assert.equal(settleApproval({...base,request:respond('select','answer','opt_xxx000'),pendingDialog:selectDialog([{optionId:'opt_aaa000',label:'A'}])}).code,'payload_invalid');
   // bare display label is never accepted as an answer
   assert.equal(settleApproval({...base,request:respond('select','answer','Label text'),pendingDialog:selectDialog([{optionId:'opt_xxx000',label:'Label text'}])}).code,'payload_invalid');
@@ -558,22 +558,22 @@ test('reset occupies its sequence; next frame is reset.sequence+1, no freshSubsc
   const pub=desktop.publicKeyRaw;
   // fresh subscribe accepts reset at any generation
   const r1=acceptEventFrame({event:signFrame(mk(7,3)),deviceId:'device_abc12345',serviceId:'svc-1',desktopPublicKey:pub,deviceScopes:['sessions.read']});
-  assert.equal(r1.ok,true); assert.deepEqual(r1.newExpectedPosition,{streamGeneration:3,sequence:7});
+  assert.equal(r1.ok,true); assert.deepEqual(r1.lastAcceptedPosition,{streamGeneration:3,sequence:7});
   // established stream: a reset at a LOWER/equal generation is rejected (no bypass flag)
   assert.equal(acceptEventFrame({event:signFrame(mk(1,3)),deviceId:'device_abc12345',serviceId:'svc-1',desktopPublicKey:pub,deviceScopes:['sessions.read'],expectedStreamGeneration:5,expectedSequence:2}).code,'sequence_gap');
   // greater generation accepted; next ordinary frame expected at reset.sequence+1
   const r2=acceptEventFrame({event:signFrame(mk(9,6)),deviceId:'device_abc12345',serviceId:'svc-1',desktopPublicKey:pub,deviceScopes:['sessions.read'],expectedStreamGeneration:5,expectedSequence:2});
-  assert.equal(r2.ok,true); assert.deepEqual(r2.newExpectedPosition,{streamGeneration:6,sequence:9});
+  assert.equal(r2.ok,true); assert.deepEqual(r2.lastAcceptedPosition,{streamGeneration:6,sequence:9});
 });
 
 test('out-of-scope and network-path vectors per valueScanOutOfScope',()=>{
   const rsp=name=>({protocolVersion:1,requestId:id,operation:'projects.list',serverRevision:1,result:{projects:[{projectId:'project_12345678',displayName:name}],registryRevision:1}});
   // out-of-scope forms PASS the scan (documented)
-  for(const ok of ['C:relative','D:relative/x','~root/x','~user/dir','https://example.com','https://example.com/','https://h:8080/p','ftp://host','plain text']) {
+  for(const ok of ['C:relative','D:relative/x','~root/x','~user/dir','https://example.com','https://example.com/','https://h:8080','ftp://host','plain text']) {
     assert.equal(validateRemoteResponse(rsp(ok),'projects.list',id),true,`out-of-scope allowed: ${ok}`);
   }
-  // network-path shapes scanned scheme-agnostically -> REJECTED
-  for(const bad of ['https://example.com/x','smb://srv/share/x','//srv/dir','file:///etc/passwd','file:///C:/x','\\Windows\System32']) {
+  // network-path shapes scanned scheme-agnostically (incl :port/@userinfo) -> REJECTED
+  for(const bad of ['https://example.com/x','smb://srv/share/x','//srv/dir','//srv:8080/dir','smb://srv:9/share','https://user:pw@h/x','ftp://u@h/p','x=//h:9/s','file:///etc/passwd','file:///C:/x','\\Windows\System32']) {
     assert.equal(validateRemoteResponse(rsp(bad),'projects.list',id),false,`network path rejected: ${bad}`);
   }
 });
