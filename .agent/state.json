@@ -1,33 +1,42 @@
 {
   "schemaVersion": 2,
   "kind": "state",
-  "revision": 461,
-  "updatedAt": "2026-11-22T03:13:10.680Z",
+  "revision": 466,
+  "updatedAt": "2026-11-22T03:25:16.282Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "e43113c514fe5ab7e31a3633557d3ee12a8a51751a417e6f45d381e5e01eeb12",
+    "parentDigest": "911b7b2cec51521a0d1ac2eef5bb2a3e271d94adfe107608e62447ab16e9eebe",
     "phase": "M0",
     "currentTask": "M0-architecture",
     "branch": "agent/m-1-bootstrap",
     "checkpoint": {
-      "id": "v2-2026-11-22T03-13-10-680Z-360988d1-3fa0-417a-9329-8ceb0e6aa3f9",
-      "path": ".agent/checkpoints/v2-2026-11-22T03-13-10-680Z-360988d1-3fa0-417a-9329-8ceb0e6aa3f9.json",
-      "sha256": "386b044db853d34813432e9c043a7fb4947a3681e91a16bf809d166068ad27c0",
-      "authorityDigest": "b7d30a0d68bd166d9e211c22e23b4646e943d867b3ba1f86fa997ba8163377fd",
-      "at": "2026-11-22T03:13:10.680Z",
+      "id": "v2-2026-11-22T03-25-16-282Z-4e3e261f-a670-4409-b771-d73b3a54e75e",
+      "path": ".agent/checkpoints/v2-2026-11-22T03-25-16-282Z-4e3e261f-a670-4409-b771-d73b3a54e75e.json",
+      "sha256": "ea5206ffb10e6f22808ea7e3d0a1f769a15d9f4cf25213e6c370936d443bcad4",
+      "authorityDigest": "f7903b4fbf29ec7f783ac63cb4772890e211a42e31b316f6b31ac221ed731b62",
+      "at": "2026-11-22T03:25:16.282Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "eaae1f83a7c565dffc664e2fdc792d3badf3805b",
+        "commit": "dd6c1bfe87b8e88c70d68db4e868fcb21dc25a63",
         "dirty": [
           "M .agent/HANDOFF.md",
           " M .agent/control.json",
           " M .agent/state.json",
           " M .agent/tasks.json",
-          " M PROGRESS.md"
+          " M PROGRESS.md",
+          " M docs/acceptance/local-protocol-contract-output.txt",
+          " M docs/acceptance/local-protocol-contract.json",
+          " M docs/acceptance/local-unit-output.txt",
+          " M docs/acceptance/local-unit.json",
+          "?? .agent/checkpoints/v2-2026-11-22T03-24-31-860Z-eacd6859-15a9-4021-a13e-7ae64f721c94.json",
+          "?? .agent/checkpoints/v2-2026-11-22T03-24-33-134Z-a3cc46b6-7c04-4142-a2d6-3e3ce42f7a42.json",
+          "?? .agent/checkpoints/v2-2026-11-22T03-24-35-934Z-3ba45af6-4933-4f97-a70f-321572390329.json",
+          "?? .agent/checkpoints/v2-2026-11-22T03-24-36-805Z-cd89b029-44a5-40ef-8c05-f5e5b22379ff.json",
+          "?? .agent/checkpoints/v2-2026-11-22T03-25-15-288Z-f907bfec-a155-46a5-8099-43c6af3196d6.json"
         ]
       },
-      "sourceFingerprint": "2e6f4db5f9baf269bfc50edb7105ae7e58ae13264f777a3bb4c5f6ebedc38e18",
-      "note": "round-3 reviewers launched on hardened contract eaae1f8"
+      "sourceFingerprint": "ce7e65aeca954fa73f8c65ee6c64eab50610fb80757e2408f6e1ac5a5a36cd0d",
+      "note": "agent-task evidence M0-architecture"
     },
     "blockers": [
       "M-1 owner-waiver locked run 44906133898/1 failed before Pods install (NATIVE_DEPENDENCIES_REJECTED); a malformed local Gemfile hash was found and corrected, but the owner directed us not to retry. Candidate lock set is removed from the active repo and remains available only as ignored local artifact. M-1 remains blocked; no Simulator/UI/IPA result.",
@@ -255,11 +264,17 @@
         "role": "m0-r3-security-review",
         "status": "working",
         "sourceCommit": "eaae1f83a7c565dffc664e2fdc792d3badf3805b"
+      },
+      {
+        "taskId": "node:delegated-task:command%3Amcp%3A02869bb3-50d6-471c-b7e4-0c9110dc070f%3Adelegate-task%3A72d665f1-44d2-4634-a341-c28867b43c4a",
+        "role": "m0-r4-combined-functional-security-review",
+        "status": "working",
+        "sourceCommit": "dd6c1bfe87b8e88c70d68db4e868fcb21dc25a63"
       }
     ]
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "a762c67781bf77fb24a957c871e5637dfd5a7969a4b34609fc38ca8606f16b33"
+    "digest": "5e01a7ebd90f59e1f0c5ac932c5bf7665b1016522ba05be8169c0794018e5a65"
   }
 }
