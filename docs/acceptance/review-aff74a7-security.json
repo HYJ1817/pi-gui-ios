@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 2,
+  "kind": "independent-security",
+  "taskId": "M0-architecture",
+  "commit": "aff74a7f66d2882189184550b0e19ce3949d7a47",
+  "sourceFingerprint": "f08e9dc98f3f45b4edf3fc71843db0861b3ef292dd1d93a4aa480f9b41847291",
+  "startedAt": "2026-11-22T12:52:00Z",
+  "finishedAt": "2026-11-22T12:52:00Z",
+  "passed": true,
+  "details": {
+    "receiptPath": "docs/acceptance/review-aff74a7-receipt.json",
+    "receiptSha256": "007f4d815fa35d86aeca8ac9a09cbf9da2ee9395292fa8aa2561607d66a1c3a5",
+    "scope": "Combined functional+security independent review of the M0 remote-protocol contract, validator and design docs on aff74a7."
+  }
+}

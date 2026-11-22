@@ -1,11 +1,11 @@
 {
   "schemaVersion": 2,
   "kind": "tasks",
-  "revision": 536,
-  "updatedAt": "2026-11-22T04:41:50.826Z",
+  "revision": 548,
+  "updatedAt": "2026-11-22T04:47:29.810Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "7aec4ca05116c81071d8fbab250df77d391c388d37d0c9892c6e7dea9818c912",
+    "parentDigest": "124be2c70bb738f2b151086d2070b51a5a33d423bdd05ac513c3f9a329f71580",
     "tasks": [
       {
         "id": "M-1-infrastructure",
@@ -730,6 +730,38 @@
             "sourceFingerprint": "f08e9dc98f3f45b4edf3fc71843db0861b3ef292dd1d93a4aa480f9b41847291",
             "commit": "aff74a7f66d2882189184550b0e19ce3949d7a47",
             "at": "2026-11-22T04:41:35.132Z"
+          },
+          {
+            "kind": "unit",
+            "path": "docs/acceptance/local-unit.json",
+            "sha256": "9dcee341c5183a18ddb1c0bd520d9f27ab822c0ce30b0704ee21aa2c3cd14290",
+            "sourceFingerprint": "5416a7cfbe503a1cac4782bb2eddc20eefc9dfd82d9ec29efabc6b6a94e6a178",
+            "commit": "b56184849eb14f09c2ad9622faf232aabdfc23ba",
+            "at": "2026-11-22T04:46:26.628Z"
+          },
+          {
+            "kind": "protocol-contract",
+            "path": "docs/acceptance/local-protocol-contract.json",
+            "sha256": "62162992c29a0f5b5b93ed91ac898fb72d17098c4658e5161e62646c84903521",
+            "sourceFingerprint": "5416a7cfbe503a1cac4782bb2eddc20eefc9dfd82d9ec29efabc6b6a94e6a178",
+            "commit": "b56184849eb14f09c2ad9622faf232aabdfc23ba",
+            "at": "2026-11-22T04:46:27.497Z"
+          },
+          {
+            "kind": "independent-review",
+            "path": "docs/acceptance/review-aff74a7-review.json",
+            "sha256": "bd71351d9e6efc8444bfe7423803e6205f2dabecd99d304c8f1570768b151bc3",
+            "sourceFingerprint": "f08e9dc98f3f45b4edf3fc71843db0861b3ef292dd1d93a4aa480f9b41847291",
+            "commit": "aff74a7f66d2882189184550b0e19ce3949d7a47",
+            "at": "2026-11-22T04:47:28.914Z"
+          },
+          {
+            "kind": "independent-security",
+            "path": "docs/acceptance/review-aff74a7-security.json",
+            "sha256": "4dca43dcb1e0ab9d5582fba060e495e7e19143d5eff5d414737f187a95c064ed",
+            "sourceFingerprint": "f08e9dc98f3f45b4edf3fc71843db0861b3ef292dd1d93a4aa480f9b41847291",
+            "commit": "aff74a7f66d2882189184550b0e19ce3949d7a47",
+            "at": "2026-11-22T04:47:29.765Z"
           }
         ],
         "updatedAt": "2026-11-21T13:47:29.393Z"
@@ -849,6 +881,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "634684ea443814e01aeabed0a44e8bcc3098566a9484ab121f701d116eafce4e"
+    "digest": "4fdf6676953412c9f8141c1213d032040f8e45ac95aafe4df3fb79bc4e4a8240"
   }
 }
