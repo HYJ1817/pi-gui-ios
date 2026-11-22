@@ -1,8 +1,8 @@
 {
   "schemaVersion": 2,
   "kind": "control",
-  "revision": 446,
-  "updatedAt": "2026-11-22T02:46:46.423Z",
+  "revision": 448,
+  "updatedAt": "2026-11-22T02:57:14.417Z",
   "data": {
     "phase": "M0",
     "currentTask": "M0-architecture",
@@ -807,14 +807,14 @@
       }
     ],
     "checkpoint": {
-      "id": "v2-2026-11-22T02-46-46-423Z-745ffa01-f7df-42eb-a487-ae3a679736c0",
-      "path": ".agent/checkpoints/v2-2026-11-22T02-46-46-423Z-745ffa01-f7df-42eb-a487-ae3a679736c0.json",
-      "sha256": "fe20e25f84043df7ff725d951051a66e8d8aa035b6f7b5fedcd2629ad7a5e56e",
-      "authorityDigest": "69d0f5bae73a71eb4a62c534a0fd06e1a6d12137f26138eb3c44dc970b30172f",
-      "at": "2026-11-22T02:46:46.423Z",
+      "id": "v2-2026-11-22T02-57-14-417Z-dfa16ebc-e160-42c2-8cc6-b957b1a89668",
+      "path": ".agent/checkpoints/v2-2026-11-22T02-57-14-417Z-dfa16ebc-e160-42c2-8cc6-b957b1a89668.json",
+      "sha256": "e846c7b3e16170e3043daf99cdbf0969c832ab5cc05660cd5d2225367574e1d6",
+      "authorityDigest": "460212e6a1beb23e2f754c2f3860920bab80a7acf63c09c029ab1a0dde823060",
+      "at": "2026-11-22T02:57:14.417Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "df54261275bd88c9d6ecd4c167a6fe19c0382bb0",
+        "commit": "04aa9121f1f590370e1d4a15c856e15c0a6294a3",
         "dirty": [
           "M .agent/HANDOFF.md",
           " M .agent/control.json",
@@ -824,7 +824,7 @@
         ]
       },
       "sourceFingerprint": "8d3a4bb43fd7eca0a76e5a1c1cb8bc917cba14ba3b5dd0f47cf516e22fd0f006",
-      "note": "registered M0 independent review delegates (working)"
+      "note": "xingchiapi 503 failed; retried reviews on codex gpt-6.2-sol"
     },
     "nextAction": "真机/SideStore 验收统一移至全部软件实现、自动化/Simulator/IPA/审查完成后的最终一次清单，由用户亲自操作；中途不请求设备、不等待设备。Agent 对普通问题自主排障，三轮同类失败后记录 deferred/unverified 并继续无依赖工作。M-1 基础验证保持 blocked；M0 design 已先行，继续收敛协议/安全合同，不启用远程入口。",
     "delegates": [
@@ -897,19 +897,31 @@
       {
         "taskId": "node:delegated-task:command%3Amcp%3A02869bb3-50d6-471c-b7e4-0c9110dc070f%3Adelegate-task%3A8661e131-adbc-4d68-bc90-acaa0597670b",
         "role": "m0-remote-contract-functional-review",
-        "status": "working",
+        "status": "failed",
         "sourceCommit": "df54261275bd88c9d6ecd4c167a6fe19c0382bb0"
       },
       {
         "taskId": "node:delegated-task:command%3Amcp%3A02869bb3-50d6-471c-b7e4-0c9110dc070f%3Adelegate-task%3A8ee3a563-4441-4859-b8dd-50a8ee2f5e2c",
         "role": "m0-remote-contract-security-review",
-        "status": "working",
+        "status": "failed",
         "sourceCommit": "df54261275bd88c9d6ecd4c167a6fe19c0382bb0"
+      },
+      {
+        "taskId": "node:delegated-task:command%3Amcp%3A02869bb3-50d6-471c-b7e4-0c9110dc070f%3Adelegate-task%3A8d1bd127-dc5a-4046-a638-a0bacccc1b10",
+        "role": "m0-remote-contract-functional-review-codex",
+        "status": "working",
+        "sourceCommit": "04aa9121f1f590370e1d4a15c856e15c0a6294a3"
+      },
+      {
+        "taskId": "node:delegated-task:command%3Amcp%3A02869bb3-50d6-471c-b7e4-0c9110dc070f%3Adelegate-task%3A0d6b9aa1-8081-4e12-a4e3-80256552533f",
+        "role": "m0-remote-contract-security-review-codex",
+        "status": "working",
+        "sourceCommit": "04aa9121f1f590370e1d4a15c856e15c0a6294a3"
       }
     ]
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "7f2ad52a74fb8031157097ce8d1009e1db82a74d317d3ef79879b06ed6a74d6d"
+    "digest": "a7196d823b94a7a719424175c8b0a89694733b1c95c2598246c2f9eb867852f9"
   }
 }
