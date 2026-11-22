@@ -120,6 +120,7 @@ function validateSignatureHeaders(input,expectedBodyHash,method,eventStream=fals
   if(headers.accept!==undefined&&headers.accept!==(eventStream?'text/event-stream':'application/json'))return {ok:false,code:'signature_headers_invalid'};
   if(!OPAQUE_ID.test(headers['x-pi-remote-device'])||!UUID.test(headers['x-pi-remote-request-id'])||!/^[0-9]{13}$/.test(headers['x-pi-remote-timestamp'])
     ||!decodeB64url(headers['x-pi-remote-nonce'],32)||!decodeB64url(headers['x-pi-remote-signature'],64)
+    ||!/^[0-9]+$/.test(headers['x-pi-remote-epoch']??'')
     ||!HEX_SHA256.test(headers['x-pi-remote-body-sha256'])||headers['x-pi-remote-body-sha256']!==expectedBodyHash)return {ok:false,code:'signature_headers_invalid'};
   return {ok:true,headers};
 }
@@ -180,7 +181,7 @@ export function buildPairProofMessage(body) {
   delete schema.properties.proofSignature;
   const {proofSignature,...proofFields}=body;
   if(!validateSchema(proofFields,schema)||hasForbiddenKey(proofFields))return null;
-  return ['remote-v1-pair',proofFields.pairingSessionId,proofFields.pairCode,proofFields.deviceName,proofFields.devicePublicKey,proofFields.clientNonce,proofFields.serviceFingerprint].join('\n');
+  return ['remote-v1-pair',proofFields.pairingSessionId,proofFields.pairCode,proofFields.deviceName,proofFields.devicePublicKey,proofFields.clientNonce,proofFields.serviceFingerprint,canonicalJson(proofFields.requestedScopes)].join('\n');
 }
 export function verifyPairProof(body) {
   const message=buildPairProofMessage(body);
@@ -191,12 +192,12 @@ export function buildPairProofFields(body) {
   const {proofSignature,...fields}=body;
   return fields;
 }
-export function buildSignatureMessage({protocolVersion,deviceId,serviceId,requestId,method,path,query={},timestamp,nonce,bodySha256}) {
+export function buildSignatureMessage({protocolVersion,deviceId,serviceId,replayEpoch,requestId,method,path,query={},timestamp,nonce,bodySha256}) {
   if(!isRecord(query)||Object.values(query).some(value=>typeof value!=='string'))return null;
-  if(!OPAQUE_ID.test(deviceId??'')||typeof serviceId!=='string'||serviceId.length===0)return null;
+  if(!OPAQUE_ID.test(deviceId??'')||typeof serviceId!=='string'||serviceId.length===0||!/^[0-9]+$/.test(String(replayEpoch??'')))return null;
   const canonicalQuery=Object.keys(query).sort().map(key=>`${encodeURIComponent(key)}=${encodeURIComponent(query[key])}`).join('&');
   const target=canonicalQuery?`${path}?${canonicalQuery}`:path;
-  return [String(protocolVersion),deviceId,serviceId,requestId,String(method).toUpperCase(),target,timestamp,nonce,bodySha256].join('\n');
+  return [String(protocolVersion),deviceId,serviceId,String(replayEpoch),requestId,String(method).toUpperCase(),target,timestamp,nonce,bodySha256].join('\n');
 }
 const PRE_AUTHENTICATION_CODES=new Set(['route_mismatch','pair_headers_invalid','signature_headers_missing','signature_headers_invalid','get_body_forbidden','body_bytes_required','body_parse_mismatch','request_too_large','request_invalid','query_invalid','operation_route_mismatch','envelope_invalid','cursor_invalid','replay_store_unavailable','signature_expired','signature_invalid','device_identity_mismatch','device_inactive']);
 export function wireErrorCode(internal) {
@@ -223,18 +224,23 @@ export function verifyRemoteSignature({request,device,serviceId,nowMs=Date.now()
   const headers=Object.fromEntries(Object.entries(request.headers).map(([key,value])=>[key.toLowerCase(),value]));
   if(device.deviceId!==headers['x-pi-remote-device'])return {ok:false,code:'device_identity_mismatch',wire:'unauthorized'};
   if(!device.grantedScopes.every(scope=>REMOTE_V1.scopeVocabulary.includes(scope)))return {ok:false,code:'device_grants_invalid',wire:'unauthorized'};
+  // device expiry + replay epoch bound into the signed request
+  const expiryMs=Date.parse(device.expiresAt??'');
+  if(Number.isFinite(expiryMs)&&expiryMs<=nowMs)return {ok:false,code:'device_inactive',wire:'unauthorized'};
+  if(Number.isSafeInteger(device.replayEpoch)&&Number(headers['x-pi-remote-epoch'])!==device.replayEpoch)return {ok:false,code:'signature_invalid',wire:'unauthorized'};
   if(!Number.isSafeInteger(nowMs))return {ok:false,code:'signature_expired',wire:'unauthorized'};
   const timestamp=Number(headers['x-pi-remote-timestamp']);
   if(!Number.isSafeInteger(timestamp)||Math.abs(nowMs-timestamp)>REMOTE_V1.signedRequest.maximumClockSkewSeconds*1000)return {ok:false,code:'signature_expired',wire:'unauthorized'};
-  const message=buildSignatureMessage({protocolVersion:REMOTE_V1.contractVersion,deviceId:device.deviceId,serviceId,requestId:headers['x-pi-remote-request-id'],method:request.method,path:request.path,query:request.query??{},timestamp:headers['x-pi-remote-timestamp'],nonce:headers['x-pi-remote-nonce'],bodySha256:headers['x-pi-remote-body-sha256']});
+  const message=buildSignatureMessage({protocolVersion:REMOTE_V1.contractVersion,deviceId:device.deviceId,serviceId,replayEpoch:headers['x-pi-remote-epoch'],requestId:headers['x-pi-remote-request-id'],method:request.method,path:request.path,query:request.query??{},timestamp:headers['x-pi-remote-timestamp'],nonce:headers['x-pi-remote-nonce'],bodySha256:headers['x-pi-remote-body-sha256']});
   if(!message||!verifyEd25519(device.devicePublicKey,headers['x-pi-remote-signature'],message))return {ok:false,code:'signature_invalid',wire:'unauthorized'};
+  // authenticated-stage failures keep their wire code; stage boundary documented.
   const requiredScope=shape.scope ?? REMOTE_V1.eventStream.scope;
-  if(!device.grantedScopes.includes(requiredScope))return {ok:false,code:'scope_denied',wire:'scope_denied'};
+  if(!device.grantedScopes.includes(requiredScope))return {ok:false,stage:'authenticated',code:'scope_denied',wire:'scope_denied'};
   if(typeof consumeNonce!=='function')return {ok:false,code:'replay_store_unavailable',wire:'unauthorized'};
   let consumed;
   try { consumed=consumeNonce(device.deviceId,headers['x-pi-remote-nonce'],timestamp); } catch { return {ok:false,code:'replay_store_unavailable',wire:'unauthorized'}; }
   if(consumed&&typeof consumed.then==='function')return {ok:false,code:'replay_store_unavailable',wire:'unauthorized'};
-  if(consumed!==true)return {ok:false,code:'request_replayed',wire:'replay_rejected'};
+  if(consumed!==true)return {ok:false,stage:'authenticated',code:'request_replayed',wire:'replay_rejected'};
   return {ok:true,operation:shape.operation,scope:requiredScope,requestId:shape.requestId,deviceId:device.deviceId,pathParameters:shape.pathParameters,cursor:shape.cursor};
 }
 
@@ -260,7 +266,7 @@ export function verifyPairExchangeProof(request,expectedServiceFingerprint) {
   if(!verifyPairProof(request.body))return {ok:false,code:'pair_proof_invalid'};
   return {ok:true,code:'device_proof_valid_not_authorized'};
 }
-export function authorizePairExchange({request,expectedServiceFingerprint,peerId,reservePairBudget,validatePairingSession,recordPairAttempt,confirmLocally,consumePairingCodeAndRegisterDevice,grantedScopes,deviceId,serverNonce,expiresAt,desktopPrivateKey,nowMs=Date.now()}) {
+export function authorizePairExchange({request,expectedServiceFingerprint,peerId,reservePairBudget,validatePairingSession,recordPairAttempt,verifyPairCode,confirmLocally,consumePairingCodeAndRegisterDevice,grantedScopes,deviceId,serverNonce,expiresAt,desktopPrivateKey,nowMs=Date.now()}) {
   const shape=validatePairExchange(request);if(!shape.ok)return shape;
   if(request.body.serviceFingerprint!==expectedServiceFingerprint)return {ok:false,code:'service_fingerprint_mismatch'};
   // Reserve peer + service budget BEFORE any session/code lookup, using a
@@ -270,18 +276,23 @@ export function authorizePairExchange({request,expectedServiceFingerprint,peerId
   let budget;try {budget=reservePairBudget({peerId});}catch{return {ok:false,code:'pair_rate_limiter_unavailable'};}
   if(budget&&typeof budget.then==='function')return {ok:false,code:'pair_rate_limiter_unavailable'};
   if(budget!==true)return {ok:false,code:'pair_rate_limited'};
-  // Validate the live pairing session and code BEFORE any local confirmation prompt.
+  // Validate the live session, charge the attempt, then verify the code — the
+  // attempt is consumed even on a wrong code so guessing exhausts the session budget.
   if(typeof validatePairingSession!=='function')return {ok:false,code:'pair_store_unavailable'};
   let liveSession;
-  try { liveSession=validatePairingSession({pairingSessionId:request.body.pairingSessionId,pairCode:request.body.pairCode}); } catch { return {ok:false,code:'pair_store_unavailable'}; }
+  try { liveSession=validatePairingSession({pairingSessionId:request.body.pairingSessionId}); } catch { return {ok:false,code:'pair_store_unavailable'}; }
   if(liveSession&&typeof liveSession.then==='function')return {ok:false,code:'pair_store_unavailable'};
   if(liveSession!==true)return {ok:false,code:'pairing_session_invalid'};
-  // Charge the attempt against the now-live session (wrong guesses consume budget).
   if(typeof recordPairAttempt!=='function'||typeof request.body.pairingSessionId!=='string')return {ok:false,code:'pair_rate_limiter_unavailable'};
   const keyFingerprint=sha256(Buffer.from(request.body.devicePublicKey,'base64url'));
   let allowed;try {allowed=recordPairAttempt({peerId,pairingSessionId:request.body.pairingSessionId,deviceKeyFingerprint:keyFingerprint});}catch{return {ok:false,code:'pair_rate_limiter_unavailable'};}
   if(allowed&&typeof allowed.then==='function')return {ok:false,code:'pair_rate_limiter_unavailable'};
   if(allowed!==true)return {ok:false,code:'pair_rate_limited'};
+  // Verify the code AFTER the attempt is charged, still before confirmation.
+  if(typeof verifyPairCode!=='function')return {ok:false,code:'pair_store_unavailable'};
+  let codeOk;try {codeOk=verifyPairCode({pairingSessionId:request.body.pairingSessionId,pairCode:request.body.pairCode});}catch{return {ok:false,code:'pair_store_unavailable'};}
+  if(codeOk&&typeof codeOk.then==='function')return {ok:false,code:'pair_store_unavailable'};
+  if(codeOk!==true)return {ok:false,code:'pairing_rejected'};
   if(!verifyPairProof(request.body))return {ok:false,code:'pair_proof_invalid'};
   if(!Array.isArray(grantedScopes)||new Set(grantedScopes).size!==grantedScopes.length
     ||!['projects.read','sessions.read'].every(scope=>grantedScopes.includes(scope))
@@ -317,25 +328,24 @@ export function verifyPairExchangeResponse(response,desktopPublicKey,requestId,{
   if(!validatePairExchangeResponse(response)||!/^([A-Za-z0-9_-]{43})$/.test(requestId??''))return false;
   const expiryMs=Date.parse(response.expiresAt);
   if(!Number.isFinite(expiryMs)||!(Number.isSafeInteger(nowMs)&&expiryMs>nowMs))return false;
-  // Require a live outstanding exchange for the pinned service; a replayed
-  // valid response without outstanding state is rejected.
-  if(outstandingExchange!==undefined) {
-    if(!isRecord(outstandingExchange)||outstandingExchange.clientNonce!==requestId)return false;
-    if(Array.isArray(outstandingExchange.approvedScopes)
-      &&!(Array.isArray(response.grantedScopes)
-        &&outstandingExchange.approvedScopes.length===response.grantedScopes.length
-        &&outstandingExchange.approvedScopes.every(scope=>response.grantedScopes.includes(scope))))return false;
-  }
+  // A live outstanding exchange for the pinned service is mandatory; a valid
+  // signed response presented without outstanding state is rejected, and a
+  // re-presentation after retirement is rejected by retireExchange.
+  if(!isRecord(outstandingExchange)||outstandingExchange.clientNonce!==requestId)return false;
+  // Compare the response scopes to the client's own outstanding requestedScopes
+  // (the only client-known expected set; the server cannot widen beyond approval).
+  if(!Array.isArray(outstandingExchange.requestedScopes))return false;
+  if(!(Array.isArray(response.grantedScopes)
+    &&outstandingExchange.requestedScopes.length===response.grantedScopes.length
+    &&outstandingExchange.requestedScopes.every(scope=>response.grantedScopes.includes(scope))))return false;
   const {serverSignature,...unsigned}=response;
   const message=['remote-v1-pair-response',requestId,canonicalJson(unsigned)].join('\n');
   if(!verifyEd25519(desktopPublicKey,serverSignature,message))return false;
   // Retire the outstanding exchange atomically so the response is single-use.
-  if(outstandingExchange!==undefined) {
-    if(typeof retireExchange!=='function')return false;
-    let retired;try {retired=retireExchange(outstandingExchange);}catch{return false;}
-    if(retired&&typeof retired.then==='function')return false;
-    if(retired!==true)return false;
-  }
+  if(typeof retireExchange!=='function')return false;
+  let retired;try {retired=retireExchange(outstandingExchange);}catch{return false;}
+  if(retired&&typeof retired.then==='function')return false;
+  if(retired!==true)return false;
   return true;
 }
 export function filterGrantedResources(items,device) {
@@ -349,16 +359,20 @@ export function authorizeRemoteOperation({request,device,serviceId,resolveOwner,
   // Grants derive from the authoritative device record, not caller input.
   if(!isRecord(device.grants))return {ok:false,code:'grant_store_unavailable',wire:'unauthorized'};
   const params=verification.pathParameters??{};
-  const resourceId=params.projectId??params.conversationId??null;
-  // Single admission transaction: device active+scope already verified; now
-  // recheck resource grant + full typed owner + revision atomically.
-  if(resourceId!==null&&device.grants[resourceId]!==true)return {ok:false,code:'unknown_resource',wire:'unknown_resource'};
-  if(typeof resolveOwner!=='function')return {ok:false,code:'stale_owner',wire:'unauthorized'};
+  // Single admission transaction: recheck resource grant + typed owner + revision.
+  if(typeof resolveOwner!=='function')return {ok:false,code:'stale_owner',wire:'stale_owner'};
   let owner;
   try { owner=resolveOwner({deviceId:device.deviceId,operation:verification.operation,pathParameters:params,ownerRevision:request.body?.ownerRevision}); } catch { return {ok:false,code:'stale_owner',wire:'stale_owner'}; }
   if(owner&&typeof owner.then==='function')return {ok:false,code:'stale_owner',wire:'stale_owner'};
-  // Full typed owner must be proven from desktop state, not a bare flag.
-  if(!isRecord(owner)||owner.current!==true||!['classic','runtime'].includes(owner.namespace)||typeof owner.revision!=='number'||!Number.isSafeInteger(owner.revision))return {ok:false,code:'stale_owner',wire:'stale_owner'};
+  // Full typed owner must be proven from desktop state and name its project.
+  if(!isRecord(owner)||owner.current!==true||!['classic','runtime'].includes(owner.namespace)
+    ||typeof owner.identity!=='string'||owner.identity.length===0
+    ||!OPAQUE_ID.test(owner.projectId??''))
+    return {ok:false,code:'stale_owner',wire:'stale_owner'};
+  // The grant is checked against the AUTHORITATIVE project the owner resolved to,
+  // so a valid conversation id in an ungranted project is still rejected (IDOR).
+  if(device.grants[owner.projectId]!==true)return {ok:false,code:'unknown_resource',wire:'unknown_resource'};
+  if(owner.revision===undefined||!Number.isSafeInteger(owner.revision))return {ok:false,code:'stale_owner',wire:'stale_owner'};
   if(request.body?.ownerRevision!==undefined&&owner.revision!==request.body.ownerRevision)return {ok:false,code:'stale_revision',wire:'stale_revision'};
   return {...verification,owner};
 }
@@ -401,10 +415,13 @@ export function settleApproval({request,device,serviceId,deviceResolveOwner,pend
   const payload=request.body.payload,requestId=admission.pathParameters?.requestId;
   if(!isRecord(pendingDialog)||pendingDialog.requestId!==requestId||pendingDialog.owner!==admission.owner?.identity)return {ok:false,code:'stale_owner',wire:'stale_owner'};
   if(pendingDialog.pending!==true||pendingDialog.method!==payload.method)return {ok:false,code:'stale_owner',wire:'stale_owner'};
-  if(payload.method==='select'&&(!Array.isArray(pendingDialog.options)||!pendingDialog.options.includes(payload.value)))return {ok:false,code:'payload_invalid',wire:'payload_invalid'};
+  if(Number.isFinite(pendingDialog.expiresAtMs)&&pendingDialog.expiresAtMs<=nowMs)return {ok:false,code:'stale_owner',wire:'stale_owner'};
+  if(payload.method==='select'&&(!Array.isArray(pendingDialog.options)||!pendingDialog.options.some(opt=>isRecord(opt)?opt.optionId===payload.value:opt===payload.value)))return {ok:false,code:'payload_invalid',wire:'payload_invalid'};
   if(typeof consumeDialog!=='function')return {ok:false,code:'stale_owner',wire:'stale_owner'};
+  // Single transaction: re-validate and consume exactly once with the full
+  // response tuple before relay to Pi.
   let consumed;
-  try { consumed=consumeDialog({requestId,owner:admission.owner.identity}); } catch { return {ok:false,code:'stale_owner',wire:'stale_owner'}; }
+  try { consumed=consumeDialog({requestId,owner:admission.owner.identity,method:payload.method,decision:payload.decision,value:payload.value}); } catch { return {ok:false,code:'stale_owner',wire:'stale_owner'}; }
   if(consumed&&typeof consumed.then==='function')return {ok:false,code:'stale_owner',wire:'stale_owner'};
   if(consumed!==true)return {ok:false,code:'stale_owner',wire:'stale_owner'};
   return {ok:true,operation:admission.operation,requestId:admission.requestId,deviceId:device.deviceId,owner:admission.owner};
@@ -412,12 +429,12 @@ export function settleApproval({request,device,serviceId,deviceResolveOwner,pend
 export function requiredEventScope(eventName) {
   return REMOTE_V1.eventStream.perEventScopes?.[eventName] ?? null;
 }
-export function buildEventFrameMessage(event,deviceId) {
-  if(!isRecord(event)||!OPAQUE_ID.test(deviceId??''))return null;
+export function buildEventFrameMessage(event,deviceId,serviceId) {
+  if(!isRecord(event)||!OPAQUE_ID.test(deviceId??'')||typeof serviceId!=='string'||serviceId.length===0)return null;
   const payloadBytes=canonicalJson(event.payload);
   if(payloadBytes===null)return null;
   const payloadDigest=sha256(Buffer.from(payloadBytes,'utf8'));
-  return [String(REMOTE_V1.contractVersion),deviceId,String(event.streamGeneration),String(event.sequence),String(event.conversationId),String(event.ownerRevision),event.cursor,event.event,payloadDigest].join('\n');
+  return [String(REMOTE_V1.contractVersion),deviceId,serviceId,String(event.streamGeneration),String(event.sequence),String(event.conversationId),String(event.ownerRevision),event.cursor,event.event,payloadDigest].join('\n');
 }
 // Structural validity only — necessary but NOT sufficient for delivery.
 export function validateEventEnvelope(event) {
@@ -431,15 +448,24 @@ export function validateEventEnvelope(event) {
   return true;
 }
 // Full acceptance: pinned service key + authenticated device + scope + expected stream position.
-export function acceptEventFrame({event,deviceId,desktopPublicKey,deviceScopes,expectedStreamGeneration,expectedSequence}) {
+// Ordinary frames require the expected (generation, sequence); a 'reset' frame
+// establishes a new expected position and is not subject to a prior check.
+export function acceptEventFrame({event,deviceId,serviceId,desktopPublicKey,deviceScopes,expectedStreamGeneration,expectedSequence,authorizeResource}) {
   if(!validateEventEnvelope(event))return {ok:false,code:'frame_invalid'};
-  if(typeof desktopPublicKey!=='string'||!OPAQUE_ID.test(deviceId??''))return {ok:false,code:'frame_context_required'};
-  const message=buildEventFrameMessage(event,deviceId);
+  if(typeof desktopPublicKey!=='string'||!OPAQUE_ID.test(deviceId??'')||typeof serviceId!=='string'||serviceId.length===0)return {ok:false,code:'frame_context_required'};
+  const message=buildEventFrameMessage(event,deviceId,serviceId);
   if(!message||!verifyEd25519(desktopPublicKey,event.frameSignature,message))return {ok:false,code:'frame_signature_invalid'};
   const requiredScope=requiredEventScope(event.event);
   if(!Array.isArray(deviceScopes)||!deviceScopes.includes(requiredScope))return {ok:false,code:'scope_denied'};
-  if(expectedStreamGeneration!==undefined&&event.streamGeneration!==expectedStreamGeneration)return {ok:false,code:'sequence_gap'};
-  if(expectedSequence!==undefined&&event.sequence!==expectedSequence)return {ok:false,code:'sequence_gap'};
+  if(event.event==='reset') {
+    if(event.conversationId!=='stream-reset')return {ok:false,code:'frame_invalid'};
+    return {ok:true,newExpectedPosition:{streamGeneration:event.streamGeneration,sequence:event.sequence}};
+  }
+  if(expectedStreamGeneration===undefined||expectedSequence===undefined)return {ok:false,code:'frame_context_required'};
+  if(event.streamGeneration!==expectedStreamGeneration||event.sequence!==expectedSequence)return {ok:false,code:'sequence_gap'};
+  // ordinary frames name a real conversation; resource must remain authorized
+  if(event.conversationId==='stream-reset')return {ok:false,code:'frame_invalid'};
+  if(typeof authorizeResource==='function'&&authorizeResource(event.conversationId)!==true)return {ok:false,code:'unknown_resource'};
   return {ok:true};
 }
 export function validateApprovalPayload(payload) {
