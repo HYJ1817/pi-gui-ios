@@ -1,45 +1,33 @@
 {
   "schemaVersion": 2,
   "kind": "state",
-  "revision": 444,
-  "updatedAt": "2026-11-22T02:44:40.427Z",
+  "revision": 446,
+  "updatedAt": "2026-11-22T02:46:46.423Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "bddde97ebb6e7d3026f57f1f2b937d5e6e09b946bf86791b25d5495e4251f7ba",
+    "parentDigest": "7f2ad52a74fb8031157097ce8d1009e1db82a74d317d3ef79879b06ed6a74d6d",
     "phase": "M0",
     "currentTask": "M0-architecture",
     "branch": "agent/m-1-bootstrap",
     "checkpoint": {
-      "id": "v2-2026-11-22T02-44-40-427Z-4d05db3b-69a2-4e47-af9e-489aaaad7802",
-      "path": ".agent/checkpoints/v2-2026-11-22T02-44-40-427Z-4d05db3b-69a2-4e47-af9e-489aaaad7802.json",
-      "sha256": "e9e68f080423386b26d1987ed3b0b9a2ad59d5e4d39e826e55fd6862e688a885",
-      "authorityDigest": "1dd3582bfda105fc5c10f34b0e9ac24ac767a8df028529500e765b2c4bf41347",
-      "at": "2026-11-22T02:44:40.427Z",
+      "id": "v2-2026-11-22T02-46-46-423Z-745ffa01-f7df-42eb-a487-ae3a679736c0",
+      "path": ".agent/checkpoints/v2-2026-11-22T02-46-46-423Z-745ffa01-f7df-42eb-a487-ae3a679736c0.json",
+      "sha256": "fe20e25f84043df7ff725d951051a66e8d8aa035b6f7b5fedcd2629ad7a5e56e",
+      "authorityDigest": "69d0f5bae73a71eb4a62c534a0fd06e1a6d12137f26138eb3c44dc970b30172f",
+      "at": "2026-11-22T02:46:46.423Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "2a13a1d4dd5b6d92ba933427599449c792b542c0",
+        "commit": "df54261275bd88c9d6ecd4c167a6fe19c0382bb0",
         "dirty": [
           "M .agent/HANDOFF.md",
           " M .agent/control.json",
           " M .agent/state.json",
           " M .agent/tasks.json",
-          " M PROGRESS.md",
-          " M docs/acceptance/local-protocol-contract-output.txt",
-          " M docs/acceptance/local-protocol-contract.json",
-          " M docs/acceptance/local-unit-output.txt",
-          " M docs/acceptance/local-unit.json",
-          " M docs/acceptance/t3-vendor-inspection.json",
-          " M docs/contracts/remote-v1.json",
-          " M tests/remote-contract.test.mjs",
-          "?? .agent/checkpoints/v2-2026-11-22T02-42-03-094Z-d11f5321-1365-4858-b1aa-7ec92d41e7e1.json",
-          "?? .agent/checkpoints/v2-2026-11-22T02-42-50-659Z-c3050903-d317-4e5f-8038-715497740e16.json",
-          "?? .agent/checkpoints/v2-2026-11-22T02-43-48-941Z-ff9e25b1-c501-461d-b5a2-2d5cf4bef561.json",
-          "?? .agent/checkpoints/v2-2026-11-22T02-44-37-239Z-85975c3f-b662-480d-8bee-96a39f08f219.json",
-          "?? .agent/checkpoints/v2-2026-11-22T02-44-39-615Z-e05d8d41-f7a2-4b13-80f2-baeeb9118d1d.json"
+          " M PROGRESS.md"
         ]
       },
       "sourceFingerprint": "8d3a4bb43fd7eca0a76e5a1c1cb8bc917cba14ba3b5dd0f47cf516e22fd0f006",
-      "note": "agent-task evidence M0-architecture"
+      "note": "registered M0 independent review delegates (working)"
     },
     "blockers": [
       "M-1 owner-waiver locked run 44906133898/1 failed before Pods install (NATIVE_DEPENDENCIES_REJECTED); a malformed local Gemfile hash was found and corrected, but the owner directed us not to retry. Candidate lock set is removed from the active repo and remains available only as ignored local artifact. M-1 remains blocked; no Simulator/UI/IPA result.",
@@ -219,11 +207,23 @@
         "role": "fixed-header-vocabulary-and-private-diagnostics-security-review-and-handoff",
         "status": "completed",
         "sourceCommit": "ef2c3b77f2de2860e286a03c617d884537c344df"
+      },
+      {
+        "taskId": "node:delegated-task:command%3Amcp%3A02869bb3-50d6-471c-b7e4-0c9110dc070f%3Adelegate-task%3A8661e131-adbc-4d68-bc90-acaa0597670b",
+        "role": "m0-remote-contract-functional-review",
+        "status": "working",
+        "sourceCommit": "df54261275bd88c9d6ecd4c167a6fe19c0382bb0"
+      },
+      {
+        "taskId": "node:delegated-task:command%3Amcp%3A02869bb3-50d6-471c-b7e4-0c9110dc070f%3Adelegate-task%3A8ee3a563-4441-4859-b8dd-50a8ee2f5e2c",
+        "role": "m0-remote-contract-security-review",
+        "status": "working",
+        "sourceCommit": "df54261275bd88c9d6ecd4c167a6fe19c0382bb0"
       }
     ]
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "a9984533df1f05c237ec1221189fc5756f8df9d1d3f9bc0d7fcba0c34e3ec3db"
+    "digest": "b6b1bf828a87f6e8bd09ff9a535c5af8dba6260812831bb7fcdedfe6cf207d9f"
   }
 }
