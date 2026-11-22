@@ -1,11 +1,11 @@
 {
   "schemaVersion": 2,
   "kind": "tasks",
-  "revision": 515,
-  "updatedAt": "2026-11-22T04:25:38.109Z",
+  "revision": 527,
+  "updatedAt": "2026-11-22T04:33:15.814Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "62da9d9612629baaf80cd267ded4607fc23efe0317d3a7bcc4f9defd94c3d3ce",
+    "parentDigest": "7ae4f895dc05495e115e3ba46609a15759654b574489f9fb88cad652182380b3",
     "tasks": [
       {
         "id": "M-1-infrastructure",
@@ -698,6 +698,22 @@
             "sourceFingerprint": "0793b8189efbc75f18a3bf66612186efd72b16b62720afee900197285840a0cd",
             "commit": "231b931cd02fc5e833ea8368158939299217cc04",
             "at": "2026-11-22T04:25:24.692Z"
+          },
+          {
+            "kind": "unit",
+            "path": "docs/acceptance/local-unit.json",
+            "sha256": "297df6ce38867db2360db8609bdb540577d38587414259dc6899df0d1db0e503",
+            "sourceFingerprint": "9ae0244435de8bb66dd89fa34d3865e93c2ec1f9fa2cf643cd7cc5a762a06335",
+            "commit": "70fb91b4e14df2a81d63c88a8e47787e8915faca",
+            "at": "2026-11-22T04:33:03.593Z"
+          },
+          {
+            "kind": "protocol-contract",
+            "path": "docs/acceptance/local-protocol-contract.json",
+            "sha256": "d980ca273a03a0de46b54adc5d8d7eb2e805ce98ea17fa22e343b6feb427f782",
+            "sourceFingerprint": "9ae0244435de8bb66dd89fa34d3865e93c2ec1f9fa2cf643cd7cc5a762a06335",
+            "commit": "70fb91b4e14df2a81d63c88a8e47787e8915faca",
+            "at": "2026-11-22T04:33:04.562Z"
           }
         ],
         "updatedAt": "2026-11-21T13:47:29.393Z"
@@ -733,7 +749,16 @@
           "independent-review"
         ],
         "acceptance": "双设备、主题、辅助功能真实渲染验收",
-        "evidence": []
+        "evidence": [
+          {
+            "kind": "unit",
+            "path": "docs/acceptance/local-unit.json",
+            "sha256": "5a2e3c6caa84f4dbd56237bcfec87d7efe626613c39a513fcb4a5450522739d0",
+            "sourceFingerprint": "9ae0244435de8bb66dd89fa34d3865e93c2ec1f9fa2cf643cd7cc5a762a06335",
+            "commit": "70fb91b4e14df2a81d63c88a8e47787e8915faca",
+            "at": "2026-11-22T04:33:13.205Z"
+          }
+        ]
       },
       {
         "id": "M3-core",
@@ -808,6 +833,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "635d044bb014b821283c9b4d447d435e4f6ef933dcecc0bb31be45fa5a4c6b6d"
+    "digest": "97d4a559e2e5fc5d728536b7df280d20da4289f28ed8e40c01f7e17f04e68899"
   }
 }
