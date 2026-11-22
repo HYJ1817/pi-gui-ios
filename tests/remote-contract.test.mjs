@@ -565,3 +565,26 @@ test('reset occupies its sequence; next frame is reset.sequence+1, no freshSubsc
   const r2=acceptEventFrame({event:signFrame(mk(9,6)),deviceId:'device_abc12345',serviceId:'svc-1',desktopPublicKey:pub,deviceScopes:['sessions.read'],expectedStreamGeneration:5,expectedSequence:2});
   assert.equal(r2.ok,true); assert.deepEqual(r2.newExpectedPosition,{streamGeneration:6,sequence:9});
 });
+
+test('out-of-scope and network-path vectors per valueScanOutOfScope',()=>{
+  const rsp=name=>({protocolVersion:1,requestId:id,operation:'projects.list',serverRevision:1,result:{projects:[{projectId:'project_12345678',displayName:name}],registryRevision:1}});
+  // out-of-scope forms PASS the scan (documented)
+  for(const ok of ['C:relative','D:relative/x','~root/x','~user/dir','https://example.com','https://example.com/','https://h:8080/p','ftp://host','plain text']) {
+    assert.equal(validateRemoteResponse(rsp(ok),'projects.list',id),true,`out-of-scope allowed: ${ok}`);
+  }
+  // network-path shapes scanned scheme-agnostically -> REJECTED
+  for(const bad of ['https://example.com/x','smb://srv/share/x','//srv/dir','file:///etc/passwd','file:///C:/x','\\Windows\System32']) {
+    assert.equal(validateRemoteResponse(rsp(bad),'projects.list',id),false,`network path rejected: ${bad}`);
+  }
+});
+
+test('quoted-key credentials rejected in metadata AND transcript text',()=>{
+  const rsp=name=>({protocolVersion:1,requestId:id,operation:'projects.list',serverRevision:1,result:{projects:[{projectId:'project_12345678',displayName:name}],registryRevision:1}});
+  for(const bad of ['{"token":"abc12345"}','{"password":"hunter2"}',"'token': 'abc'",'token="v"','API_KEY="x"']) {
+    assert.equal(validateRemoteResponse(rsp(bad),'projects.list',id),false,`metadata cred rejected: ${bad}`);
+  }
+  const frame={protocolVersion:1,sequence:1,conversationId:'conversation_12345678',ownerRevision:1,streamGeneration:1,cursor:'cursor_aaaaaaaa',event:'message.append',payload:{messageId:'m_12345678',role:'assistant',text:'x'},frameSignature:'x'.repeat(86)};
+  for(const bad of ['{"token":"abc12345"}','token="abc"','sk-abcdef123456']) {
+    assert.equal(validateEventEnvelope({...frame,payload:{...frame.payload,text:bad}}),false,`transcript cred rejected: ${bad}`);
+  }
+});

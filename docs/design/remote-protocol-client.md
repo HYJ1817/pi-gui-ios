@@ -23,7 +23,7 @@ RemoteClient
 
 每次操作请求携带 `signedRequest.requiredHeaders` 的 7 个头（`x-pi-remote-device`, `x-pi-remote-epoch`, `x-pi-remote-request-id`, `x-pi-remote-timestamp`, `x-pi-remote-nonce`, `x-pi-remote-body-sha256`, `x-pi-remote-signature`），加固定 `content-type`/`accept`。签名消息 `signedRequest.signedMessage`（权威串）由 client 对 `METHOD + 已校验 rawTarget + timestamp + nonce + bodySha256` 做 Ed25519 签名（device 私钥）。
 
-client **不**自行构造 path：8 个 op 各有 `operation.route` 模板与 `ownerRequirement`；client 只填 opaque `projectId`/`conversationId`/`requestId`（`^[a-z0-9]+-[a-z0-9-]{6,}$`）与 query 闭集参数，其余字符一律拒绝。`requestId` 由 client 生成 UUID v4，签名并用于幂等 `(deviceId, requestId)`。
+client **不**自行构造 path：8 个 op 各有 `operation.method`+`operation.path` 模板与 `ownerRequirement`；client 只把 opaque `projectId`/`conversationId`/`requestId`（`^[A-Za-z0-9_-]{8,128}$`）填进 pathParameters，不接收自由 query，其余字符一律拒绝。`requestId` 由 client 生成 UUID v4，签名并用于幂等 `(deviceId, requestId)`。
 
 ## 响应信封
 
@@ -52,7 +52,7 @@ client 只接受 `responseEnvelope`：`{protocolVersion,requestId,operation,serv
 
 ## 配对 client
 
-`pair.exchange`（POST `/remote/v1/pair/exchange`，**唯一未认证**入口）只在桌面本地用户显式开启配对窗口后进行：`reservePairBudget → validatePairingSession → recordPairAttempt → verifyPairProof（设备 Ed25519 proof 绑定 code/displayName/deviceKey/nonce/serviceFp）→ verifyPairCode → confirmLocally → atomic 注册`。响应仅在 `outstandingExchange`（含 `serviceFingerprint`+`devicePublicKey`+nonce+精确 `requestedScopes==grantedScopes`+`replayEpoch`）原子核对后消费，单次退役。client 据此获得 `deviceId`、`grantedScopes`、**由注册事务分配的 `replayEpoch`（re-pair 会递增，不能硬编码为 1）**、pin 住的 `serviceFingerprint` 与桌面服务公钥；`replayEpoch` 在 `x-pi-remote-epoch` 里回显，直到下一次 re-pair。
+`pair.exchange`（POST `/remote/v1/pair/exchange`，**唯一未认证**入口）只在桌面本地用户显式开启配对窗口后进行：`reservePairBudget → validatePairingSession → recordPairAttempt → verifyPairProof（设备 Ed25519 proof 绑定 code/displayName/deviceKey/nonce/serviceFp）→ verifyPairCode → confirmLocally → atomic 注册`。响应仅在 `outstandingExchange`（含 `serviceFingerprint`+`devicePublicKey`+nonce+精确 `requestedScopes==grantedScopes`）原子核对后消费，单次退役；`replayEpoch` 不跟 outstanding 字段比对——它由签名响应的 canonical form 覆盖并经 `serverSignature` 验签绑定。client 据此获得 `deviceId`、`grantedScopes`、**由注册事务分配的 `replayEpoch`（re-pair 会递增，不能硬编码为 1）**、pin 住的 `serviceFingerprint` 与桌面服务公钥；`replayEpoch` 在 `x-pi-remote-epoch` 里回显，直到下一次 re-pair。
 
 ## 错误与安全姿态
 

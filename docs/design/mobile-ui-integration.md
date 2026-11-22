@@ -22,14 +22,14 @@ UI 只与**类型化 client API** 交互；不直接构造 HTTP、不知道 `PI_
 | 会话列表 | `sessions.list` | 项目下会话（`conversationId`,`active`,`title`） |
 | 会话详情/聊天 | `events.subscribe`（设备级，仅 `cursor` query）+ `runtime.snapshot` + `chat.send`/`chat.stop` | 消息流、运行态、cursor |
 | 待审批 | `approvals.list` + 事件 `approval.pending`/`approval.settled` | 待决对话框（`requestId,method,options`） |
-| 运行时创建 | `runtime.create` | 新会话的 `runtimeId`/`conversationId` |
+| 运行时创建 | `runtime.create` | 新会话的 `{conversationId, ownerRevision}` |
 
 ## 数据形状（UI 所见）
 
 - 项目：`{projectId, displayName, path?（投影后不含绝对路径）}` — 注意桌面投影已剔除敏感路径字段。
 - 会话：`{sessionId, displayName, updatedAt, projectId, activeConversations:[{conversationId}]}`（与 `sessions.list` result 一致；无 `revision` 字段，ownerRevision 在事件信封上）。
 - 消息：`{text, role, timestamp}`，转录文本 ≤ `maxSerializedJsonBytes=8192`（凭据扫描已过滤敏感值）。
-- 审批：`{requestId, method, label, options:[{optionId,label}]}`；respond 只回 `{decision:allow/deny/cancel | optionId}`。
+- 审批：`{requestId, method, title, message, options:[{optionId,label}]}`；`approvals.respond` 发送 `{method, decision∈allow/deny/cancel/answer, value?}`（select 的 value 是 `optionId`，input/editor 是文本），返回 `{accepted, ownerRevision}`。
 
 ## 状态/错误姿态（UI 承诺）
 

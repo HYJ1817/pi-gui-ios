@@ -94,7 +94,7 @@ const FORBIDDEN_VALUE=new RegExp([
   /(?:^|[^A-Za-z0-9_.\\/~])\/(?!\/)/.source,                     // absolute POSIX path start or '/seg' after any non-path char
   /\w+:\/\/+[A-Za-z]:[\\/]/.source,                                  // URI-scheme drive path (file:///C:/x)
   /\w+:\/\/+\/(?:[A-Za-z0-9._~-]+\/)*[A-Za-z0-9._~-]+/.source,        // URI-scheme POSIX path (file:///etc/x)
-  /\/\/+[A-Za-z0-9._~-]+\//.source,                                   // forward-slash network/UNC path (//srv/share, smb://h/s)
+  /\/\/+[A-Za-z0-9._~-]+\/[A-Za-z0-9._~-]/.source,                   // network/UNC host+path (//srv/share, smb://h/s, scheme://h/p); bare //host/ allowed
   /(?:^|[^A-Za-z0-9_.~\/])(?:[A-Za-z]:[\\/]|\\\\|~[\\/]|\\(?=[A-Za-z]))/.source, // drive / UNC / ~ / single-\ root path (\\Windows caught)
   /(?:^|[^A-Za-z0-9_.~\/])(?:home|Users|etc|private|var|opt|root|tmp|usr|bin|srv|mnt|data)[\\/][A-Za-z0-9._-]/.source,
   /(?:PI_GUI_TOKEN|api[_-]?key|oauth[_-]?token|-----BEGIN [A-Z ]*PRIVATE KEY-----)/.source,
@@ -115,9 +115,13 @@ const CREDENTIAL_VALUE=new RegExp([
 // Transcript exception paths: only these dotted key paths carry raw conversation
 // text that tolerates ordinary prose; they are still credential-scanned.
 const TRANSCRIPT_TEXT_PATHS=new Set(['payload.text','messages.text','payload.messages.text','result.messages.text']);
+// Cap scanned value length so the path/secret alternation cannot run quadratically
+// on a pathological free-text field (a bound the schema should already enforce).
+const MAX_SCAN_VALUE_LENGTH=16384;
 function hasForbiddenValue(value,depth=0,path=[]) {
   if(depth>MAX_JSON_DEPTH)return true;
   if(typeof value==='string') {
+    if(value.length>MAX_SCAN_VALUE_LENGTH)return true; // oversized -> fail closed
     const insideTranscript=TRANSCRIPT_TEXT_PATHS.has(path.join('.'));
     return insideTranscript?CREDENTIAL_VALUE.test(value):FORBIDDEN_VALUE.test(value);
   }
