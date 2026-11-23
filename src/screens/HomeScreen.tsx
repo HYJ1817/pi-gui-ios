@@ -1,4 +1,4 @@
-import { FlatList, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { FlatList, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { contentWidth } from '../design/layout';
@@ -34,8 +34,15 @@ export default function HomeScreen() {
           </GlassSurface>
           <Text accessibilityRole="header" style={[styles.sectionTitle, { color: theme.text }]}>Projects</Text>
           <View style={styles.quickRow}>
-            <Text testID="nav-approvals" onPress={() => navigation.navigate('Approvals')} style={[styles.quickLink, { color: theme.accent, borderColor: theme.line }]}>Approvals</Text>
-            <Text testID="nav-settings" onPress={() => navigation.navigate('Settings')} style={[styles.quickLink, { color: theme.accent, borderColor: theme.line }]}>Settings</Text>
+            <Pressable testID="nav-approvals" accessibilityRole="button" accessibilityLabel="Open approvals" onPress={() => navigation.navigate('Approvals')} style={({ pressed }) => [styles.quickLink, { borderColor: theme.line, opacity: pressed ? 0.7 : 1, minHeight: theme.tokens.minHitTarget }]}>
+              <Text style={[styles.quickLinkText, { color: theme.accent }]}>Approvals</Text>
+            </Pressable>
+            <Pressable testID="nav-settings" accessibilityRole="button" accessibilityLabel="Open settings" onPress={() => navigation.navigate('Settings')} style={({ pressed }) => [styles.quickLink, { borderColor: theme.line, opacity: pressed ? 0.7 : 1, minHeight: theme.tokens.minHitTarget }]}>
+              <Text style={[styles.quickLinkText, { color: theme.accent }]}>Settings</Text>
+            </Pressable>
+            <Pressable testID="nav-probe" accessibilityRole="button" accessibilityLabel="Open infrastructure probe" onPress={() => navigation.navigate('InfrastructureProbe')} style={({ pressed }) => [styles.quickLink, { borderColor: theme.line, opacity: pressed ? 0.7 : 1, minHeight: theme.tokens.minHitTarget }]}>
+              <Text style={[styles.quickLinkText, { color: theme.accent }]}>Infrastructure</Text>
+            </Pressable>
           </View>
         </View>
       }
@@ -52,9 +59,9 @@ export default function HomeScreen() {
       ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
       ListEmptyComponent={<EmptyState title="No projects" message="Nothing to show in this offline shell." />}
       ListFooterComponent={
-        <Text testID="home-diagnostics-link" onPress={() => navigation.navigate('Diagnostics')} style={[styles.footerLink, { color: theme.accent }]}>
-          Open infrastructure details
-        </Text>
+        <Pressable testID="home-diagnostics-link" accessibilityRole="button" accessibilityLabel="Open infrastructure details" onPress={() => navigation.navigate('Diagnostics')} style={({ pressed }) => [styles.footerLink, { opacity: pressed ? 0.7 : 1 }]}>
+          <Text style={[styles.footerLinkText, { color: theme.accent }]}>Open infrastructure details</Text>
+        </Pressable>
       }
     />
   );
@@ -72,6 +79,8 @@ const styles = StyleSheet.create({
   heroCardBody: { fontSize: 14, lineHeight: 20 },
   sectionTitle: { fontSize: 22, fontWeight: '700', marginTop: 14 },
   quickRow: { flexDirection: 'row', gap: 10, marginTop: 8 },
-  quickLink: { fontSize: 15, fontWeight: '600', paddingHorizontal: 16, paddingVertical: 10, borderRadius: 12, borderWidth: 1, overflow: 'hidden' },
-  footerLink: { fontSize: 15, fontWeight: '600', textAlign: 'center', marginTop: 24, minHeight: 44 },
+  quickLink: { paddingHorizontal: 16, borderRadius: 12, borderWidth: 1, overflow: 'hidden', justifyContent: 'center' },
+  quickLinkText: { fontSize: 15, fontWeight: '600' },
+  footerLink: { marginTop: 24, minHeight: 44, justifyContent: 'center', alignItems: 'center' },
+  footerLinkText: { fontSize: 15, fontWeight: '600', textAlign: 'center' },
 });

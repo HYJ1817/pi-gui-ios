@@ -12,7 +12,8 @@ import { projects } from '../data/fixtures';
  * and dispatches onto the detail column's stack (the root navigator).
  */
 
-const QUICK: { key: string; title: string; subtitle: string; route: keyof RootStackParamList }[] = [
+type QuickRoute = 'Home' | 'Approvals' | 'Settings' | 'Diagnostics' | 'InfrastructureProbe';
+const QUICK: { key: string; title: string; subtitle: string; route: QuickRoute }[] = [
   { key: 'home', title: 'Overview', subtitle: 'Workspace home', route: 'Home' },
   { key: 'approvals', title: 'Approvals', subtitle: 'Pending decisions', route: 'Approvals' },
   { key: 'settings', title: 'Settings', subtitle: 'App preferences', route: 'Settings' },
@@ -50,7 +51,7 @@ export default function SidebarScreen() {
           testID={`sidebar-${item.key}`}
           onPress={() => {
             if (item.kind === 'project') navigation.navigate('Sessions', { projectId: item.projectId, title: item.title });
-            else navigation.navigate(item.route as never);
+            else navigation.navigate(item.route);
           }}
         />
       )}

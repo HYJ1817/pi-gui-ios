@@ -68,7 +68,7 @@ export default function ApprovalDetailScreen() {
         </View>
       ) : null}
       {(method === 'input' || method === 'editor') ? (
-        <Pressable testID="approval-answer" accessibilityRole="button" accessibilityLabel="Answer" onPress={() => decide('answer')} style={[styles.decision, { backgroundColor: theme.accent, opacity: value.trim() ? 1 : 0.45 }]}><Text style={[styles.decisionText, { color: theme.onAccent }]}>Answer</Text></Pressable>
+        <Pressable testID="approval-answer" accessibilityRole="button" accessibilityLabel="Answer" accessibilityState={{ disabled: !value.trim() }} disabled={!value.trim()} onPress={() => decide('answer')} style={[styles.decision, { backgroundColor: theme.accent, opacity: value.trim() ? 1 : 0.45 }]}><Text style={[styles.decisionText, { color: theme.onAccent }]}>Answer</Text></Pressable>
       ) : null}
 
       {decided ? <Text testID="approval-result" style={[styles.result, { color: theme.success }]}>Decision recorded (offline): {decided}</Text> : null}
