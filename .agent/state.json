@@ -1,37 +1,33 @@
 {
   "schemaVersion": 2,
   "kind": "state",
-  "revision": 640,
-  "updatedAt": "2026-11-23T04:46:35.840Z",
+  "revision": 642,
+  "updatedAt": "2026-11-23T04:47:50.245Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "6db3d557976914dead37052ed2d84c90acde737c59b88cc76df53c2f1642c8d0",
+    "parentDigest": "db13d511e1c61341019e178c915cf967cbeec1cd4b3ecb6ea2a5f6fa809277fc",
     "phase": "M2",
     "currentTask": "M2-shell",
     "branch": "agent/m-1-bootstrap",
     "checkpoint": {
-      "id": "v2-2026-11-23T04-46-35-840Z-20aef7ab-4428-4b0c-805d-a0c34b835b9d",
-      "path": ".agent/checkpoints/v2-2026-11-23T04-46-35-840Z-20aef7ab-4428-4b0c-805d-a0c34b835b9d.json",
-      "sha256": "811188a9b6cb3b48273a781d964f22742499bdc66e6b88b6b3d3c4fd9b02b0ba",
-      "authorityDigest": "6aed51aab75b741a14a07f2698ecc594837e37eb93da6c64eeeaae3de069ecc6",
-      "at": "2026-11-23T04:46:35.840Z",
+      "id": "v2-2026-11-23T04-47-50-245Z-03470e8f-cdc3-4467-b083-75f08dd94c00",
+      "path": ".agent/checkpoints/v2-2026-11-23T04-47-50-245Z-03470e8f-cdc3-4467-b083-75f08dd94c00.json",
+      "sha256": "98942a597a3d1c3f36eaa77f70ac86932f7d69bacf1d3b28da0e17c635f04005",
+      "authorityDigest": "d29fd500c7ba7eb6bb92c58199d1cf138e46cd6abf01962d931ab1ffa07fe5be",
+      "at": "2026-11-23T04:47:50.245Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "9bdc4d0ab46bf6729fbebf483a7895879555f9cb",
+        "commit": "5aac7ba120ee24550cbaa0387477f565d42b4746",
         "dirty": [
           "M .agent/HANDOFF.md",
           " M .agent/control.json",
           " M .agent/state.json",
           " M .agent/tasks.json",
-          " M PROGRESS.md",
-          " M docs/acceptance/local-bundle-output.txt",
-          " M docs/acceptance/local-bundle.json",
-          " M docs/acceptance/local-typecheck.json",
-          "?? .agent/checkpoints/v2-2026-11-23T04-46-31-549Z-19ed1fc8-7854-408f-b6d5-faebe2583879.json"
+          " M PROGRESS.md"
         ]
       },
       "sourceFingerprint": "561e46d8b07ace27cd6c3602dc11cd5f9056e844f95421a8d9322b6f315daa0f",
-      "note": "实际运行 npm run export:ios，exit=0"
+      "note": "M2-shell 独立审查 delegate 登记 (0507f1a5 @60b0951)"
     },
     "blockers": [],
     "ci": [
@@ -352,11 +348,17 @@
         "role": "native-lock-candidates-review",
         "status": "working",
         "sourceCommit": "a27a9a253e12a148de6f92f033ba4342faa1ed02"
+      },
+      {
+        "taskId": "node:delegated-task:command%3Amcp%3Abc091f6e-8884-452f-aeb8-0a54387f015d%3Adelegate-task%3A0507f1a5-bfbe-4c78-9c72-7bd5f3a1957d",
+        "role": "m2-shell-independent-review",
+        "status": "working",
+        "sourceCommit": "5aac7ba120ee24550cbaa0387477f565d42b4746"
       }
     ]
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "084ba2da62043bb3068d940d71096fbdb1de82b72bec14b796900d440e24e060"
+    "digest": "0a1f6f1d776c21ff809a3d9840b930b74bdb6ff8ec2a128df5a7a5d4ffe213fa"
   }
 }
