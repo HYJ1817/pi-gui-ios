@@ -18,11 +18,17 @@ assert(pkg.dependencies.uniwind === '1.13.2' && !JSON.stringify(pkg).includes('u
 
 const names = ['react', 'react-native', '@react-navigation/native', '@react-navigation/native-stack', '@react-navigation/elements', 'uniwind', 'tailwindcss', 'expo-glass-effect', '@react-native-menu/menu', 'react-native-reanimated', 'react-native-gesture-handler', 'react-native-worklets', 'react-native-keyboard-controller'];
 const installed = {};
+// Reviewed version deviations from the frozen T3 inventory (same family/API,
+// license identical, divergence documented in docs/decisions/technology-stack.md):
+// - @react-native-menu/menu 2.1.2: 2.0.0 fails to compile on RN 0.87+ where React
+//   headers ship as header-only XCFrameworks (bare #import "RCTBridge.h" cannot
+//   resolve); upstream 2.1.2 qualifies it to <React/RCTBridge.h> (ecb3a67).
+const versionDeviations = { '@react-native-menu/menu': '2.1.2' };
 for (const name of names) {
   const selected = reference.mobileDependencies.find(row => row.name === name);
   assert(selected?.registry?.license?.toUpperCase() === 'MIT', 'Unreviewed reference license for ' + name);
   const metadata = JSON.parse(readFileSync(resolve(ROOT, 'node_modules', name, 'package.json'), 'utf8'));
-  const expected = selected.lockedVersion.split('(')[0];
+  const expected = versionDeviations[name] ?? selected.lockedVersion.split('(')[0];
   assert(metadata.version === expected && metadata.license?.toUpperCase() === 'MIT', 'Installed ' + name + ' does not match the reviewed version/license');
   installed[name] = metadata.version;
 }
