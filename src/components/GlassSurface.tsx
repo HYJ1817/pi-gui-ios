@@ -16,17 +16,11 @@ interface Props {
 }
 
 export function useGlassAvailable(): { native: boolean; reducedTransparency: boolean; enabled: boolean } {
-  const [reducedTransparency, setReducedTransparency] = useState(true);
-  useEffect(() => {
-    let active = true;
-    AccessibilityInfo.isReduceTransparencyEnabled()
-      .then(value => { if (active) setReducedTransparency(value); })
-      .catch(() => { if (active) setReducedTransparency(true); });
-    const sub = AccessibilityInfo.addEventListener('reduceTransparencyChanged', setReducedTransparency);
-    return () => { active = false; sub.remove(); };
-  }, []);
+  // isLiquidGlassAvailable() already folds the Reduce Transparency preference
+  // into its answer; tracking it ourselves would mount the opaque fallback for
+  // one frame on capable devices (children remount, visible flash).
   const native = Platform.OS === 'ios' && isGlassEffectAPIAvailable() && isLiquidGlassAvailable();
-  return { native, reducedTransparency, enabled: native && !reducedTransparency };
+  return { native, reducedTransparency: !native, enabled: native };
 }
 
 export function GlassSurface({ children, style, contentStyle, testID, tint = 'regular' }: Props) {

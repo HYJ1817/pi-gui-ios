@@ -1,4 +1,5 @@
-import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { useRoute } from '@react-navigation/native';
 import type { RouteProp } from '@react-navigation/native';
 import { useState } from 'react';
@@ -23,7 +24,7 @@ export default function ApprovalDetailScreen() {
   const method = approval.method;
 
   return (
-    <ScrollView testID="approval-detail" style={{ backgroundColor: theme.background }} contentInsetAdjustmentBehavior="automatic" contentContainerStyle={styles.page}>
+    <KeyboardAwareScrollView testID="approval-detail" style={{ backgroundColor: theme.background }} contentInsetAdjustmentBehavior="automatic" contentContainerStyle={styles.page}>
       <GlassSurface testID="approval-card" style={styles.card} contentStyle={[styles.cardContent, { backgroundColor: theme.approvalSurface }]}>
         <Text style={[styles.method, { color: theme.approvalAccent }]}>{method.toUpperCase()}</Text>
         <Text style={[styles.title, { color: theme.text }]}>{approval.title}</Text>
@@ -72,7 +73,7 @@ export default function ApprovalDetailScreen() {
       ) : null}
 
       {decided ? <Text testID="approval-result" style={[styles.result, { color: theme.success }]}>Decision recorded (offline): {decided}</Text> : null}
-    </ScrollView>
+    </KeyboardAwareScrollView>
   );
 }
 

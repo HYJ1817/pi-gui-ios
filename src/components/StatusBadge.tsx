@@ -23,9 +23,9 @@ export function StatusBadge({ status, label }: { status: Status; label?: string 
   const theme = useTheme();
   const color = statusColor(status, theme.tokens.colors);
   return (
-    <View accessibilityRole="text" accessibilityLabel={label ?? LABEL[status]} style={[styles.badge, { borderColor: color }]}>
-      <View style={[styles.dot, { backgroundColor: color }]} />
-      <Text style={[styles.text, { color }]} numberOfLines={1}>{label ?? LABEL[status]}</Text>
+    <View accessibilityLabel={label ?? LABEL[status]} style={[styles.badge, { borderColor: color }]}>
+      <View accessible={false} style={[styles.dot, { backgroundColor: color }]} />
+      <Text accessible={false} style={[styles.text, { color }]} numberOfLines={1}>{label ?? LABEL[status]}</Text>
     </View>
   );
 }

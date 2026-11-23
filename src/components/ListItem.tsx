@@ -13,25 +13,37 @@ interface Props {
 
 export function ListItem({ title, subtitle, right, onPress, testID, style, accessibilityLabel }: Props) {
   const theme = useTheme();
-  return (
-    <Pressable
-      testID={testID}
-      accessibilityRole={onPress ? 'button' : 'none'}
-      accessibilityLabel={accessibilityLabel ?? title}
-      onPress={onPress}
-      disabled={!onPress}
-      style={({ pressed }) => [
-        styles.row,
-        { backgroundColor: theme.surface, borderColor: theme.line, opacity: onPress && pressed ? 0.7 : 1 },
-        style,
-      ]}
-    >
+  const body = (
+    <>
       <View style={styles.textCol}>
         <Text style={[styles.title, { color: theme.text }]} numberOfLines={1}>{title}</Text>
         {subtitle ? <Text style={[styles.subtitle, { color: theme.secondary }]} numberOfLines={2}>{subtitle}</Text> : null}
       </View>
       {right}
-      {onPress ? <Text style={[styles.chevron, { color: theme.tertiary }]}>›</Text> : null}
+      {onPress ? <Text accessible={false} importantForAccessibility="no-hide-descendants" style={[styles.chevron, { color: theme.tertiary }]}>›</Text> : null}
+    </>
+  );
+  if (!onPress) {
+    // A non-interactive row must not carry Pressable's disabled/dimmed a11y state.
+    return (
+      <View testID={testID} accessibilityLabel={accessibilityLabel} style={[styles.row, { backgroundColor: theme.surface, borderColor: theme.line }, style]}>
+        {body}
+      </View>
+    );
+  }
+  return (
+    <Pressable
+      testID={testID}
+      accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel ?? title}
+      onPress={onPress}
+      style={({ pressed }) => [
+        styles.row,
+        { backgroundColor: theme.surface, borderColor: theme.line, opacity: pressed ? 0.7 : 1 },
+        style,
+      ]}
+    >
+      {body}
     </Pressable>
   );
 }

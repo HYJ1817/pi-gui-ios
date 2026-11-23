@@ -32,8 +32,10 @@ export default function InfrastructureProbe() {
       if (finished) runOnJS(setAnimationResult)('Animation completed');
     });
   };
-  const nativeAvailable = Platform.OS === 'ios' && isGlassEffectAPIAvailable() && isLiquidGlassAvailable();
-  const glass = nativeAvailable && !reducedTransparency;
+  // isLiquidGlassAvailable() already includes Reduce Transparency, so the
+  // local flag only tracks the preference for display copy — no fallback flash.
+  const glass = Platform.OS === 'ios' && isGlassEffectAPIAvailable() && isLiquidGlassAvailable();
+  const nativeAvailable = glass;
 
   useEffect(() => {
     let active = true;
@@ -49,8 +51,7 @@ export default function InfrastructureProbe() {
   return <KeyboardAwareScrollView testID="probe-scroll" contentInsetAdjustmentBehavior="automatic" keyboardShouldPersistTaps="handled" style={{ backgroundColor: theme.background }} contentContainerStyle={[styles.page, { paddingBottom: Math.max(32, insets.bottom + 20), paddingLeft: Math.max(20, insets.left + 12), paddingRight: Math.max(20, insets.right + 12) }]}>
     <View className="w-full self-center gap-6" style={{ maxWidth: width > 700 ? 760 : 560 }}>
       <Text style={[styles.eyebrow, { color: theme.accent }]}>M−1 · INFRASTRUCTURE LAB</Text>
-      <Text style={[styles.hero, { color: theme.text }]}>Your agents.
-Closer at hand.</Text>
+      <Text style={[styles.hero, { color: theme.text }]}>{'Your agents.\nCloser at hand.'}</Text>
       <Text style={[styles.intro, { color: theme.secondary }]}>Offline native technology preview. No computer is connected and remote access is not enabled.</Text>
       <View style={[styles.canvas, { backgroundColor: theme.decorative }]}><View accessible={false} style={[styles.orbit, { borderColor: theme.accent }]} /><View accessible={false} style={[styles.stripe, { backgroundColor: theme.accent }]} />{glass ? <GlassView testID="native-glass-surface" glassEffectStyle="regular" style={styles.glass} colorScheme={theme.dark ? 'dark' : 'light'}>{glassContents}</GlassView> : <View testID="opaque-surface" style={[styles.glass, { backgroundColor: theme.surface }]}>{glassContents}</View>}</View>
       <View style={[styles.section, { backgroundColor: theme.surface, borderColor: theme.line }]}>
