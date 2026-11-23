@@ -35,3 +35,12 @@ export RNS_GAMMA_ENABLED='1'
 # pipefail is essential: tee success must never conceal a failed pod resolution.
 (cd "$ROOT/ios" && bundle _2.6.9_ exec pod "${POD_ARGS[@]}" 2>&1 | tee "$PRIVATE/pods.log" > /dev/null)
 "$PYTHON" "$ROOT/scripts/ci/native-dependencies.py" finish "$ROOT" "$PRIVATE"
+# The build-time 'Check Pods Manifest' phase diffs Podfile.lock against
+# Pods/Manifest.lock. In locked/deployment mode Podfile.lock keeps the committed
+# bytes while pod install serializes a normalized copy to Manifest.lock — any
+# formatting drift fails the build even though the resolved set is identical.
+# Stamp the sandbox with the reviewed Podfile.lock so the check compares the
+# lock we actually reviewed, not a re-serialized variant.
+if [[ "$MODE" == locked && -f "$ROOT/ios/Pods/Manifest.lock" ]]; then
+  cp "$ROOT/ios/Podfile.lock" "$ROOT/ios/Pods/Manifest.lock"
+fi
