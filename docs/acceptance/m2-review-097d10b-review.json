@@ -1,0 +1,15 @@
+{
+ "schemaVersion": 2,
+ "kind": "independent-review",
+ "taskId": "M2-shell",
+ "commit": "097d10bd88136a62d2f66df7f28dd8052cf3a5ac",
+ "sourceFingerprint": "fac70b64c49783548183bf9f7c47aad686a8aac1d69901c3742f45a7710272a7",
+ "startedAt": "2026-11-23T07:22:00.000Z",
+ "finishedAt": "2026-11-23T07:36:30.000Z",
+ "passed": true,
+ "details": {
+  "receiptPath": "docs/acceptance/m2-review-097d10b-receipt.json",
+  "receiptSha256": "d09501b02ed8a7c09e9b85ef55c4d38711ebcbe8f25c361e33048ed013e55e0b",
+  "scope": "Independent functional+security confirmation review of M2-shell @097d10bd (swe-2): all 5 prior findings verified fixed (DetailStack navigator factory, nav-probe testID, isPad-only split, Pressable links, onAccent/disabled/QuickRoute); glass fallback, a11y, navigation correctness, security surface re-audited; 8 residual nits, 0 blockers/important."
+ }
+}

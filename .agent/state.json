@@ -1,33 +1,35 @@
 {
   "schemaVersion": 2,
   "kind": "state",
-  "revision": 674,
-  "updatedAt": "2026-11-23T07:21:52.936Z",
+  "revision": 677,
+  "updatedAt": "2026-11-23T07:36:45.759Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "2cf87b5ba3b9e778c9d9fc9b89141acb731a42190e08a7284078565cef2e4a81",
+    "parentDigest": "b02f08d65beae3278edb3f54eab01a912e8ee0a077fb419f607bdecc82094b47",
     "phase": "M2",
     "currentTask": "M2-shell",
     "branch": "agent/m-1-bootstrap",
     "checkpoint": {
-      "id": "v2-2026-11-23T07-21-52-936Z-7988452f-010f-4c96-b725-e53b347d58c5",
-      "path": ".agent/checkpoints/v2-2026-11-23T07-21-52-936Z-7988452f-010f-4c96-b725-e53b347d58c5.json",
-      "sha256": "c764a99ba881f29b60b40bc87e335279e1a59f1bbe1276bfdfa9021879c9c0db",
-      "authorityDigest": "c4da9fee6eaceeac1b8b6e637a1a94a06ad2eff00ac58f67134e2058bb03bcca",
-      "at": "2026-11-23T07:21:52.936Z",
+      "id": "v2-2026-11-23T07-36-45-759Z-5ecca08f-ba43-4b82-9155-c1d286989651",
+      "path": ".agent/checkpoints/v2-2026-11-23T07-36-45-759Z-5ecca08f-ba43-4b82-9155-c1d286989651.json",
+      "sha256": "ff7113b712920d4a2a6d3b7a006745be9c70aa81fb9cd2c9d9ba64f1845f1e94",
+      "authorityDigest": "6a6103fe42c5597e569abd6f3c1b031f51ca1a3e01e62eaf83fb40f60f6d5462",
+      "at": "2026-11-23T07:36:45.759Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "097d10bd88136a62d2f66df7f28dd8052cf3a5ac",
+        "commit": "a1a43ec40dfd8c252283decb43268da772eeffb3",
         "dirty": [
           "M .agent/HANDOFF.md",
           " M .agent/control.json",
           " M .agent/state.json",
           " M .agent/tasks.json",
-          " M PROGRESS.md"
+          " M PROGRESS.md",
+          "?? docs/acceptance/m2-review-097d10b-receipt.json",
+          "?? docs/acceptance/m2-review-097d10b-review.json"
         ]
       },
       "sourceFingerprint": "fac70b64c49783548183bf9f7c47aad686a8aac1d69901c3742f45a7710272a7",
-      "note": "unit 证据 fac70b64 已导入（097d10bd）；M2-shell 独立审查 bcc771ca 已发出并登记 working；locked CI 45129052026 ios job 进行中，等截图产物做 ui 证据"
+      "note": "agent-task evidence M2-shell"
     },
     "blockers": [],
     "ci": [
@@ -370,13 +372,13 @@
       {
         "taskId": "node:delegated-task:command%3Amcp%3Ab0c4212d-5e5e-4703-b239-1582ae7a6378%3Adelegate-task%3Abcc771ca-fa16-4680-93ab-c0cec6fd289e",
         "role": "m2-shell-independent-review",
-        "status": "working",
+        "status": "completed",
         "sourceCommit": "097d10bd88136a62d2f66df7f28dd8052cf3a5ac"
       }
     ]
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "1eeacdfc72505cc3164063202a490b842986f4de0c5d2c2582dc7c2cbbed8494"
+    "digest": "3ba4319fbba848091069dce38e1d07e87a3c49330b3e77727a92ecb8ba4ce8ea"
   }
 }

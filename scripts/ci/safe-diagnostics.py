@@ -60,6 +60,14 @@ def safe_codes():
     return codes
 
 
+def pod_targets():
+    """Public target names already pinned in the committed Podfile.lock."""
+    result = subprocess.run(['git', '-C', str(ROOT), 'show', 'HEAD:native/Podfile.lock'], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True, timeout=10)
+    if result.returncode != 0:
+        return set()
+    return set(re.findall(r'^- ([A-Za-z0-9_+-]+) \(', result.stdout, re.MULTILINE))
+
+
 def public_source_index():
     """Only immutable Git names / lock package names may become public locations."""
     listed = subprocess.run(['git', '-C', str(ROOT), 'ls-tree', '-r', '--name-only', 'HEAD'], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True, timeout=10)
@@ -87,19 +95,32 @@ def scan(step, paths):
         raise ValueError('DIAGNOSTIC_STEP_REJECTED')
     allowed, codes, locations = safe_codes(), set(), {}
     tracked, packages = public_source_index()
+    pods, targets = pod_targets(), []
+    tool_line = re.compile(r'^(?:CompileC|SwiftCompile|SwiftDriver|Ld|PhaseScriptExecution|CodeSign)\b[^\n]*/([A-Za-z0-9_+-]+)\.build/')
+    error_line = re.compile(r'\berror\b', re.IGNORECASE)
+    recent_tool, recent_tool_line = None, -1
     for path in map(pathlib.Path, paths):
         if not path.exists():
             continue
         if path.is_symlink() or not path.is_file() or path.stat().st_size > 64 * 1024 * 1024:
             raise ValueError('DIAGNOSTIC_INPUT_REJECTED')
         with path.open(encoding='utf-8', errors='replace') as stream:
-            for line in stream:
+            for lineno, line in enumerate(stream):
                 if len(line) > 65536:
                     continue
                 codes.update(token for token in re.findall(r'\b[A-Z][A-Z0-9_]{2,120}\b', line) if token in allowed)
                 for code, pattern in CATEGORIES.items():
                     if re.search(pattern, line, re.IGNORECASE):
                         codes.add(code)
+                tool = tool_line.search(line)
+                if tool:
+                    # Remember only the public pod/target name for attribution
+                    # of a nearby error line; the command contents never copy.
+                    recent_tool, recent_tool_line = tool[1], lineno
+                if error_line.search(line) and recent_tool is not None and lineno - recent_tool_line <= 12 and len(targets) < 10:
+                    name = recent_tool if recent_tool in pods else None
+                    if name and name not in targets:
+                        targets.append(name)
                 match = re.search(r'((?:src|scripts|node_modules|ios/Pods|ios)/[^\s:\"<>]+\.(?:tsx?|swift|mm?|cpp|h|py|rb|sh|a|tbd|dylib|o))(?::(\d{1,7}))?(?::\d{1,7})?', line.replace('\\', '/'))
                 if match and re.search(r'\berror\b', line, re.IGNORECASE):
                     relative, number = match[1], int(match[2] or 1)
@@ -134,9 +155,13 @@ def scan(step, paths):
                     # basename only, never intermediate paths or contents.
                     locations[('ios-generated', number)] = {'dependency': 'ios-generated', 'line': number}
                 # No quoted identifier or generated/untracked source value is copied.
-    return {'schemaVersion': 1, 'kind': 'safe-ci-diagnostics', 'step': step,
-            'codes': sorted(codes)[:32] or ['NATIVE_FAILURE_DETAILS_WITHHELD'],
-            'sourceLocations': list(locations.values())[:10]}
+    report = {'schemaVersion': 1, 'kind': 'safe-ci-diagnostics', 'step': step,
+              'codes': sorted(codes)[:32] or ['NATIVE_FAILURE_DETAILS_WITHHELD'],
+              'sourceLocations': list(locations.values())[:10]}
+    if targets:
+        # Public pod target names nearest to error output (attribution only).
+        report['failedTargets'] = targets
+    return report
 
 
 def environment(path):
