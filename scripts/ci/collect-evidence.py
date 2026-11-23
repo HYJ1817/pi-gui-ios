@@ -128,6 +128,16 @@ def collect(private, output):
         'sideStoreInstallVerified': False}, sort_keys=True) + '\n', encoding='utf-8')
     failures = [diagnostics.scan(item['step'], [private / 'logs' / (item['step'] + '.log')])
                 for item in steps if item['status'] in ('failed', 'interrupted', 'bootstrap-required')]
+    for record in failures:
+        xcresult = private / 'logs' / (record['step'] + '-xcresult.json')
+        if xcresult.is_file():
+            try:
+                parsed = json.loads(read(xcresult, 1024 * 1024))
+            except Exception:
+                parsed = None
+            if isinstance(parsed, dict) and parsed.get('kind') == 'safe-ci-xcresult':
+                # Only the allowlisted structured issue records merge in.
+                record['xcresult'] = parsed
     (reports / 'diagnostics.json').write_text(json.dumps({'schemaVersion': 1, 'diagnostics': failures}, sort_keys=True) + '\n', encoding='utf-8')
     (reports / 'environment.json').write_text(json.dumps(diagnostics.environment(private / 'logs/environment.log'), sort_keys=True) + '\n', encoding='utf-8')
     for device in ('iphone', 'ipad'):
