@@ -117,6 +117,16 @@ def scan(step, paths):
                 for code, pattern in CATEGORIES.items():
                     if re.search(pattern, line, re.IGNORECASE):
                         codes.add(code)
+                if error_line.search(line):
+                    # Attribute the error to a public pod/node package only when
+                    # its install path appears verbatim — never copy the line
+                    # and never match a bare name (e.g. react/renderer).
+                    pod_hit = re.search(r'ios/Pods/([A-Za-z0-9_+-]+)', line)
+                    if pod_hit and pod_hit[1] in pods and pod_hit[1] not in targets:
+                        targets.append(pod_hit[1])
+                    pkg_hit = re.search(r'node_modules/((?:@[a-z0-9_.-]+/)?[a-z0-9_.-]+)', line)
+                    if pkg_hit and pkg_hit[1] in packages and pkg_hit[1] not in targets:
+                        targets.append(pkg_hit[1])
                 tool = tool_line.search(line)
                 if not tool:
                     alias = tool_alias.match(line)
