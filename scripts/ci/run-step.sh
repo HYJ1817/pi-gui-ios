@@ -28,11 +28,12 @@ if [[ "$STEP" == simulator-build && "$STATUS" != 0 ]]; then
   # ReactCodegen's 'Generate Specs' phase writes only package/component names
   # to react-codegen.log. Append its sanitized structural lines (no paths/messages)
   # so diagnostics can attribute a codegen-phase failure instead of withholding it.
+  # `head -z` is GNU-only; BSD head rejects it. Read the first -print0 entry via IFS splitting.
   while IFS= read -r -d '' candidate; do
     printf '\n== react-codegen.log (structural lines only) ==\n' >> "$PRIVATE/logs/$STEP.log"
     grep -aoE 'NATIVE_[A-Z0-9_]+|\[Codegen\][^/"'"'"']*|error|FAILED|Generated.*' "$candidate" | head -50 >> "$PRIVATE/logs/$STEP.log" || true
     break
-  done < <(find "$PWD/build/simulator" -name 'react-codegen.log' -print0 2>/dev/null | head -z -n 1)
+  done < <(find "$PWD/build/simulator" -name 'react-codegen.log' -print0 2>/dev/null)
 fi
 record "$RESULT"
 printf 'NATIVE_STEP_%s_%s\n' "$STEP" "$RESULT"
