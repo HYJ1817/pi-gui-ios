@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { AccessibilityInfo, Platform, Pressable, StyleSheet, Switch, Text, TextInput, View, useWindowDimensions } from 'react-native';
 import { GlassView, isGlassEffectAPIAvailable, isLiquidGlassAvailable } from 'expo-glass-effect';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { MenuView } from '@react-native-menu/menu';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -9,11 +9,13 @@ import { KeyboardAwareScrollView, useKeyboardState } from 'react-native-keyboard
 import Animated, { cancelAnimation, runOnJS, useAnimatedStyle, useReducedMotion, useSharedValue, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { RootStackParamList } from '../navigation/types';
+import type { RouteProp } from '@react-navigation/native';
 import { useTheme } from '../theme';
 
 export default function InfrastructureProbe() {
   const theme = useTheme(), insets = useSafeAreaInsets();
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, 'Home'>>();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, 'InfrastructureProbe'>>();
+  const route = useRoute<RouteProp<RootStackParamList, 'InfrastructureProbe'>>();
   const { width } = useWindowDimensions();
   const [reducedTransparency, setReducedTransparency] = useState(true);
   const [label, setLabel] = useState('');
@@ -58,7 +60,7 @@ export default function InfrastructureProbe() {
         <Text style={[styles.cardTitle, { color: theme.text }]}>Interaction checks</Text>
         <Text testID="keyboard-state" style={[styles.body, { color: theme.secondary }]}>Keyboard state: {keyboardVisible ? 'visible' : 'hidden'}</Text>
         <Text nativeID="label-title" style={[styles.body, { color: theme.secondary }]}>Synthetic device label</Text>
-        <TextInput testID="device-label" accessibilityLabel="Synthetic device label" accessibilityLabelledBy="label-title" value={label} onChangeText={setLabel} placeholder="Enter a test label" placeholderTextColor={theme.secondary} autoCorrect={false} autoCapitalize="none" maxLength={64} returnKeyType="done" style={[styles.input, { color: theme.text, borderColor: theme.line, backgroundColor: theme.background }]} />
+        <TextInput testID="device-label" accessibilityLabel="Synthetic device label" accessibilityLabelledBy="label-title" value={label} onChangeText={setLabel} placeholder="Enter a test label" placeholderTextColor={theme.secondary} autoCorrect={false} autoCapitalize="none" maxLength={64} returnKeyType="done" autoFocus={route.params?.focus === 'device-label'} style={[styles.input, { color: theme.text, borderColor: theme.line, backgroundColor: theme.background }]} />
         <Text testID="label-result" style={[styles.body, { color: theme.text }]}>Preview label: {label || 'not set'}</Text>
         <View style={styles.switchRow}><Text style={[styles.switchLabel, { color: theme.text }]}>Local demo preference</Text><Switch testID="demo-toggle" accessibilityLabel="Local demo preference" value={enabled} onValueChange={setEnabled} /></View>
         <Text testID="toggle-result" style={[styles.body, { color: theme.secondary }]}>Demo preference: {enabled ? 'on' : 'off'}</Text>

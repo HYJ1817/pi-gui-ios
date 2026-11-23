@@ -1,4 +1,4 @@
-import { DarkTheme, DefaultTheme, NavigationContainer, createStaticNavigation, type Theme } from '@react-navigation/native';
+import { DarkTheme, DefaultTheme, NavigationContainer, createStaticNavigation, type LinkingOptions, type Theme } from '@react-navigation/native';
 import { createNativeStackNavigator, createNativeStackScreen } from '@react-navigation/native-stack';
 import { Platform, useWindowDimensions } from 'react-native';
 import { Split } from 'react-native-screens/experimental';
@@ -19,14 +19,14 @@ import DiagnosticsScreen from '../screens/DiagnosticsScreen';
 // navigator below; the iPad split detail stack maps the SAME entries onto a
 // dynamic <Screen> set, so the two shells can never drift apart.
 const SCREENS = {
-  Home: createNativeStackScreen({ screen: HomeScreen, options: { title: 'Pi GUI Mobile', headerLargeTitle: true } }),
-  Sessions: createNativeStackScreen({ screen: SessionsScreen, options: ({ route }: { route: { params?: { title?: string } } }) => ({ title: route.params?.title ?? 'Sessions' }) }),
-  Conversation: createNativeStackScreen({ screen: ConversationScreen, options: ({ route }: { route: { params?: { title?: string } } }) => ({ title: route.params?.title ?? 'Conversation' }) }),
-  Approvals: createNativeStackScreen({ screen: ApprovalsScreen, options: { title: 'Approvals' } }),
-  ApprovalDetail: createNativeStackScreen({ screen: ApprovalDetailScreen, options: ({ route }: { route: { params?: { title?: string } } }) => ({ title: route.params?.title ?? 'Approval' }) }),
-  Settings: createNativeStackScreen({ screen: SettingsScreen, options: { title: 'Settings' } }),
-  InfrastructureProbe: createNativeStackScreen({ screen: InfrastructureProbe, options: { title: 'Infrastructure' } }),
-  Diagnostics: createNativeStackScreen({ screen: DiagnosticsScreen, options: { title: 'Diagnostics' } }),
+  Home: createNativeStackScreen({ screen: HomeScreen, linking: 'home', options: { title: 'Pi GUI Mobile', headerLargeTitle: true } }),
+  Sessions: createNativeStackScreen({ screen: SessionsScreen, linking: 'project/:projectId', options: ({ route }: { route: { params?: { title?: string } } }) => ({ title: route.params?.title ?? 'Sessions' }) }),
+  Conversation: createNativeStackScreen({ screen: ConversationScreen, linking: 'session/:sessionId/:conversationId', options: ({ route }: { route: { params?: { title?: string } } }) => ({ title: route.params?.title ?? 'Conversation' }) }),
+  Approvals: createNativeStackScreen({ screen: ApprovalsScreen, linking: 'approvals', options: { title: 'Approvals' } }),
+  ApprovalDetail: createNativeStackScreen({ screen: ApprovalDetailScreen, linking: 'approval/:requestId', options: ({ route }: { route: { params?: { title?: string } } }) => ({ title: route.params?.title ?? 'Approval' }) }),
+  Settings: createNativeStackScreen({ screen: SettingsScreen, linking: 'settings', options: { title: 'Settings' } }),
+  InfrastructureProbe: createNativeStackScreen({ screen: InfrastructureProbe, linking: 'probe', options: { title: 'Infrastructure' } }),
+  Diagnostics: createNativeStackScreen({ screen: DiagnosticsScreen, linking: 'diagnostics', options: { title: 'Diagnostics' } }),
 };
 
 // Stacked (iPhone / compact) navigator: React Navigation static config.
@@ -60,6 +60,28 @@ function DetailStack() {
   );
 }
 
+// UI-evidence deep links (synthetic only; the app is offline and never
+// registers a production deep link). `piguimobile://probe?focus=device-label`
+// lands on the probe with the label input focused so the CI keyboard shot
+// needs no accessibility-tree tap. The static navigator derives its path
+// config from each screen's `linking` above; the iPad dynamic stack reuses
+// the same map.
+const LINKING: LinkingOptions<RootStackParamList> = {
+  prefixes: ['piguimobile://'],
+  config: {
+    screens: {
+      Home: 'home',
+      Sessions: 'project/:projectId',
+      Conversation: 'session/:sessionId/:conversationId',
+      Approvals: 'approvals',
+      ApprovalDetail: 'approval/:requestId',
+      Settings: 'settings',
+      InfrastructureProbe: 'probe',
+      Diagnostics: 'diagnostics',
+    },
+  },
+};
+
 function navTheme(theme: AppTheme): Theme {
   const base = theme.dark ? DarkTheme : DefaultTheme;
   return { ...base, colors: { ...base.colors, background: theme.background, card: theme.surface, text: theme.text, primary: theme.accent, border: theme.line } };
@@ -79,7 +101,7 @@ function SplitShell({ theme }: { theme: AppTheme }) {
   const { width, height } = useWindowDimensions();
   const metrics = splitColumnMetrics({ width, height });
   return (
-    <NavigationContainer theme={navTheme(theme)}>
+    <NavigationContainer theme={navTheme(theme)} linking={LINKING}>
       <Split.Host
         columnMetrics={metrics}
         preferredDisplayMode="automatic"
@@ -103,5 +125,5 @@ function SplitShell({ theme }: { theme: AppTheme }) {
 export function RootNavigation() {
   const theme = useTheme();
   if (Platform.OS === 'ios' && Platform.isPad) return <SplitShell theme={theme} />;
-  return <Navigation theme={navTheme(theme)} />;
+  return <Navigation theme={navTheme(theme)} linking={{ prefixes: ['piguimobile://'] }} />;
 }

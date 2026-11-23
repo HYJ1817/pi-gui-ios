@@ -5,6 +5,6 @@ export type RootStackParamList = {
   Approvals: undefined;
   ApprovalDetail: { requestId: string; title?: string };
   Settings: undefined;
-  InfrastructureProbe: undefined;
+  InfrastructureProbe: { focus?: string } | undefined;
   Diagnostics: undefined;
 };
