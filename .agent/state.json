@@ -1,34 +1,32 @@
 {
   "schemaVersion": 2,
   "kind": "state",
-  "revision": 632,
-  "updatedAt": "2026-11-23T02:47:37.887Z",
+  "revision": 634,
+  "updatedAt": "2026-11-23T04:22:52.506Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "031321d88f49473f2102465c7f535a706db6189087b99ab917affcd369aed60e",
+    "parentDigest": "88851d658fa389438e4d1d68b1cdc8808d20aab65e9645eb69a76274d35760d7",
     "phase": "M2",
     "currentTask": "M2-shell",
     "branch": "agent/m-1-bootstrap",
     "checkpoint": {
-      "id": "v2-2026-11-23T02-47-37-887Z-78351284-06bd-429e-b112-21508cc59f54",
-      "path": ".agent/checkpoints/v2-2026-11-23T02-47-37-887Z-78351284-06bd-429e-b112-21508cc59f54.json",
-      "sha256": "6b5f90b6b9ef477d606d4f134ec0369e7bdf7f0f65512ef07dce455ff11b74bf",
-      "authorityDigest": "593fdd5f55cfd06e4c07d80e90bd84abfbe743f79beef8806fcf506c361a41d8",
-      "at": "2026-11-23T02:47:37.887Z",
+      "id": "v2-2026-11-23T04-22-52-506Z-281b3b5e-709d-4c45-b0f0-afded57f6b86",
+      "path": ".agent/checkpoints/v2-2026-11-23T04-22-52-506Z-281b3b5e-709d-4c45-b0f0-afded57f6b86.json",
+      "sha256": "af4bbc2271bb1b8a54c45863e46439e1ce4c3da2059e5f8f81c32ec4a9a77010",
+      "authorityDigest": "d38b541ccd3633c972cf2cb04bda9d83711ab13aa9f2bac41eafd329474e42cc",
+      "at": "2026-11-23T04:22:52.506Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "b598af614428771378cc412b99f0a0f64a44b61f",
+        "commit": "ec1820ad5a21d87efff49c3af103e1bfbffaccda",
         "dirty": [
           "M .agent/HANDOFF.md",
-          " M .agent/control.json",
           " M .agent/state.json",
           " M .agent/tasks.json",
-          " M PROGRESS.md",
-          "?? .agent/checkpoints/v2-2026-11-23T02-47-37-258Z-07b129b3-9a1f-49c4-8006-5af066da373f.json"
+          " M PROGRESS.md"
         ]
       },
-      "sourceFingerprint": "ceeb588d13e8e5c610d52edd8e9aec1c2fb0ca0bfbc4cc54985bcfbb85c8a5b0",
-      "note": "M1-remote completed；M2-shell 开始 in_progress"
+      "sourceFingerprint": "f8d97438802ef39d7df417fea5e86018020c2ad9628872f0281b6f581dfab504",
+      "note": "M2-shell: iPad 原生 UISplitViewController 分栏+边栏+度量实现并 bundle/typecheck/311 测试全绿；native lock-candidates 独立审查中（解锁 macOS CI -> M2 ui 证据与 M-1-infrastructure）"
     },
     "blockers": [],
     "ci": [
@@ -343,11 +341,17 @@
         "role": "m1-remote-final-confirmation-review",
         "status": "working",
         "sourceCommit": "ceec7e888ed8b637f20b351c8ec81a0d890bca18"
+      },
+      {
+        "taskId": "node:delegated-task:command%3Amcp%3A192f0d0c-3998-422d-9b85-6f47c284ec5e%3Adelegate-task%3A2f042cbb-5ba8-4766-bdf6-e6ea512a9986",
+        "role": "native-lock-candidates-review",
+        "status": "working",
+        "sourceCommit": "a27a9a253e12a148de6f92f033ba4342faa1ed02"
       }
     ]
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "387d827672ea98288aa78fe7bd389f78c58d9710d838b1e10a840bf2622eb072"
+    "digest": "36caf2ff2875bac60e2e81a3cc569629effa3bb57677782528cb64e9c3bcd0ad"
   }
 }
