@@ -53,7 +53,7 @@ export default function HomeScreen() {
       ListEmptyComponent={<EmptyState title="No projects" message="Nothing to show in this offline shell." />}
       ListFooterComponent={
         <Text testID="home-diagnostics-link" onPress={() => navigation.navigate('Diagnostics')} style={[styles.footerLink, { color: theme.accent }]}>
-          Open infrastructure probe
+          Open infrastructure details
         </Text>
       }
     />

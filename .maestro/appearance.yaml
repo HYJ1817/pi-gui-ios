@@ -1,8 +1,15 @@
 appId: io.github.hyj1817.piguimobile
 name: Native appearance capture
 ---
+# Dark/system appearance: capture the M2 shell home first, then the probe glass.
 - launchApp:
     clearState: true
+- extendedWaitUntil:
+    visible: "Your agents"
+    timeout: 30000
+- takeScreenshot: ${SCREENSHOT_DIR}/home
+- tapOn:
+    id: "nav-probe"
 - extendedWaitUntil:
     visible: "Native Liquid Glass"
     timeout: 30000

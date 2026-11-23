@@ -163,24 +163,34 @@ jobs:
             artifacts/reports/ipad-native.xml
             artifacts/reports/ipad-dark.xml
             artifacts/reports/ipad-accessibility.xml
+            artifacts/screenshots/iphone/00-shell-home.png
             artifacts/screenshots/iphone/01-native-glass.png
             artifacts/screenshots/iphone/02-interactions.png
             artifacts/screenshots/iphone/03-navigation.png
             artifacts/screenshots/iphone/04-keyboard-visible.png
             artifacts/screenshots/iphone/05-native-motion.png
             artifacts/screenshots/iphone/06-native-menu.png
+            artifacts/screenshots/iphone/07-shell-sessions.png
+            artifacts/screenshots/iphone/08-shell-conversation.png
+            artifacts/screenshots/iphone/dark/home.png
             artifacts/screenshots/iphone/dark/appearance.png
+            artifacts/screenshots/iphone/accessibility/home.png
             artifacts/screenshots/iphone/accessibility/reduce-transparency.png
             artifacts/screenshots/iphone/accessibility/dynamic-type.png
             artifacts/screenshots/iphone/final.png
             artifacts/screenshots/iphone/failure.png
+            artifacts/screenshots/ipad/00-shell-home.png
             artifacts/screenshots/ipad/01-native-glass.png
             artifacts/screenshots/ipad/02-interactions.png
             artifacts/screenshots/ipad/03-navigation.png
             artifacts/screenshots/ipad/04-keyboard-visible.png
             artifacts/screenshots/ipad/05-native-motion.png
             artifacts/screenshots/ipad/06-native-menu.png
+            artifacts/screenshots/ipad/07-shell-sessions.png
+            artifacts/screenshots/ipad/08-shell-conversation.png
+            artifacts/screenshots/ipad/dark/home.png
             artifacts/screenshots/ipad/dark/appearance.png
+            artifacts/screenshots/ipad/accessibility/home.png
             artifacts/screenshots/ipad/accessibility/reduce-transparency.png
             artifacts/screenshots/ipad/accessibility/dynamic-type.png
             artifacts/screenshots/ipad/final.png

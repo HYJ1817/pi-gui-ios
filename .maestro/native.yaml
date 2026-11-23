@@ -1,8 +1,42 @@
 appId: io.github.hyj1817.piguimobile
-name: Native infrastructure interactions
+name: Native shell and infrastructure interactions
 ---
+# M2 shell: the app entry is the Projects home (stacked on iPhone, detail column on iPad split).
 - launchApp:
     clearState: true
+- extendedWaitUntil:
+    visible: "Your agents"
+    timeout: 30000
+- assertVisible: "Projects"
+- assertVisible: "Pi GUI Mobile"
+- takeScreenshot: ${SCREENSHOT_DIR}/00-shell-home
+# Project → Sessions push (detail column on iPad).
+- tapOn:
+    id: "project-project-a0001"
+- extendedWaitUntil:
+    visible: "Synthetic sessions for this project"
+    timeout: 10000
+- assertVisible: "App shell layout"
+- takeScreenshot: ${SCREENSHOT_DIR}/07-shell-sessions
+# Session → Conversation push.
+- tapOn:
+    id: "session-session-s0001"
+- extendedWaitUntil:
+    visible: "Offline conversation preview"
+    timeout: 10000
+- takeScreenshot: ${SCREENSHOT_DIR}/08-shell-conversation
+# Back to Sessions, then Home.
+- tapOn: "Back"
+- extendedWaitUntil:
+    visible: "Synthetic sessions for this project"
+    timeout: 10000
+- tapOn: "Back"
+- extendedWaitUntil:
+    visible: "Your agents"
+    timeout: 10000
+# Enter the infrastructure probe (M−1 native capability lab) via the home quick link.
+- tapOn:
+    id: "nav-probe"
 - extendedWaitUntil:
     visible: "Native Liquid Glass"
     timeout: 30000

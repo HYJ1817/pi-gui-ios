@@ -1,8 +1,15 @@
 appId: io.github.hyj1817.piguimobile
 name: Native opaque accessibility fallback
 ---
+# Reduce Transparency + Dynamic Type: solid fallback on home, then on the probe.
 - launchApp:
     clearState: true
+- extendedWaitUntil:
+    visible: "Your agents"
+    timeout: 30000
+- takeScreenshot: ${SCREENSHOT_DIR}/home
+- tapOn:
+    id: "nav-probe"
 - extendedWaitUntil:
     visible: "Opaque accessibility fallback"
     timeout: 30000

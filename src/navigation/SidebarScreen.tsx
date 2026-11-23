@@ -16,7 +16,8 @@ const QUICK: { key: string; title: string; subtitle: string; route: keyof RootSt
   { key: 'home', title: 'Overview', subtitle: 'Workspace home', route: 'Home' },
   { key: 'approvals', title: 'Approvals', subtitle: 'Pending decisions', route: 'Approvals' },
   { key: 'settings', title: 'Settings', subtitle: 'App preferences', route: 'Settings' },
-  { key: 'diagnostics', title: 'Diagnostics', subtitle: 'Infrastructure probe', route: 'Diagnostics' },
+  { key: 'diagnostics', title: 'Diagnostics', subtitle: 'Infrastructure details', route: 'Diagnostics' },
+  { key: 'probe', title: 'Infrastructure Probe', subtitle: 'Native capability lab', route: 'InfrastructureProbe' },
 ];
 
 export default function SidebarScreen() {
