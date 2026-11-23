@@ -89,17 +89,26 @@ def scan(step, paths):
                     if re.search(pattern, line, re.IGNORECASE):
                         codes.add(code)
                 match = re.search(r'((?:src|scripts|node_modules|ios/Pods|ios)/[^\s:\"<>]+\.(?:tsx?|swift|mm?|cpp|h|py|rb|sh)):(\d{1,7})(?::\d{1,7})?', line.replace('\\', '/'))
-                if not match or not re.search(r'\berror\b', line, re.IGNORECASE):
+                if match and re.search(r'\berror\b', line, re.IGNORECASE):
+                    relative, number = match[1], int(match[2])
+                    # Compiler messages may reference headers through ../ relative
+                    # hops (e.g. Pods -> ../node_modules/...): normalize leading ../
+                    # so the same structural location still reports, never the raw line.
+                    normalized = re.sub(r'^(?:\.\./)+', '', relative)
+                    parts = pathlib.PurePosixPath(normalized).parts
+                    if not 0 < number <= 1000000 or len(normalized) > 240 or '..' in parts or len(locations) >= 10:
+                        continue
+                    relative = normalized
+                elif re.search(r'\berror\b', line, re.IGNORECASE):
+                    # No recognized path prefix: report only the file BASENAME
+                    # with line number for the first few error lines so a
+                    # DerivedData/generated-source failure still has a locator.
+                    name = re.search(r'([A-Za-z0-9_.-]+\.(?:swift|mm?|cpp|h|m)):(\d{1,7})', line)
+                    if name and len(locations) < 10:
+                        locations[('file:' + name[1], int(name[2]))] = {'dependency': 'file:' + name[1], 'line': int(name[2])}
                     continue
-                relative, number = match[1], int(match[2])
-                # Compiler messages may reference headers through ../ relative
-                # hops (e.g. Pods -> ../node_modules/...): normalize leading ../
-                # so the same structural location still reports, never the raw line.
-                normalized = re.sub(r'^(?:\.\./)+', '', relative)
-                parts = pathlib.PurePosixPath(normalized).parts
-                if not 0 < number <= 1000000 or len(normalized) > 240 or '..' in parts or len(locations) >= 10:
+                else:
                     continue
-                relative = normalized
                 if relative in tracked:
                     locations[(relative, number)] = {'path': relative, 'line': number}
                 elif parts[0] == 'node_modules' and len(parts) >= 2:
