@@ -1,6 +1,6 @@
 # 项目进度（生成文件）
 
-权威：.agent/control.json；schema v2；revision 634；2026-11-23T04:22:52.506Z
+权威：.agent/control.json；schema v2；revision 638；2026-11-23T04:46:17.611Z
 
 阶段：M2；当前：M2-shell；分支：agent/m-1-bootstrap
 
@@ -18,7 +18,7 @@
 
 阻塞：无已记录阻塞
 
-检查点：.agent/checkpoints/v2-2026-11-23T04-22-52-506Z-281b3b5e-709d-4c45-b0f0-afded57f6b86.json；保存时 HEAD：ec1820ad5a21d87efff49c3af103e1bfbffaccda
+检查点：.agent/checkpoints/v2-2026-11-23T04-46-17-611Z-e3a4814a-a641-47cb-978d-1100b2475675.json；保存时 HEAD：60b0951935c66cb31ed5053ac29e23de575059e1
 
 CI：44783585115/1 completed/cancelled @ 58ec99506e00a35121866580ffb28d09d5078b17；44864063976/1 completed/failure @ d46d6a5f84ad569f42a727fe29b0e2ed7b6f4afd；44868846710/1 completed/failure @ 86822196c84ee01baf5b8dec41256abdfd04ddeb；44872870220/1 completed/failure @ 0148a3fc0058e6db17a803e1946c2a88a3aab85a；44874304419/1 completed/failure @ 2b16a1ae71f67d953fd7f1956b163843d9a4385f；44877767639/1 completed/failure @ 86cadda377fc1fdf3c483478b03215a3d6b96c32；44891582412/1 completed/failure @ a3420973d4dff86b7def48c26eddad0c0501692b；44894722354/1 completed/failure @ b6d52004cd4fb95f9a96c1cc39ed83570d0ed322；44901616612/1 completed/failure @ 9503ae3932fa707e00f509a8bb6d884745283feb；44906133898/1 completed/failure @ 0e62f613cc69d41d6064c26a251e355c2a299efd；44911181329/1 completed/cancelled @ 0b3745e4d71da50bbbf1bcf9b58bccdf450c54ce
 

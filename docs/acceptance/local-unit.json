@@ -1,16 +1,16 @@
 {
   "schemaVersion": 2,
   "kind": "unit",
-  "taskId": "M1-remote",
-  "commit": "14973c4fa705311b05c879666ebb559992f37461",
-  "sourceFingerprint": "ceeb588d13e8e5c610d52edd8e9aec1c2fb0ca0bfbc4cc54985bcfbb85c8a5b0",
-  "startedAt": "2026-11-22T13:22:17.729Z",
-  "finishedAt": "2026-11-22T13:23:06.830Z",
+  "taskId": "M2-shell",
+  "commit": "60b0951935c66cb31ed5053ac29e23de575059e1",
+  "sourceFingerprint": "561e46d8b07ace27cd6c3602dc11cd5f9056e844f95421a8d9322b6f315daa0f",
+  "startedAt": "2026-11-23T04:45:28.044Z",
+  "finishedAt": "2026-11-23T04:46:14.708Z",
   "passed": true,
   "details": {
     "command": "npm test",
     "exitCode": 0,
     "logPath": "docs/acceptance/local-unit-output.txt",
-    "logSha256": "2949432b4d84a04945b71d74de8df59e573b9b6c9fe740661ec4f40a7dfc6a7e"
+    "logSha256": "e17024a2f832b5fb98fd5dfa8baf9113660a3b0ccd140c3e2094d66809c33012"
   }
 }
