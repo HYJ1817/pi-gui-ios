@@ -1,37 +1,27 @@
 {
   "schemaVersion": 2,
   "kind": "state",
-  "revision": 646,
-  "updatedAt": "2026-11-23T05:00:46.299Z",
+  "revision": 647,
+  "updatedAt": "2026-11-23T05:12:52.414Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "4d228a2d804d842fa9e77dd7489739d9bac63131e464ff07f34e8aac2bb81a8a",
+    "parentDigest": "673cbbf8f9ec116821d09bd60d7f0d40e16c638c388a3fd5de3a0137de32e4e1",
     "phase": "M2",
     "currentTask": "M2-shell",
     "branch": "agent/m-1-bootstrap",
     "checkpoint": {
-      "id": "v2-2026-11-23T05-00-46-299Z-abce8a8c-5540-4639-8e30-50e0835ea420",
-      "path": ".agent/checkpoints/v2-2026-11-23T05-00-46-299Z-abce8a8c-5540-4639-8e30-50e0835ea420.json",
-      "sha256": "3c49d5821ace57391d968396c4b5b38e83ae6d81ee5e7a85ccd02558934a975f",
-      "authorityDigest": "beb2fe39341a9ef7b38b1f140f94e7fce895b5abdc6ef46665a8080217804b59",
-      "at": "2026-11-23T05:00:46.299Z",
+      "id": "v2-2026-11-23T05-12-52-414Z-17a702b3-9e0f-4053-ab1b-df2535d3b399",
+      "path": ".agent/checkpoints/v2-2026-11-23T05-12-52-414Z-17a702b3-9e0f-4053-ab1b-df2535d3b399.json",
+      "sha256": "1f93a803568ca3026226aa0ab5929a34226f422d11d5c908643e68b2a82467d5",
+      "authorityDigest": "4d228a2d804d842fa9e77dd7489739d9bac63131e464ff07f34e8aac2bb81a8a",
+      "at": "2026-11-23T05:12:52.414Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "71063956c01681f542706af09fe28b16ffe3e244",
-        "dirty": [
-          "M .agent/HANDOFF.md",
-          " M .agent/control.json",
-          " M .agent/state.json",
-          " M .agent/tasks.json",
-          " M PROGRESS.md",
-          " M docs/acceptance/local-unit-output.txt",
-          " M docs/acceptance/local-unit.json",
-          "?? .agent/checkpoints/v2-2026-11-23T04-59-44-405Z-5ff1f793-6762-441c-860f-ad22ff1cbf84.json",
-          "?? .agent/checkpoints/v2-2026-11-23T05-00-38-930Z-a3b092e7-9b6a-49df-8413-6fb1ee58d36d.json"
-        ]
+        "commit": "8c6335f29b97b33a226a097f5454cf0ffd591af3",
+        "dirty": []
       },
-      "sourceFingerprint": "600043180d439d7baa5a8544fc091398fa99b2f972bcac6d0d6e9dc9db18874a",
-      "note": "agent-task evidence M2-shell"
+      "sourceFingerprint": "06d9e8e30c8078e1d5274bd7542972afa11199c5ac1a23295d3c96688688e410",
+      "note": "menu 2.1.2+bootstrap 重锁推送 8c6335f；CI 将产新 lock-candidates，需独立审查后重锁；M2 修复已合入"
     },
     "blockers": [],
     "ci": [
@@ -363,6 +353,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "fea0ccee0a33f4bd67a10b9ba406e24593afe2ca1bdcf9e6cee0e0bf5b93077c"
+    "digest": "84318ae899c0befd5ceb07b44ea395cffa385fe3a780d2311548bde875b3bba7"
   }
 }
