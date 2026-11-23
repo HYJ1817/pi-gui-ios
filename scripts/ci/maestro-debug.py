@@ -18,12 +18,17 @@ import re
 
 # Java/Kotlin exception FQCNs are static source-level names, safe to report.
 EXCEPTION = re.compile(r'\b((?:[a-z][a-z0-9_]*\.){2,}[A-Z][A-Za-z0-9]*(?:Exception|Error|Throwable|Timeout|InterruptedException))\b')
-# Log levels and fixed verbs that carry no data.
-LEVEL = re.compile(r'\b(INFO|WARN|ERROR|DEBUG|TRACE|FATAL)\b')
+# Structural lifecycle keywords from Maestro's own driver-install logs and the
+# runner's console — fixed vocabulary, never payload text.
+LIFECYCLE = re.compile(
+    r'\b(XCUITest driver status check|driver.*install|xctest runner.*(launch|start|listen|crash|exit|terminate)|'
+    r'Test Session Results|test.*(succeeded|failed|completed)|Listening|Starting server|server.*ready|'
+    r'simulator.*boot|Application State|process.*crash|CoreSimulator|Failed to launch|install.*succeed|install.*fail)\b',
+    re.IGNORECASE)
 
 
-def reduce_log(path, limit=12):
-    """Exception class names + structural lines from a Maestro log, no payloads."""
+def reduce_log(path, limit=16):
+    """Exception class names + lifecycle keywords from a Maestro/driver log."""
     found, seen = [], set()
     try:
         stream = pathlib.Path(path).open(encoding='utf-8', errors='replace')
@@ -38,6 +43,11 @@ def reduce_log(path, limit=12):
                 if name not in seen:
                     seen.add(name)
                     found.append({'exception': name})
+            for match in LIFECYCLE.finditer(line):
+                key = ' '.join(match.group(0).split())
+                if key not in seen:
+                    seen.add(key)
+                    found.append({'signal': key})
             if len(found) >= limit:
                 break
     return found

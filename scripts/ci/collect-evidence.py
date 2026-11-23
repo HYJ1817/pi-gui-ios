@@ -159,8 +159,8 @@ def collect(private, output):
                     out = {'schemaVersion': 1, 'kind': 'maestro-debug', 'commands': verbs}
                     if isinstance(parsed.get('files'), list) and all(isinstance(f, str) and len(f) <= 80 for f in parsed['files']):
                         out['files'] = parsed['files'][:32]
-                    if isinstance(parsed.get('errors'), list) and all(isinstance(e, dict) and set(e) == {'exception'} and isinstance(e['exception'], str) and len(e['exception']) <= 120 for e in parsed['errors']):
-                        out['errors'] = parsed['errors'][:12]
+                    if isinstance(parsed.get('errors'), list) and all(isinstance(e, dict) and len(e) == 1 and next(iter(e.values())) and isinstance(next(iter(e.values())), str) and len(next(iter(e.values()))) <= 120 and next(iter(e.keys())) in ('exception', 'signal') for e in parsed['errors']):
+                        out['errors'] = parsed['errors'][:16]
                     if isinstance(parsed.get('debugDir'), str) and parsed['debugDir'] == 'missing':
                         out['debugDir'] = 'missing'
                     if len(verbs) == len(parsed['commands']):
