@@ -105,7 +105,8 @@ def collect(bundle):
         ident = ref_id(summary)
         if ident:
             refs.append(ident)
-        elif isinstance(summary, dict) and text(summary.get('producingTarget')):
+        elif isinstance(summary, dict):
+            # Xcode 26 embeds summaries inline with issueType/message (no ref).
             refs.append(summary)  # inline summary objects (older format)
     out = []
     pods = pod_names()
@@ -120,6 +121,14 @@ def collect(bundle):
         issue_type = text(item.get('issueType'))
         if re.fullmatch(r'[A-Za-z0-9_ .\-]{1,40}', issue_type):
             record['issueType'] = issue_type
+        # Xcode 26 inline summaries carry the message directly. Keep the
+        # compiler diagnostic text (public), collapse absolute paths and any
+        # assignment-looking env values.
+        message = text(item.get('message'))
+        if message:
+            safe = re.sub(r'(/[A-Za-z0-9_.+@%^(),= \-]+)+', '[path]', message)
+            safe = re.sub(r'\b[A-Z][A-Z0-9_]{2,}=[^ ]+', '[env]', safe)
+            record['message'] = safe[:400]
         doc = item.get('documentLocationInCreatingWorkspace')
         url = text(doc.get('url')) if isinstance(doc, dict) else ''
         if url:
