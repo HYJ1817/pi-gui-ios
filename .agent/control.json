@@ -1,8 +1,8 @@
 {
   "schemaVersion": 2,
   "kind": "control",
-  "revision": 611,
-  "updatedAt": "2026-11-23T02:39:10.865Z",
+  "revision": 613,
+  "updatedAt": "2026-11-23T02:39:43.572Z",
   "data": {
     "phase": "M1",
     "currentTask": "M1-remote",
@@ -1325,15 +1325,21 @@
         "sourceCommit": "14973c4fa705311b05c879666ebb559992f37461"
       },
       {
-        "taskId": "node:delegated-task:command%3Amcp%3A5a55819e-c86d-47c8-848e-e3f0fbb88082%3Adelegate-task%3A3adb7d89-8301-4520-a490-40e854e52333",
-        "role": "m1-remote-confirmation-review-v3",
+        "taskId": "node:delegated-task:command%3Amcp%3A0de40706-e69b-4b20-bdea-19836641e491%3Adelegate-task%3Afab32c09-5ef8-414e-af49-c42f6839f9cf",
+        "role": "m1-remote-final-confirmation-review",
         "status": "working",
-        "sourceCommit": "e28b5a8096d02084eb45649a59991aa200c32856"
+        "sourceCommit": "ceec7e888ed8b637f20b351c8ec81a0d890bca18"
+      },
+      {
+        "taskId": "node:delegated-task:command%3Amcp%3A0de40706-e69b-4b20-bdea-19836641e491%3Adelegate-task%3Afab32c09-5ef8-414e-af49-c42f6839f9cf",
+        "role": "m1-remote-final-confirmation-review",
+        "status": "working",
+        "sourceCommit": "ceec7e888ed8b637f20b351c8ec81a0d890bca18"
       }
     ]
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "a84c7d7293b8e328229d31d011285d6a1f34d76e5a0572402ef5abc5e223840d"
+    "digest": "c5e999be4a77a2162faf3c95fcc4ce6b1e1b41f5dc75dfec03dc35fb3d2c6574"
   }
 }
