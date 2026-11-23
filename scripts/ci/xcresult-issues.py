@@ -27,41 +27,45 @@ def tracked_files():
 
 
 def issues_from(bundle):
-    result = run(['xcrun', 'xcresulttool', 'get', 'build-results',
-                  '-path', str(bundle)])
-    if result.returncode != 0:
-        return None
-    try:
-        data = json.loads(result.stdout)
-    except json.JSONDecodeError:
-        return None
-    return data
+    # xcresulttool's verb and JSON shape changed across Xcode releases; try the
+    # two modern forms before giving up. Never log tool output.
+    for args in (['xcrun', 'xcresulttool', 'get', 'build-results', '-path', str(bundle)],
+                 ['xcrun', 'xcresulttool', 'get', '--legacy', '--format', 'json', '--path', str(bundle)]):
+        result = run(args)
+        if result.returncode != 0:
+            continue
+        try:
+            data = json.loads(result.stdout)
+        except json.JSONDecodeError:
+            continue
+        return data
+    return None
 
 
 def issue_entries(data):
     if not isinstance(data, dict):
         return []
     entries = []
-    for key in ('errors', 'errorSummaries', 'analyzerWarnings', 'testFailures'):
-        for item in data.get(key, []):
-            if isinstance(item, dict):
-                entries.append(item)
-    for key in ('issues', 'errorSummaries'):
-        sub = data.get(key)
-        if isinstance(sub, dict):
-            for item in sub.get('errorSummaries', []) or []:
-                if isinstance(item, dict):
-                    entries.append(item)
-        elif isinstance(sub, list):
-            for item in sub:
-                if isinstance(item, dict):
-                    entries.append(item)
-    # build-results layout: issues -> {errorSummaries:[{issueType,producingTarget,documentLocationInCreatingWorkspace:{url}}], warningSummaries:...}
-    issues = data.get('issues')
-    if isinstance(issues, dict):
-        for item in issues.get('errorSummaries', []) or []:
-            if isinstance(item, dict):
-                entries.append(item)
+
+    def harvest(value, depth=0):
+        if depth > 6 or len(entries) >= 64:
+            return
+        if isinstance(value, dict):
+            # Issue nodes across Xcode releases share producingTarget or
+            # documentLocationInCreatingWorkspace.
+            if isinstance(value.get('producingTarget'), str) or 'documentLocationInCreatingWorkspace' in value:
+                entries.append(value)
+            for child in value.values():
+                if isinstance(child, (dict, list)):
+                    harvest(child, depth + 1)
+        elif isinstance(value, list):
+            for child in value:
+                if isinstance(child, (dict, list)):
+                    harvest(child, depth + 1)
+
+    # Only harvest under the issues/errors subtrees, not the whole bundle.
+    issues = data.get('issues') if isinstance(data.get('issues'), dict) else {}
+    harvest(issues.get('errorSummaries') or issues.get('errors') or data.get('errors') or data.get('errorSummaries'))
     return entries
 
 
