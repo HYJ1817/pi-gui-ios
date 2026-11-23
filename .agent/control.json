@@ -1,8 +1,8 @@
 {
   "schemaVersion": 2,
   "kind": "control",
-  "revision": 609,
-  "updatedAt": "2026-11-22T14:05:13.842Z",
+  "revision": 611,
+  "updatedAt": "2026-11-23T02:39:10.865Z",
   "data": {
     "phase": "M1",
     "currentTask": "M1-remote",
@@ -11,7 +11,7 @@
     "desktop": {
       "repo": "HYJ1817/pi-gui",
       "branch": "feat/mobile-remote-protocol-v1",
-      "commit": "74b53edbefbfb99543746296b35c4a8205dd7ef0",
+      "commit": "74d252f57554dca33245f7d0050e8ead310ec124",
       "protocolVersion": 1
     },
     "ci": [
@@ -1087,17 +1087,16 @@
       }
     ],
     "checkpoint": {
-      "id": "v2-2026-11-22T13-51-33-637Z-bd433d92-9564-4e20-a9fb-b81a4b4a740f",
-      "path": ".agent/checkpoints/v2-2026-11-22T13-51-33-637Z-bd433d92-9564-4e20-a9fb-b81a4b4a740f.json",
-      "sha256": "a4c2af6341305f1308ed8f1a9ee6886f88a4ec7ea331bed1190c41075d3d24a3",
-      "authorityDigest": "1cb0758dc6ce2796c92466a72008cf0058a43f8782b7f52fbebf574cb600e608",
-      "at": "2026-11-22T13:51:33.637Z",
+      "id": "v2-2026-11-22T14-05-14-233Z-3ad2fcb2-81d5-47c3-972f-cc5c6f9294e1",
+      "path": ".agent/checkpoints/v2-2026-11-22T14-05-14-233Z-3ad2fcb2-81d5-47c3-972f-cc5c6f9294e1.json",
+      "sha256": "43590e562ddcdf3328b17533cdfc391a8b6e9ba02fd1c9f95abd78a7680365ff",
+      "authorityDigest": "aebc04bf478f8fa18b984e49a8793d12c58b483b6bebee9f253bb066bb55b01c",
+      "at": "2026-11-22T14:05:14.233Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "e28b5a8096d02084eb45649a59991aa200c32856",
+        "commit": "75405dd60f0680300f3a230de2b88d34c5adc6c2",
         "dirty": [
           "M .agent/HANDOFF.md",
-          " M .agent/control.json",
           " M .agent/state.json",
           " M .agent/tasks.json",
           " M PROGRESS.md",
@@ -1117,6 +1116,7 @@
           "?? .agent/checkpoints/v2-2026-11-22T13-26-38-281Z-d2e7d461-1677-4333-a6ae-78859188f4d0.json",
           "?? .agent/checkpoints/v2-2026-11-22T13-26-39-361Z-09be7e27-d959-4b97-9f27-1f2d9ed55d1e.json",
           "?? .agent/checkpoints/v2-2026-11-22T13-26-52-110Z-8fdffbdf-3171-46ad-a37e-b015510ed034.json",
+          "?? .agent/checkpoints/v2-2026-11-22T13-51-33-637Z-bd433d92-9564-4e20-a9fb-b81a4b4a740f.json",
           "?? docs/acceptance/local-integration-output.txt",
           "?? docs/acceptance/local-integration.json",
           "?? docs/acceptance/m0-local-protocol-contract.json",
@@ -1128,7 +1128,7 @@
         ]
       },
       "sourceFingerprint": "ceeb588d13e8e5c610d52edd8e9aec1c2fb0ca0bfbc4cc54985bcfbb85c8a5b0",
-      "note": "M1-remote 审查修复落地(desktop 1d8ac5d2)：cert持久化/本机管理面/授权撤销reset/reset递归护栏；旧审查取消，v2独立审查已启动"
+      "note": "M1-remote v2 审查 important/nit 修复落地(desktop 74b53edb)：cursor恢复/快照水印/配对转录通路/每订阅隔离代数/各 nit；v3 确认审查已启动"
     },
     "nextAction": "M1-remote 桌面实现已提交 pi-gui@d244f3e1（remote/v1 全对齐；contract 33+gateway 11 绿）。unit+integration 证据已在 14973c4 导入；M0 依赖 unit+protocol-contract 已在新指纹重章导入。剩：两个 delegate 独立审查（taskId 6b89e4b0=M1-remote 实现审查，a83336bb=M0 合同重审）完成后把 receipt+report 写入 docs/acceptance/review-14973c4-*.json，evidence 导入 M1-remote 与 M0-architecture，validate 全绿后 transition M1-remote->completed。",
     "delegates": [
@@ -1334,6 +1334,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "aebc04bf478f8fa18b984e49a8793d12c58b483b6bebee9f253bb066bb55b01c"
+    "digest": "a84c7d7293b8e328229d31d011285d6a1f34d76e5a0572402ef5abc5e223840d"
   }
 }
