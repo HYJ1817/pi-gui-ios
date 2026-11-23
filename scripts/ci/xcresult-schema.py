@@ -16,6 +16,9 @@ def shape(value, depth=0):
 
 
 def main():
+    help_result = subprocess.run(['xcrun', 'xcresulttool', 'get', '--help'],
+                                 capture_output=True, text=True)
+    print('get-help:', ' '.join(help_result.stdout.split())[:600])
     result = subprocess.run(['xcrun', 'xcresulttool', 'get', 'build-results', '--format', 'json', '-path', sys.argv[1]],
                             capture_output=True, text=True)
     print('rc', result.returncode)
