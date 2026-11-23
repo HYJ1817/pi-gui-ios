@@ -1,8 +1,8 @@
 {
   "schemaVersion": 2,
   "kind": "control",
-  "revision": 658,
-  "updatedAt": "2026-11-23T05:24:16.289Z",
+  "revision": 660,
+  "updatedAt": "2026-11-23T05:29:35.631Z",
   "data": {
     "phase": "M2",
     "currentTask": "M2-shell",
@@ -1128,30 +1128,24 @@
       }
     ],
     "checkpoint": {
-      "id": "v2-2026-11-23T05-24-16-289Z-aa6b693a-493d-4976-aba8-a36026f336fa",
-      "path": ".agent/checkpoints/v2-2026-11-23T05-24-16-289Z-aa6b693a-493d-4976-aba8-a36026f336fa.json",
-      "sha256": "ecee22fef4c168bc2c3f7af3a1ee6d2df9e6a9f706b33fa6187fad26ac9a8066",
-      "authorityDigest": "82a00eddb144364bba96835150cd3a877e3d709eef726fe6d74477dcb8757868",
-      "at": "2026-11-23T05:24:16.289Z",
+      "id": "v2-2026-11-23T05-29-35-631Z-f030b24f-ef72-4f30-a202-303fd940d4cd",
+      "path": ".agent/checkpoints/v2-2026-11-23T05-29-35-631Z-f030b24f-ef72-4f30-a202-303fd940d4cd.json",
+      "sha256": "9b22edbe8d99ac5645847cfe4dc778ce0a56d04e75b28aac4edadebf9ef95013",
+      "authorityDigest": "bf34c8e9bf5320a84dca1b840cde105d422e9502de1f3da90630de4be9f0be2b",
+      "at": "2026-11-23T05:29:35.631Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "97a6b1c7afda50e502174cf02c6772d8f82f65fc",
+        "commit": "6be22fbaa06fa52be3cf987eb891c2f0140ca67f",
         "dirty": [
           "M .agent/HANDOFF.md",
           " M .agent/control.json",
           " M .agent/state.json",
           " M .agent/tasks.json",
-          " M PROGRESS.md",
-          " M docs/acceptance/local-unit-output.txt",
-          " M docs/acceptance/local-unit.json",
-          " M native/dependency-policy.json",
-          "?? .agent/checkpoints/v2-2026-11-23T05-21-37-707Z-b5b7ce3c-22fc-4ca9-8d02-cb1956c9db9d.json",
-          "?? .agent/checkpoints/v2-2026-11-23T05-23-12-357Z-7b5defda-678e-4cec-81e5-ddb0cf38e202.json",
-          "?? .agent/checkpoints/v2-2026-11-23T05-24-11-328Z-6f3a2226-751f-4374-bf58-9f07816c38af.json"
+          " M PROGRESS.md"
         ]
       },
       "sourceFingerprint": "7ebc02b754cc6126398a8df02a3f7b77738967dee5a5481319d25e20af52372f",
-      "note": "agent-task evidence M2-shell"
+      "note": "锁集候选独立审查 delegate 341529d8 登记@HEAD；menu2.1.2+gamma 候选待批"
     },
     "nextAction": "M1-remote completed（desktop 74d252f5，final 审查 pass，四类证据齐）。下一可执行任务：M2-shell（原生设计系统与 iPad 导航布局，依赖 M1-remote 已满足）。M-1-infrastructure 仍 blocked（ADR 0006 owner waiver，NATIVE_DEPENDENCIES_REJECTED，不重试）。M2 开始：调研现有 app 结构与技术栈决策记录，然后实现设计系统/导航并补 unit+ui+independent-review 证据。",
     "delegates": [
@@ -1370,11 +1364,17 @@
         "role": "m2-shell-independent-review",
         "status": "completed",
         "sourceCommit": "5aac7ba120ee24550cbaa0387477f565d42b4746"
+      },
+      {
+        "taskId": "node:delegated-task:command%3Amcp%3Abc091f6e-8884-452f-aeb8-0a54387f015d%3Adelegate-task%3A341529d8-112b-48d4-9df3-9c1aea8e6e4f",
+        "role": "native-lock-candidates-review-45117019917",
+        "status": "working",
+        "sourceCommit": "6be22fbaa06fa52be3cf987eb891c2f0140ca67f"
       }
     ]
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "0f003ac5c7a242252c751e39356e6e4fe0f8bb5e069eaac92df043f747f349e6"
+    "digest": "2bb5183fe7184b654612f7d82beab86d460e6d21431ea4e1d320c452d2feb7e0"
   }
 }
