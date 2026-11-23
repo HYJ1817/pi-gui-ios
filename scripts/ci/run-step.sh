@@ -35,18 +35,6 @@ if [[ "$STEP" == simulator-build && "$STATUS" != 0 ]]; then
     grep -aoE 'NATIVE_[A-Z0-9_]+|\[Codegen\][^/"'"'"']*|error|FAILED|Generated.*' "$CANDIDATE" | head -50 >> "$PRIVATE/logs/$STEP.log" || true
   fi
 fi
-if [[ "$STEP" == simulator-build || "$STEP" == device-build ]] && [[ "$STATUS" != 0 ]]; then
-  # Echo a sanitized excerpt of compiler/linker error lines to the Actions log.
-  # Source messages stay (public, unambiguous), absolute paths collapse to
-  # basenames, and env-var assignments are dropped.
-  printf '\n== %s build errors (paths stripped) ==\n' "$STEP"
-  grep -aE 'error:|error |FAILED|failed with|Undefined symbols|not found|No such module|BUILD FAILED' \
-      "$PRIVATE/logs/$STEP.log" \
-    | grep -av '^[A-Za-z_][A-Za-z0-9_]*=' \
-    | sed -E 's|/[A-Za-z0-9_.+@%^(),= -]+\.[A-Za-z0-9]+|[file]|g; s|/[^: ]*/|[dir]/|g' \
-    | sort -u | head -40
-  printf '== end build errors ==\n'
-fi
 record "$RESULT"
 printf 'NATIVE_STEP_%s_%s\n' "$STEP" "$RESULT"
 if [[ -n "${GITHUB_OUTPUT:-}" ]]; then
