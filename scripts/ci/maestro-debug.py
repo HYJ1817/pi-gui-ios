@@ -65,11 +65,30 @@ def reduce(path):
     return {'schemaVersion': 1, 'kind': 'maestro-debug', 'commands': reduced}
 
 
+def collect_debug(directory):
+    """Locate Maestro's debug artifacts under a --debug-output dir by basename."""
+    root = pathlib.Path(directory)
+    output = {'schemaVersion': 1, 'kind': 'maestro-debug', 'commands': []}
+    if not root.is_dir() or root.is_symlink():
+        output['debugDir'] = 'missing'
+        return output
+    output['files'] = sorted({p.name for p in root.rglob('*') if p.is_file()})[:32]
+    commands = next(root.rglob('commands.json'), None)
+    if commands is not None:
+        try:
+            output = reduce(commands)
+            output['files'] = sorted({p.name for p in root.rglob('*') if p.is_file()})[:32]
+        except Exception:
+            pass
+    log = next(root.rglob('maestro.log'), None)
+    if log is not None:
+        output['errors'] = reduce_log(log)
+    return output
+
+
 if __name__ == '__main__':
     try:
-        output = reduce(sys.argv[1])
+        output = collect_debug(sys.argv[1])
     except Exception:
         output = {'schemaVersion': 1, 'kind': 'maestro-debug', 'commands': []}
-    if len(sys.argv) > 2:
-        output['errors'] = reduce_log(sys.argv[2])
     print(json.dumps(output, sort_keys=True))
