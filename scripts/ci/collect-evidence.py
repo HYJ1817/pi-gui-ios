@@ -147,6 +147,17 @@ def collect(private, output):
             target.unlink(missing_ok=True)
             if source.exists():
                 target.write_bytes(junit(read(source, 2 * 1024 * 1024), device, phase))
+        for phase in PHASES:
+            source = private / 'ui' / device / (phase + '-debug.json')
+            target = reports / (device + '-' + phase + '-debug.json')
+            target.unlink(missing_ok=True)
+            if source.exists():
+                parsed = json.loads(read(source, 256 * 1024))
+                if isinstance(parsed, dict) and parsed.get('kind') == 'maestro-debug' and isinstance(parsed.get('commands'), list):
+                    verbs = [c for c in parsed['commands'] if isinstance(c, dict)
+                             and all(k in ('index', 'verb', 'status') for k in c)]
+                    if len(verbs) == len(parsed['commands']):
+                        target.write_text(json.dumps({'schemaVersion': 1, 'kind': 'maestro-debug', 'commands': verbs}, sort_keys=True) + '\n', encoding='utf-8')
         for shot in SHOTS:
             source = private / 'screenshots' / device / shot
             target = output / 'screenshots' / device / shot
