@@ -10,7 +10,8 @@
       "bundleIdentifier": "io.github.hyj1817.piguimobile",
       "buildNumber": "1",
       "supportsTablet": true,
-      "infoPlist": { "ITSAppUsesNonExemptEncryption": false }
+      "infoPlist": { "ITSAppUsesNonExemptEncryption": false },
+      "deploymentTarget": "26.0"
     },
     "plugins": []
   }
