@@ -108,6 +108,7 @@ jobs:
           sha1sum ios/Podfile 2>/dev/null || true
           grep 'PODFILE CHECKSUM' ios/Podfile.lock 2>/dev/null || true
           diff -q ios/Pods/Manifest.lock ios/Podfile.lock && echo "MANIFEST_MATCH" || echo "MANIFEST_DIFFER"
+          diff ios/Pods/Manifest.lock ios/Podfile.lock | head -120 || true
           echo "MANIFEST_DIAG_END"
       - name: Save dependency downloads only after full lock and checksum verification
         if: steps.pods.outputs.result == 'passed' && steps.native-cache.outputs.cache-hit != 'true'
