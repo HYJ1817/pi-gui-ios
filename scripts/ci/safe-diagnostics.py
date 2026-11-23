@@ -129,7 +129,9 @@ def scan(step, paths):
                     if pkg_hit and pkg_hit[1] in packages and pkg_hit[1] not in targets:
                         targets.append(pkg_hit[1])
                     if len(records) < 12:
-                        records.append(record_error(line))
+                        record = record_error(line)
+                        if record:
+                            records.append(record)
                 tool = tool_line.search(line)
                 if not tool:
                     alias = tool_alias.match(line)
@@ -205,10 +207,21 @@ def record_error(line):
         head = re.search(r'(?:fatal\s+)?error:\s*(.*)', line)
         if not head:
             head = re.search(r'(ld:.*|Undefined.*|duplicate symbol.*)', line)
-        summary = head[1] if head else line[-160:]
+        if not head:
+            # Anything that is not a recognizable compiler/linker diagnostic
+            # carries unclassifiable free text — publish a fixed marker only.
+            return {'message': '<unclassified error>'}
+        summary = head[1]
     summary = re.sub(r'["\'`][^"\'`]{0,200}["\'`]', '<q>', summary)
     # Path-shaped tokens keep only their basename (Foo.h), never directories.
-    summary = ' '.join(token.replace('\\', '/').rsplit('/', 1)[-1] if ('/' in token or '\\' in token) else token for token in summary.split())
+    tokens = [token.replace('\\', '/').rsplit('/', 1)[-1] if ('/' in token or '\\' in token) else token for token in summary.split()]
+    # Arbitrary free text still never copies: only compiler-shaped vocabulary
+    # (plain words, source extensions, angle-bracket placeholders, short
+    # punctuation groups) survives.
+    tokens = [token if re.fullmatch(r'[A-Za-z0-9_.+\-:]+|<[^>]{0,40}>|\W{1,12}', token) else '<x>' for token in tokens]
+    summary = ' '.join(tokens)
+    if not summary.strip():
+        return None
     record['message'] = summary[:160]
     return record
 
