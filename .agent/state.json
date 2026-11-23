@@ -1,27 +1,36 @@
 {
   "schemaVersion": 2,
   "kind": "state",
-  "revision": 669,
-  "updatedAt": "2026-11-23T05:37:46.960Z",
+  "revision": 672,
+  "updatedAt": "2026-11-23T07:21:16.297Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "8b92b7e9facd22d780dc922a9407829b73b708e903c307633e4ce2a9b4234265",
+    "parentDigest": "cd036deb15c269ff7633053f3fd4be0a6714544e276742211df64dff46337e6e",
     "phase": "M2",
     "currentTask": "M2-shell",
     "branch": "agent/m-1-bootstrap",
     "checkpoint": {
-      "id": "v2-2026-11-23T05-37-08-662Z-c5200afd-7fd3-46d3-9bce-659cddc9004e",
-      "path": ".agent/checkpoints/v2-2026-11-23T05-37-08-662Z-c5200afd-7fd3-46d3-9bce-659cddc9004e.json",
-      "sha256": "0b6d31f44cccba4fdc9276c37007c7b7eb2eb4b6246043e46e98980fa6a3d3cf",
-      "authorityDigest": "955207d34dc140f7c4fc41fba6fc6e634917c19ca744048ef30751f85ab0cd63",
-      "at": "2026-11-23T05:37:08.662Z",
+      "id": "v2-2026-11-23T07-21-16-297Z-990ed94e-0474-420a-8c5d-338f88277be7",
+      "path": ".agent/checkpoints/v2-2026-11-23T07-21-16-297Z-990ed94e-0474-420a-8c5d-338f88277be7.json",
+      "sha256": "0ea54059d6158bf09cecff6e6ba209e312bbc900b3c13c264316118bea61189a",
+      "authorityDigest": "9fabcdada791867f8e291c6e97f76c519a5242fb816aca6d4d5cef982dd33ee2",
+      "at": "2026-11-23T07:21:16.297Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "658a03dde878738063f91d5a3ddd9a63b8bd013a",
-        "dirty": []
+        "commit": "c48437ca7d2ee03e706b0ae88152af6bd87b1ac8",
+        "dirty": [
+          "M .agent/HANDOFF.md",
+          " M .agent/control.json",
+          " M .agent/state.json",
+          " M .agent/tasks.json",
+          " M PROGRESS.md",
+          " M docs/acceptance/local-unit-output.txt",
+          " M docs/acceptance/local-unit.json",
+          "?? .agent/checkpoints/v2-2026-11-23T07-20-59-436Z-bf75cedb-92c8-459d-a325-1224dd0a9fc0.json"
+        ]
       },
-      "sourceFingerprint": "efd29fc2113c45cfe953ce28d2fd8f9a90fd3f2b3d59214594509d102d6af4da",
-      "note": "locked CI 45118725807 运行中（menu2.1.2+gamma+全部修复）；M2 复审 998aa959 进行中；指纹 efd29fc2"
+      "sourceFingerprint": "fac70b64c49783548183bf9f7c47aad686a8aac1d69901c3742f45a7710272a7",
+      "note": "agent-task evidence M2-shell"
     },
     "blockers": [],
     "ci": [
@@ -365,6 +374,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "0d56d90fac67f2fc2b93b5a0e177cf59ad8291688353c24cd55df28cc1857474"
+    "digest": "34636370c490bac9bae51be57926d9a9f52226623b8fc521185ae510d5571995"
   }
 }
