@@ -16,9 +16,13 @@ def shape(value, depth=0):
 
 
 def main():
-    result = subprocess.run(['xcrun', 'xcresulttool', 'get', 'build-results', '-path', sys.argv[1]],
+    result = subprocess.run(['xcrun', 'xcresulttool', 'get', 'build-results', '--format', 'json', '-path', sys.argv[1]],
                             capture_output=True, text=True)
     print('rc', result.returncode)
+    if result.returncode != 0:
+        result = subprocess.run(['xcrun', 'xcresulttool', 'get', 'build-results', '-path', sys.argv[1]],
+                                capture_output=True, text=True)
+        print('rc2', result.returncode, 'first200:', repr(result.stdout[:200]))
     try:
         print(json.dumps(shape(json.loads(result.stdout)), indent=1)[:3000])
     except Exception as error:
