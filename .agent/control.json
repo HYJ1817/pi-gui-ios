@@ -1,8 +1,8 @@
 {
   "schemaVersion": 2,
   "kind": "control",
-  "revision": 684,
-  "updatedAt": "2026-11-23T12:07:47.438Z",
+  "revision": 685,
+  "updatedAt": "2026-11-23T23:26:49.937Z",
   "data": {
     "phase": "M2",
     "currentTask": "M2-shell",
@@ -1168,27 +1168,18 @@
       }
     ],
     "checkpoint": {
-      "id": "v2-2026-11-23T12-07-47-438Z-04ef4434-25aa-46a8-852a-1baf0a818930",
-      "path": ".agent/checkpoints/v2-2026-11-23T12-07-47-438Z-04ef4434-25aa-46a8-852a-1baf0a818930.json",
-      "sha256": "8186c9f126c1dec9fce461329c7913abf5df4eb5a323f6689fa140349ad7d487",
-      "authorityDigest": "fb0c4bfa6117eadb833059c645e9c824fd48ddee5060d7e05020a610a9988040",
-      "at": "2026-11-23T12:07:47.438Z",
+      "id": "v2-2026-11-23T23-26-49-937Z-68b0b2e8-1a8e-4bbe-b7fc-bb1f0e5a7792",
+      "path": ".agent/checkpoints/v2-2026-11-23T23-26-49-937Z-68b0b2e8-1a8e-4bbe-b7fc-bb1f0e5a7792.json",
+      "sha256": "428f6700e9f27379ba8383a5e65f77595f49f3c905cd72d262e85c020122acad",
+      "authorityDigest": "cc389641e07008e99832493644b5c418ce9413df60c14772edfc5d38541a1167",
+      "at": "2026-11-23T23:26:49.937Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "ee41ab9a1d02c2c8dac2078cf6a6c89ba40cc6d4",
-        "dirty": [
-          "M .agent/HANDOFF.md",
-          " M .agent/control.json",
-          " M .agent/state.json",
-          " M .agent/tasks.json",
-          " M PROGRESS.md",
-          " M docs/acceptance/local-unit-output.txt",
-          " M docs/acceptance/local-unit.json",
-          "?? .agent/checkpoints/v2-2026-11-23T12-07-41-198Z-a97049a5-47a8-439a-b51c-84dc0c20dadd.json"
-        ]
+        "commit": "3d29f70749d09db9f1a55e8fdf5da3885f929acd",
+        "dirty": []
       },
-      "sourceFingerprint": "d38f4c24433335be966c0603012e9b8a16d1a53df9f746e85726eb9505c56ed2",
-      "note": "agent-task evidence M2-shell"
+      "sourceFingerprint": "7fd922c7e552b4ca13d6b886fa3e687be1141c0aebeedc15e7f80fd6b92c0ff1",
+      "note": "iphone AX 崩溃对策: deep-link linking+坐标tap/swipe+evalScript 延时 flow; 需等 CI 45288650063 判定 driver 是否仍不监听"
     },
     "nextAction": "M1-remote completed（desktop 74d252f5，final 审查 pass，四类证据齐）。下一可执行任务：M2-shell（原生设计系统与 iPad 导航布局，依赖 M1-remote 已满足）。M-1-infrastructure 仍 blocked（ADR 0006 owner waiver，NATIVE_DEPENDENCIES_REJECTED，不重试）。M2 开始：调研现有 app 结构与技术栈决策记录，然后实现设计系统/导航并补 unit+ui+independent-review 证据。",
     "delegates": [
@@ -1430,6 +1421,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "cc389641e07008e99832493644b5c418ce9413df60c14772edfc5d38541a1167"
+    "digest": "8b6993377358ff9f4162196ef38de8950282defeedab7cc057e59c5f67611d40"
   }
 }

@@ -18,6 +18,12 @@ import re
 
 # Java/Kotlin exception FQCNs are static source-level names, safe to report.
 EXCEPTION = re.compile(r'\b((?:[a-z][a-z0-9_]*\.){2,}[A-Z][A-Za-z0-9]*(?:Exception|Error|Throwable|Timeout|InterruptedException))\b')
+# Maestro's own fixed failure vocabulary from the test runner console — these
+# are source-level strings, not runner paths or payloads.
+FATAL = re.compile(
+    r'\b(Unable to connect|Failed to (install|launch|start)|driver (is not|not) (running|listening)|'
+    r'Could not connect|connection refused|timed? ?out|Flow .* failed|Unexpected error|no devices found|'
+    r'unable to launch app|app.*(not installed|not found))\b', re.IGNORECASE)
 # Structural lifecycle keywords from Maestro's own driver-install logs and the
 # runner's console — fixed vocabulary, never payload text.
 LIFECYCLE = re.compile(
@@ -44,6 +50,11 @@ def reduce_log(path, limit=16):
                     seen.add(name)
                     found.append({'exception': name})
             for match in LIFECYCLE.finditer(line):
+                key = ' '.join(match.group(0).split())
+                if key not in seen:
+                    seen.add(key)
+                    found.append({'signal': key})
+            for match in FATAL.finditer(line):
                 key = ' '.join(match.group(0).split())
                 if key not in seen:
                     seen.add(key)
@@ -91,7 +102,7 @@ def collect_debug(directory):
         except Exception:
             pass
     errors = []
-    for name in ('maestro.log', 'device-xctest.log'):
+    for name in ('console.log', 'maestro.log', 'device-xctest.log'):
         log = next(root.rglob(name), None)
         if log is not None:
             errors.extend(reduce_log(log))

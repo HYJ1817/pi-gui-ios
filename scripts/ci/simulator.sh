@@ -46,12 +46,13 @@ run_flow() {
   local args=(test -e "$env" --format junit --output "$xml" --test-output-dir "$out"
               --debug-output "$debug" --flatten-debug-output "$flow")
   local rc=0
-  maestro --device "$UDID" "${args[@]}" || rc=$?
+  mkdir -p "$debug"
+  maestro --device "$UDID" "${args[@]}" > "$debug/console.log" 2>&1 || rc=$?
   if [[ "$rc" != 0 ]]; then
     python3 scripts/ci/maestro-debug.py "$debug" "$UI/$1-debug.json" || true
     sleep 5
     rm -rf "$debug"; mkdir -p "$debug"
-    maestro --device "$UDID" --reinstall-driver "${args[@]}" && rc=0
+    maestro --device "$UDID" --reinstall-driver "${args[@]}" > "$debug/console.log" 2>&1 && rc=0
   fi
   return "$rc"
 }
