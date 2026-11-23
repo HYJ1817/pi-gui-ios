@@ -148,12 +148,9 @@ jobs:
       - name: Stage sanitized simulator-build text excerpt for diagnosis
         if: always() && steps.evidence.outcome == 'success'
         run: |
-          for step in simulator-build device-build pods; do
-            src="$RUNNER_TEMP/native-private/logs/$step.log"
-            if [ -f "$src" ]; then
-              python3 scripts/ci/sanitize-log.py "$src" "artifacts/reports/${step}.txt"
-            fi
-          done
+          python3 scripts/ci/sanitize-log.py "$RUNNER_TEMP/native-private/logs/simulator-build.log" "artifacts/reports/simulator-build.txt" || true
+          python3 scripts/ci/sanitize-log.py "$RUNNER_TEMP/native-private/logs/device-build.log" "artifacts/reports/device-build.txt" || true
+          python3 scripts/ci/sanitize-log.py "$RUNNER_TEMP/native-private/logs/pods.log" "artifacts/reports/pods.txt" || true
       - name: Upload verified final IPA only
         if: success() && steps.ipa.outputs.result == 'passed'
         uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
