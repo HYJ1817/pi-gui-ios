@@ -80,9 +80,17 @@ def collect_debug(directory):
             output['files'] = sorted({p.name for p in root.rglob('*') if p.is_file()})[:32]
         except Exception:
             pass
-    log = next(root.rglob('maestro.log'), None)
-    if log is not None:
-        output['errors'] = reduce_log(log)
+    errors = []
+    for name in ('maestro.log', 'device-xctest.log'):
+        log = next(root.rglob(name), None)
+        if log is not None:
+            errors.extend(reduce_log(log))
+    for log in sorted(root.rglob('xctest_runner_*.log')):
+        errors.extend(reduce_log(log))
+        if len(errors) >= 12:
+            break
+    if errors:
+        output['errors'] = errors[:12]
     return output
 
 
