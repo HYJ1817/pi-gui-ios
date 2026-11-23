@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 2,
+  "kind": "independent-security",
+  "taskId": "M0-architecture",
+  "commit": "14973c4fa705311b05c879666ebb559992f37461",
+  "sourceFingerprint": "ceeb588d13e8e5c610d52edd8e9aec1c2fb0ca0bfbc4cc54985bcfbb85c8a5b0",
+  "startedAt": "2026-11-22T13:26:32.980Z",
+  "finishedAt": "2026-11-22T13:26:32.980Z",
+  "passed": true,
+  "details": {
+    "receiptPath": "docs/acceptance/m0-review-14973c4-receipt.json",
+    "receiptSha256": "0fffc267615c16a50be7cf83c37431eb7b45813e4730e3bd8eb2d0bcedf75d0f",
+    "scope": "Combined functional+security independent re-review of the M0 frozen remote/v1 contract on HEAD 14973c4 (contract/validator/tests byte-identical to previously-passed baseline; only verify.mjs integration kind + desktop-remote-verify.mjs added)."
+  }
+}

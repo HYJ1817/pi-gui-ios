@@ -1,8 +1,8 @@
 {
   "schemaVersion": 2,
   "kind": "control",
-  "revision": 615,
-  "updatedAt": "2026-11-23T02:45:11.285Z",
+  "revision": 628,
+  "updatedAt": "2026-11-23T02:45:34.518Z",
   "data": {
     "phase": "M1",
     "currentTask": "M1-remote",
@@ -960,7 +960,7 @@
         "id": "M1-remote",
         "phase": "M1",
         "title": "桌面远程授权、配对、撤销",
-        "status": "in_progress",
+        "status": "completed",
         "dependsOn": [
           "M0-architecture"
         ],
@@ -987,9 +987,25 @@
             "sourceFingerprint": "ceeb588d13e8e5c610d52edd8e9aec1c2fb0ca0bfbc4cc54985bcfbb85c8a5b0",
             "commit": "14973c4fa705311b05c879666ebb559992f37461",
             "at": "2026-11-22T13:23:13.620Z"
+          },
+          {
+            "kind": "independent-review",
+            "path": "docs/acceptance/m1-remote-final-review.json",
+            "sha256": "f25533ff0ce06836f98081e71a75e8c9fb7864bdd6138bd5c89154568aeb6a66",
+            "sourceFingerprint": "ceeb588d13e8e5c610d52edd8e9aec1c2fb0ca0bfbc4cc54985bcfbb85c8a5b0",
+            "commit": "4b66caac82dd57b20cb937b6975965c89a52135d",
+            "at": "2026-11-23T02:45:14.892Z"
+          },
+          {
+            "kind": "independent-security",
+            "path": "docs/acceptance/m1-remote-final-security.json",
+            "sha256": "64e5fc40c1d5af612b8b1c20b32a18a3edff123bb61fdf717077c18158faf8dc",
+            "sourceFingerprint": "ceeb588d13e8e5c610d52edd8e9aec1c2fb0ca0bfbc4cc54985bcfbb85c8a5b0",
+            "commit": "4b66caac82dd57b20cb937b6975965c89a52135d",
+            "at": "2026-11-23T02:45:18.820Z"
           }
         ],
-        "updatedAt": "2026-11-22T05:04:18.571Z"
+        "updatedAt": "2026-11-23T02:45:31.115Z"
       },
       {
         "id": "M2-shell",
@@ -1087,16 +1103,17 @@
       }
     ],
     "checkpoint": {
-      "id": "v2-2026-11-23T02-39-58-767Z-44fe400b-1083-46fe-a6bb-a40019a4a6ef",
-      "path": ".agent/checkpoints/v2-2026-11-23T02-39-58-767Z-44fe400b-1083-46fe-a6bb-a40019a4a6ef.json",
-      "sha256": "9dfb04a2e54c56b744adf8aadb0e7ee0eaf25439799f49f42bcd000e71890d9e",
-      "authorityDigest": "c5e999be4a77a2162faf3c95fcc4ce6b1e1b41f5dc75dfec03dc35fb3d2c6574",
-      "at": "2026-11-23T02:39:58.767Z",
+      "id": "v2-2026-11-23T02-45-34-518Z-3e3d3bd6-dfee-4496-b81b-464593b31970",
+      "path": ".agent/checkpoints/v2-2026-11-23T02-45-34-518Z-3e3d3bd6-dfee-4496-b81b-464593b31970.json",
+      "sha256": "41f5183d69d16cd1341c501bf658c712ad23169c177f6f05788b18a6e49da9c2",
+      "authorityDigest": "e288a8d79c9225dfe1eb0c51c0a64bbfca41888b5d270e8fdba51fa236af648e",
+      "at": "2026-11-23T02:45:34.518Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "4b66caac82dd57b20cb937b6975965c89a52135d",
+        "commit": "6e0e4449d13b7abfb434b5290515c6f0e6e01b8a",
         "dirty": [
           "M .agent/HANDOFF.md",
+          " M .agent/control.json",
           " M .agent/state.json",
           " M .agent/tasks.json",
           " M PROGRESS.md",
@@ -1118,6 +1135,13 @@
           "?? .agent/checkpoints/v2-2026-11-22T13-26-52-110Z-8fdffbdf-3171-46ad-a37e-b015510ed034.json",
           "?? .agent/checkpoints/v2-2026-11-22T13-51-33-637Z-bd433d92-9564-4e20-a9fb-b81a4b4a740f.json",
           "?? .agent/checkpoints/v2-2026-11-22T14-05-14-233Z-3ad2fcb2-81d5-47c3-972f-cc5c6f9294e1.json",
+          "?? .agent/checkpoints/v2-2026-11-23T02-39-58-767Z-44fe400b-1083-46fe-a6bb-a40019a4a6ef.json",
+          "?? .agent/checkpoints/v2-2026-11-23T02-45-14-943Z-f02f70f5-13cb-4a6b-991d-5150665c4f12.json",
+          "?? .agent/checkpoints/v2-2026-11-23T02-45-18-867Z-029d224b-0510-407f-ad06-0af411ad6e6e.json",
+          "?? .agent/checkpoints/v2-2026-11-23T02-45-26-349Z-845c61fb-0342-4429-8ec2-98c5e6d6cd22.json",
+          "?? .agent/checkpoints/v2-2026-11-23T02-45-27-124Z-d2cc0450-d301-4dad-ade2-753d07d609c0.json",
+          "?? .agent/checkpoints/v2-2026-11-23T02-45-29-212Z-079f216c-57f7-4e84-b67a-b9fd8bd8732c.json",
+          "?? .agent/checkpoints/v2-2026-11-23T02-45-31-164Z-2da4cf1b-3b2f-4842-ba82-b8c42ad8c303.json",
           "?? docs/acceptance/local-integration-output.txt",
           "?? docs/acceptance/local-integration.json",
           "?? docs/acceptance/m0-local-protocol-contract.json",
@@ -1129,7 +1153,7 @@
         ]
       },
       "sourceFingerprint": "ceeb588d13e8e5c610d52edd8e9aec1c2fb0ca0bfbc4cc54985bcfbb85c8a5b0",
-      "note": "v3 审查卡死(内存 SSE 订阅未 close 致 keepalive 挂住 bash)已取消并重启 final 审查；watermark 空 backlog 边界已修(74d252f5)"
+      "note": "M1-remote completed：独立审查 final pass(desktop 74d252f5)，unit/integration/independent-review/independent-security 证据齐全"
     },
     "nextAction": "M1-remote 桌面实现已提交 pi-gui@d244f3e1（remote/v1 全对齐；contract 33+gateway 11 绿）。unit+integration 证据已在 14973c4 导入；M0 依赖 unit+protocol-contract 已在新指纹重章导入。剩：两个 delegate 独立审查（taskId 6b89e4b0=M1-remote 实现审查，a83336bb=M0 合同重审）完成后把 receipt+report 写入 docs/acceptance/review-14973c4-*.json，evidence 导入 M1-remote 与 M0-architecture，validate 全绿后 transition M1-remote->completed。",
     "delegates": [
@@ -1341,6 +1365,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "c26d07952fc9fb359e14d746c20a3b4427d938dbd983195688df279bd59dfb21"
+    "digest": "519ff4955f03d85a30dba575cb404a9c2b42d27d52cc5012493f7cde9a1b1b48"
   }
 }

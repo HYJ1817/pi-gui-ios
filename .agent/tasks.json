@@ -1,11 +1,11 @@
 {
   "schemaVersion": 2,
   "kind": "tasks",
-  "revision": 583,
-  "updatedAt": "2026-11-22T13:17:33.609Z",
+  "revision": 628,
+  "updatedAt": "2026-11-23T02:45:34.518Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "80bc361d947ec399a6376bb2f108cc748e0551393e3f02df68e3ec280fc1116c",
+    "parentDigest": "519ff4955f03d85a30dba575cb404a9c2b42d27d52cc5012493f7cde9a1b1b48",
     "tasks": [
       {
         "id": "M-1-infrastructure",
@@ -810,6 +810,38 @@
             "sourceFingerprint": "2741833c73b7a8bba5ee544d59c5695d3958a80478970a13eb11a3f5731abf41",
             "commit": "447d98f3f4f40401d03b5f225a037cfc5d1848a8",
             "at": "2026-11-22T05:03:54.956Z"
+          },
+          {
+            "kind": "unit",
+            "path": "docs/acceptance/m0-local-unit.json",
+            "sha256": "f54381d8db09b29905d0fb60e528419aecb28ea8b3707925fb248f9eedcf0fd0",
+            "sourceFingerprint": "ceeb588d13e8e5c610d52edd8e9aec1c2fb0ca0bfbc4cc54985bcfbb85c8a5b0",
+            "commit": "14973c4fa705311b05c879666ebb559992f37461",
+            "at": "2026-11-22T13:25:07.153Z"
+          },
+          {
+            "kind": "protocol-contract",
+            "path": "docs/acceptance/m0-local-protocol-contract.json",
+            "sha256": "8e2ab43c20c384f2bf2239680520f5f744a18ebc64f21fd166546e9188459545",
+            "sourceFingerprint": "ceeb588d13e8e5c610d52edd8e9aec1c2fb0ca0bfbc4cc54985bcfbb85c8a5b0",
+            "commit": "14973c4fa705311b05c879666ebb559992f37461",
+            "at": "2026-11-22T13:25:08.378Z"
+          },
+          {
+            "kind": "independent-review",
+            "path": "docs/acceptance/m0-review-14973c4-review.json",
+            "sha256": "c566c7e823de23f2f42efa26da6be52fe38feb07bc6344ecd32025d8bb97ae1d",
+            "sourceFingerprint": "ceeb588d13e8e5c610d52edd8e9aec1c2fb0ca0bfbc4cc54985bcfbb85c8a5b0",
+            "commit": "14973c4fa705311b05c879666ebb559992f37461",
+            "at": "2026-11-22T13:26:38.231Z"
+          },
+          {
+            "kind": "independent-security",
+            "path": "docs/acceptance/m0-review-14973c4-security.json",
+            "sha256": "48797fa41ea413df03f0dc04905deb825205a17128ae236042aa82e4c4af67c6",
+            "sourceFingerprint": "ceeb588d13e8e5c610d52edd8e9aec1c2fb0ca0bfbc4cc54985bcfbb85c8a5b0",
+            "commit": "14973c4fa705311b05c879666ebb559992f37461",
+            "at": "2026-11-22T13:26:39.302Z"
           }
         ],
         "updatedAt": "2026-11-22T05:04:14.175Z"
@@ -818,7 +850,7 @@
         "id": "M1-remote",
         "phase": "M1",
         "title": "桌面远程授权、配对、撤销",
-        "status": "in_progress",
+        "status": "completed",
         "dependsOn": [
           "M0-architecture"
         ],
@@ -829,8 +861,41 @@
           "independent-security"
         ],
         "acceptance": "隔离入口、TLS、重放、撤销断连、最小权限及桌面 canonical 验证",
-        "evidence": [],
-        "updatedAt": "2026-11-22T05:04:18.571Z"
+        "evidence": [
+          {
+            "kind": "unit",
+            "path": "docs/acceptance/local-unit.json",
+            "sha256": "2f3f8c59dd3b0cf5207a0c9be76a3618509c8c159fb0d7a3da99880558ecc69f",
+            "sourceFingerprint": "ceeb588d13e8e5c610d52edd8e9aec1c2fb0ca0bfbc4cc54985bcfbb85c8a5b0",
+            "commit": "14973c4fa705311b05c879666ebb559992f37461",
+            "at": "2026-11-22T13:23:12.281Z"
+          },
+          {
+            "kind": "integration",
+            "path": "docs/acceptance/local-integration.json",
+            "sha256": "62f39f1e109274309ca8f5aef689f7159254bfd1ceee0f1ae5e6afee55c0f277",
+            "sourceFingerprint": "ceeb588d13e8e5c610d52edd8e9aec1c2fb0ca0bfbc4cc54985bcfbb85c8a5b0",
+            "commit": "14973c4fa705311b05c879666ebb559992f37461",
+            "at": "2026-11-22T13:23:13.620Z"
+          },
+          {
+            "kind": "independent-review",
+            "path": "docs/acceptance/m1-remote-final-review.json",
+            "sha256": "f25533ff0ce06836f98081e71a75e8c9fb7864bdd6138bd5c89154568aeb6a66",
+            "sourceFingerprint": "ceeb588d13e8e5c610d52edd8e9aec1c2fb0ca0bfbc4cc54985bcfbb85c8a5b0",
+            "commit": "4b66caac82dd57b20cb937b6975965c89a52135d",
+            "at": "2026-11-23T02:45:14.892Z"
+          },
+          {
+            "kind": "independent-security",
+            "path": "docs/acceptance/m1-remote-final-security.json",
+            "sha256": "64e5fc40c1d5af612b8b1c20b32a18a3edff123bb61fdf717077c18158faf8dc",
+            "sourceFingerprint": "ceeb588d13e8e5c610d52edd8e9aec1c2fb0ca0bfbc4cc54985bcfbb85c8a5b0",
+            "commit": "4b66caac82dd57b20cb937b6975965c89a52135d",
+            "at": "2026-11-23T02:45:18.820Z"
+          }
+        ],
+        "updatedAt": "2026-11-23T02:45:31.115Z"
       },
       {
         "id": "M2-shell",
@@ -930,6 +995,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "083c9356c60644a88dd533b9f236ef1d90a65be5d2ff59fb28a99e9dc8d54ab0"
+    "digest": "56bb5539ccacc168281d484d6cd4312b80a64691f57cd33af48f446e89650178"
   }
 }
