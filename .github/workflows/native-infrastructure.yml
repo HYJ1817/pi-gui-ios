@@ -128,7 +128,7 @@ jobs:
           set -e
           if [ "$status" -ne 0 ]; then
             python3 scripts/ci/xcresult-schema.py "$RUNNER_TEMP/native-private/simulator.xcresult" || true
-            python3 scripts/ci/xcresult-issues.py "$RUNNER_TEMP/native-private/simulator.xcresult" > "$RUNNER_TEMP/native-private/logs/simulator-build-xcresult.json" || true
+            python3 scripts/ci/xcresult-issues.py "$RUNNER_TEMP/native-private/simulator.xcresult" "$RUNNER_TEMP/native-private/logs/simulator-build.log" > "$RUNNER_TEMP/native-private/logs/simulator-build-xcresult.json" || true
           fi
           exit "$status"
       - name: iPhone native interactions and appearance
