@@ -88,13 +88,18 @@ def scan(step, paths):
                 for code, pattern in CATEGORIES.items():
                     if re.search(pattern, line, re.IGNORECASE):
                         codes.add(code)
-                match = re.search(r'((?:src|scripts|node_modules|ios/Pods)/[^\s:\"<>]+\.(?:tsx?|swift|mm?|cpp|h|py|rb|sh)):(\d{1,7})(?::\d{1,7})?', line.replace('\\', '/'))
+                match = re.search(r'((?:src|scripts|node_modules|ios/Pods|ios)/[^\s:\"<>]+\.(?:tsx?|swift|mm?|cpp|h|py|rb|sh)):(\d{1,7})(?::\d{1,7})?', line.replace('\\', '/'))
                 if not match or not re.search(r'\berror\b', line, re.IGNORECASE):
                     continue
                 relative, number = match[1], int(match[2])
-                parts = pathlib.PurePosixPath(relative).parts
-                if not 0 < number <= 1000000 or len(relative) > 240 or '..' in parts or len(locations) >= 10:
+                # Compiler messages may reference headers through ../ relative
+                # hops (e.g. Pods -> ../node_modules/...): normalize leading ../
+                # so the same structural location still reports, never the raw line.
+                normalized = re.sub(r'^(?:\.\./)+', '', relative)
+                parts = pathlib.PurePosixPath(normalized).parts
+                if not 0 < number <= 1000000 or len(normalized) > 240 or '..' in parts or len(locations) >= 10:
                     continue
+                relative = normalized
                 if relative in tracked:
                     locations[(relative, number)] = {'path': relative, 'line': number}
                 elif parts[0] == 'node_modules' and len(parts) >= 2:
@@ -103,6 +108,10 @@ def scan(step, paths):
                         locations[(name, number)] = {'dependency': name, 'line': number}
                 elif relative.startswith('ios/Pods/'):
                     locations[('cocoapods', number)] = {'dependency': 'cocoapods', 'line': number}
+                elif relative.startswith('ios/'):
+                    # Generated project files (pods-prebuild output): report the
+                    # basename only, never intermediate paths or contents.
+                    locations[('ios-generated', number)] = {'dependency': 'ios-generated', 'line': number}
                 # No quoted identifier or generated/untracked source value is copied.
     return {'schemaVersion': 1, 'kind': 'safe-ci-diagnostics', 'step': step,
             'codes': sorted(codes)[:32] or ['NATIVE_FAILURE_DETAILS_WITHHELD'],
