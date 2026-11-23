@@ -83,14 +83,14 @@ jobs:
             python3 scripts/ci/verify-template.py "$RUNNER_TEMP/native-private/expo-template-bare-minimum-58.0.35.tgz"
             npx expo prebuild --platform ios --no-install --template "$RUNNER_TEMP/native-private/expo-template-bare-minimum-58.0.35.tgz"
             python3 scripts/ci/configure-native.py
-            # Xcode script phases run with a minimal PATH that lacks the runner's
-            # hostedtoolcache node (it only joins PATH via GITHUB_PATH). The template's
-            # .xcode.env does `export NODE_BINARY=$(command -v node)`, which resolves to
-            # nothing inside xcodebuild, so every node-driven phase fails (exit 65).
-            # Write .xcode.env.local with the absolute binary; it is not versioned and
-            # overrides the global env file.
-            printf 'export NODE_BINARY=%s\n' "$(command -v node)" > ios/.xcode.env.local
           '
+          # Xcode script phases run with a minimal PATH that lacks the runner's
+          # hostedtoolcache node (it only joins PATH via GITHUB_PATH). The template's
+          # .xcode.env does `export NODE_BINARY=$(command -v node)`, which resolves to
+          # nothing inside xcodebuild, so every node-driven phase fails (exit 65).
+          # Write .xcode.env.local with the absolute binary; it is not versioned and
+          # overrides the global env file.
+          printf 'export NODE_BINARY=%s\n' "$(command -v node)" > ios/.xcode.env.local
       - name: Restore exact reviewed dependency downloads
         id: native-cache
         if: hashFiles('native/lock-review.json') != ''
