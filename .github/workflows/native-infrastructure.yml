@@ -145,6 +145,33 @@ jobs:
         id: evidence
         if: always()
         run: python3 scripts/ci/collect-evidence.py
+      - name: Stage sanitized simulator-build log for diagnosis
+        if: always() && steps.evidence.outcome == 'success'
+        run: |
+          mkdir -p artifacts/logs
+          for step in simulator-build device-build pods; do
+            src="$RUNNER_TEMP/native-private/logs/$step.log"
+            if [ -f "$src" ]; then
+              python3 - "$src" "artifacts/logs/$step.log" <<'PY'
+import pathlib, re, sys
+src, dst = pathlib.Path(sys.argv[1]), pathlib.Path(sys.argv[2])
+text = src.read_text(encoding='utf-8', errors='replace')
+# Collapse absolute paths (runner home, DerivedData, sandbox roots) and env
+# assignments; keep public diagnostic text.
+text = re.sub(r'(?:/[A-Za-z0-9_.+@%^(),= \-]+){2,}', '[path]', text)
+text = re.sub(r'\b[A-Z][A-Z0-9_]{2,}=[^ \n]+', '[env]', text)
+dst.write_text(text[-2_000_000:], encoding='utf-8')
+PY
+            fi
+          done
+      - name: Upload sanitized build logs
+        if: always() && steps.evidence.outcome == 'success'
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        with:
+          name: build-logs-${{ github.run_id }}
+          path: artifacts/logs/*.log
+          retention-days: 7
+          if-no-files-found: warn
       - name: Upload verified final IPA only
         if: success() && steps.ipa.outputs.result == 'passed'
         uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
