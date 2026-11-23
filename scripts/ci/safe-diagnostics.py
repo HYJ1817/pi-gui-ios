@@ -47,6 +47,7 @@ def git_source(path):
 
 def safe_codes():
     codes = set(CATEGORIES) | {'NATIVE_FAILURE_DETAILS_WITHHELD', 'NATIVE_LOCK_VALIDATOR_FAILED',
+            'NODE_BINARY_MISSING', 'PHASE_SCRIPT_FAILED',
             'NATIVE_LOCKS_SAFE', 'NATIVE_LOCKS_REJECTED', 'NATIVE_DEPENDENCIES_LOCKED',
             'NATIVE_DEPENDENCIES_BOOTSTRAP_REQUIRED', 'NATIVE_DEPENDENCIES_VERIFIED',
             'NATIVE_LOCK_BOOTSTRAP_REVIEW_REQUIRED'}
@@ -93,7 +94,7 @@ def public_source_index():
 def scan(step, paths):
     if step not in STEPS:
         raise ValueError('DIAGNOSTIC_STEP_REJECTED')
-    allowed, codes, locations = safe_codes(), set(), {}
+    allowed, codes, locations, records = safe_codes(), set(), {}, []
     tracked, packages = public_source_index()
     pods, targets = pod_targets(), []
     tool_line = re.compile(r'^(?:CompileC|SwiftCompile|Ld|PhaseScriptExecution|CodeSign)\b[^\n]*/([A-Za-z0-9_+-]+)\.build/')
@@ -127,6 +128,8 @@ def scan(step, paths):
                     pkg_hit = re.search(r'node_modules/((?:@[a-z0-9_.-]+/)?[a-z0-9_.-]+)', line)
                     if pkg_hit and pkg_hit[1] in packages and pkg_hit[1] not in targets:
                         targets.append(pkg_hit[1])
+                    if len(records) < 12:
+                        records.append(record_error(line))
                 tool = tool_line.search(line)
                 if not tool:
                     alias = tool_alias.match(line)
@@ -176,10 +179,38 @@ def scan(step, paths):
     report = {'schemaVersion': 1, 'kind': 'safe-ci-diagnostics', 'step': step,
               'codes': sorted(codes)[:32] or ['NATIVE_FAILURE_DETAILS_WITHHELD'],
               'sourceLocations': list(locations.values())[:10]}
+    if records:
+        report['errorRecords'] = records
     if targets:
         # Public pod target names nearest to error output (attribution only).
         report['failedTargets'] = targets
     return report
+
+
+def record_error(line):
+    """One bounded, path-free compiler/linker diagnostic line.
+
+    Keeps only the failing file basename + line plus a word-level summary with
+    every `/`-containing token (absolute or relative path) and every quoted run
+    stripped — never runner paths, HOME values or script bodies.
+    """
+    # `file.ext:LINE:COL` compiler prefix anywhere in the line.
+    match = re.search(r'((?:[A-Za-z]:)?[\\/]?[^\s"\'()]+\.(?:swift|mm?|cpp|cc|cxx|h|hh|hpp|hxx|m)):(\d{1,7}):(\d{1,7})?:\s*(?:fatal\s+)?error:\s*(.*)', line)
+    record = {}
+    if match:
+        record['file'] = match[1].replace('\\', '/').rsplit('/', 1)[-1]
+        record['line'] = int(match[2])
+        summary = match[4]
+    else:
+        head = re.search(r'(?:fatal\s+)?error:\s*(.*)', line)
+        if not head:
+            head = re.search(r'(ld:.*|Undefined.*|duplicate symbol.*)', line)
+        summary = head[1] if head else line[-160:]
+    summary = re.sub(r'["\'`][^"\'`]{0,200}["\'`]', '<q>', summary)
+    # Path-shaped tokens keep only their basename (Foo.h), never directories.
+    summary = ' '.join(token.replace('\\', '/').rsplit('/', 1)[-1] if ('/' in token or '\\' in token) else token for token in summary.split())
+    record['message'] = summary[:160]
+    return record
 
 
 def environment(path):
