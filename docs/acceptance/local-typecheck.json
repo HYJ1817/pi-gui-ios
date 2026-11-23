@@ -1,11 +1,11 @@
 {
   "schemaVersion": 2,
   "kind": "typecheck",
-  "taskId": "M0-architecture",
-  "commit": "70fb91b4e14df2a81d63c88a8e47787e8915faca",
-  "sourceFingerprint": "9ae0244435de8bb66dd89fa34d3865e93c2ec1f9fa2cf643cd7cc5a762a06335",
-  "startedAt": "2026-11-22T04:33:00.097Z",
-  "finishedAt": "2026-11-22T04:33:02.652Z",
+  "taskId": "M2-shell",
+  "commit": "9bdc4d0ab46bf6729fbebf483a7895879555f9cb",
+  "sourceFingerprint": "561e46d8b07ace27cd6c3602dc11cd5f9056e844f95421a8d9322b6f315daa0f",
+  "startedAt": "2026-11-23T04:46:28.628Z",
+  "finishedAt": "2026-11-23T04:46:31.378Z",
   "passed": true,
   "details": {
     "command": "npm run typecheck",

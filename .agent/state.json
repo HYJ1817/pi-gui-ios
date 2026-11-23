@@ -1,37 +1,37 @@
 {
   "schemaVersion": 2,
   "kind": "state",
-  "revision": 638,
-  "updatedAt": "2026-11-23T04:46:17.611Z",
+  "revision": 640,
+  "updatedAt": "2026-11-23T04:46:35.840Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "2cb64de7ccd02cde53aeb8e706eb945419ff9ba55b2744b39219b83b07c6f4ed",
+    "parentDigest": "6db3d557976914dead37052ed2d84c90acde737c59b88cc76df53c2f1642c8d0",
     "phase": "M2",
     "currentTask": "M2-shell",
     "branch": "agent/m-1-bootstrap",
     "checkpoint": {
-      "id": "v2-2026-11-23T04-46-17-611Z-e3a4814a-a641-47cb-978d-1100b2475675",
-      "path": ".agent/checkpoints/v2-2026-11-23T04-46-17-611Z-e3a4814a-a641-47cb-978d-1100b2475675.json",
-      "sha256": "2ccabc1802c08051685d2a7bd057a9ee47aee9dd15747298e8175022df36d534",
-      "authorityDigest": "400031f6392dfcfa036b918b78c5df07208eda3b8ea5d1c096485dfb024467a1",
-      "at": "2026-11-23T04:46:17.611Z",
+      "id": "v2-2026-11-23T04-46-35-840Z-20aef7ab-4428-4b0c-805d-a0c34b835b9d",
+      "path": ".agent/checkpoints/v2-2026-11-23T04-46-35-840Z-20aef7ab-4428-4b0c-805d-a0c34b835b9d.json",
+      "sha256": "811188a9b6cb3b48273a781d964f22742499bdc66e6b88b6b3d3c4fd9b02b0ba",
+      "authorityDigest": "6aed51aab75b741a14a07f2698ecc594837e37eb93da6c64eeeaae3de069ecc6",
+      "at": "2026-11-23T04:46:35.840Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "60b0951935c66cb31ed5053ac29e23de575059e1",
+        "commit": "9bdc4d0ab46bf6729fbebf483a7895879555f9cb",
         "dirty": [
           "M .agent/HANDOFF.md",
           " M .agent/control.json",
           " M .agent/state.json",
           " M .agent/tasks.json",
           " M PROGRESS.md",
-          " M docs/acceptance/local-unit-output.txt",
-          " M docs/acceptance/local-unit.json",
-          "?? .agent/checkpoints/v2-2026-11-23T04-45-25-736Z-4d99df73-5b77-4adf-9179-f0e86a8dac5f.json",
-          "?? .agent/checkpoints/v2-2026-11-23T04-46-14-877Z-42bf0eaa-c384-448f-ab6e-8bf088d22edb.json"
+          " M docs/acceptance/local-bundle-output.txt",
+          " M docs/acceptance/local-bundle.json",
+          " M docs/acceptance/local-typecheck.json",
+          "?? .agent/checkpoints/v2-2026-11-23T04-46-31-549Z-19ed1fc8-7854-408f-b6d5-faebe2583879.json"
         ]
       },
       "sourceFingerprint": "561e46d8b07ace27cd6c3602dc11cd5f9056e844f95421a8d9322b6f315daa0f",
-      "note": "agent-task evidence M2-shell"
+      "note": "实际运行 npm run export:ios，exit=0"
     },
     "blockers": [],
     "ci": [
@@ -357,6 +357,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "47b12342ffb0e9966607f3732889156ebf7a679e074677efde8e0b5ed3eabed4"
+    "digest": "084ba2da62043bb3068d940d71096fbdb1de82b72bec14b796900d440e24e060"
   }
 }
