@@ -187,7 +187,7 @@ def pod_names():
     return set(re.findall(r'^- ([A-Za-z0-9_+-]+) \(', result.stdout, re.MULTILINE))
 
 
-def log_excerpt(log_path, limit=50):
+def log_excerpt(log_path, limit=80):
     """Return a sanitized excerpt of error-bearing lines from the raw
     xcodebuild log. Keeps the public diagnostic text, strips absolute paths
     and shell assignments, dedupes, caps output size."""
@@ -202,18 +202,16 @@ def log_excerpt(log_path, limit=50):
         return []
     matches = []
     for line in lines:
-        if not re.search(r'\berror\b|\bFAILED\b|fatal error|linker command failed|Undefined symbols|not found|No such module|Could not build module|SwiftCompile|SwiftDriver|Ld |EmitSwiftModule', line, re.IGNORECASE):
+        if not re.search(r'\berror\b|\bFAILED\b|fatal error|linker command failed|Undefined symbols', line, re.IGNORECASE):
             continue
         if re.match(r'\s*[A-Za-z_][A-Za-z0-9_]*=', line):
             continue
-        safe = re.sub(r'(/[A-Za-z0-9_.+@%^(),= \-]+)+', '[path]', line)
+        safe = re.sub(r'(?:/[A-Za-z0-9_.+@%^(),= \-]+){2,}', '[path]', line)
         safe = re.sub(r'\b[A-Z][A-Z0-9_]{2,}=[^ ]+', '[env]', safe)
         safe = safe[:300]
         if safe not in matches:
             matches.append(safe)
-        if len(matches) >= limit:
-            break
-    return matches
+    return matches[-limit:]
 
 
 if __name__ == '__main__':
