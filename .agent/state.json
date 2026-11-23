@@ -1,11 +1,11 @@
 {
   "schemaVersion": 2,
   "kind": "state",
-  "revision": 662,
-  "updatedAt": "2026-11-23T05:30:24.847Z",
+  "revision": 663,
+  "updatedAt": "2026-11-23T05:35:13.294Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "47c2aa2dba99682f9178c300b20c08d0d37f7a131270c6b18e7f334ec7d3b191",
+    "parentDigest": "ebbcbb82ff3f445d0a8be0ac5599d89f1484adb092603a16e518690db16509c4",
     "phase": "M2",
     "currentTask": "M2-shell",
     "branch": "agent/m-1-bootstrap",
@@ -358,7 +358,7 @@
       {
         "taskId": "node:delegated-task:command%3Amcp%3Abc091f6e-8884-452f-aeb8-0a54387f015d%3Adelegate-task%3A341529d8-112b-48d4-9df3-9c1aea8e6e4f",
         "role": "native-lock-candidates-review-45117019917",
-        "status": "working",
+        "status": "completed",
         "sourceCommit": "6be22fbaa06fa52be3cf987eb891c2f0140ca67f"
       },
       {
@@ -371,6 +371,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "85a327c7c14a2f935a8a5d31f284cc15d3e1a64fcdf05130185f38aaa73d2775"
+    "digest": "ae0f6a9f9c92824cbbe3fc17c8038448acf477605ac3023ea3abfec0dd4e5078"
   }
 }

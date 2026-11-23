@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "mode": "bootstrap-required",
+  "mode": "locked",
   "ruby": "3.3.8",
   "bundler": "2.6.9",
   "cocoapods": "1.16.2"

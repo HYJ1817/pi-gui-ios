@@ -1,0 +1,13 @@
+{
+  "approved": true,
+  "hashes": {
+    "gemLockSha256": "a5d49214c09ec3b1d8ae96fa0e45197a4ed43c027c25da8e00f4cbf476d99c17",
+    "gemfileSha256": "82b99bdbee002fc9676633b636d35e6f11d388dfecfcff730cf0184af49c8a90",
+    "packageLockSha256": "4e494604fbcbcaf294b3276295d47112f76ef2bb0281465a4479bdfd79bcbe79",
+    "podLockSha256": "0961d8069f21504ba797f7be11da113a8a10ce10ea7a899d774a23e235a41692",
+    "podfileSha256": "c687a9210445f9f81f577e2b59a8b80bce1a59c6b956ed5f2a8f3b56fafa0bc8",
+    "prebuiltManifestSha256": "ec038510abfde011be64739fa8d53645499a64b5a477620fcca07e5793366081",
+    "templateVerifierSha256": "47b3fdb8008b71ed3d55292db46ae480442c12de6f3bd3620ce0f716f5375b03"
+  },
+  "schemaVersion": 1
+}
