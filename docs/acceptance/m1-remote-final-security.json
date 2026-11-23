@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 2,
+  "kind": "independent-security",
+  "taskId": "M1-remote",
+  "commit": "4b66caac82dd57b20cb937b6975965c89a52135d",
+  "sourceFingerprint": "ceeb588d13e8e5c610d52edd8e9aec1c2fb0ca0bfbc4cc54985bcfbb85c8a5b0",
+  "startedAt": "2026-11-23T02:44:52.502Z",
+  "finishedAt": "2026-11-23T02:44:52.502Z",
+  "passed": true,
+  "details": {
+    "receiptPath": "docs/acceptance/m1-remote-final-review-receipt.json",
+    "receiptSha256": "47713ca969637cf05148e954f2b176e7f7348325b859c01a2a88a6266c557285",
+    "scope": "Combined functional+security independent confirmation review of remote/v1 (desktop 74d252f5): all v2 important fixes verified (cursor resume, per-subscription isolation, watermark, production pairing, nits); security posture intact; suites 33/33 + 15/15."
+  }
+}
