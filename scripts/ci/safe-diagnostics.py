@@ -96,7 +96,12 @@ def scan(step, paths):
     allowed, codes, locations = safe_codes(), set(), {}
     tracked, packages = public_source_index()
     pods, targets = pod_targets(), []
-    tool_line = re.compile(r'^(?:CompileC|SwiftCompile|SwiftDriver|Ld|PhaseScriptExecution|CodeSign)\b[^\n]*/([A-Za-z0-9_+-]+)\.build/')
+    tool_line = re.compile(r'^(?:CompileC|SwiftCompile|Ld|PhaseScriptExecution|CodeSign)\b[^\n]*/([A-Za-z0-9_+-]+)\.build/')
+    # SwiftDriver/SwiftCompile print the target as the first alias word, e.g.
+    # "SwiftDriver RNScreens arm64 com.apple.xcode.tools.swift.compiler" or
+    # "SwiftCompile normal arm64 Compiling X.swift (...RNScreens...)" — the
+    # Pods.build path still wins when present.
+    tool_alias = re.compile(r'^(?:SwiftDriver|SwiftCompile)\s+(?:normal\s+\S+\s+)?([A-Za-z][A-Za-z0-9_+-]*)\b')
     error_line = re.compile(r'\berror\b', re.IGNORECASE)
     recent_tool, recent_tool_line = None, -1
     for path in map(pathlib.Path, paths):
@@ -113,11 +118,14 @@ def scan(step, paths):
                     if re.search(pattern, line, re.IGNORECASE):
                         codes.add(code)
                 tool = tool_line.search(line)
+                if not tool:
+                    alias = tool_alias.match(line)
+                    tool = alias if alias and alias[1] in pods else None
                 if tool:
                     # Remember only the public pod/target name for attribution
                     # of a nearby error line; the command contents never copy.
                     recent_tool, recent_tool_line = tool[1], lineno
-                if error_line.search(line) and recent_tool is not None and lineno - recent_tool_line <= 12 and len(targets) < 10:
+                if error_line.search(line) and recent_tool is not None and lineno - recent_tool_line <= 40 and len(targets) < 10:
                     name = recent_tool if recent_tool in pods else None
                     if name and name not in targets:
                         targets.append(name)
