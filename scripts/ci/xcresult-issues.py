@@ -100,14 +100,36 @@ def collect(bundle):
                     # Print all leaf scalar names+types for schema debugging
                     debug['errorSummaryFirstLeaves'] = sorted({k for k,v in first.items()})
     refs = []
+
+    def harvest(node, depth=0):
+        """Recursively collect issue-summary objects from any nested container."""
+        if depth > 6 or not isinstance(node, dict):
+            return
+        if text(node.get('issueType')) or text(node.get('producingTarget')):
+            ident = ref_id(node)
+            if ident:
+                refs.append(ident)
+            else:
+                refs.append(node)
+            return
+        for key in ('errorSummaries', 'issues', 'subIssues', 'actions', 'buildResult'):
+            child = node.get(key)
+            if isinstance(child, dict):
+                harvest(child, depth + 1)
+                for item in values(child):
+                    harvest(item, depth + 1)
+            elif isinstance(child, list):
+                for item in child:
+                    if isinstance(item, dict):
+                        harvest(item, depth + 1)
+
     issues_node = root.get('issues') if isinstance(root, dict) else None
     for summary in values((issues_node or {}).get('errorSummaries')):
-        ident = ref_id(summary)
-        if ident:
-            refs.append(ident)
-        elif isinstance(summary, dict):
-            # Xcode 26 embeds summaries inline with issueType/message (no ref).
-            refs.append(summary)  # inline summary objects (older format)
+        harvest(summary)
+    # Also try the action buildResult path where Xcode 26 nests issue objects.
+    for action in values(root.get('actions') if isinstance(root, dict) else None):
+        for key in ('buildResult', 'actionResult'):
+            harvest(action.get(key) if isinstance(action.get(key), dict) else action, 1)
     out = []
     pods = pod_names()
     for ref in refs[:16]:
