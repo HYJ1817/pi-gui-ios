@@ -173,11 +173,17 @@ jobs:
             artifacts/reports/diagnostics.json
             artifacts/reports/environment.json
             artifacts/reports/iphone-native.xml
+            artifacts/reports/iphone-native-debug.json
             artifacts/reports/iphone-dark.xml
+            artifacts/reports/iphone-dark-debug.json
             artifacts/reports/iphone-accessibility.xml
+            artifacts/reports/iphone-accessibility-debug.json
             artifacts/reports/ipad-native.xml
+            artifacts/reports/ipad-native-debug.json
             artifacts/reports/ipad-dark.xml
+            artifacts/reports/ipad-dark-debug.json
             artifacts/reports/ipad-accessibility.xml
+            artifacts/reports/ipad-accessibility-debug.json
             artifacts/screenshots/iphone/00-shell-home.png
             artifacts/screenshots/iphone/01-native-glass.png
             artifacts/screenshots/iphone/02-interactions.png
