@@ -1,23 +1,23 @@
 {
   "schemaVersion": 2,
   "kind": "state",
-  "revision": 660,
-  "updatedAt": "2026-11-23T05:29:35.631Z",
+  "revision": 662,
+  "updatedAt": "2026-11-23T05:30:24.847Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "2bb5183fe7184b654612f7d82beab86d460e6d21431ea4e1d320c452d2feb7e0",
+    "parentDigest": "47c2aa2dba99682f9178c300b20c08d0d37f7a131270c6b18e7f334ec7d3b191",
     "phase": "M2",
     "currentTask": "M2-shell",
     "branch": "agent/m-1-bootstrap",
     "checkpoint": {
-      "id": "v2-2026-11-23T05-29-35-631Z-f030b24f-ef72-4f30-a202-303fd940d4cd",
-      "path": ".agent/checkpoints/v2-2026-11-23T05-29-35-631Z-f030b24f-ef72-4f30-a202-303fd940d4cd.json",
-      "sha256": "9b22edbe8d99ac5645847cfe4dc778ce0a56d04e75b28aac4edadebf9ef95013",
-      "authorityDigest": "bf34c8e9bf5320a84dca1b840cde105d422e9502de1f3da90630de4be9f0be2b",
-      "at": "2026-11-23T05:29:35.631Z",
+      "id": "v2-2026-11-23T05-30-24-847Z-6d95d930-4fb3-4f6c-90bb-4e9f3c167eed",
+      "path": ".agent/checkpoints/v2-2026-11-23T05-30-24-847Z-6d95d930-4fb3-4f6c-90bb-4e9f3c167eed.json",
+      "sha256": "fe24a4c6e92fd9cb9a40ad17ad49f6b99ed18193d58b0445e95381c2a2b09929",
+      "authorityDigest": "fee15d2c9dd2a426a59969bdcb4e3c9b95e45b3247ef5398e4aa5bef266d7f47",
+      "at": "2026-11-23T05:30:24.847Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "6be22fbaa06fa52be3cf987eb891c2f0140ca67f",
+        "commit": "2c99b12beea1693c52df425667777a93ac383c67",
         "dirty": [
           "M .agent/HANDOFF.md",
           " M .agent/control.json",
@@ -27,7 +27,7 @@
         ]
       },
       "sourceFingerprint": "7ebc02b754cc6126398a8df02a3f7b77738967dee5a5481319d25e20af52372f",
-      "note": "锁集候选独立审查 delegate 341529d8 登记@HEAD；menu2.1.2+gamma 候选待批"
+      "note": "M2 复审 delegate 998aa959 登记；两个审查并行；等锁集批准→重锁→locked CI"
     },
     "blockers": [],
     "ci": [
@@ -360,11 +360,17 @@
         "role": "native-lock-candidates-review-45117019917",
         "status": "working",
         "sourceCommit": "6be22fbaa06fa52be3cf987eb891c2f0140ca67f"
+      },
+      {
+        "taskId": "node:delegated-task:command%3Amcp%3Abc091f6e-8884-452f-aeb8-0a54387f015d%3Adelegate-task%3A998aa959-7ff8-42b0-ae69-1f5bf9105433",
+        "role": "m2-shell-confirmation-review",
+        "status": "working",
+        "sourceCommit": "2c99b12beea1693c52df425667777a93ac383c67"
       }
     ]
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "919fde83856785153ef9a625cb2f828f6308d1378592555d241456850b59812a"
+    "digest": "85a327c7c14a2f935a8a5d31f284cc15d3e1a64fcdf05130185f38aaa73d2775"
   }
 }
