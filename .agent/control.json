@@ -1,8 +1,8 @@
 {
   "schemaVersion": 2,
   "kind": "control",
-  "revision": 677,
-  "updatedAt": "2026-11-23T07:36:45.759Z",
+  "revision": 680,
+  "updatedAt": "2026-11-23T07:38:20.548Z",
   "data": {
     "phase": "M2",
     "currentTask": "M2-shell",
@@ -1077,6 +1077,14 @@
             "sourceFingerprint": "fac70b64c49783548183bf9f7c47aad686a8aac1d69901c3742f45a7710272a7",
             "commit": "097d10bd88136a62d2f66df7f28dd8052cf3a5ac",
             "at": "2026-11-23T07:36:45.698Z"
+          },
+          {
+            "kind": "unit",
+            "path": "docs/acceptance/local-unit.json",
+            "sha256": "822277dcc3eb664d8376a1aa412c0a04575226bd9558c9fc3c135384be0a807e",
+            "sourceFingerprint": "6879c01ef97d61cb8166c7f54a1d2ee123df8d4b09cdc969d228629aac022b8c",
+            "commit": "1771cc744dd30c2e3e63223e807c425f86e3c07b",
+            "at": "2026-11-23T07:38:20.500Z"
           }
         ],
         "updatedAt": "2026-11-23T02:47:37.213Z"
@@ -1152,25 +1160,26 @@
       }
     ],
     "checkpoint": {
-      "id": "v2-2026-11-23T07-36-45-759Z-5ecca08f-ba43-4b82-9155-c1d286989651",
-      "path": ".agent/checkpoints/v2-2026-11-23T07-36-45-759Z-5ecca08f-ba43-4b82-9155-c1d286989651.json",
-      "sha256": "ff7113b712920d4a2a6d3b7a006745be9c70aa81fb9cd2c9d9ba64f1845f1e94",
-      "authorityDigest": "6a6103fe42c5597e569abd6f3c1b031f51ca1a3e01e62eaf83fb40f60f6d5462",
-      "at": "2026-11-23T07:36:45.759Z",
+      "id": "v2-2026-11-23T07-38-20-548Z-66333d78-770d-47d2-b178-e4ae3438ed6a",
+      "path": ".agent/checkpoints/v2-2026-11-23T07-38-20-548Z-66333d78-770d-47d2-b178-e4ae3438ed6a.json",
+      "sha256": "7b8f974a8283bd9140cda8c65d71c18699035bbc6cdb6f4d7bdf65585a04e856",
+      "authorityDigest": "3cca1eb4004690626256b52599644dacb0dc10862751ebff1824d87df90bcfae",
+      "at": "2026-11-23T07:38:20.548Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "a1a43ec40dfd8c252283decb43268da772eeffb3",
+        "commit": "1771cc744dd30c2e3e63223e807c425f86e3c07b",
         "dirty": [
           "M .agent/HANDOFF.md",
           " M .agent/control.json",
           " M .agent/state.json",
           " M .agent/tasks.json",
           " M PROGRESS.md",
-          "?? docs/acceptance/m2-review-097d10b-receipt.json",
-          "?? docs/acceptance/m2-review-097d10b-review.json"
+          " M docs/acceptance/local-unit-output.txt",
+          " M docs/acceptance/local-unit.json",
+          "?? .agent/checkpoints/v2-2026-11-23T07-38-13-029Z-a1f52815-5c68-4f36-9095-97ff595c8db8.json"
         ]
       },
-      "sourceFingerprint": "fac70b64c49783548183bf9f7c47aad686a8aac1d69901c3742f45a7710272a7",
+      "sourceFingerprint": "6879c01ef97d61cb8166c7f54a1d2ee123df8d4b09cdc969d228629aac022b8c",
       "note": "agent-task evidence M2-shell"
     },
     "nextAction": "M1-remote completed（desktop 74d252f5，final 审查 pass，四类证据齐）。下一可执行任务：M2-shell（原生设计系统与 iPad 导航布局，依赖 M1-remote 已满足）。M-1-infrastructure 仍 blocked（ADR 0006 owner waiver，NATIVE_DEPENDENCIES_REJECTED，不重试）。M2 开始：调研现有 app 结构与技术栈决策记录，然后实现设计系统/导航并补 unit+ui+independent-review 证据。",
@@ -1413,6 +1422,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "b02f08d65beae3278edb3f54eab01a912e8ee0a077fb419f607bdecc82094b47"
+    "digest": "be370557fd400392bee2f45a52321e0576fd02c5516050de6786d61d42196457"
   }
 }
