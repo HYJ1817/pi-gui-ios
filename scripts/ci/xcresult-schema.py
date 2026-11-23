@@ -19,17 +19,16 @@ def main():
     help_result = subprocess.run(['xcrun', 'xcresulttool', 'get', '--help'],
                                  capture_output=True, text=True)
     print('get-help:', ' '.join(help_result.stdout.split())[:600])
-    result = subprocess.run(['xcrun', 'xcresulttool', 'get', 'build-results', '--format', 'json', '-path', sys.argv[1]],
-                            capture_output=True, text=True)
-    print('rc', result.returncode)
-    try:
-        print(json.dumps(shape(json.loads(result.stdout)), indent=1)[:3000])
-    except Exception as error:
-        print('parse fail', type(error).__name__)
-        # Non-JSON output: report only the first lines' word shapes so the
-        # format can be identified without copying message text.
-        print('stdout-head:', repr(' '.join(result.stdout.split())[:160]))
-        print('stderr-head:', repr(' '.join(result.stderr.split())[:160]))
+    for label, cmd in (
+            ('build-results-json', ['xcrun', 'xcresulttool', 'get', 'build-results', '--format', 'json', '-path', sys.argv[1]]),
+            ('build-results-plain', ['xcrun', 'xcresulttool', 'get', 'build-results', '-path', sys.argv[1]]),
+            ('object-root', ['xcrun', 'xcresulttool', 'get', 'object', '--legacy', '--format', 'json', '--path', sys.argv[1]])):
+        result = subprocess.run(cmd, capture_output=True, text=True)
+        print(label, 'rc', result.returncode)
+        try:
+            print(json.dumps(shape(json.loads(result.stdout)), indent=1)[:2500])
+        except Exception:
+            print(label, 'stdout-head:', repr(' '.join(result.stdout.split())[:140]))
 
 
 if __name__ == '__main__':
