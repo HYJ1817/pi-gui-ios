@@ -25,6 +25,17 @@ xcrun simctl bootstatus "$UDID" -b
 xcrun simctl status_bar "$UDID" override --time '9:41' --dataNetwork wifi --wifiMode active --wifiBars 3 --batteryState charged --batteryLevel 100
 xcrun simctl ui "$UDID" appearance light
 xcrun simctl install "$UDID" "$APP_PATH"
+# Launch probe: a non-numeric result means the app could not start at all
+# (missing bundle, Hermes fault); a pid that disappears within 3s means an
+# early crash. Either prints a fixed structural code, never the process text.
+LAUNCH_RC=$(xcrun simctl launch "$UDID" io.github.hyj1817.piguimobile 2>&1 | awk '{print $NF}') || true
+if ! [[ "$LAUNCH_RC" =~ ^[0-9]+$ ]]; then
+  printf 'NATIVE_LAUNCH_FAIL\n'
+else
+  sleep 3
+  xcrun simctl spawn "$UDID" launchctl list 2>/dev/null | grep -q "io.github.hyj1817.piguimobile" || printf 'NATIVE_LAUNCH_EXITED\n'
+  xcrun simctl terminate "$UDID" io.github.hyj1817.piguimobile >/dev/null 2>&1 || true
+fi
 maestro --device "$UDID" test -e "SCREENSHOT_DIR=$SHOTS" --format junit --output "$UI/native.xml" --test-output-dir "$UI/native" .maestro/native.yaml
 xcrun simctl ui "$UDID" appearance dark
 maestro --device "$UDID" test -e "SCREENSHOT_DIR=$SHOTS/dark" --format junit --output "$UI/dark.xml" --test-output-dir "$UI/dark" .maestro/appearance.yaml

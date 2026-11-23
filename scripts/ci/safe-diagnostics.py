@@ -36,6 +36,10 @@ CATEGORIES = {
     'COMPILER_TOOL_SCRIPT': r'\bPhaseScriptExecution\b',
     'COMPILER_TOOL_CODESIGN': r'\bCodeSign\b',
     'MAESTRO_ASSERTION_FAILED': r'Assertion is false|Assertion failed|element .* not found',
+    'MAESTRO_FLOW_FAILED': r'Maestro|flow.*(failed|error)|timed out.*waiting',
+    'SIMCTL_BOOT_FAILED': r'simctl.*(boot|bootstatus).*(failed|timeout|error)',
+    'SIMCTL_INSTALL_FAILED': r'simctl install.*(failed|error)|install.*failed',
+    'APP_CRASH': r'\bSIG\w+\b|crashed|terminated.*signal',
     'RUNNER_INPUT_NOT_FOUND': r'No such file or directory|command not found',
 }
 
@@ -47,7 +51,7 @@ def git_source(path):
 
 def safe_codes():
     codes = set(CATEGORIES) | {'NATIVE_FAILURE_DETAILS_WITHHELD', 'NATIVE_LOCK_VALIDATOR_FAILED',
-            'NODE_BINARY_MISSING', 'PHASE_SCRIPT_FAILED',
+            'NODE_BINARY_MISSING', 'PHASE_SCRIPT_FAILED', 'NATIVE_LAUNCH_FAIL', 'NATIVE_LAUNCH_EXITED',
             'NATIVE_LOCKS_SAFE', 'NATIVE_LOCKS_REJECTED', 'NATIVE_DEPENDENCIES_LOCKED',
             'NATIVE_DEPENDENCIES_BOOTSTRAP_REQUIRED', 'NATIVE_DEPENDENCIES_VERIFIED',
             'NATIVE_LOCK_BOOTSTRAP_REVIEW_REQUIRED'}
