@@ -2,15 +2,15 @@
   "schemaVersion": 2,
   "kind": "unit",
   "taskId": "M2-shell",
-  "commit": "1771cc744dd30c2e3e63223e807c425f86e3c07b",
-  "sourceFingerprint": "6879c01ef97d61cb8166c7f54a1d2ee123df8d4b09cdc969d228629aac022b8c",
-  "startedAt": "2026-11-23T07:37:15.616Z",
-  "finishedAt": "2026-11-23T07:38:12.285Z",
+  "commit": "ee41ab9a1d02c2c8dac2078cf6a6c89ba40cc6d4",
+  "sourceFingerprint": "d38f4c24433335be966c0603012e9b8a16d1a53df9f746e85726eb9505c56ed2",
+  "startedAt": "2026-11-23T12:06:50.658Z",
+  "finishedAt": "2026-11-23T12:07:41.017Z",
   "passed": true,
   "details": {
     "command": "npm test",
     "exitCode": 0,
     "logPath": "docs/acceptance/local-unit-output.txt",
-    "logSha256": "13d2f683589707636ee3a55dd264e30489b08e0e7a641e0cd9cfe712335add9e"
+    "logSha256": "f8d64132702270edde92cd564b88f839162486bddcd740b73530dcbca29fd8b9"
   }
 }

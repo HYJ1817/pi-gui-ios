@@ -1,27 +1,36 @@
 {
   "schemaVersion": 2,
   "kind": "state",
-  "revision": 681,
-  "updatedAt": "2026-11-23T12:06:30.337Z",
+  "revision": 684,
+  "updatedAt": "2026-11-23T12:07:47.438Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "88ebc78b4a2d0e618a9481609cddc8b81633cc37657d4a02b171ceb01a743402",
+    "parentDigest": "cc389641e07008e99832493644b5c418ce9413df60c14772edfc5d38541a1167",
     "phase": "M2",
     "currentTask": "M2-shell",
     "branch": "agent/m-1-bootstrap",
     "checkpoint": {
-      "id": "v2-2026-11-23T12-06-30-337Z-0ad6d3cf-837d-4f65-823c-d4473d09fdc3",
-      "path": ".agent/checkpoints/v2-2026-11-23T12-06-30-337Z-0ad6d3cf-837d-4f65-823c-d4473d09fdc3.json",
-      "sha256": "0f7b03a03658a72d4c85d9a47b5a03a95b7ae5eb0ddd567e26ec0b82478bb9cb",
-      "authorityDigest": "be370557fd400392bee2f45a52321e0576fd02c5516050de6786d61d42196457",
-      "at": "2026-11-23T12:06:30.337Z",
+      "id": "v2-2026-11-23T12-07-47-438Z-04ef4434-25aa-46a8-852a-1baf0a818930",
+      "path": ".agent/checkpoints/v2-2026-11-23T12-07-47-438Z-04ef4434-25aa-46a8-852a-1baf0a818930.json",
+      "sha256": "8186c9f126c1dec9fce461329c7913abf5df4eb5a323f6689fa140349ad7d487",
+      "authorityDigest": "fb0c4bfa6117eadb833059c645e9c824fd48ddee5060d7e05020a610a9988040",
+      "at": "2026-11-23T12:07:47.438Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "4764e307d8f994213d4bc0a704c666a1d28325cf",
-        "dirty": []
+        "commit": "ee41ab9a1d02c2c8dac2078cf6a6c89ba40cc6d4",
+        "dirty": [
+          "M .agent/HANDOFF.md",
+          " M .agent/control.json",
+          " M .agent/state.json",
+          " M .agent/tasks.json",
+          " M PROGRESS.md",
+          " M docs/acceptance/local-unit-output.txt",
+          " M docs/acceptance/local-unit.json",
+          "?? .agent/checkpoints/v2-2026-11-23T12-07-41-198Z-a97049a5-47a8-439a-b51c-84dc0c20dadd.json"
+        ]
       },
       "sourceFingerprint": "d38f4c24433335be966c0603012e9b8a16d1a53df9f746e85726eb9505c56ed2",
-      "note": "simulator-build exit 65 第11次（ReactCodegen/AppDepProvider/EXConstants/safe-area-context 漂移归因，React-Core-prebuilt+codegen 头族；上游 #53966 已知 Xcode26 问题）。诊断手段已穷尽（codes/failedTargets/xcresult/codesign log）。unit+review 证据在旧指纹上已获；ui/ipa 因 shared ios 链 blocked。记 deferred：恢复条件=上游修复或拿到 macOS 实机复现；期间继续 M3 本地实现，不改 status、不假通过。"
+      "note": "agent-task evidence M2-shell"
     },
     "blockers": [],
     "ci": [
@@ -371,6 +380,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "a9290be8fe7ff5c51b2d9823201d8b139d0804cb7faee2962ff1aba551591acb"
+    "digest": "ca865cca32a663ab95da0ab938b1649749c1ef5b46fa39cd4126e27d7ce4d2ef"
   }
 }
