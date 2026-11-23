@@ -1,33 +1,39 @@
 {
   "schemaVersion": 2,
   "kind": "state",
-  "revision": 663,
-  "updatedAt": "2026-11-23T05:35:13.294Z",
+  "revision": 667,
+  "updatedAt": "2026-11-23T05:36:45.224Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "ebbcbb82ff3f445d0a8be0ac5599d89f1484adb092603a16e518690db16509c4",
+    "parentDigest": "955207d34dc140f7c4fc41fba6fc6e634917c19ca744048ef30751f85ab0cd63",
     "phase": "M2",
     "currentTask": "M2-shell",
     "branch": "agent/m-1-bootstrap",
     "checkpoint": {
-      "id": "v2-2026-11-23T05-30-24-847Z-6d95d930-4fb3-4f6c-90bb-4e9f3c167eed",
-      "path": ".agent/checkpoints/v2-2026-11-23T05-30-24-847Z-6d95d930-4fb3-4f6c-90bb-4e9f3c167eed.json",
-      "sha256": "fe24a4c6e92fd9cb9a40ad17ad49f6b99ed18193d58b0445e95381c2a2b09929",
-      "authorityDigest": "fee15d2c9dd2a426a59969bdcb4e3c9b95e45b3247ef5398e4aa5bef266d7f47",
-      "at": "2026-11-23T05:30:24.847Z",
+      "id": "v2-2026-11-23T05-36-45-224Z-cc171219-5ecb-4b8f-8654-1c4084f540c7",
+      "path": ".agent/checkpoints/v2-2026-11-23T05-36-45-224Z-cc171219-5ecb-4b8f-8654-1c4084f540c7.json",
+      "sha256": "d9284ab940e1cf886a8750d55f3a21905b3afdb2b4ea1c18557ea6057a97b4f3",
+      "authorityDigest": "45ec49d4579804fc1d74c583d4646d8e441186ca7611fdd0c57390185c487ba6",
+      "at": "2026-11-23T05:36:45.224Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "2c99b12beea1693c52df425667777a93ac383c67",
+        "commit": "db7f69b872cdf9aa2f2844326bd4a3b7c5782ba3",
         "dirty": [
           "M .agent/HANDOFF.md",
           " M .agent/control.json",
           " M .agent/state.json",
           " M .agent/tasks.json",
-          " M PROGRESS.md"
+          " M PROGRESS.md",
+          " M docs/acceptance/local-unit-output.txt",
+          " M docs/acceptance/local-unit.json",
+          " M native/dependency-policy.json",
+          " M native/lock-review.json",
+          "?? .agent/checkpoints/v2-2026-11-23T05-35-23-803Z-da9c44bb-5c54-45fb-9433-1f1a0ec49d56.json",
+          "?? .agent/checkpoints/v2-2026-11-23T05-36-43-839Z-fa6aca3c-c3c9-44e5-b5a7-9f60a92e4546.json"
         ]
       },
-      "sourceFingerprint": "7ebc02b754cc6126398a8df02a3f7b77738967dee5a5481319d25e20af52372f",
-      "note": "M2 复审 delegate 998aa959 登记；两个审查并行；等锁集批准→重锁→locked CI"
+      "sourceFingerprint": "efd29fc2113c45cfe953ce28d2fd8f9a90fd3f2b3d59214594509d102d6af4da",
+      "note": "agent-task evidence M2-shell"
     },
     "blockers": [],
     "ci": [
@@ -371,6 +377,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "ae0f6a9f9c92824cbbe3fc17c8038448acf477605ac3023ea3abfec0dd4e5078"
+    "digest": "31af7a9bfb3e004d9f5a5d93f7faec382979969c160588b3244ca675f263afc7"
   }
 }

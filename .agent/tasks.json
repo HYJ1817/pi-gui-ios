@@ -1,11 +1,11 @@
 {
   "schemaVersion": 2,
   "kind": "tasks",
-  "revision": 663,
-  "updatedAt": "2026-11-23T05:35:13.294Z",
+  "revision": 667,
+  "updatedAt": "2026-11-23T05:36:45.224Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "ebbcbb82ff3f445d0a8be0ac5599d89f1484adb092603a16e518690db16509c4",
+    "parentDigest": "955207d34dc140f7c4fc41fba6fc6e634917c19ca744048ef30751f85ab0cd63",
     "tasks": [
       {
         "id": "M-1-infrastructure",
@@ -943,6 +943,14 @@
             "sourceFingerprint": "7ebc02b754cc6126398a8df02a3f7b77738967dee5a5481319d25e20af52372f",
             "commit": "97a6b1c7afda50e502174cf02c6772d8f82f65fc",
             "at": "2026-11-23T05:24:16.235Z"
+          },
+          {
+            "kind": "unit",
+            "path": "docs/acceptance/local-unit.json",
+            "sha256": "d1e0e31b6c8757734b188e4632acf82111baf8951c515b1c920c7a8ac9adf7f0",
+            "sourceFingerprint": "efd29fc2113c45cfe953ce28d2fd8f9a90fd3f2b3d59214594509d102d6af4da",
+            "commit": "db7f69b872cdf9aa2f2844326bd4a3b7c5782ba3",
+            "at": "2026-11-23T05:36:45.144Z"
           }
         ],
         "updatedAt": "2026-11-23T02:47:37.213Z"
@@ -1020,6 +1028,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "33365ff423033aed8c7e32ae6c9a1a5a621c03599cccd15ef31f47c978de996c"
+    "digest": "a7b1c0a9b72bdc84c79d10bb553ed3c2398b285337f05da9325ba9bb9feda45c"
   }
 }
