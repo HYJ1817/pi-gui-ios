@@ -1,8 +1,8 @@
 {
   "schemaVersion": 2,
   "kind": "control",
-  "revision": 650,
-  "updatedAt": "2026-11-23T05:16:53.066Z",
+  "revision": 653,
+  "updatedAt": "2026-11-23T05:21:24.731Z",
   "data": {
     "phase": "M2",
     "currentTask": "M2-shell",
@@ -1120,14 +1120,14 @@
       }
     ],
     "checkpoint": {
-      "id": "v2-2026-11-23T05-16-53-066Z-cc2b2c42-f320-4495-8512-471bd8abf7fa",
-      "path": ".agent/checkpoints/v2-2026-11-23T05-16-53-066Z-cc2b2c42-f320-4495-8512-471bd8abf7fa.json",
-      "sha256": "1a149981b04abd8df75273d33d49238522fc529f80e40e33a9091ed647f2b1ba",
-      "authorityDigest": "d114a03410ad0cb3495b7cdc476ac9e96c55990f5bb0e5e526b1af677fd95c78",
-      "at": "2026-11-23T05:16:53.066Z",
+      "id": "v2-2026-11-23T05-21-24-731Z-e5b6fc26-8c33-493f-98d3-96757293bec7",
+      "path": ".agent/checkpoints/v2-2026-11-23T05-21-24-731Z-e5b6fc26-8c33-493f-98d3-96757293bec7.json",
+      "sha256": "ceb1edc9b359004eba21dd43e38bdf4c840d541e9397d856c93f1b83f85329b4",
+      "authorityDigest": "09802340842009672c5abcf33785cbd6b66ff269a0a87619d25d6707b502539e",
+      "at": "2026-11-23T05:21:24.731Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "6b7199e881cf59b23fec84eae7804bac7afe7362",
+        "commit": "137d2b4bfe88984d102306bcf4c83fbcdd588bce",
         "dirty": [
           "M .agent/HANDOFF.md",
           " M .agent/control.json",
@@ -1136,11 +1136,12 @@
           " M PROGRESS.md",
           " M docs/acceptance/local-unit-output.txt",
           " M docs/acceptance/local-unit.json",
-          "?? .agent/checkpoints/v2-2026-11-23T05-15-54-791Z-cd3bac3b-6517-405d-a721-2ccaa48f0f78.json"
+          "?? .agent/checkpoints/v2-2026-11-23T05-19-15-965Z-43591ff9-2f22-49ad-908b-28f2771f693b.json",
+          "?? .agent/checkpoints/v2-2026-11-23T05-20-11-375Z-93bc1840-1fc2-428e-aeb3-9e92f1ef882b.json"
         ]
       },
-      "sourceFingerprint": "4934d06f5d96ac01181209e214dcd4b2e95c4badf6ae62a477638a297a50b84f",
-      "note": "实际运行 npm test，exit=1"
+      "sourceFingerprint": "0a8d04626e4827e3cc4eaecfa7035efca4b3acb8c60760975d998115b77837e4",
+      "note": "实际运行 npm test，exit=0"
     },
     "nextAction": "M1-remote completed（desktop 74d252f5，final 审查 pass，四类证据齐）。下一可执行任务：M2-shell（原生设计系统与 iPad 导航布局，依赖 M1-remote 已满足）。M-1-infrastructure 仍 blocked（ADR 0006 owner waiver，NATIVE_DEPENDENCIES_REJECTED，不重试）。M2 开始：调研现有 app 结构与技术栈决策记录，然后实现设计系统/导航并补 unit+ui+independent-review 证据。",
     "delegates": [
@@ -1364,6 +1365,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "84a0446414cdd720ee8a1bfa35630dc95b42805470b71f027eee5c3f5b731286"
+    "digest": "14d8289b58ab5c83dd5edecf4c28498b61c1c4d3778653124ff11e843b879682"
   }
 }
