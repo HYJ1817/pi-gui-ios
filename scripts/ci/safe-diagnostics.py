@@ -52,6 +52,7 @@ def git_source(path):
 def safe_codes():
     codes = set(CATEGORIES) | {'NATIVE_FAILURE_DETAILS_WITHHELD', 'NATIVE_LOCK_VALIDATOR_FAILED',
             'NODE_BINARY_MISSING', 'PHASE_SCRIPT_FAILED', 'NATIVE_LAUNCH_FAIL', 'NATIVE_LAUNCH_EXITED',
+            'MAESTRO_DEBUG_DIR_MISSING', 'MAESTRO_DEBUG_NO_COMMANDS',
             'NATIVE_LOCKS_SAFE', 'NATIVE_LOCKS_REJECTED', 'NATIVE_DEPENDENCIES_LOCKED',
             'NATIVE_DEPENDENCIES_BOOTSTRAP_REQUIRED', 'NATIVE_DEPENDENCIES_VERIFIED',
             'NATIVE_LOCK_BOOTSTRAP_REVIEW_REQUIRED'}
@@ -119,6 +120,7 @@ def scan(step, paths):
                 if len(line) > 65536:
                     continue
                 codes.update(token for token in re.findall(r'\b[A-Z][A-Z0-9_]{2,120}\b', line) if token in allowed)
+                codes.update(token for token in re.findall(r'\bMAESTRO_STEP_\d+_[A-Z0-9]{1,40}\b', line))
                 for code, pattern in CATEGORIES.items():
                     if re.search(pattern, line, re.IGNORECASE):
                         codes.add(code)

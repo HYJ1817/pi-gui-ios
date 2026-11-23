@@ -86,9 +86,30 @@ def collect_debug(directory):
     return output
 
 
+def failed_marks(output):
+    """Fixed diagnostic marks for the step log (allowlisted in safe-diagnostics)."""
+    marks = []
+    for entry in output.get('commands', []):
+        if entry.get('status') == 'failed':
+            verb = ''.join(c for c in str(entry.get('verb', 'unknown')).upper() if c.isalnum())
+            marks.append(f"MAESTRO_STEP_{entry.get('index', 0)}_{verb or 'UNKNOWN'}")
+    if output.get('debugDir') == 'missing':
+        marks.append('MAESTRO_DEBUG_DIR_MISSING')
+    elif not output.get('commands'):
+        marks.append('MAESTRO_DEBUG_NO_COMMANDS')
+    return marks
+
+
 if __name__ == '__main__':
     try:
         output = collect_debug(sys.argv[1])
     except Exception:
         output = {'schemaVersion': 1, 'kind': 'maestro-debug', 'commands': []}
-    print(json.dumps(output, sort_keys=True))
+    # Marks go to stdout (the step log); the JSON artifact goes to argv[2].
+    for mark in failed_marks(output):
+        print(mark)
+    if len(sys.argv) > 2:
+        try:
+            pathlib.Path(sys.argv[2]).write_text(json.dumps(output, sort_keys=True) + '\n', encoding='utf-8')
+        except OSError:
+            pass

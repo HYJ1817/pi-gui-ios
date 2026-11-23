@@ -156,8 +156,15 @@ def collect(private, output):
                 if isinstance(parsed, dict) and parsed.get('kind') == 'maestro-debug' and isinstance(parsed.get('commands'), list):
                     verbs = [c for c in parsed['commands'] if isinstance(c, dict)
                              and all(k in ('index', 'verb', 'status') for k in c)]
+                    out = {'schemaVersion': 1, 'kind': 'maestro-debug', 'commands': verbs}
+                    if isinstance(parsed.get('files'), list) and all(isinstance(f, str) and len(f) <= 80 for f in parsed['files']):
+                        out['files'] = parsed['files'][:32]
+                    if isinstance(parsed.get('errors'), list) and all(isinstance(e, dict) and set(e) == {'exception'} and isinstance(e['exception'], str) and len(e['exception']) <= 120 for e in parsed['errors']):
+                        out['errors'] = parsed['errors'][:12]
+                    if isinstance(parsed.get('debugDir'), str) and parsed['debugDir'] == 'missing':
+                        out['debugDir'] = 'missing'
                     if len(verbs) == len(parsed['commands']):
-                        target.write_text(json.dumps({'schemaVersion': 1, 'kind': 'maestro-debug', 'commands': verbs}, sort_keys=True) + '\n', encoding='utf-8')
+                        target.write_text(json.dumps(out, sort_keys=True) + '\n', encoding='utf-8')
         for shot in SHOTS:
             source = private / 'screenshots' / device / shot
             target = output / 'screenshots' / device / shot

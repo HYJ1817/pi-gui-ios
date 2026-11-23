@@ -37,10 +37,10 @@ else
   xcrun simctl terminate "$UDID" io.github.hyj1817.piguimobile >/dev/null 2>&1 || true
 fi
 export MAESTRO_LOG_LEVEL=debug
-maestro --device "$UDID" test -e "SCREENSHOT_DIR=$SHOTS" --format junit --output "$UI/native.xml" --test-output-dir "$UI/native" --debug-output "$PRIVATE/debug-$DEVICE_NAME-native" --flatten-debug-output .maestro/native.yaml || { rc=$?; python3 scripts/ci/maestro-debug.py "$PRIVATE/debug-$DEVICE_NAME-native" > "$UI/native-debug.json" 2>/dev/null || true; exit $rc; }
+maestro --device "$UDID" test -e "SCREENSHOT_DIR=$SHOTS" --format junit --output "$UI/native.xml" --test-output-dir "$UI/native" --debug-output "$PRIVATE/debug-$DEVICE_NAME-native" --flatten-debug-output .maestro/native.yaml || { rc=$?; python3 scripts/ci/maestro-debug.py "$PRIVATE/debug-$DEVICE_NAME-native" "$UI/native-debug.json" || true; exit $rc; }
 xcrun simctl ui "$UDID" appearance dark
-maestro --device "$UDID" test -e "SCREENSHOT_DIR=$SHOTS/dark" --format junit --output "$UI/dark.xml" --test-output-dir "$UI/dark" --debug-output "$PRIVATE/debug-$DEVICE_NAME-dark" --flatten-debug-output .maestro/appearance.yaml || { rc=$?; python3 scripts/ci/maestro-debug.py "$PRIVATE/debug-$DEVICE_NAME-dark" > "$UI/dark-debug.json" 2>/dev/null || true; exit $rc; }
+maestro --device "$UDID" test -e "SCREENSHOT_DIR=$SHOTS/dark" --format junit --output "$UI/dark.xml" --test-output-dir "$UI/dark" --debug-output "$PRIVATE/debug-$DEVICE_NAME-dark" --flatten-debug-output .maestro/appearance.yaml || { rc=$?; python3 scripts/ci/maestro-debug.py "$PRIVATE/debug-$DEVICE_NAME-dark" "$UI/dark-debug.json" || true; exit $rc; }
 xcrun simctl ui "$UDID" content_size accessibility-extra-extra-extra-large
 xcrun simctl spawn "$UDID" defaults write com.apple.Accessibility ReduceTransparencyEnabled -bool YES
-maestro --device "$UDID" test -e "SCREENSHOT_DIR=$SHOTS/accessibility" --format junit --output "$UI/accessibility.xml" --test-output-dir "$UI/accessibility" --debug-output "$PRIVATE/debug-$DEVICE_NAME-accessibility" --flatten-debug-output .maestro/accessibility.yaml || { rc=$?; python3 scripts/ci/maestro-debug.py "$PRIVATE/debug-$DEVICE_NAME-accessibility" > "$UI/accessibility-debug.json" 2>/dev/null || true; exit $rc; }
+maestro --device "$UDID" test -e "SCREENSHOT_DIR=$SHOTS/accessibility" --format junit --output "$UI/accessibility.xml" --test-output-dir "$UI/accessibility" --debug-output "$PRIVATE/debug-$DEVICE_NAME-accessibility" --flatten-debug-output .maestro/accessibility.yaml || { rc=$?; python3 scripts/ci/maestro-debug.py "$PRIVATE/debug-$DEVICE_NAME-accessibility" "$UI/accessibility-debug.json" || true; exit $rc; }
 xcrun simctl io "$UDID" screenshot "$SHOTS/final.png"
