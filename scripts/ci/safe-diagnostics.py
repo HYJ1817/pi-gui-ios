@@ -25,7 +25,7 @@ CATEGORIES = {
     'LINKER_SYMBOL_NOT_FOUND': r'undefined symbols|undefined symbol',
     'XCODE_COMMAND_FAILED': r'Command \w+ failed with a nonzero exit code',
     'XCODE_BUILD_ERROR': r'xcodebuild: error|error: Building for',
-    'FRAMEWORK_NOT_FOUND': r'framework not found|library not found|file not found.*for architecture',
+    'FRAMEWORK_NOT_FOUND': r'framework not found|library not found|file not found|cannot open|unable to load|duplicate symbol|duplicate symbols|attempting to link|unsupported option|missing required architecture|building for.*but',
     'SWIFT_FRONTEND_FAILED': r'frontend command failed|Fatal error|signal \d',
     'LINKER_COMMAND_FAILED': r'linker command failed|ld:',
     'COMPILER_TOOL_EMIT_MODULE': r'\bEmitSwiftModule\b',
@@ -100,9 +100,9 @@ def scan(step, paths):
                 for code, pattern in CATEGORIES.items():
                     if re.search(pattern, line, re.IGNORECASE):
                         codes.add(code)
-                match = re.search(r'((?:src|scripts|node_modules|ios/Pods|ios)/[^\s:\"<>]+\.(?:tsx?|swift|mm?|cpp|h|py|rb|sh)):(\d{1,7})(?::\d{1,7})?', line.replace('\\', '/'))
+                match = re.search(r'((?:src|scripts|node_modules|ios/Pods|ios)/[^\s:\"<>]+\.(?:tsx?|swift|mm?|cpp|h|py|rb|sh|a|tbd|dylib|o))(?::(\d{1,7}))?(?::\d{1,7})?', line.replace('\\', '/'))
                 if match and re.search(r'\berror\b', line, re.IGNORECASE):
-                    relative, number = match[1], int(match[2])
+                    relative, number = match[1], int(match[2] or 1)
                     # Compiler messages may reference headers through ../ relative
                     # hops (e.g. Pods -> ../node_modules/...): normalize leading ../
                     # so the same structural location still reports, never the raw line.
