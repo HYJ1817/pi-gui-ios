@@ -125,7 +125,7 @@ def scan(step, paths):
                     # Remember only the public pod/target name for attribution
                     # of a nearby error line; the command contents never copy.
                     recent_tool, recent_tool_line = tool[1], lineno
-                if error_line.search(line) and recent_tool is not None and lineno - recent_tool_line <= 40 and len(targets) < 10:
+                if error_line.search(line) and recent_tool is not None and len(targets) < 10:
                     name = recent_tool if recent_tool in pods else None
                     if name and name not in targets:
                         targets.append(name)
