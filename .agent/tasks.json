@@ -1,11 +1,11 @@
 {
   "schemaVersion": 2,
   "kind": "tasks",
-  "revision": 628,
-  "updatedAt": "2026-11-23T02:45:34.518Z",
+  "revision": 632,
+  "updatedAt": "2026-11-23T02:47:37.887Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "519ff4955f03d85a30dba575cb404a9c2b42d27d52cc5012493f7cde9a1b1b48",
+    "parentDigest": "031321d88f49473f2102465c7f535a706db6189087b99ab917affcd369aed60e",
     "tasks": [
       {
         "id": "M-1-infrastructure",
@@ -901,7 +901,7 @@
         "id": "M2-shell",
         "phase": "M2",
         "title": "原生设计系统与 iPad 导航布局",
-        "status": "pending",
+        "status": "in_progress",
         "dependsOn": [
           "M1-remote"
         ],
@@ -920,7 +920,8 @@
             "commit": "70fb91b4e14df2a81d63c88a8e47787e8915faca",
             "at": "2026-11-22T04:33:13.205Z"
           }
-        ]
+        ],
+        "updatedAt": "2026-11-23T02:47:37.213Z"
       },
       {
         "id": "M3-core",
@@ -995,6 +996,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "56bb5539ccacc168281d484d6cd4312b80a64691f57cd33af48f446e89650178"
+    "digest": "586574f8705b9f759c3cf4a2cdc418d1bc1ad3d09f3ea78a7192bf666be84771"
   }
 }

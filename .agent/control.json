@@ -1,11 +1,11 @@
 {
   "schemaVersion": 2,
   "kind": "control",
-  "revision": 628,
-  "updatedAt": "2026-11-23T02:45:34.518Z",
+  "revision": 632,
+  "updatedAt": "2026-11-23T02:47:37.887Z",
   "data": {
-    "phase": "M1",
-    "currentTask": "M1-remote",
+    "phase": "M2",
+    "currentTask": "M2-shell",
     "branch": "agent/m-1-bootstrap",
     "protocolVersion": 1,
     "desktop": {
@@ -1011,7 +1011,7 @@
         "id": "M2-shell",
         "phase": "M2",
         "title": "原生设计系统与 iPad 导航布局",
-        "status": "pending",
+        "status": "in_progress",
         "dependsOn": [
           "M1-remote"
         ],
@@ -1030,7 +1030,8 @@
             "commit": "70fb91b4e14df2a81d63c88a8e47787e8915faca",
             "at": "2026-11-22T04:33:13.205Z"
           }
-        ]
+        ],
+        "updatedAt": "2026-11-23T02:47:37.213Z"
       },
       {
         "id": "M3-core",
@@ -1103,59 +1104,27 @@
       }
     ],
     "checkpoint": {
-      "id": "v2-2026-11-23T02-45-34-518Z-3e3d3bd6-dfee-4496-b81b-464593b31970",
-      "path": ".agent/checkpoints/v2-2026-11-23T02-45-34-518Z-3e3d3bd6-dfee-4496-b81b-464593b31970.json",
-      "sha256": "41f5183d69d16cd1341c501bf658c712ad23169c177f6f05788b18a6e49da9c2",
-      "authorityDigest": "e288a8d79c9225dfe1eb0c51c0a64bbfca41888b5d270e8fdba51fa236af648e",
-      "at": "2026-11-23T02:45:34.518Z",
+      "id": "v2-2026-11-23T02-47-37-887Z-78351284-06bd-429e-b112-21508cc59f54",
+      "path": ".agent/checkpoints/v2-2026-11-23T02-47-37-887Z-78351284-06bd-429e-b112-21508cc59f54.json",
+      "sha256": "6b5f90b6b9ef477d606d4f134ec0369e7bdf7f0f65512ef07dce455ff11b74bf",
+      "authorityDigest": "593fdd5f55cfd06e4c07d80e90bd84abfbe743f79beef8806fcf506c361a41d8",
+      "at": "2026-11-23T02:47:37.887Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "6e0e4449d13b7abfb434b5290515c6f0e6e01b8a",
+        "commit": "b598af614428771378cc412b99f0a0f64a44b61f",
         "dirty": [
           "M .agent/HANDOFF.md",
           " M .agent/control.json",
           " M .agent/state.json",
           " M .agent/tasks.json",
           " M PROGRESS.md",
-          " M docs/acceptance/local-protocol-contract-output.txt",
-          " M docs/acceptance/local-protocol-contract.json",
-          " M docs/acceptance/local-unit-output.txt",
-          " M docs/acceptance/local-unit.json",
-          "?? .agent/checkpoints/v2-2026-11-22T13-18-33-959Z-bdedf079-666f-4dd2-b65f-ce7641d0b927.json",
-          "?? .agent/checkpoints/v2-2026-11-22T13-19-20-311Z-dd0e3a3a-8938-4a86-aa62-772ffabb3cc4.json",
-          "?? .agent/checkpoints/v2-2026-11-22T13-23-06-994Z-a895b90f-0a23-4d29-9d34-787a0bafb66a.json",
-          "?? .agent/checkpoints/v2-2026-11-22T13-23-12-325Z-190e9c7b-c957-47a0-b190-e746c0f5f52a.json",
-          "?? .agent/checkpoints/v2-2026-11-22T13-23-13-664Z-a1cae3ef-d1c0-4e87-a3cc-8c9367d154a2.json",
-          "?? .agent/checkpoints/v2-2026-11-22T13-25-00-390Z-e81b861b-578e-496e-a6e2-ee7284e935e1.json",
-          "?? .agent/checkpoints/v2-2026-11-22T13-25-07-224Z-7672398b-5ead-485a-9ecc-a9552f8defe7.json",
-          "?? .agent/checkpoints/v2-2026-11-22T13-25-08-436Z-cf0e0abe-73b5-4842-be53-7724e32b7461.json",
-          "?? .agent/checkpoints/v2-2026-11-22T13-25-50-887Z-d8401d80-9f18-482b-be3c-50fed7ca9f2d.json",
-          "?? .agent/checkpoints/v2-2026-11-22T13-26-38-281Z-d2e7d461-1677-4333-a6ae-78859188f4d0.json",
-          "?? .agent/checkpoints/v2-2026-11-22T13-26-39-361Z-09be7e27-d959-4b97-9f27-1f2d9ed55d1e.json",
-          "?? .agent/checkpoints/v2-2026-11-22T13-26-52-110Z-8fdffbdf-3171-46ad-a37e-b015510ed034.json",
-          "?? .agent/checkpoints/v2-2026-11-22T13-51-33-637Z-bd433d92-9564-4e20-a9fb-b81a4b4a740f.json",
-          "?? .agent/checkpoints/v2-2026-11-22T14-05-14-233Z-3ad2fcb2-81d5-47c3-972f-cc5c6f9294e1.json",
-          "?? .agent/checkpoints/v2-2026-11-23T02-39-58-767Z-44fe400b-1083-46fe-a6bb-a40019a4a6ef.json",
-          "?? .agent/checkpoints/v2-2026-11-23T02-45-14-943Z-f02f70f5-13cb-4a6b-991d-5150665c4f12.json",
-          "?? .agent/checkpoints/v2-2026-11-23T02-45-18-867Z-029d224b-0510-407f-ad06-0af411ad6e6e.json",
-          "?? .agent/checkpoints/v2-2026-11-23T02-45-26-349Z-845c61fb-0342-4429-8ec2-98c5e6d6cd22.json",
-          "?? .agent/checkpoints/v2-2026-11-23T02-45-27-124Z-d2cc0450-d301-4dad-ade2-753d07d609c0.json",
-          "?? .agent/checkpoints/v2-2026-11-23T02-45-29-212Z-079f216c-57f7-4e84-b67a-b9fd8bd8732c.json",
-          "?? .agent/checkpoints/v2-2026-11-23T02-45-31-164Z-2da4cf1b-3b2f-4842-ba82-b8c42ad8c303.json",
-          "?? docs/acceptance/local-integration-output.txt",
-          "?? docs/acceptance/local-integration.json",
-          "?? docs/acceptance/m0-local-protocol-contract.json",
-          "?? docs/acceptance/m0-local-unit.json",
-          "?? docs/acceptance/m0-review-14973c4-receipt.json",
-          "?? docs/acceptance/m0-review-14973c4-review.json",
-          "?? docs/acceptance/m0-review-14973c4-security.json",
-          "?? docs/acceptance/m0-review-14973c4-summary.json"
+          "?? .agent/checkpoints/v2-2026-11-23T02-47-37-258Z-07b129b3-9a1f-49c4-8006-5af066da373f.json"
         ]
       },
       "sourceFingerprint": "ceeb588d13e8e5c610d52edd8e9aec1c2fb0ca0bfbc4cc54985bcfbb85c8a5b0",
-      "note": "M1-remote completed：独立审查 final pass(desktop 74d252f5)，unit/integration/independent-review/independent-security 证据齐全"
+      "note": "M1-remote completed；M2-shell 开始 in_progress"
     },
-    "nextAction": "M1-remote 桌面实现已提交 pi-gui@d244f3e1（remote/v1 全对齐；contract 33+gateway 11 绿）。unit+integration 证据已在 14973c4 导入；M0 依赖 unit+protocol-contract 已在新指纹重章导入。剩：两个 delegate 独立审查（taskId 6b89e4b0=M1-remote 实现审查，a83336bb=M0 合同重审）完成后把 receipt+report 写入 docs/acceptance/review-14973c4-*.json，evidence 导入 M1-remote 与 M0-architecture，validate 全绿后 transition M1-remote->completed。",
+    "nextAction": "M1-remote completed（desktop 74d252f5，final 审查 pass，四类证据齐）。下一可执行任务：M2-shell（原生设计系统与 iPad 导航布局，依赖 M1-remote 已满足）。M-1-infrastructure 仍 blocked（ADR 0006 owner waiver，NATIVE_DEPENDENCIES_REJECTED，不重试）。M2 开始：调研现有 app 结构与技术栈决策记录，然后实现设计系统/导航并补 unit+ui+independent-review 证据。",
     "delegates": [
       {
         "taskId": "node:delegated-task:command%3Amcp%3Ac31b83bb-4e95-4301-8a91-f13f8295d85a%3Adelegate-task%3A4b75cf04-9360-469c-87e1-321a7e4b3149",
@@ -1365,6 +1334,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "519ff4955f03d85a30dba575cb404a9c2b42d27d52cc5012493f7cde9a1b1b48"
+    "digest": "031321d88f49473f2102465c7f535a706db6189087b99ab917affcd369aed60e"
   }
 }

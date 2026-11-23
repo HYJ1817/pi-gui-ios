@@ -33,6 +33,26 @@ export function contentWidth(g: ShellGeometry): number {
   return Math.min(CONTENT_MAX, avail > 0 ? avail : g.width);
 }
 
+// Primary-column metrics for the native UISplitViewController shell
+// (react-native-screens gamma Split). Preferred width is a FRACTION of the
+// split — iOS convention ~30–38% — clamped by absolute min/max bounds.
+export const SIDEBAR_MIN = 300;
+export const SIDEBAR_MAX = 375;
+export const SIDEBAR_FRACTION = 0.32;
+
+export interface SplitColumnMetricsShape {
+  minimumPrimaryColumnWidth: number;
+  maximumPrimaryColumnWidth: number;
+  preferredPrimaryColumnWidthOrFraction: number;
+}
+export function splitColumnMetrics(_g: ShellGeometry): SplitColumnMetricsShape {
+  return {
+    minimumPrimaryColumnWidth: SIDEBAR_MIN,
+    maximumPrimaryColumnWidth: SIDEBAR_MAX,
+    preferredPrimaryColumnWidthOrFraction: SIDEBAR_FRACTION,
+  };
+}
+
 // Dynamic-type scale factor derived from a font-size multiplier the OS supplies.
 // RN exposes preferred content size via the text style's allowFontScaling; we keep
 // a clamp so huge accessibility sizes don't blow the layout out of bounds.

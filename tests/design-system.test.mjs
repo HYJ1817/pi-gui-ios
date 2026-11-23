@@ -65,6 +65,19 @@ test('layout: split vs stacked breakpoints and sidebar/content widths', (t) => {
   assert.equal(clampFontScale(3), 2.0); assert.equal(clampFontScale(0.5), 0.75); assert.equal(clampFontScale(1), 1);
 });
 
+test('layout: split primary-column metrics satisfy the native shell bounds', (t) => {
+  const out = buildDesign(t);
+  const { splitColumnMetrics, SIDEBAR_MIN, SIDEBAR_MAX, SIDEBAR_FRACTION } = require(resolve(out, 'design/layout.js'));
+  const m = splitColumnMetrics({ width: 1180, height: 820 });
+  assert.equal(m.minimumPrimaryColumnWidth, SIDEBAR_MIN);
+  assert.equal(m.maximumPrimaryColumnWidth, SIDEBAR_MAX);
+  assert.equal(m.preferredPrimaryColumnWidthOrFraction, SIDEBAR_FRACTION);
+  assert.ok(m.minimumPrimaryColumnWidth <= m.maximumPrimaryColumnWidth);
+  assert.ok(m.preferredPrimaryColumnWidthOrFraction > 0 && m.preferredPrimaryColumnWidthOrFraction < 1);
+  // deterministic regardless of geometry (bounds are contract, not adaptive)
+  assert.deepEqual(splitColumnMetrics({ width: 390, height: 844 }), m);
+});
+
 test('theme hook: appTheme maps tokens to legacy field names', (t) => {
   const out = buildDesign(t);
   const { appTheme } = require(resolve(out, 'design/app-theme.js'));
