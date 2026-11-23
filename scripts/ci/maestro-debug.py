@@ -14,6 +14,35 @@ import sys
 OUTCOME = {'COMPLETED', 'WARNED', 'FAILED', 'SKIPPED'}
 
 
+import re
+
+# Java/Kotlin exception FQCNs are static source-level names, safe to report.
+EXCEPTION = re.compile(r'\b((?:[a-z][a-z0-9_]*\.){2,}[A-Z][A-Za-z0-9]*(?:Exception|Error|Throwable|Timeout|InterruptedException))\b')
+# Log levels and fixed verbs that carry no data.
+LEVEL = re.compile(r'\b(INFO|WARN|ERROR|DEBUG|TRACE|FATAL)\b')
+
+
+def reduce_log(path, limit=12):
+    """Exception class names + structural lines from a Maestro log, no payloads."""
+    found, seen = [], set()
+    try:
+        stream = pathlib.Path(path).open(encoding='utf-8', errors='replace')
+    except OSError:
+        return found
+    with stream:
+        for line in stream:
+            if len(line) > 8192:
+                continue
+            for match in EXCEPTION.finditer(line):
+                name = match.group(1)
+                if name not in seen:
+                    seen.add(name)
+                    found.append({'exception': name})
+            if len(found) >= limit:
+                break
+    return found
+
+
 def reduce(path):
     root = json.loads(pathlib.Path(path).read_text(encoding='utf-8'))
     commands = root.get('commands') if isinstance(root, dict) else None
@@ -38,6 +67,9 @@ def reduce(path):
 
 if __name__ == '__main__':
     try:
-        print(json.dumps(reduce(sys.argv[1]), sort_keys=True))
+        output = reduce(sys.argv[1])
     except Exception:
-        print(json.dumps({'schemaVersion': 1, 'kind': 'maestro-debug', 'commands': []}))
+        output = {'schemaVersion': 1, 'kind': 'maestro-debug', 'commands': []}
+    if len(sys.argv) > 2:
+        output['errors'] = reduce_log(sys.argv[2])
+    print(json.dumps(output, sort_keys=True))
