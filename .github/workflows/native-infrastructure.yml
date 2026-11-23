@@ -123,7 +123,7 @@ jobs:
       - name: Build self-contained Release simulator app
         run: |
           set +e
-          bash scripts/ci/run-step.sh simulator-build xcodebuild -workspace ios/PiGUIMobile.xcworkspace -scheme PiGUIMobile -configuration Debug -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -derivedDataPath build/simulator ARCHS="$(uname -m)" ONLY_ACTIVE_ARCH=YES CODE_SIGNING_ALLOWED=NO -resultBundlePath "$RUNNER_TEMP/native-private/simulator.xcresult" build
+          bash scripts/ci/run-step.sh simulator-build xcodebuild -workspace ios/PiGUIMobile.xcworkspace -scheme PiGUIMobile -configuration Release -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -derivedDataPath build/simulator ARCHS="$(uname -m)" ONLY_ACTIVE_ARCH=YES CODE_SIGNING_ALLOWED=NO -resultBundlePath "$RUNNER_TEMP/native-private/simulator.xcresult" build
           status=$?
           set -e
           if [ "$status" -ne 0 ]; then
