@@ -82,6 +82,23 @@ def collect(bundle):
     if root is None:
         return {'schemaVersion': 1, 'kind': 'safe-ci-xcresult', 'observed': False, 'issues': []}
     tracked = tracked_files()
+    debug = {}
+    if isinstance(root, dict):
+        debug['rootKeys'] = sorted(root.keys())
+        issues_node = root.get('issues') or {}
+        if isinstance(issues_node, dict):
+            debug['issuesKeys'] = sorted(issues_node.keys())
+            es = issues_node.get('errorSummaries')
+            if isinstance(es, dict):
+                debug['errorSummariesType'] = text(es.get('_type').get('name') if isinstance(es.get('_type'), dict) else es.get('_type'))
+                debug['errorSummariesCount'] = len(es.get('_values') or [])
+                first = (es.get('_values') or [{}])[0]
+                if isinstance(first, dict):
+                    debug['errorSummaryFirstKeys'] = sorted(first.keys())
+                    debug['errorSummaryFirstType'] = text(first.get('_type').get('name') if isinstance(first.get('_type'), dict) else first.get('_type'))
+                    debug['errorSummaryFirstId'] = ref_id(first)[:8] if ref_id(first) else ''
+                    # Print all leaf scalar names+types for schema debugging
+                    debug['errorSummaryFirstLeaves'] = sorted({k for k,v in first.items()})
     refs = []
     issues_node = root.get('issues') if isinstance(root, dict) else None
     for summary in values((issues_node or {}).get('errorSummaries')):
@@ -118,7 +135,10 @@ def collect(bundle):
                 elif path.startswith('ios/'):
                     record['location']['dependency'] = 'ios-generated'
         out.append(record)
-    return {'schemaVersion': 1, 'kind': 'safe-ci-xcresult', 'observed': True, 'issues': out}
+    result = {'schemaVersion': 1, 'kind': 'safe-ci-xcresult', 'observed': True, 'issues': out}
+    if debug:
+        result['debug'] = debug
+    return result
 
 
 def pod_names():
