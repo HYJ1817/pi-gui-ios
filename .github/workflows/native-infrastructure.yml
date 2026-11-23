@@ -100,6 +100,15 @@ jobs:
       - name: Resolve reviewed native dependencies or stop at bootstrap gate
         id: pods
         run: bash scripts/ci/run-step.sh pods bash scripts/ci/install-pods.sh
+      - name: Diagnose sandbox manifest state after pod install
+        if: always() && steps.pods.outcome == 'success'
+        run: |
+          echo "MANIFEST_DIAG_BEGIN"
+          ls -l ios/Pods/Manifest.lock ios/Podfile.lock 2>&1 || true
+          sha1sum ios/Podfile 2>/dev/null || true
+          grep 'PODFILE CHECKSUM' ios/Podfile.lock 2>/dev/null || true
+          diff -q ios/Pods/Manifest.lock ios/Podfile.lock && echo "MANIFEST_MATCH" || echo "MANIFEST_DIFFER"
+          echo "MANIFEST_DIAG_END"
       - name: Save dependency downloads only after full lock and checksum verification
         if: steps.pods.outputs.result == 'passed' && steps.native-cache.outputs.cache-hit != 'true'
         uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
