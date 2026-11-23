@@ -1,8 +1,8 @@
 {
   "schemaVersion": 2,
   "kind": "control",
-  "revision": 632,
-  "updatedAt": "2026-11-23T02:47:37.887Z",
+  "revision": 633,
+  "updatedAt": "2026-11-23T04:22:18.177Z",
   "data": {
     "phase": "M2",
     "currentTask": "M2-shell",
@@ -1329,11 +1329,17 @@
         "role": "m1-remote-final-confirmation-review",
         "status": "working",
         "sourceCommit": "ceec7e888ed8b637f20b351c8ec81a0d890bca18"
+      },
+      {
+        "taskId": "node:delegated-task:command%3Amcp%3A192f0d0c-3998-422d-9b85-6f47c284ec5e%3Adelegate-task%3A2f042cbb-5ba8-4766-bdf6-e6ea512a9986",
+        "role": "native-lock-candidates-review",
+        "status": "working",
+        "sourceCommit": "a27a9a253e12a148de6f92f033ba4342faa1ed02"
       }
     ]
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "031321d88f49473f2102465c7f535a706db6189087b99ab917affcd369aed60e"
+    "digest": "d38b541ccd3633c972cf2cb04bda9d83711ab13aa9f2bac41eafd329474e42cc"
   }
 }
