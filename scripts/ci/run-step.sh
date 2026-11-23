@@ -25,6 +25,16 @@ RESULT=failed
 if [[ "$STATUS" == 0 ]]; then RESULT=passed; fi
 if [[ "$STEP" == pods && "$STATUS" == 78 ]]; then RESULT=bootstrap-required; fi
 record "$RESULT"
+if [[ "$RESULT" == failed && -s "$PRIVATE/logs/$STEP.log" ]]; then
+  # Surface a path-sanitized tail of the private log: only lines carrying
+  # compiler/test diagnostics survive, with runner home/workspace prefixes
+  # and env values stripped — never raw logs or full paths.
+  printf 'NATIVE_STEP_%s_LOG_TAIL_BEGIN\n' "$STEP"
+  grep -aE 'error:|error |warning:|FAILED|fatal|undefined|not found|no such|PhaseScriptExecution|ld:|clang:|EmitSwiftModule|SwiftCompile|CompileC|exit' "$PRIVATE/logs/$STEP.log" | \
+    sed -E 's|/Users/[^ ]+|<USR>|g; s|/private/var/[^ ]+|<TMP>|g; s|/opt/[^ ]+|<OPT>|g' | \
+    tail -n 40
+  printf 'NATIVE_STEP_%s_LOG_TAIL_END\n' "$STEP"
+fi
 printf 'NATIVE_STEP_%s_%s\n' "$STEP" "$RESULT"
 if [[ -n "${GITHUB_OUTPUT:-}" ]]; then
   printf 'result=%s\n' "$RESULT" >> "$GITHUB_OUTPUT"
