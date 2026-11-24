@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 2,
+  "kind": "independent-security",
+  "taskId": "M1-remote",
+  "commit": "17e825507005ed5c763a2ca5eb174ddccb53d2bf",
+  "sourceFingerprint": "77ec78fcb3e32d547aa09880aaf6a88dfde075fb8d2d843cf5eba7c41fbae359",
+  "startedAt": "2026-11-24T08:35:00.000Z",
+  "finishedAt": "2026-11-24T08:41:44.736Z",
+  "passed": true,
+  "details": {
+    "receiptPath": "docs/acceptance/m1-remote-security-17e8255-receipt.json",
+    "receiptSha256": "29bbbb25d6a408ff4b4c85313722a98112ce67a5dc59b339f661ac336206ae9a",
+    "scope": "Independent security re-review @17e8255 (swe-2): M1-remote security model re-verified at current fingerprint; pairing/signed-request/revocation/event-scope contracts intact; M2 additions no attack surface; 2 nits, 0 blockers."
+  }
+}

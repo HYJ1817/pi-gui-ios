@@ -1,11 +1,11 @@
 {
   "schemaVersion": 2,
   "kind": "tasks",
-  "revision": 703,
-  "updatedAt": "2026-11-24T08:37:55.829Z",
+  "revision": 707,
+  "updatedAt": "2026-11-24T08:44:06.145Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "9df1ca2bf4c32e6a4746d0c7d0262e02a6f3c37328dfa750c80b4835e417fbda",
+    "parentDigest": "913449ae2a8ac399671baf06587ce3a37370610cbe2d3ca2495b6f72e9a7b243",
     "tasks": [
       {
         "id": "M-1-infrastructure",
@@ -858,6 +858,14 @@
             "sourceFingerprint": "77ec78fcb3e32d547aa09880aaf6a88dfde075fb8d2d843cf5eba7c41fbae359",
             "commit": "53ec2bf028065fe0279d3b603ed4c77df12b4008",
             "at": "2026-11-24T08:35:04.872Z"
+          },
+          {
+            "kind": "independent-security",
+            "path": "docs/acceptance/m0-architecture-security-17e8255.json",
+            "sha256": "2cb55b430b3a5c742bb1f5d53cdec2fc5cfac3fa48a8f218b35b7df0968fba1a",
+            "sourceFingerprint": "77ec78fcb3e32d547aa09880aaf6a88dfde075fb8d2d843cf5eba7c41fbae359",
+            "commit": "17e825507005ed5c763a2ca5eb174ddccb53d2bf",
+            "at": "2026-11-24T08:44:05.019Z"
           }
         ],
         "updatedAt": "2026-11-22T05:04:14.175Z"
@@ -925,6 +933,14 @@
             "sourceFingerprint": "77ec78fcb3e32d547aa09880aaf6a88dfde075fb8d2d843cf5eba7c41fbae359",
             "commit": "53ec2bf028065fe0279d3b603ed4c77df12b4008",
             "at": "2026-11-24T08:35:05.875Z"
+          },
+          {
+            "kind": "independent-security",
+            "path": "docs/acceptance/m1-remote-security-17e8255.json",
+            "sha256": "38bbf5f0b6937d56241e6c7da758f4f6cbb32506c22a6b9d612c9f80c83b6613",
+            "sourceFingerprint": "77ec78fcb3e32d547aa09880aaf6a88dfde075fb8d2d843cf5eba7c41fbae359",
+            "commit": "17e825507005ed5c763a2ca5eb174ddccb53d2bf",
+            "at": "2026-11-24T08:44:06.080Z"
           }
         ],
         "updatedAt": "2026-11-23T02:45:31.115Z"
@@ -1108,6 +1124,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "1f4857f2eabe133155b2f39388fc75a772eb360dfec42d60569291eadc4bcf53"
+    "digest": "c7e6a76a797ef862b8336ce1e65f887ba020985e5a2f378ace3e32aa70144b4c"
   }
 }

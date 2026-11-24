@@ -1,0 +1,11 @@
+{
+  "childThreadId": "thread:delegated-task:command%3Amcp%3A571f0893-6372-4390-a2f5-e277a43aeec2%3Adelegate-task%3A20e58c56-11a2-4d1f-a875-c4fe9d7f98d0",
+  "link": "[M0+M1 security re-review @17e8255](t3-thread://v2/54c2be41-16aa-490a-8cc2-bfd447f6c2a5/thread:delegated-task:command%3Amcp%3A571f0893-6372-4390-a2f5-e277a43aeec2%3Adelegate-task%3A20e58c56-11a2-4d1f-a875-c4fe9d7f98d0)",
+  "status": "completed",
+  "workState": "result_available",
+  "latestTerminalStatus": "completed",
+  "executedModel": "magpie/devin/swe-2",
+  "providerInstanceId": "pi",
+  "taskId": "node:delegated-task:command%3Amcp%3A571f0893-6372-4390-a2f5-e277a43aeec2%3Adelegate-task%3A20e58c56-11a2-4d1f-a875-c4fe9d7f98d0",
+  "summary": "{\"schemaVersion\":1,\"reports\":[{\"schemaVersion\":1,\"kind\":\"independent-security\",\"decision\":\"pass\",\"taskId\":\"M0-architecture\",\"reviewedCommit\":\"17e825507005ed5c763a2ca5eb174ddccb53d2bf\",\"sourceFingerprint\":\"77ec78fcb3e32d547aa09880aaf6a88dfde075fb8d2d843cf5eba7c41fbae359\",\"unresolvedBlockers\":0,\"unresolvedImportant\":0,\"findings\":[{\"severity\":\"nit\",\"note\":\"control.mjs atomicWrite/safePath allowMissing components skip realpath checks — documented single-writer TOCTOU limit on the local agent plane; no remote exposure\"},{\"severity\":\"nit\",\"note\":\"dirty worktree files are exclusively .agent/, docs/acceptance/, PROGRESS.md — all fingerprint-excluded; evidence model is fail-closed\"}],\"testsRun\":[{\"command\":\"npm test (RUBY+GEM_HOME/GEM_PATH pinned)\",\"exitCode\":0,\"result\":\"pass\"},{\"command\":\"node --test tests/remote-contract.test.mjs\",\"exitCode\":0,\"result\":\"pass\"},{\"command\":\"node scripts/desktop-remote-verify.mjs\",\"exitCode\":0,\"result\":\"pass\"}]}]}"
+}

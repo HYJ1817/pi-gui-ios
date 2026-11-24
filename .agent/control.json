@@ -1,8 +1,8 @@
 {
   "schemaVersion": 2,
   "kind": "control",
-  "revision": 703,
-  "updatedAt": "2026-11-24T08:37:55.829Z",
+  "revision": 707,
+  "updatedAt": "2026-11-24T08:44:06.145Z",
   "data": {
     "phase": "M2",
     "currentTask": "M2-shell",
@@ -968,6 +968,14 @@
             "sourceFingerprint": "77ec78fcb3e32d547aa09880aaf6a88dfde075fb8d2d843cf5eba7c41fbae359",
             "commit": "53ec2bf028065fe0279d3b603ed4c77df12b4008",
             "at": "2026-11-24T08:35:04.872Z"
+          },
+          {
+            "kind": "independent-security",
+            "path": "docs/acceptance/m0-architecture-security-17e8255.json",
+            "sha256": "2cb55b430b3a5c742bb1f5d53cdec2fc5cfac3fa48a8f218b35b7df0968fba1a",
+            "sourceFingerprint": "77ec78fcb3e32d547aa09880aaf6a88dfde075fb8d2d843cf5eba7c41fbae359",
+            "commit": "17e825507005ed5c763a2ca5eb174ddccb53d2bf",
+            "at": "2026-11-24T08:44:05.019Z"
           }
         ],
         "updatedAt": "2026-11-22T05:04:14.175Z"
@@ -1035,6 +1043,14 @@
             "sourceFingerprint": "77ec78fcb3e32d547aa09880aaf6a88dfde075fb8d2d843cf5eba7c41fbae359",
             "commit": "53ec2bf028065fe0279d3b603ed4c77df12b4008",
             "at": "2026-11-24T08:35:05.875Z"
+          },
+          {
+            "kind": "independent-security",
+            "path": "docs/acceptance/m1-remote-security-17e8255.json",
+            "sha256": "38bbf5f0b6937d56241e6c7da758f4f6cbb32506c22a6b9d612c9f80c83b6613",
+            "sourceFingerprint": "77ec78fcb3e32d547aa09880aaf6a88dfde075fb8d2d843cf5eba7c41fbae359",
+            "commit": "17e825507005ed5c763a2ca5eb174ddccb53d2bf",
+            "at": "2026-11-24T08:44:06.080Z"
           }
         ],
         "updatedAt": "2026-11-23T02:45:31.115Z"
@@ -1216,18 +1232,30 @@
       }
     ],
     "checkpoint": {
-      "id": "v2-2026-11-24T08-37-55-829Z-e5984c7e-0d63-4d2d-bced-b046760a8a6a",
-      "path": ".agent/checkpoints/v2-2026-11-24T08-37-55-829Z-e5984c7e-0d63-4d2d-bced-b046760a8a6a.json",
-      "sha256": "3f67559b6fe8cab6b00f471736710a0e2fa8c5b35ff46abfa97e86dc78cf6ff0",
-      "authorityDigest": "172a4ba21b183e2657c9fd53843dc3a6609efffdf2e50aadd177bedb183cce50",
-      "at": "2026-11-24T08:37:55.829Z",
+      "id": "v2-2026-11-24T08-44-06-145Z-74e47d14-7e5b-4b27-956c-9ffd5963e174",
+      "path": ".agent/checkpoints/v2-2026-11-24T08-44-06-145Z-74e47d14-7e5b-4b27-956c-9ffd5963e174.json",
+      "sha256": "a140814dbb3d56e2b7ccb6a1fe8f6f9613c9391a3fa9f8c6200ca5610d3f7dc0",
+      "authorityDigest": "d8ddd750ff0d1ba8fd20b95b7698f60344f07598b4f200a57651a4f7bca0192b",
+      "at": "2026-11-24T08:44:06.145Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "93c98e4e2efad0315f0d2daf39733c9ce086e44b",
-        "dirty": []
+        "commit": "73a68fe774e7497c01f79f5031035b4d92434ed9",
+        "dirty": [
+          "M .agent/HANDOFF.md",
+          " M .agent/control.json",
+          " M .agent/state.json",
+          " M .agent/tasks.json",
+          " M PROGRESS.md",
+          "?? .agent/checkpoints/v2-2026-11-24T08-44-05-078Z-873efa31-317d-42d4-827d-afb03e480543.json",
+          "?? docs/acceptance/m0-architecture-security-17e8255-receipt.json",
+          "?? docs/acceptance/m0-architecture-security-17e8255.json",
+          "?? docs/acceptance/m0m1-security-17e8255-receipt.json",
+          "?? docs/acceptance/m1-remote-security-17e8255-receipt.json",
+          "?? docs/acceptance/m1-remote-security-17e8255.json"
+        ]
       },
       "sourceFingerprint": "77ec78fcb3e32d547aa09880aaf6a88dfde075fb8d2d843cf5eba7c41fbae359",
-      "note": "M0/M1 unit+contract+integration 已刷新；M2-shell unit+independent-review 已入；等 CI 45352185165 截图(ui) + 2 个 review delegate"
+      "note": "agent-task evidence M1-remote"
     },
     "nextAction": "M1-remote completed（desktop 74d252f5，final 审查 pass，四类证据齐）。下一可执行任务：M2-shell（原生设计系统与 iPad 导航布局，依赖 M1-remote 已满足）。M-1-infrastructure 仍 blocked（ADR 0006 owner waiver，NATIVE_DEPENDENCIES_REJECTED，不重试）。M2 开始：调研现有 app 结构与技术栈决策记录，然后实现设计系统/导航并补 unit+ui+independent-review 证据。",
     "delegates": [
@@ -1470,11 +1498,17 @@
         "role": "m2-shell-independent-review",
         "status": "completed",
         "sourceCommit": "53ec2bf028065fe0279d3b603ed4c77df12b4008"
+      },
+      {
+        "taskId": "node:delegated-task:command%3Amcp%3A571f0893-6372-4390-a2f5-e277a43aeec2%3Adelegate-task%3A20e58c56-11a2-4d1f-a875-c4fe9d7f98d0",
+        "role": "m0-m1-security-rereview",
+        "status": "completed",
+        "sourceCommit": "17e825507005ed5c763a2ca5eb174ddccb53d2bf"
       }
     ]
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "9df1ca2bf4c32e6a4746d0c7d0262e02a6f3c37328dfa750c80b4835e417fbda"
+    "digest": "913449ae2a8ac399671baf06587ce3a37370610cbe2d3ca2495b6f72e9a7b243"
   }
 }
