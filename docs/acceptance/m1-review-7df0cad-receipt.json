@@ -1,0 +1,11 @@
+{
+ "childThreadId": "thread:delegated-task:command%3Amcp%3A98737254-2f27-45ed-b038-23dc9c30c97e%3Adelegate-task%3A2c44d663-e814-4be2-8378-3563f47fd642",
+ "link": "[M0+M1 re-review (fix verification)](t3-thread://v2/54c2be41-16aa-490a-8cc2-bfd447f6c2a5/thread:delegated-task:command%3Amcp%3A98737254-2f27-45ed-b038-23dc9c30c97e%3Adelegate-task%3A2c44d663-e814-4be2-8378-3563f47fd642)",
+ "status": "completed",
+ "workState": "result_available",
+ "latestTerminalStatus": "completed",
+ "executedModel": "devin/swe-2",
+ "providerInstanceId": "claudeAgent",
+ "taskId": "node:delegated-task:command%3Amcp%3A98737254-2f27-45ed-b038-23dc9c30c97e%3Adelegate-task%3A2c44d663-e814-4be2-8378-3563f47fd642",
+ "summary": "{\"reports\": [{\"decision\": \"pass\", \"kind\": \"independent-review\", \"reviewedCommit\": \"7df0cad92379bfad14f65a83a52a38d88e79aa79\", \"schemaVersion\": 1, \"sourceFingerprint\": \"42bab82c933864049cb3be62b1409b5c1f3d06eaf0a3df66ddc73ae6de7d0004\", \"summary\": \"Re-review @7df0cad (swe-2): prior Important findings verified fixed \\u2014 17e8255 reviews now satisfy the gate via the legacy grandfather path; both handoff sites assert manifest.head_sha==GITHUB_SHA, closing cross-commit evidence certification. 0 blockers, 0 important.\", \"taskId\": \"M1-remote\", \"unresolvedBlockers\": 0, \"unresolvedImportant\": 0}], \"schemaVersion\": 1}"
+}

@@ -1,11 +1,11 @@
 {
   "schemaVersion": 2,
   "kind": "tasks",
-  "revision": 759,
-  "updatedAt": "2026-11-24T13:28:44.021Z",
+  "revision": 764,
+  "updatedAt": "2026-11-24T13:31:40.171Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "84142cb39fc7f2e694ee273b633ba10646be09d040ce157c99d7b24c292789a6",
+    "parentDigest": "80407dcbeb7f37fee1b2d588dce3afd97f39306ffa41737b33ca1a721f84bfcc",
     "tasks": [
       {
         "id": "M-1-infrastructure",
@@ -921,6 +921,19 @@
             "sourceFingerprint": "77ec78fcb3e32d547aa09880aaf6a88dfde075fb8d2d843cf5eba7c41fbae359",
             "commit": "17e825507005ed5c763a2ca5eb174ddccb53d2bf",
             "at": "2026-11-24T13:27:03.864Z"
+          },
+          {
+            "kind": "independent-review",
+            "path": "docs/acceptance/m0-review-7df0cad.json",
+            "sha256": "e56210428ec4cb2b01d84aafd721ee0452c4faa297b9b372f1d16dbf50ae3d26",
+            "sourceFingerprint": "42bab82c933864049cb3be62b1409b5c1f3d06eaf0a3df66ddc73ae6de7d0004",
+            "commit": "7df0cad92379bfad14f65a83a52a38d88e79aa79",
+            "at": "2026-11-24T13:31:38.966Z",
+            "scopes": [
+              "protocol",
+              "shared"
+            ],
+            "scopeFingerprint": "b8e43d36ca038ba8e2669dd6e04456bb2ecac4da0f8531889007f3a6f482dbdc"
           }
         ],
         "updatedAt": "2026-11-22T05:04:14.175Z",
@@ -1060,6 +1073,19 @@
             "sourceFingerprint": "77ec78fcb3e32d547aa09880aaf6a88dfde075fb8d2d843cf5eba7c41fbae359",
             "commit": "17e825507005ed5c763a2ca5eb174ddccb53d2bf",
             "at": "2026-11-24T13:27:05.033Z"
+          },
+          {
+            "kind": "independent-review",
+            "path": "docs/acceptance/m1-review-7df0cad.json",
+            "sha256": "487a65dbf1ee8ef5f5b86e202971fffc303f9cee833bac3b0d5d761bb238bae4",
+            "sourceFingerprint": "42bab82c933864049cb3be62b1409b5c1f3d06eaf0a3df66ddc73ae6de7d0004",
+            "commit": "7df0cad92379bfad14f65a83a52a38d88e79aa79",
+            "at": "2026-11-24T13:31:40.115Z",
+            "scopes": [
+              "protocol",
+              "shared"
+            ],
+            "scopeFingerprint": "b8e43d36ca038ba8e2669dd6e04456bb2ecac4da0f8531889007f3a6f482dbdc"
           }
         ],
         "updatedAt": "2026-11-23T02:45:31.115Z",
@@ -1306,6 +1332,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "11574cac8dbe20aa967ce74baf92f059e997cb9b58734190b10b85ba8c881eae"
+    "digest": "f49281ed1ed801f4fd41be3d9f32a9208dd4f832e7eff75600d1930b076454bd"
   }
 }

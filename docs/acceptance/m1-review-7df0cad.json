@@ -1,0 +1,20 @@
+{
+ "schemaVersion": 2,
+ "kind": "independent-review",
+ "taskId": "M1-remote",
+ "commit": "7df0cad92379bfad14f65a83a52a38d88e79aa79",
+ "sourceFingerprint": "42bab82c933864049cb3be62b1409b5c1f3d06eaf0a3df66ddc73ae6de7d0004",
+ "scopes": [
+  "protocol",
+  "shared"
+ ],
+ "scopeFingerprint": "b8e43d36ca038ba8e2669dd6e04456bb2ecac4da0f8531889007f3a6f482dbdc",
+ "startedAt": "2026-11-24T13:20:00.000Z",
+ "finishedAt": "2026-11-24T13:45:00.000Z",
+ "passed": true,
+ "details": {
+  "receiptPath": "docs/acceptance/m1-review-7df0cad-receipt.json",
+  "receiptSha256": "590b5f93e8a7ddf4b288b3de875f8ee48ff52bec9be41dcfc5887d4e18d478ae",
+  "scope": "Re-review @7df0cad (swe-2): prior Important findings verified fixed \u2014 17e8255 reviews now satisfy the gate via the legacy grandfather path; both handoff sites assert manifest.head_sha==GITHUB_SHA, closing cross-commit evidence certification. 0 blockers, 0 important."
+ }
+}
