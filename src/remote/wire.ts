@@ -126,6 +126,68 @@ export function hexDecode(text: string, expectedBytes?: number): Uint8Array | nu
   return expectedBytes === undefined || out.length === expectedBytes ? out : null;
 }
 
+/** Contract maxTranscriptSerializedBytes: measured on the JSON-serialized
+ * representation of the text (quotes + escapes included), not raw UTF-8. */
+export function serializedJsonBytes(value: unknown): number {
+  const json = canonicalJson(value);
+  return json === null ? Number.POSITIVE_INFINITY : utf8Bytes(json);
+}
+
+// ---- projection policy scans (mirroring scripts/lib/remote-protocol-contract.mjs) ----
+
+const FORBIDDEN_KEYS = new Set(['command', 'args', 'path', 'file', 'sessionpath', 'filepath', 'projectpath', 'cwd', 'url', 'headers', 'env', 'token', 'authorization', 'piguitoken', 'apikey', 'secret', 'credential']);
+const normalizeKey = (key: string): string => key.toLowerCase().replace(/[_-]/g, '').replace(/[^a-z0-9]/g, '');
+export function isForbiddenKey(key: string): boolean {
+  const n = normalizeKey(key);
+  return FORBIDDEN_KEYS.has(n) || n.endsWith('filepath') || n.endsWith('sessionpath')
+    || n.endsWith('token') || n.endsWith('apikey') || n.endsWith('secret') || n.endsWith('credential') || n.endsWith('password');
+}
+
+const FORBIDDEN_VALUE = new RegExp([
+  /(?:^|[^A-Za-z0-9_.\/~])\/(?!\/)/.source,
+  /\w+:\/\/+[A-Za-z]:[\\/]/.source,
+  /\w+:\/\/\/(?:[A-Za-z0-9._~-]+\/)*[A-Za-z0-9._~-]+/.source,
+  /\/\/+[A-Za-z0-9._~:@-]+\/[A-Za-z0-9._~-]/.source,
+  /(?:^|[^A-Za-z0-9_.~\/])(?:[A-Za-z]:[\\/]|\\\\|~[\\/]|\\(?=[A-Za-z]))/.source,
+  /(?:^|[^A-Za-z0-9_.~\/])(?:home|Users|etc|private|var|opt|root|tmp|usr|bin|srv|mnt|data)[\\/][A-Za-z0-9._-]/.source,
+  /(?:PI_GUI_TOKEN|api[_-]?key|oauth[_-]?token|-----BEGIN [A-Z ]*PRIVATE KEY-----)/.source,
+  /(?:[Bb]earer\s+[A-Za-z0-9._-]{8,}|sk-[A-Za-z0-9]{8,})/.source,
+  /["']?(?:password|passwd|secret|credential|token|api[_-]?key)["']?\s*[:=]\s*["']?[^\s,;"']+/.source,
+  /["']?\b[A-Z][A-Z0-9_]{2,}(?:_KEY|_TOKEN|_SECRET|_PASSWORD|_CREDENTIAL)["']?=["']?\S+/.source,
+  /(?:^|[^A-Za-z0-9_])[A-Z][A-Z0-9_]{2,}["']?=["']?[^\s,;"']+/.source,
+  /(?:^|[^A-Za-z0-9_.~\/])\\\\[A-Za-z0-9._-]+[\\]/.source,
+  /(?:ENOENT|ECONNREFUSED|stack trace|at [A-Za-z]+ \(|Error: )/.source,
+].join('|'), 'i');
+const CREDENTIAL_VALUE = new RegExp([
+  /(?:PI_GUI_TOKEN|-----BEGIN [A-Z ]*PRIVATE KEY-----)/.source,
+  /(?:[Bb]earer\s+[A-Za-z0-9._-]{8,}|sk-[A-Za-z0-9]{8,})/.source,
+  /["']?(?:api[_-]?key|oauth[_-]?token|secret|credential|password|passwd|token)["']?\s*[:=]\s*["']?[^\s,;"']+/.source,
+  /["']?\b[A-Z][A-Z0-9_]{2,}(?:_KEY|_TOKEN|_SECRET|_PASSWORD|_CREDENTIAL)["']?=["']?\S+/.source,
+].join('|'), 'i');
+/** Transcript exception paths: raw conversation text tolerates prose but is
+ * still credential-scanned (projectionPolicy.transcriptException). */
+const TRANSCRIPT_TEXT_PATHS = new Set(['payload.text', 'messages.text', 'payload.messages.text', 'result.messages.text']);
+const MAX_SCAN_VALUE_LENGTH = 16384;
+const isRecord = (v: unknown): v is Record<string, unknown> => v !== null && typeof v === 'object' && !Array.isArray(v);
+
+export function hasForbiddenKey(value: unknown, depth = 0): boolean {
+  if (depth > 16) return true;
+  if (Array.isArray(value)) return value.some(item => hasForbiddenKey(item, depth + 1));
+  if (!isRecord(value)) return false;
+  return Object.entries(value).some(([key, item]) => isForbiddenKey(key) || hasForbiddenKey(item, depth + 1));
+}
+export function hasForbiddenValue(value: unknown, depth = 0, path: string[] = []): boolean {
+  if (depth > 16) return true;
+  if (typeof value === 'string') {
+    if (value.length > MAX_SCAN_VALUE_LENGTH) return true;
+    const insideTranscript = TRANSCRIPT_TEXT_PATHS.has(path.join('.'));
+    return insideTranscript ? CREDENTIAL_VALUE.test(value) : FORBIDDEN_VALUE.test(value);
+  }
+  if (Array.isArray(value)) return value.some(item => hasForbiddenValue(item, depth + 1, path));
+  if (!isRecord(value)) return false;
+  return Object.entries(value).some(([key, item]) => hasForbiddenValue(item, depth + 1, [...path, key]));
+}
+
 /** Deterministic RFC4122-ish v4 UUID from 16 bytes (uuidv4 shape). */
 export function uuidFromBytes(bytes: Uint8Array): string | null {
   if (bytes.length < 16) return null;

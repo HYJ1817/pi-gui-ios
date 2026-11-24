@@ -59,6 +59,15 @@ export class ConversationStore {
     for (const l of this.listeners) l();
   }
 
+  private bumpRevision(conversationId: string, revision: number): void {
+    // The outcome revision is minted before post-mutation effects (e.g. the
+    // scripted assistant reply) bump the owner again and emit frames with a
+    // HIGHER revision — never regress the stream-tracked value.
+    if (revision > this.conversation(conversationId).ownerRevision) {
+      this.setConversation(conversationId, { ownerRevision: revision });
+    }
+  }
+
   private setConversation(conversationId: string, patch: Partial<ConversationState>): void {
     const current = this.state.conversations[conversationId] ?? EMPTY;
     this.setState({ conversations: { ...this.state.conversations, [conversationId]: { ...current, ...patch } } });
@@ -84,13 +93,23 @@ export class ConversationStore {
   async refresh(conversationId: string): Promise<void> {
     const snap = await this.client.snapshot(conversationId);
     if (!snap.ok) { this.setState({ lastError: snap.code }); return; }
-    this.setConversation(conversationId, {
-      status: snap.result.status,
-      messages: snap.result.messages.slice(-MAX_SNAPSHOT_MESSAGES),
-      ownerRevision: snap.result.ownerRevision,
-      snapshotTruncated: snap.result.snapshotTruncated === true,
-      loaded: true,
-    });
+    // Live frames may have advanced the tracked revision past the snapshot
+    // (e.g. a reset-triggered refresh racing an in-flight mutation). Never
+    // downgrade messages/status with a stale baseline — approvals still
+    // re-pull below regardless.
+    if (snap.result.ownerRevision < this.conversation(conversationId).ownerRevision) {
+      if (!this.conversation(conversationId).loaded) {
+        this.setConversation(conversationId, { loaded: true });
+      }
+    } else {
+      this.setConversation(conversationId, {
+        status: snap.result.status,
+        messages: snap.result.messages.slice(-MAX_SNAPSHOT_MESSAGES),
+        ownerRevision: snap.result.ownerRevision,
+        snapshotTruncated: snap.result.snapshotTruncated === true,
+        loaded: true,
+      });
+    }
     const approvals = await this.client.listApprovals(conversationId);
     if (approvals.ok) this.setConversation(conversationId, { approvals: approvals.result.approvals.slice(0, MAX_APPROVALS) });
   }
@@ -142,7 +161,11 @@ export class ConversationStore {
       const status = payload.status as StoreState['decided'][string];
       const current = this.conversation(conversationId);
       this.setConversation(conversationId, { approvals: current.approvals.filter(a => a.requestId !== requestId) });
-      this.setState({ decided: { ...this.state.decided, [requestId]: status } });
+      const decided = { ...this.state.decided, [requestId]: status };
+      // Bounded decided map: keep the most recent 500 settled requestIds.
+      const keys = Object.keys(decided);
+      if (keys.length > 500) for (const k of keys.slice(0, keys.length - 500)) delete decided[k];
+      this.setState({ decided });
       return;
     }
   }
@@ -154,7 +177,7 @@ export class ConversationStore {
       if (outcome.code === 'stale_revision' || outcome.code === 'stale_owner') await this.refresh(conversationId);
       return { ok: false, code: outcome.code };
     }
-    this.setConversation(conversationId, { ownerRevision: outcome.result.ownerRevision });
+    this.bumpRevision(conversationId, outcome.result.ownerRevision);
     return { ok: true };
   }
 
@@ -165,6 +188,7 @@ export class ConversationStore {
       if (outcome.code === 'stale_revision' || outcome.code === 'stale_owner') await this.refresh(conversationId);
       return { ok: false, code: outcome.code };
     }
+    this.bumpRevision(conversationId, outcome.result.ownerRevision);
     return { ok: true };
   }
 
@@ -179,6 +203,7 @@ export class ConversationStore {
       }
       return { ok: false, code: outcome.code };
     }
+    this.bumpRevision(conversationId, outcome.result.ownerRevision);
     return { ok: true };
   }
 }

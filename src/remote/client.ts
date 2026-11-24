@@ -29,7 +29,7 @@ import {
   type SignedResponse,
   type Transport,
 } from './types';
-import { b64urlDecode, b64urlEncode, canonicalJson, isOpaqueId, isUuid, sha256hex, utf8Bytes, uuidFromBytes } from './wire';
+import { b64urlDecode, b64urlEncode, canonicalJson, hasForbiddenKey, hasForbiddenValue, isOpaqueId, isUuid, serializedJsonBytes, sha256hex, utf8Bytes, uuidFromBytes } from './wire';
 
 export const EVENTS_PATH = '/remote/v1/events';
 
@@ -63,28 +63,7 @@ export const OPERATIONS: Record<string, OperationSpec> = {
   'approvals.respond': { id: 'approvals.respond', method: 'POST', path: '/remote/v1/conversations/{conversationId}/approvals/{requestId}/respond', scope: 'approvals.respond', ownerRevisionRequired: true },
 };
 
-const FORBIDDEN_KEYS = new Set(['command', 'args', 'path', 'file', 'sessionpath', 'filepath', 'projectpath', 'cwd', 'url', 'headers', 'env', 'token', 'authorization', 'piguitoken', 'apikey', 'secret', 'credential']);
-const normalizeKey = (key: string) => key.toLowerCase().replace(/[_-]/g, '').replace(/[^a-z0-9]/g, '');
-function isForbiddenKey(key: string): boolean {
-  const n = normalizeKey(key);
-  return FORBIDDEN_KEYS.has(n) || n.includes('piguitoken') || n.includes('apikey');
-}
-export function hasForbiddenKey(value: unknown, depth = 0): boolean {
-  if (depth > 16) return true;
-  if (Array.isArray(value)) return value.some(item => hasForbiddenKey(item, depth + 1));
-  if (value !== null && typeof value === 'object') {
-    return Object.entries(value as Record<string, unknown>).some(([key, item]) => isForbiddenKey(key) || hasForbiddenKey(item, depth + 1));
-  }
-  return false;
-}
-const FORBIDDEN_VALUE = /(?:[A-Za-z]:[\\/]|\\\\[A-Za-z0-9]|\/(?:Users|home|var|etc|tmp|private)\/|PI_GUI_TOKEN|bearer\s+[A-Za-z0-9._~-]{8,}|api[_-]?key\s*[:=]|x-pi-remote-signature|BEGIN [A-Z ]*PRIVATE KEY)/i;
-function hasForbiddenValue(value: unknown, depth = 0): boolean {
-  if (depth > 16) return true;
-  if (typeof value === 'string') return FORBIDDEN_VALUE.test(value);
-  if (Array.isArray(value)) return value.some(item => hasForbiddenValue(item, depth + 1));
-  if (value !== null && typeof value === 'object') return Object.values(value as Record<string, unknown>).some(item => hasForbiddenValue(item, depth + 1));
-  return false;
-}
+export { hasForbiddenKey, hasForbiddenValue };
 
 function fillPath(template: string, params: Record<string, string>): string | null {
   let out = template;
@@ -129,9 +108,12 @@ export class TypedRemoteClient implements RemoteClient {
 
   private nonce(): string { return this.crypto.randomBytes(32); }
 
-  /** Signed GET /remote/v1/events request (only query allowed: cursor). */
+  /** Signed GET /remote/v1/events request (only query allowed: cursor).
+   * The ZERO_UUID sentinel is reserved for pre-auth failures — a subscribe
+   * request always carries a real requestId (crypto failure throws closed). */
   buildEventsRequest(cursor?: string): SignedRequest {
-    const requestId = this.requestId() ?? '00000000-0000-0000-0000-000000000000';
+    const requestId = this.requestId();
+    if (requestId === null) throw new Error('crypto failure');
     const timestamp = String(this.now());
     const bodySha256 = sha256hex('');
     const nonce = this.nonce();
@@ -148,7 +130,7 @@ export class TypedRemoteClient implements RemoteClient {
         'x-pi-remote-nonce': nonce,
         'x-pi-remote-body-sha256': bodySha256,
         'x-pi-remote-signature': this.crypto.sign(message),
-        accept: 'application/json',
+        accept: 'text/event-stream',
       },
       rawBody: '',
     };
@@ -201,9 +183,16 @@ export class TypedRemoteClient implements RemoteClient {
     const value = response.value;
     if (value === null || typeof value !== 'object' || Array.isArray(value)) return fail('internal_error');
     const record = value as Record<string, unknown>;
-    if (record.protocolVersion !== 1 || record.requestId !== requestId || record.operation !== operation.id || !Number.isSafeInteger(record.serverRevision) || !('result' in record)) return fail('internal_error');
+    // Exact success envelope: {protocolVersion, requestId, operation,
+    // serverRevision, result} — no extra fields, then the whole envelope is
+    // projection-scanned (forbidden keys/values) before result validation.
+    const expectedKeys = ['operation', 'protocolVersion', 'requestId', 'result', 'serverRevision'];
+    if (Object.keys(record).sort().join(',') !== expectedKeys.join(',')) return fail('internal_error');
+    if (hasForbiddenKey(record) || hasForbiddenValue(record)) return fail('internal_error');
+    if (record.protocolVersion !== 1 || record.requestId !== requestId || record.operation !== operation.id
+      || !Number.isSafeInteger(record.serverRevision) || (record.serverRevision as number) < 0) return fail('internal_error');
     const result = validate(record.result);
-    if (result === null || result === undefined || hasForbiddenKey(result) || hasForbiddenValue(result)) return fail('internal_error');
+    if (result === null || result === undefined) return fail('internal_error');
     return { ok: true, result, serverRevision: record.serverRevision as number };
   }
 
@@ -283,7 +272,7 @@ export class TypedRemoteClient implements RemoteClient {
       const messages: RemoteMessage[] = [];
       for (const m of r.messages as unknown[]) {
         const o = m as Record<string, unknown>;
-        if (!isOpaqueId(o?.messageId) || !['user', 'assistant'].includes(o.role as string) || typeof o.text !== 'string' || utf8Bytes(o.text) > 8192
+        if (!isOpaqueId(o?.messageId) || !['user', 'assistant'].includes(o.role as string) || typeof o.text !== 'string' || serializedJsonBytes(o.text) > 8192
           || Object.keys(o).some(k => !['messageId', 'role', 'text'].includes(k))) return null;
         messages.push({ messageId: o.messageId, role: o.role as 'user' | 'assistant', text: o.text });
       }
@@ -296,7 +285,7 @@ export class TypedRemoteClient implements RemoteClient {
   }
 
   sendMessage(conversationId: string, clientMessageId: string, text: string, ownerRevision?: number): Promise<RemoteOutcome<{ clientMessageId: string; accepted: boolean; ownerRevision: number }>> {
-    if (!isUuid(clientMessageId) || typeof text !== 'string' || !text.length || utf8Bytes(text) > 8192) return Promise.resolve(fail('payload_invalid'));
+    if (!isUuid(clientMessageId) || typeof text !== 'string' || !text.length || serializedJsonBytes(text) > 8192) return Promise.resolve(fail('payload_invalid'));
     return this.call(OPERATIONS['chat.send']!, { conversationId }, { clientMessageId, text }, ownerRevision, (v): { clientMessageId: string; accepted: boolean; ownerRevision: number } | null => {
       const r = v as Record<string, unknown>;
       return r?.clientMessageId === clientMessageId && typeof r.accepted === 'boolean' && Number.isSafeInteger(r.ownerRevision) && Object.keys(r).every(k => ['clientMessageId', 'accepted', 'ownerRevision'].includes(k))
@@ -372,8 +361,12 @@ function parseApprovals(v: unknown): { approvals: RemoteApproval[] } | null {
 function parseError(value: unknown, requestId: string): { code: RemoteErrorCode; retryable: boolean } {
   const r = value as Record<string, unknown>;
   const err = r?.error as Record<string, unknown> | undefined;
-  if (!r || r.protocolVersion !== 1 || typeof err?.code !== 'string' || !ERROR_CODES.includes(err.code as RemoteErrorCode)) return { code: 'internal_error', retryable: false };
+  if (!r || r.protocolVersion !== 1 || typeof err?.code !== 'string' || !ERROR_CODES.includes(err.code as RemoteErrorCode)
+    || typeof err.retryable !== 'boolean' || Object.keys(err).sort().join(',') !== 'code,retryable'
+    || Object.keys(r).sort().join(',') !== 'error,protocolVersion,requestId') return { code: 'internal_error', retryable: false };
   const rid = r.requestId;
+  // The ZERO_UUID sentinel is ONLY a closed uncorrelated 'unauthorized' error.
+  if (rid === ZERO_REQUEST_ID && err.code !== 'unauthorized') return { code: 'internal_error', retryable: false };
   if (rid !== requestId && rid !== ZERO_REQUEST_ID) return { code: 'internal_error', retryable: false };
   return { code: err.code as RemoteErrorCode, retryable: err.retryable === true };
 }

@@ -131,7 +131,7 @@ export default function ApprovalDetailScreen() {
         </View>
       ) : null}
 
-      {statusText ? <Text testID="approval-result" style={[styles.result, { color: settled ? theme.success : theme.secondary }]}>{statusText}</Text> : null}
+      {statusText ? <Text testID="approval-result" style={[styles.result, { color: settled === 'allowed' || settled === 'answered' ? theme.success : settled ? theme.danger : theme.secondary }]}>{statusText}</Text> : null}
       {error ? <Text testID="approval-error" style={[styles.errorText, { color: theme.danger }]}>Response failed: {error}</Text> : null}
     </KeyboardAwareScrollView>
   );

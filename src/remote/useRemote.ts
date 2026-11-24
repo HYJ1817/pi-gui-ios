@@ -13,7 +13,9 @@ export function useRemote(): { state: StoreState } {
   useEffect(() => {
     if (loadStarted) return;
     loadStarted = true;
-    void runtime.store.load();
+    // Retry the bootstrap after a failed load — one-shot would leave the UI
+    // permanently empty on a transient transport failure.
+    void runtime.store.load().catch(() => { loadStarted = false; });
   }, [runtime]);
   const state = useSyncExternalStore(
     listener => runtime.store.subscribe(listener),

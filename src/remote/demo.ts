@@ -24,6 +24,8 @@ export interface DemoRuntime {
   credentials: DeviceCredentials;
   /** open the device-level event stream (with optional resume cursor) */
   openStream: () => void;
+  /** close + reopen (resubscribe path) */
+  reopenStream: () => void;
   closeStream: () => void;
 }
 
@@ -135,6 +137,25 @@ export function demoRuntime(): DemoRuntime {
   const pairResponse = gateway.pairExchange(JSON.parse(unsigned.rawBody));
   if (pairResponse.status !== 200) throw new Error('synthetic pair exchange failed');
   const granted = JSON.parse(pairResponse.body) as Record<string, unknown>;
+  const requested = ['projects.read', 'sessions.read', 'sessions.create', 'approvals.read', 'chat.send', 'chat.stop', 'approvals.respond'];
+  // Contract-shaped client verification of the service-signed pair response:
+  // schema keys, pinned service signature, non-expired grant and EXACT scope
+  // parity with the signed requestedScopes.
+  const pairValid = (() => {
+    if (Object.keys(granted).sort().join(',') !== 'deviceId,expiresAt,grantedScopes,replayEpoch,serverNonce,serverSignature') return false;
+    if (typeof granted.deviceId !== 'string' || !/^[A-Za-z0-9_-]{8,128}$/.test(granted.deviceId)) return false;
+    if (typeof granted.serverNonce !== 'string' || !/^[A-Za-z0-9_-]{43}$/.test(granted.serverNonce)) return false;
+    if (typeof granted.serverSignature !== 'string' || !/^[A-Za-z0-9_-]{86}$/.test(granted.serverSignature)) return false;
+    if (!Number.isSafeInteger(granted.replayEpoch) || (granted.replayEpoch as number) < 1) return false;
+    if (typeof granted.expiresAt !== 'string' || !Number.isFinite(Date.parse(granted.expiresAt)) || Date.parse(granted.expiresAt) <= Date.now()) return false;
+    const scopes = granted.grantedScopes;
+    if (!Array.isArray(scopes) || scopes.length !== requested.length || new Set(scopes).size !== scopes.length
+      || !requested.every(s => scopes.includes(s))) return false;
+    const unsignedResponse = { deviceId: granted.deviceId, serverNonce: granted.serverNonce, grantedScopes: scopes, expiresAt: granted.expiresAt, replayEpoch: granted.replayEpoch };
+    const verifyMessage = ['remote-v1-pair-response', clientNonce, canonicalJson(unsignedResponse)].join('\n');
+    return deviceCrypto.verify(service.publicKey, String(granted.serverSignature), verifyMessage);
+  })();
+  if (!pairValid) throw new Error('synthetic pair response invalid');
   const credentials: DeviceCredentials = {
     deviceId: String(granted.deviceId), devicePublicKey: deviceCrypto.identity.publicKey,
     grantedScopes: granted.grantedScopes as DeviceCredentials['grantedScopes'],
@@ -157,7 +178,7 @@ export function demoRuntime(): DemoRuntime {
       // a revoked/ungranted projection would answer false here.
       return ctx.conversationId.startsWith('conversation-') || ctx.conversationId.startsWith('conv_');
     },
-    onReset: () => { /* the applied reset event rebuilds baselines via store.apply */ },
+    onReset: () => { /* reset applied event already rebuilt baselines via store.apply */ },
     onEvent: applied => { storeRef?.apply(applied); },
   });
 
@@ -175,6 +196,11 @@ export function demoRuntime(): DemoRuntime {
   runtime = {
     gateway, client, events, store, credentials,
     openStream: () => {
+      events.open(streamTransport, client.buildEventsRequest(events.latestCursor()), events.latestCursor());
+    },
+    /** close + reopen, exercising the resubscribe path. */
+    reopenStream: () => {
+      events.close();
       events.open(streamTransport, client.buildEventsRequest(events.latestCursor()), events.latestCursor());
     },
     closeStream: () => events.close(),

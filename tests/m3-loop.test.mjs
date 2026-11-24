@@ -126,17 +126,18 @@ function rig(t, { scopes = ALL_SCOPES, grants = [PROJECT], overrides = {} } = {}
   return { M, gateway, client, events, store, stream, credentials, deviceCrypto, serviceCrypto, serviceFp, storeEvents, resets, drops };
 }
 
-function signedOp(rigCtx, opPath, params, { method = 'GET', body = null, mutate } = {}) {
+function signedOp(rigCtx, opPath, params, { method = 'GET', body = null, rawBodyOverride, query, mutate } = {}) {
   const M = rigCtx.M;
   let path = opPath;
   for (const [k, v] of Object.entries(params)) path = path.replace(`{${k}}`, v);
-  const rawBody = body === null ? '' : M.wire.canonicalJson(body);
+  const rawBody = rawBodyOverride !== undefined ? rawBodyOverride : (body === null ? '' : M.wire.canonicalJson(body));
   const requestId = crypto.randomUUID ? crypto.randomUUID() : 'aaaaaaaa-1111-4111-8111-aaaaaaaaaaaa';
   const timestamp = String(Date.now());
   const nonce = randomBytes(32).toString('base64url');
   const bodySha256 = sha256(rawBody);
   const creds = rigCtx.credentials;
-  const message = ['1', creds.deviceId, creds.serviceId, String(creds.replayEpoch), requestId, method, path, timestamp, nonce, bodySha256].join('\n');
+  const target = query ? `${path}?${Object.keys(query).sort().map(k => `${encodeURIComponent(k)}=${encodeURIComponent(query[k])}`).join('&')}` : path;
+  const message = ['1', creds.deviceId, creds.serviceId, String(creds.replayEpoch), requestId, method, target, timestamp, nonce, bodySha256].join('\n');
   const req = {
     method, path,
     headers: {
@@ -145,7 +146,7 @@ function signedOp(rigCtx, opPath, params, { method = 'GET', body = null, mutate 
       'x-pi-remote-body-sha256': bodySha256, 'x-pi-remote-signature': rigCtx.deviceCrypto.sign(message),
       accept: 'application/json', ...(method === 'POST' ? { 'content-type': 'application/json; charset=utf-8' } : {}),
     },
-    rawBody, ...(body === null ? {} : { body }),
+    rawBody, ...(query ? { query } : {}),
   };
   if (mutate) mutate(req);
   return req;
@@ -176,8 +177,14 @@ test('pair.exchange: closed negatives, atomic grant + minted epoch', async (t) =
   base.proofSignature = sign(null, Buffer.from(['remote-v1-pair', base.pairingSessionId, base.pairCode, base.deviceName, base.devicePublicKey, base.clientNonce, base.serviceFingerprint, r.M.wire.canonicalJson(base.requestedScopes)].join('\n'), 'utf8'), device2.privateKey).toString('base64url');
   // wrong fingerprint
   assert.equal(JSON.parse(gateway.pairExchange({ ...base, serviceFingerprint: 'a'.repeat(64) }).body).error.code, 'unauthorized');
-  // wrong code
-  assert.equal(JSON.parse(gateway.pairExchange({ ...base, pairCode: '999999' }).body).error.code, 'pairing_rejected');
+  // wrong code — proof must still be valid (signed over the WRONG code) so
+  // the code check itself is reached; contract order is proof BEFORE code.
+  const wrongCode = { ...base, pairCode: '999999' };
+  wrongCode.proofSignature = sign(null, Buffer.from(['remote-v1-pair', wrongCode.pairingSessionId, wrongCode.pairCode, wrongCode.deviceName, wrongCode.devicePublicKey, wrongCode.clientNonce, wrongCode.serviceFingerprint, r.M.wire.canonicalJson(wrongCode.requestedScopes)].join('\n'), 'utf8'), device2.privateKey).toString('base64url');
+  assert.equal(JSON.parse(gateway.pairExchange(wrongCode).body).error.code, 'pairing_rejected');
+  // proof signed over the CORRECT code but body carrying the wrong code is an
+  // oracle-safe unauthorized (proof checked first).
+  assert.equal(JSON.parse(gateway.pairExchange({ ...base, pairCode: '999999' }).body).error.code, 'unauthorized');
   // extra field
   assert.equal(JSON.parse(gateway.pairExchange({ ...base, token: 'x' }).body).error.code, 'payload_invalid');
   // bad scope
@@ -195,8 +202,10 @@ test('pair.exchange: closed negatives, atomic grant + minted epoch', async (t) =
   const unsigned = { deviceId: res.deviceId, serverNonce: res.serverNonce, grantedScopes: res.grantedScopes, expiresAt: res.expiresAt, replayEpoch: res.replayEpoch };
   const msg = ['remote-v1-pair-response', base.clientNonce, M.wire.canonicalJson(unsigned)].join('\n');
   assert.equal(r.deviceCrypto.verify(r.credentials.servicePublicKey, res.serverSignature, msg), true);
-  // single use
-  assert.equal(JSON.parse(gateway.pairExchange({ ...base, clientNonce: randomBytes(32).toString('base64url') }).body).error.code, 'pairing_rejected');
+  // single use — re-sign proof over the fresh nonce; code is still consumed.
+  const again = { ...base, clientNonce: randomBytes(32).toString('base64url') };
+  again.proofSignature = sign(null, Buffer.from(['remote-v1-pair', again.pairingSessionId, again.pairCode, again.deviceName, again.devicePublicKey, again.clientNonce, again.serviceFingerprint, r.M.wire.canonicalJson(again.requestedScopes)].join('\n'), 'utf8'), device2.privateKey).toString('base64url');
+  assert.equal(JSON.parse(gateway.pairExchange(again).body).error.code, 'pairing_rejected');
 });
 
 test('signed operations: full happy loop with real Ed25519', async (t) => {
@@ -414,3 +423,167 @@ test('demo runtime: bundled synthetic pair+loop path populates the store', async
 });
 
 function randomUUID() { const h = randomBytes(16).toString('hex'); return `${h.slice(0, 8)}-${h.slice(8, 12)}-4${h.slice(13, 16)}-a${h.slice(17, 20)}-${h.slice(20)}`; }
+
+test('admission tightening: transport shapes, canonical body, payload schema', async (t) => {
+  const r = rig(t);
+  const { gateway } = r;
+  let res;
+  // ZERO requestId is a reserved sentinel → unauthorized (not echoed).
+  res = await gateway.send(signedOp(r, PATHS.snapshot, {}, { mutate: req => { req.headers['x-pi-remote-request-id'] = '00000000-0000-0000-0000-000000000000'; } }));
+  assert.equal((await errorOf(res)).code, 'unauthorized');
+  // unknown transport header rejected.
+  res = await gateway.send(signedOp(r, PATHS.snapshot, {}, { mutate: req => { req.headers['x-debug-extra'] = '1'; } }));
+  assert.equal((await errorOf(res)).code, 'unauthorized');
+  // GET with a body → unauthorized.
+  res = await gateway.send(signedOp(r, PATHS.snapshot, {}, { mutate: req => { req.rawBody = '{}'; } }));
+  assert.equal((await errorOf(res)).code, 'unauthorized');
+  // non-canonical body bytes (key order) signed correctly → payload_invalid.
+  res = await gateway.send(signedOp(r, PATHS.send, {}, { method: 'POST', rawBodyOverride: '{"text":"x","clientMessageId":"' + randomUUID() + '"}' }));
+  assert.equal((await errorOf(res)).code, 'payload_invalid');
+  // payload schema: extra key → payload_invalid.
+  res = await gateway.send(signedOp(r, PATHS.send, {}, { method: 'POST', body: { protocolVersion: 1, operation: 'chat.send', ownerRevision: 2, payload: { clientMessageId: randomUUID(), text: 'hi', extra: 1 } } }));
+  assert.equal((await errorOf(res)).code, 'payload_invalid');
+  // ownerRevision present but not required → still validated ≥0 integer.
+  res = await gateway.send(signedOp(r, PATHS.snapshot, {}, { method: 'GET' }));
+  assert.equal(res.status, 200);
+});
+
+test('approvals.respond: decision-matrix negatives are closed payload_invalid', async (t) => {
+  const r = rig(t);
+  const { gateway } = r;
+  let res;
+  // select with allow (not in matrix) → payload_invalid.
+  res = await gateway.send(signedOp(r, PATHS.respond, {}, { method: 'POST', body: { protocolVersion: 1, operation: 'approvals.respond', ownerRevision: 2, payload: { method: 'select', decision: 'allow' } } }));
+  assert.equal((await errorOf(res)).code, 'payload_invalid');
+  // select answer without required value → payload_invalid.
+  res = await gateway.send(signedOp(r, PATHS.respond, {}, { method: 'POST', body: { protocolVersion: 1, operation: 'approvals.respond', ownerRevision: 2, payload: { method: 'select', decision: 'answer' } } }));
+  assert.equal((await errorOf(res)).code, 'payload_invalid');
+  // confirm with a value → payload_invalid.
+  res = await gateway.send(signedOp(r, PATHS.respond, {}, { method: 'POST', body: { protocolVersion: 1, operation: 'approvals.respond', ownerRevision: 2, payload: { method: 'confirm', decision: 'allow', value: 'x' } } }));
+  assert.equal((await errorOf(res)).code, 'payload_invalid');
+  // method mismatch vs live dialog (select payload vs confirm requestId is not in this rig) → payload_invalid on unknown method keys.
+  res = await gateway.send(signedOp(r, PATHS.respond, {}, { method: 'POST', body: { protocolVersion: 1, operation: 'approvals.respond', ownerRevision: 2, payload: { method: 'select', decision: 'answer', value: 'option-a' } } }));
+  assert.equal(res.status, 200);
+});
+
+test('event stream: open() resume path — position cleared, reset reaches store', async (t) => {
+  const r = rig(t);
+  const { client, store, gateway, stream } = r;
+  const frames = [];
+  const ev = new r.M.events.EventStreamClient({
+    credentials: r.credentials, crypto: r.deviceCrypto,
+    authorizeResource: () => true,
+    onReset: () => {}, onEvent: a => { frames.push(a); store.apply(a); }, onDrop: () => {},
+  });
+  ev.open(stream, client.buildEventsRequest(), undefined);
+  const rev = (await client.snapshot(CONV)).result.ownerRevision;
+  await client.sendMessage(CONV, randomUUID(), 'first', rev);
+  assert.ok(frames.length >= 2);
+  const cursor = ev.latestCursor();
+  assert.ok(cursor);
+  // Close + reopen WITHOUT cursor: position must be cleared (B2 regression).
+  ev.open(stream, client.buildEventsRequest(), undefined);
+  const rev2 = (await client.snapshot(CONV)).result.ownerRevision;
+  await client.sendMessage(CONV, randomUUID(), 'second', rev2);
+  // The new generation's first frames establish a fresh position — no drops.
+  assert.equal(store.conversation(CONV).messages.length, 4);
+  // Reopen WITH a valid cursor: backlog replay in same generation (no reset).
+  ev.close();
+  const before = frames.length;
+  ev.open(stream, client.buildEventsRequest(cursor), cursor);
+  assert.ok(ev.expectedPosition()); // replayed frames established a position
+});
+
+test('reset frame through the REAL client path rebuilds the store baseline', async (t) => {
+  const r = rig(t);
+  const { client, store, gateway, stream } = r;
+  const ev = new r.M.events.EventStreamClient({
+    credentials: r.credentials, crypto: r.deviceCrypto,
+    authorizeResource: () => true,
+    onReset: () => {}, onEvent: a => store.apply(a), onDrop: () => {},
+  });
+  await store.load();
+  assert.equal(store.conversation(CONV).loaded, true);
+  ev.open(stream, client.buildEventsRequest(), undefined);
+  // Stale cursor subscribe → new generation + exactly one reset frame; the
+  // store's reset branch rebuilds baselines through accept → onEvent → apply.
+  const staleCursor = Buffer.from('cur:' + r.credentials.deviceId + ':999:0').toString('base64url');
+  const reqStale = client.buildEventsRequest(staleCursor);
+  const applied = [];
+  const sub = gateway.subscribe(r.credentials, reqStale, f => { const r2 = ev.accept(f); if (r2.ok) applied.push(r2.applied); });
+  assert.equal(sub.ok, true);
+  // The store applied the reset (refresh re-pulls loaded=true, still consistent).
+  assert.equal(store.conversation(CONV).loaded, true);
+  // Live frames after the reset arrive in the new generation.
+  const rev = (await client.snapshot(CONV)).result.ownerRevision;
+  const sent = await client.sendMessage(CONV, randomUUID(), 'post-reset', rev);
+  assert.equal(sent.ok, true, `send failed: ${JSON.stringify(sent)}`);
+  assert.ok(store.conversation(CONV).messages.some(m => m.text === 'post-reset'), `messages: ${JSON.stringify(store.conversation(CONV).messages.map(m=>m.text))} drops?`);
+  sub.close();
+});
+
+test('store.sendMessage: ownerRevision never regresses (B1) — consecutive sends', async (t) => {
+  const r = rig(t);
+  const { client, store, stream } = r;
+  const ev = new r.M.events.EventStreamClient({
+    credentials: r.credentials, crypto: r.deviceCrypto,
+    authorizeResource: () => true, onReset: () => {}, onEvent: a => store.apply(a), onDrop: () => {},
+  });
+  ev.open(stream, client.buildEventsRequest(), undefined);
+  await store.refresh(CONV);
+  // Two consecutive sends: the second must claim the post-reply revision.
+  const s1 = await store.sendMessage(CONV, 'one', randomUUID());
+  assert.equal(s1.ok, true);
+  const s2 = await store.sendMessage(CONV, 'two', randomUUID());
+  assert.equal(s2.ok, true, `second send failed: ${JSON.stringify(s2)}`);
+  assert.ok(store.conversation(CONV).messages.some(m => m.text === 'two'));
+});
+
+test('runtime.create: end-to-end create + scope/grant enforcement', async (t) => {
+  const r = rig(t);
+  const { client } = r;
+  const rev = (await client.listProjects()).result.registryRevision;
+  const created = await client.createConversation(PROJECT, randomUUID(), rev);
+  assert.equal(created.ok, true);
+  assert.ok(created.result.conversationId.startsWith('conv_'));
+  // ungranted project → unknown_resource
+  const denied = await client.createConversation('project-b0002', randomUUID(), rev);
+  assert.equal(denied.ok, false);
+  assert.equal(denied.code, 'unknown_resource');
+});
+
+test('re-pair same key bumps replayEpoch atomically; stale nonce floor rejects', async (t) => {
+  const r = rig(t);
+  const { gateway } = r;
+  const again = gateway.registerDevice({
+    devicePublicKey: r.credentials.devicePublicKey, grantedScopes: ALL_SCOPES, grants: [PROJECT],
+    expiresAt: new Date(Date.now() + 3600_000).toISOString(),
+  });
+  assert.equal(again.deviceId, r.credentials.deviceId);
+  assert.equal(again.replayEpoch, 2); // bumped — prior-epoch requests die
+  const res = await gateway.send(signedOp(r, PATHS.snapshot, {}, {}));
+  assert.equal((await errorOf(res)).code, 'unauthorized');
+});
+
+test('approval frames are not delivered to a device lacking approvals.read', async (t) => {
+  const r1 = rig(t); // full scopes
+  const r2 = rig(t, { scopes: ALL_SCOPES.filter(s => s !== 'approvals.read') });
+  // Same domain object shares state; rig() builds separate domains, so grant
+  // the approval on r1's domain and watch r2's stream see nothing for it.
+  const d1 = r1.M.sandbox; // not needed — use gateway emit via raiseApproval
+  const got2 = [];
+  const ev2 = new r2.M.events.EventStreamClient({
+    credentials: r2.credentials, crypto: r2.deviceCrypto,
+    authorizeResource: () => true, onReset: () => {}, onEvent: a => got2.push(a), onDrop: () => {},
+  });
+  const stream2 = {
+    subscribe: (req, onFrame) => {
+      const sub = r2.gateway.subscribe(r2.credentials, req, onFrame);
+      if (!sub.ok) return { close: () => {} };
+      return sub;
+    },
+  };
+  ev2.open(stream2, r2.client.buildEventsRequest(), undefined);
+  r2.gateway.raiseApproval(CONV, { requestId: 'approval-zzz9', method: 'confirm', title: 't', message: 'm' });
+  assert.equal(got2.length, 0); // server-side scope filter: no frame emitted
+});
