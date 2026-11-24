@@ -38,7 +38,7 @@ jobs:
   ios:
     needs: checks
     runs-on: macos-26
-    timeout-minutes: 55
+    timeout-minutes: 120
     defaults:
       run:
         shell: bash
