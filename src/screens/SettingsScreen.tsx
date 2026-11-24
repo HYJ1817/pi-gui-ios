@@ -2,6 +2,7 @@ import { ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 import { useState } from 'react';
 import { useTheme } from '../theme';
 import { ListItem } from '../components/ListItem';
+import { remoteRuntime } from '../remote/useRemote';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/types';
@@ -11,10 +12,12 @@ export default function SettingsScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, 'Settings'>>();
   const [reduceMotion, setReduceMotion] = useState(false);
   const [remoteNotice, setRemoteNotice] = useState(true);
+  const runtime = remoteRuntime();
+  const creds = runtime.credentials;
 
   return (
     <ScrollView testID="settings-screen" style={{ backgroundColor: theme.background }} contentInsetAdjustmentBehavior="automatic" contentContainerStyle={styles.page}>
-      <Text style={[styles.sub, { color: theme.secondary }]}>Local preferences only — no remote connection is configured.</Text>
+      <Text style={[styles.sub, { color: theme.secondary }]}>Local preferences and the synthetic loop identity — no real remote connection is configured.</Text>
       <View style={styles.group}>
         <View style={[styles.row, { borderColor: theme.line, backgroundColor: theme.surface }]}>
           <Text style={[styles.rowLabel, { color: theme.text }]}>Follow Reduce Motion</Text>
@@ -25,12 +28,27 @@ export default function SettingsScreen() {
           <Switch testID="remote-notice" accessibilityLabel="Show offline notice" value={remoteNotice} onValueChange={setRemoteNotice} />
         </View>
       </View>
+      <Text style={[styles.groupTitle, { color: theme.secondary }]}>Synthetic loop</Text>
+      <View style={styles.group}>
+        <View style={[styles.row, { borderColor: theme.line, backgroundColor: theme.surface }]}>
+          <Text style={[styles.rowLabel, { color: theme.text }]}>Device</Text>
+          <Text style={[styles.rowValue, { color: theme.secondary }]} numberOfLines={1}>{creds.deviceId}</Text>
+        </View>
+        <View style={[styles.row, { borderColor: theme.line, backgroundColor: theme.surface }]}>
+          <Text style={[styles.rowLabel, { color: theme.text }]}>Service</Text>
+          <Text style={[styles.rowValue, { color: theme.secondary }]} numberOfLines={1}>{creds.serviceId} · epoch {creds.replayEpoch}</Text>
+        </View>
+        <View style={[styles.row, { borderColor: theme.line, backgroundColor: theme.surface }]}>
+          <Text style={[styles.rowLabel, { color: theme.text }]}>Granted scopes</Text>
+          <Text style={[styles.rowValue, { color: theme.secondary }]} numberOfLines={2}>{creds.grantedScopes.join(', ')}</Text>
+        </View>
+      </View>
       <Text style={[styles.groupTitle, { color: theme.secondary }]}>About</Text>
       <View style={styles.group}>
         <ListItem title="Infrastructure probe" subtitle="Native capability checks" onPress={() => navigation.navigate('InfrastructureProbe')} />
         <ListItem title="Diagnostics" subtitle="Infrastructure details" onPress={() => navigation.navigate('Diagnostics')} />
       </View>
-      <Text style={[styles.version, { color: theme.tertiary }]}>Pi GUI Mobile · M2 shell · offline</Text>
+      <Text style={[styles.version, { color: theme.tertiary }]}>Pi GUI Mobile · M3 core · synthetic loop</Text>
     </ScrollView>
   );
 }
@@ -42,5 +60,6 @@ const styles = StyleSheet.create({
   groupTitle: { fontSize: 13, fontWeight: '600', marginTop: 8, textTransform: 'uppercase', letterSpacing: 0.6 },
   row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 16, minHeight: 48, paddingHorizontal: 16, paddingVertical: 8, borderRadius: 14, borderWidth: StyleSheet.hairlineWidth },
   rowLabel: { fontSize: 17, flex: 1 },
+  rowValue: { fontSize: 14, flexShrink: 1, textAlign: 'right' },
   version: { fontSize: 12, textAlign: 'center', marginTop: 16 },
 });

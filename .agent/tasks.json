@@ -1,11 +1,11 @@
 {
   "schemaVersion": 2,
   "kind": "tasks",
-  "revision": 790,
-  "updatedAt": "2026-11-24T15:16:51.070Z",
+  "revision": 794,
+  "updatedAt": "2026-11-24T16:21:35.506Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "21d560e94e3b7f637ce8d2b7819ae135886a01fe9212eb7b17ba11d5055f9b04",
+    "parentDigest": "9bd1253cc3cfbf88f7a3756eddd790b8b9d5bf83322b94260d5d45095b8e6194",
     "tasks": [
       {
         "id": "M-1-infrastructure",
@@ -1328,7 +1328,7 @@
         "id": "M3-core",
         "phase": "M3",
         "title": "会话、消息、任务、模型、工具及审批",
-        "status": "pending",
+        "status": "in_progress",
         "dependsOn": [
           "M2-shell"
         ],
@@ -1340,7 +1340,8 @@
           "independent-security"
         ],
         "acceptance": "桌面/移动完整合成闭环，保持桌面审批",
-        "evidence": []
+        "evidence": [],
+        "updatedAt": "2026-11-24T15:55:19.760Z"
       },
       {
         "id": "M4-sync",
@@ -1397,6 +1398,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "c26a012682989f4cd52163dbfef571a51626e9a687703f318ddef3c1aa3d30fe"
+    "digest": "afab966a1efc67e45d46b6a2e0178b63a0c68bfe4a62289aad005ddc6d055441"
   }
 }

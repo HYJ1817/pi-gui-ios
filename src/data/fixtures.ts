@@ -1,6 +1,7 @@
-// Synthetic offline fixtures for the M2 app shell. NO remote connection, NO real
-// desktop data — these exist only to exercise navigation, layout and components.
-// The remote gateway is not built; everything here is local placeholder content.
+// LEGACY static fixtures kept only for the design-system unit test target
+// (tests/design-system.test.mjs transpiles this file). Live screens no longer
+// read these — M3 moved every remote surface to the typed client + synthetic
+// signed gateway loop in src/remote/. Do not add real data here.
 
 export interface Project { projectId: string; displayName: string; description: string; }
 export interface Session { sessionId: string; projectId: string; displayName: string; updatedAt: string; activeConversations: { conversationId: string }[]; }

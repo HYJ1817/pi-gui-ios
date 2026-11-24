@@ -1,41 +1,37 @@
 {
   "schemaVersion": 2,
   "kind": "state",
-  "revision": 790,
-  "updatedAt": "2026-11-24T15:16:51.070Z",
+  "revision": 794,
+  "updatedAt": "2026-11-24T16:21:35.506Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "21d560e94e3b7f637ce8d2b7819ae135886a01fe9212eb7b17ba11d5055f9b04",
-    "phase": "M2",
-    "currentTask": "M2-shell",
+    "parentDigest": "9bd1253cc3cfbf88f7a3756eddd790b8b9d5bf83322b94260d5d45095b8e6194",
+    "phase": "M3",
+    "currentTask": "M3-core",
     "branch": "agent/m-1-bootstrap",
     "checkpoint": {
-      "id": "v2-2026-11-24T15-16-35-655Z-eb9e8028-dcba-41c6-a102-7b13bf7784a0",
-      "path": ".agent/checkpoints/v2-2026-11-24T15-16-35-655Z-eb9e8028-dcba-41c6-a102-7b13bf7784a0.json",
-      "sha256": "597c63e2c19f4331a89b36786ca9feb471cf45f67a36b80f9372acaeeb3b401b",
-      "authorityDigest": "a415041bd714a079f04cb134d45a41762825911181d8bd6ac00778554356571e",
-      "at": "2026-11-24T15:16:35.655Z",
+      "id": "v2-2026-11-24T16-21-35-506Z-d659f174-c944-4379-9c4d-ad54eca287eb",
+      "path": ".agent/checkpoints/v2-2026-11-24T16-21-35-506Z-d659f174-c944-4379-9c4d-ad54eca287eb.json",
+      "sha256": "7f965e9f9982f3f71ea23efc22126d7cefb205bd27a7f133385da71d6ebe1760",
+      "authorityDigest": "0d851df1669a41d58728f39ca861eb800cc381510ac0de9b65d2b431c757044a",
+      "at": "2026-11-24T16:21:35.506Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "0e6adb52e2cbe32cd26272da54926d578070bbca",
+        "commit": "4c72a0447b82ceddb464df889918ca9ebaf20fdb",
         "dirty": [
           "M .agent/HANDOFF.md",
-          " D .agent/checkpoints/v2-2026-11-24T08-35-02-931Z-feba55c3-abab-437e-8ea4-4fd82e82cb72.json",
-          " D .agent/checkpoints/v2-2026-11-24T08-35-03-917Z-c563af03-1db6-451e-9b14-8688b583ae47.json",
-          " D .agent/checkpoints/v2-2026-11-24T08-35-04-923Z-14168b9c-fc1b-41b3-a369-c954a2104d18.json",
-          " D .agent/checkpoints/v2-2026-11-24T08-35-05-927Z-7ff6f6a9-6572-4564-aa98-82e066a05f76.json",
+          " D .agent/checkpoints/v2-2026-11-24T08-37-55-829Z-e5984c7e-0d63-4d2d-bced-b046760a8a6a.json",
+          " D .agent/checkpoints/v2-2026-11-24T08-44-05-078Z-873efa31-317d-42d4-827d-afb03e480543.json",
           " M .agent/control.json",
           " M .agent/state.json",
           " M .agent/tasks.json",
           " M PROGRESS.md",
-          "?? .agent/checkpoints/v2-2026-11-24T15-15-57-057Z-d6c65b80-d5bd-4a94-87c9-254670871c5d.json",
-          "?? .agent/checkpoints/v2-2026-11-24T15-15-57-820Z-02424ea5-eaa2-4d30-84e2-e26650d2c452.json",
-          "?? .agent/checkpoints/v2-2026-11-24T15-16-09-159Z-4714aaff-ca42-4dd1-b910-102319aa6508.json",
-          "?? .agent/checkpoints/v2-2026-11-24T15-16-17-362Z-420312ca-86b4-4718-b171-5b14a3abbbda.json"
+          "?? .agent/checkpoints/v2-2026-11-24T15-55-19-823Z-40a1bbd2-ec9f-490d-bb20-d6aa45faac9f.json",
+          "?? .agent/checkpoints/v2-2026-11-24T15-55-20-406Z-ecdf229f-c89f-4fd4-be21-690e2a5dfc58.json"
         ]
       },
       "sourceFingerprint": "b85b928b93f11cb14c66275b33e51b40eb347edfaa222e0d9ffb118d31431118",
-      "note": "M2-shell completed: full CI green 45413372694, unsigned IPA artifact, ui evidence + independent review; M0/M1 reviews+security grandfathered-valid"
+      "note": "M3-core design frozen: typed client+events+store+local synthetic gateway; Node loop tests reuse contract validators; UI bounded lists + status/approval states + M3 sim shots"
     },
     "blockers": [],
     "ci": [
@@ -445,6 +441,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "82c6b489dba02f0dd5df138f61fad7c31eb3a367bfb1073683f2d0039aeaf3d0"
+    "digest": "eb33e4db6fb681a46476943a2a49789859fbc88ae18e149dbf2c1128c0b781ca"
   }
 }

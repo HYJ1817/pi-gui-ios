@@ -65,6 +65,12 @@ xcrun simctl openurl "$UDID" "piguimobile://project/project-a0001"
 shot 07-shell-sessions
 xcrun simctl openurl "$UDID" "piguimobile://session/session-s0001/conversation-c001"
 shot 08-shell-conversation
+# M3 surfaces: pending approvals list and the single-response detail card,
+# projected through the synthetic remote/v1 loop (no real desktop).
+xcrun simctl openurl "$UDID" "piguimobile://approvals"
+shot 09-approvals
+xcrun simctl openurl "$UDID" "piguimobile://approval/approval-a001?conversationId=conversation-c001"
+shot 10-approval-detail
 xcrun simctl openurl "$UDID" "piguimobile://probe"
 shot 01-native-glass 3
 # Interaction state via probe params: keyboard focus+text, menu action,
@@ -82,6 +88,8 @@ xcrun simctl ui "$UDID" appearance dark
 xcrun simctl terminate "$UDID" "$BUNDLE_ID" >/dev/null 2>&1 || true
 xcrun simctl launch "$UDID" "$BUNDLE_ID" >/dev/null
 shot_dark home 4
+xcrun simctl openurl "$UDID" "piguimobile://session/session-s0001/conversation-c001"
+shot_dark conversation
 xcrun simctl openurl "$UDID" "piguimobile://probe"
 shot_dark appearance 3
 xcrun simctl ui "$UDID" appearance light
@@ -92,6 +100,8 @@ xcrun simctl ui "$UDID" content_size accessibility-extra-extra-extra-large
 xcrun simctl spawn "$UDID" defaults write com.apple.Accessibility ReduceTransparencyEnabled -bool YES
 xcrun simctl launch "$UDID" "$BUNDLE_ID" >/dev/null
 shot_ax home 4
+xcrun simctl openurl "$UDID" "piguimobile://session/session-s0001/conversation-c001"
+shot_ax conversation 2
 xcrun simctl openurl "$UDID" "piguimobile://probe?scroll=end"
 shot_ax reduce-transparency 2
 shot_ax dynamic-type 1
