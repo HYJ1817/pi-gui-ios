@@ -62,7 +62,12 @@ export default function ConversationScreen() {
     if (result.ok) setDraft('');
     else setSendError(result.code ?? 'failed');
   };
-  const stop = async () => { await runtime.store.stop(conversationId); };
+  const stop = async () => {
+    if (pending) return;
+    setPending(true);
+    await runtime.store.stop(conversationId);
+    setPending(false);
+  };
 
   return (
     <KeyboardAwareScrollView

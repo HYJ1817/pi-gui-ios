@@ -12,7 +12,7 @@
  * cursors produce a new-generation reset which rebuilds the local baseline.
  */
 import type { ConversationStatus, CryptoProvider, DeviceCredentials, EventEnvelope, RemoteApproval, RemoteMessage, Scope, SignedRequest } from './types';
-import { canonicalJson, isOpaqueId, sha256hex, utf8Bytes } from './wire';
+import { canonicalJson, hasForbiddenKey, hasForbiddenValue, isOpaqueId, serializedJsonBytes, sha256hex, utf8Bytes } from './wire';
 
 const EVENTS = ['snapshot', 'message.append', 'conversation.status', 'approval.pending', 'approval.settled', 'reset'] as const;
 type EventName = (typeof EVENTS)[number];
@@ -107,7 +107,7 @@ function validatePayload(event: EventName, payload: unknown): boolean {
 const isMessage = (m: unknown): m is RemoteMessage => {
   const o = m as Record<string, unknown>;
   return o !== null && typeof o === 'object' && isOpaqueId(o.messageId) && ['user', 'assistant'].includes(o.role as string)
-    && typeof o.text === 'string' && utf8Bytes(o.text) <= 8192 && Object.keys(o).every(k => ['messageId', 'role', 'text'].includes(k));
+    && typeof o.text === 'string' && serializedJsonBytes(o.text) <= 8192 && Object.keys(o).every(k => ['messageId', 'role', 'text'].includes(k));
 };
 
 export function buildEventFrameMessage(event: EventEnvelope, deviceId: string, serviceId: string): string | null {

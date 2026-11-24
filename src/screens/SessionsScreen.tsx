@@ -2,6 +2,7 @@ import { FlatList, StyleSheet, Text, useWindowDimensions, View } from 'react-nat
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RouteProp } from '@react-navigation/native';
+import type { RemoteSession } from '../remote/types';
 import { contentWidth } from '../design/layout';
 import type { RootStackParamList } from '../navigation/types';
 import { ListItem } from '../components/ListItem';
@@ -21,14 +22,15 @@ export default function SessionsScreen() {
   const items = state.sessions.filter(s => s.projectId === projectId);
   const col = Math.min(contentWidth({ width, height: 0 }), width);
 
-  const statusOf = (conversationId: string | undefined): { status: 'idle' | 'running' | 'pending' | 'warning' | 'danger'; label: string } => {
-    if (!conversationId) return { status: 'idle', label: 'Idle' };
-    const conv = state.conversations[conversationId];
-    const s: ConversationStatus = conv?.status ?? 'unknown';
-    const pending = conv?.approvals.length ?? 0;
+  // Aggregate over ALL active conversations: worst status wins; pending
+  // approvals always dominate.
+  const statusOf = (item: RemoteSession): { status: 'idle' | 'running' | 'pending' | 'warning' | 'danger'; label: string } => {
+    const convs = item.activeConversations.map(c => state.conversations[c.conversationId]).filter((c): c is NonNullable<typeof c> => c !== undefined);
+    const pending = convs.reduce((n, c) => n + c.approvals.length, 0);
     if (pending > 0) return { status: 'warning', label: `${pending} approval${pending > 1 ? 's' : ''}` };
-    if (s === 'running' || s === 'stopping') return { status: 'running', label: s === 'stopping' ? 'Stopping' : 'Running' };
-    if (s === 'error') return { status: 'danger', label: 'Error' };
+    if (convs.some(c => c.status === 'error')) return { status: 'danger', label: 'Error' };
+    if (convs.some(c => c.status === 'running')) return { status: 'running', label: 'Running' };
+    if (convs.some(c => c.status === 'stopping')) return { status: 'running', label: 'Stopping' };
     return { status: 'idle', label: 'Idle' };
   };
 
@@ -49,8 +51,10 @@ export default function SessionsScreen() {
             title={item.displayName}
             subtitle={`${item.activeConversations.length} active · ${item.updatedAt.slice(0, 10)}`}
             testID={`session-${item.sessionId}`}
-            right={(() => { const s = statusOf(item.activeConversations[0]?.conversationId); return <StatusBadge status={s.status} label={s.label} />; })()}
-            onPress={() => navigation.navigate('Conversation', { sessionId: item.sessionId, conversationId: item.activeConversations[0]?.conversationId ?? 'conversation-none', title: item.displayName })}
+            right={(() => { const s = statusOf(item); return <StatusBadge status={s.status} label={s.label} />; })()}
+            onPress={item.activeConversations.length
+              ? () => navigation.navigate('Conversation', { sessionId: item.sessionId, conversationId: item.activeConversations[0]!.conversationId, title: item.displayName })
+              : undefined}
           />
         </View>
       )}
