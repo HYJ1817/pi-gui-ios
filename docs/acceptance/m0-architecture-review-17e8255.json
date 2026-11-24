@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 2,
+  "kind": "independent-review",
+  "taskId": "M0-architecture",
+  "commit": "17e825507005ed5c763a2ca5eb174ddccb53d2bf",
+  "sourceFingerprint": "77ec78fcb3e32d547aa09880aaf6a88dfde075fb8d2d843cf5eba7c41fbae359",
+  "startedAt": "2026-11-24T08:35:00.000Z",
+  "finishedAt": "2026-11-24T09:04:32.439Z",
+  "passed": true,
+  "details": {
+    "receiptPath": "docs/acceptance/m0-architecture-review-17e8255-receipt.json",
+    "receiptSha256": "faa9d2a3a00a2f8a6ba90a530f915ca2f82509dd19cb93cbd5500b437e708038",
+    "scope": "Independent functional re-review @17e8255 (swe-2): M0-architecture re-verified at current fingerprint; contract/architecture/authorization boundary intact; M2 additions no weakening; 0 blockers."
+  }
+}

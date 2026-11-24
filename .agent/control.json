@@ -1504,11 +1504,17 @@
         "role": "m0-m1-security-rereview",
         "status": "completed",
         "sourceCommit": "17e825507005ed5c763a2ca5eb174ddccb53d2bf"
+      },
+      {
+        "taskId": "node:delegated-task:command%3Amcp%3A571f0893-6372-4390-a2f5-e277a43aeec2%3Adelegate-task%3Aceb2b695-e1aa-42e7-b8f2-d40273bca560",
+        "role": "m0-m1-functional-rereview",
+        "status": "completed",
+        "sourceCommit": "17e825507005ed5c763a2ca5eb174ddccb53d2bf"
       }
     ]
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "913449ae2a8ac399671baf06587ce3a37370610cbe2d3ca2495b6f72e9a7b243"
+    "digest": "dfe15afc27e3fb1feae9860c25bbc74babc06a849b02681c780e0aa222653ed1"
   }
 }
