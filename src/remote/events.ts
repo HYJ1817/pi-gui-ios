@@ -68,9 +68,16 @@ export function validateEventEnvelope(event: unknown): event is EventEnvelope {
   if (typeof e.frameSignature !== 'string' || !/^[A-Za-z0-9_-]{86}$/.test(e.frameSignature)) return false;
   if (e.event === 'reset' && e.conversationId !== 'stream-reset') return false;
   if (e.event !== 'reset' && e.conversationId === 'stream-reset') return false;
+  // Contract parity (contract.mjs validateEventEnvelope): reject forbidden
+  // keys anywhere on the envelope, and forbidden keys/values inside the
+  // payload — free-text fields would otherwise carry unscreened paths or
+  // credentials into the UI store over the signed frame channel.
+  if (hasForbiddenKey(e)) return false;
   const canonical = canonicalJson(e);
   if (canonical === null || utf8Bytes(canonical) > MAX_FRAME_BYTES) return false;
-  return validatePayload(e.event as EventName, e.payload);
+  return validatePayload(e.event as EventName, e.payload)
+    && !hasForbiddenKey(e.payload)
+    && !hasForbiddenValue(e.payload, 0, ['payload']);
 }
 
 function validatePayload(event: EventName, payload: unknown): boolean {

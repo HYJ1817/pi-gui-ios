@@ -2,6 +2,35 @@
 # Parse on the same macOS Ruby/Bundler that resolved the candidates. Never print values.
 require 'yaml'
 require 'uri'
+
+# Second mode: semantic Podfile.lock <-> Pods/Manifest.lock equality check.
+# install-pods.sh stamps Manifest.lock with Podfile.lock only to defeat the
+# byte-level format drift that pod install --deployment leaves behind; the stamp
+# is allowed solely when the already-installed manifest resolves to the SAME
+# dependency graph — this check proves that before the copy runs, so the stamp
+# can never paper over a genuinely different resolution, source or checksum.
+# Compares only resolved-dependency fields; COCOAPODS version is included.
+if ARGV[0] == 'manifest-compare'
+  begin
+    left, right = ARGV.fetch(1), ARGV.fetch(2)
+    option_keys = [:path, :podspec, :git, :http, :commit, :tag, :branch, :sha256].freeze
+    parse = lambda do |file|
+      text = File.read(file)
+      raise unless text.ascii_only? && !text.include?("\0") && text.bytesize < 2_000_000
+      YAML.safe_load(text, permitted_classes: [Symbol], permitted_symbols: option_keys, aliases: false)
+    end
+    l, r = parse.call(left), parse.call(right)
+    raise unless l.is_a?(Hash) && r.is_a?(Hash)
+    raise unless l == r
+    puts 'POD_MANIFEST_MATCH'
+  rescue Exception
+    warn 'POD_MANIFEST_DRIFT'
+    exit 1
+  else
+    exit 0
+  end
+end
+
 phase = 'GEM_RUNTIME'
 begin
   gem 'bundler', '= 2.6.9'

@@ -368,6 +368,13 @@ test('event stream: signed frames, order, scope drop, tamper drop, cursor resume
   skipped.frameSignature = r.serviceCrypto.sign(r.M.events.buildEventFrameMessage(skipped, r.credentials.deviceId, r.credentials.serviceId));
   const gapRes = ev.accept(skipped);
   assert.equal(gapRes.code, 'sequence_gap');
+  // contract parity: forbidden values inside a correctly-signed payload must
+  // still drop the frame (free-text fields are not a credential/path channel)
+  const leaked = { protocolVersion: 1, sequence: legit.sequence + 1, conversationId: CONV, ownerRevision: legit.ownerRevision, event: 'approval.pending', payload: { requestId: 'approval-lk01', method: 'confirm', title: 'PI_GUI_TOKEN=hunter2secret', message: 'see /Users/x/.env' }, streamGeneration: legit.streamGeneration, cursor: 'cur_leak', frameSignature: '' };
+  leaked.frameSignature = r.serviceCrypto.sign(r.M.events.buildEventFrameMessage(leaked, r.credentials.deviceId, r.credentials.serviceId));
+  const leakRes = ev.accept(leaked);
+  assert.equal(leakRes.ok, false);
+  assert.equal(leakRes.code, 'frame_invalid');
   // approval frame needs approvals.read: device lacking the scope drops it
   const r2 = rig(t, { scopes: ALL_SCOPES.filter(s => s !== 'approvals.read') });
   const ev2 = new r.M.events.EventStreamClient({

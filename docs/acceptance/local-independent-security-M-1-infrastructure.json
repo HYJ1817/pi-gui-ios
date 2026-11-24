@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 2,
+  "taskId": "M-1-infrastructure",
+  "commit": "cbaba6871587a6bce9902088c5fc2bbcf67c80fa",
+  "sourceFingerprint": "6e7a6a919475365de47983f258f09a8177739a5380d629a6ca07e9eae7e6aa9f",
+  "kind": "independent-security",
+  "scopes": [
+    "app",
+    "control",
+    "native-build",
+    "protocol",
+    "shared",
+    "tests"
+  ],
+  "scopeFingerprint": "e2066df800c86193c830cc1d3a9d55d1b6d6f16d939dbc5cd79f52bc450f1ccb",
+  "startedAt": "2026-11-24T19:40:19.941Z",
+  "finishedAt": "2026-11-24T19:40:19.941Z",
+  "passed": true,
+  "details": {
+    "receiptPath": "docs/acceptance/independent-security-cbaba68-receipt.json",
+    "receiptSha256": "0833e48da4d1227466a8db63725c38a0dc11c08e308f2194f46c8220ec26ba34"
+  }
+}

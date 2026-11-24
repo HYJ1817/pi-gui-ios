@@ -107,23 +107,67 @@ test('pod install failure survives a successful tee and cleans all private mater
   assert.equal(result.status, 23, result.stdout + result.stderr); assert.equal((result.stdout + result.stderr).includes(marker), false);
   assert.deepEqual(readdirSync(join(f.root, 'runner-temp')), []); assert.equal(existsSync(join(f.root, 'artifacts/lock-candidates')), false);
 });
+test('locked Manifest.lock stamp requires semantic equality with the reviewed Podfile.lock', t => {
+  // The stamp exists to defeat byte-level serialization drift under
+  // pod install --deployment. A manifest that semantically differs from the
+  // reviewed lock must abort the pipeline BEFORE the copy can paper it over.
+  const f = fixture(t); const bin = join(f.root, 'bin'); mkdirSync(bin);
+  writeFileSync(join(f.root, 'native/dependency-policy.json'), JSON.stringify({ ...policy, mode: 'locked' }));
+  const gem = 'GEM\n  remote: https://rubygems.org/\n  specs:\n    cocoapods (1.16.2)\n\nPLATFORMS\n  arm64-darwin-25\n\nDEPENDENCIES\n  bundler (= 2.6.9)\n  cocoapods (= 1.16.2)\n\nRUBY VERSION\n   ruby 3.3.8p144\n\nBUNDLED WITH\n   2.6.9\n';
+  const pod = 'PODS:\n  - Synthetic (1.0.0)\n\nDEPENDENCIES:\n  - Synthetic (from `../node_modules/synthetic`)\n\nEXTERNAL SOURCES:\n  Synthetic:\n    :path: "../node_modules/synthetic"\n\nSPEC CHECKSUMS:\n  Synthetic: ' + 'a'.repeat(40) + '\n\nPODFILE CHECKSUM: ' + 'b'.repeat(40) + '\n\nCOCOAPODS: 1.16.2\n';
+  // The validator serializes Podfile.lock to canonical YAML.dump bytes; the
+  // reviewed lock must already be canonical or its digest would shift.
+  const prep0 = join(f.root, 'prep0'); mkdirSync(prep0);
+  writeFileSync(join(prep0, 'Gemfile.lock'), gem); writeFileSync(join(prep0, 'Podfile.lock'), pod);
+  const RUBY_BIN = dirname(process.env.RUBY || 'ruby');
+  const rubyEnv = { ...f.env, PATH: (RUBY_BIN !== '.' ? RUBY_BIN + delimiter : '') + process.env.PATH };
+  const canon = spawnSync(process.env.RUBY || 'ruby', [join(f.root, 'scripts/ci/validate-locks.rb'), prep0], { env: rubyEnv });
+  assert.equal(canon.status, 0, 'fixture locks must validate');
+  writeFileSync(join(f.root, 'Gemfile.lock'), readFileSync(join(prep0, 'Gemfile.lock')));
+  writeFileSync(join(f.root, 'native/Podfile.lock'), readFileSync(join(prep0, 'Podfile.lock')));
+  const canonicalPod = readFileSync(join(f.root, 'native/Podfile.lock'), 'utf8');
+  // The stub pod install writes a DIFFERENT resolution as Pods/Manifest.lock.
+  const drifted = canonicalPod.replace('Synthetic (1.0.0)', 'Synthetic (1.0.1)');
+  const stub = join(bin, 'bundle');
+  writeFileSync(join(bin, 'manifest.lock'), drifted);
+  writeFileSync(stub, '#!/usr/bin/env bash\nif [[ "$2" == install ]]; then exit 0; fi\nif [[ "$4" == --version ]]; then printf \'1.16.2\\n\'; exit 0; fi\nif [[ "$3" == pod && "$4" == install ]]; then cp "$(dirname "$0")/manifest.lock" Pods/Manifest.lock; exit 0; fi\nprintf \'1.16.2\\n\'\nexit 0\n');
+  chmodSync(stub, 0o755);
+  const env = { ...f.env, PATH: bin + delimiter + (RUBY_BIN !== '.' ? RUBY_BIN + delimiter : '') + process.env.PATH };
+  // Reviewed lock set with real hashes computed against private copies.
+  const prep = py(f, moduleCode('native-dependencies.py', `
+private=root/'private'
+(private/'Gemfile.lock').write_bytes((root/'Gemfile.lock').read_bytes()); (private/'Podfile.lock').write_bytes((root/'native/Podfile.lock').read_bytes())
+manifest=m.inventory(root)
+(private/'prebuilt-dependencies.json').write_text(json.dumps(manifest,sort_keys=True,indent=2)+'\\n')
+(root/'native/prebuilt-dependencies.json').write_text((private/'prebuilt-dependencies.json').read_text())
+(root/'native/lock-review.json').write_text(json.dumps({'schemaVersion':1,'approved':True,'hashes':m.hashes(root,private)}))
+print('REVIEWED')`));
+  assert.equal(prep.status, 0, prep.stdout + prep.stderr);
+  const result = spawnSync('bash', ['scripts/ci/install-pods.sh'], { ...f.options, env });
+  assert.equal(result.status, 1, result.stdout + result.stderr);
+  assert.match(result.stderr + result.stdout, /POD_MANIFEST_DRIFT/, 'drift must be reported before the stamp');
+  // The semantic drift must NOT be stamped over: the manifest keeps its own bytes.
+  assert.equal(readFileSync(join(f.root, 'ios/Pods/Manifest.lock'), 'utf8'), drifted, 'drifted manifest must not be overwritten');
+});
 test('step wrapper exposes only fixed step and status, keeping command details private', t => {
   const f = fixture(t); const result = spawnSync('bash', ['scripts/ci/run-step.sh', 'device-build', 'bash', '-c', `printf '%s' '${marker}'; exit 7`], f.options);
   assert.equal(result.status, 7, result.stdout + result.stderr); assert.equal(result.stdout.trim(), 'NATIVE_STEP_device-build_failed'); assert.equal(result.stderr, '');
   assert.equal(readFileSync(join(f.root, 'runner-temp/native-private/logs/device-build.log'), 'utf8'), marker);
   assert.deepEqual(JSON.parse(readFileSync(join(f.root, 'runner-temp/native-private/steps/device-build.json'))), { step: 'device-build', status: 'failed' });
 });
-test('collector preserves JUnit failures but strips test strings, stdout, PNG metadata, logs and inventory', t => {
-  const f = fixture(t); const result = py(f, `import pathlib,os,struct,zlib\np=pathlib.Path(os.environ['RUNNER_TEMP'])/'native-private'; (p/'ui/iphone').mkdir(parents=True); (p/'screenshots/iphone').mkdir(parents=True); (p/'logs').mkdir()\nmarker=${JSON.stringify(marker)}\n(p/'logs/build.log').write_text(marker); (p/'simulators.json').write_text(marker)\n(p/'ui/iphone/native.xml').write_text('<testsuite tests="2" failures="1"><testcase name="'+marker+'"><failure message="'+marker+'">'+marker+'</failure><system-out>'+marker+'</system-out></testcase><testcase name="pass"/></testsuite>')\ndef chunk(k,b): return struct.pack('>I',len(b))+k+b+struct.pack('>I',zlib.crc32(k+b)&0xffffffff)\npng=b'\\x89PNG\\r\\n\\x1a\\n'+chunk(b'IHDR',struct.pack('>IIBBBBB',1,1,8,6,0,0,0))+chunk(b'tEXt',marker.encode())+chunk(b'IDAT',zlib.compress(bytes([0,255,0,0,255])))+chunk(b'IEND',b'')\n(p/'screenshots/iphone/01-native-glass.png').write_bytes(png); (p/'screenshots/iphone/unapproved.png').write_bytes(png)\n`);
+test('retired Maestro JUnit/debug inputs are ignored while screenshots stay sanitized', t => {
+  // The Maestro channel was removed: ui/*.xml JUnit and *-debug.json can no
+  // longer become public evidence. Leftover private inputs are skipped, not
+  // published; simctl screenshots remain the only UI evidence.
+  const f = fixture(t); const result = py(f, `import pathlib,os,struct,zlib\np=pathlib.Path(os.environ['RUNNER_TEMP'])/'native-private'; (p/'ui/iphone').mkdir(parents=True); (p/'screenshots/iphone').mkdir(parents=True); (p/'logs').mkdir()\nmarker=${JSON.stringify(marker)}\n(p/'logs/build.log').write_text(marker); (p/'simulators.json').write_text(marker)\n(p/'ui/iphone/native.xml').write_text('<testsuite tests="2" failures="1"><testcase name="'+marker+'"><failure message="'+marker+'">'+marker+'</failure></testcase></testsuite>')\n(p/'ui/iphone/native-debug.json').write_text('{"kind":"maestro-debug","commands":[]}')\ndef chunk(k,b): return struct.pack('>I',len(b))+k+b+struct.pack('>I',zlib.crc32(k+b)&0xffffffff)\npng=b'\\x89PNG\\r\\n\\x1a\\n'+chunk(b'IHDR',struct.pack('>IIBBBBB',1,1,8,6,0,0,0))+chunk(b'tEXt',marker.encode())+chunk(b'IDAT',zlib.compress(bytes([0,255,0,0,255])))+chunk(b'IEND',b'')\n(p/'screenshots/iphone/01-native-glass.png').write_bytes(png); (p/'screenshots/iphone/unapproved.png').write_bytes(png)\n`);
   assert.equal(result.status, 0, result.stderr); const collected = collect(f); assert.equal(collected.status, 0, collected.stdout + collected.stderr);
-  const publicRoot = join(f.root, 'artifacts'); const xml = readFileSync(join(publicRoot, 'reports/iphone-native.xml'), 'utf8'); assert.match(xml, /tests="2" failures="1"/); assert.match(xml, /MAESTRO_ASSERTION_FAILED/); assert.equal(xml.includes(marker), false);
+  const publicRoot = join(f.root, 'artifacts');
+  assert.equal(existsSync(join(publicRoot, 'reports/iphone-native.xml')), false, 'retired JUnit must not be published');
+  assert.equal(existsSync(join(publicRoot, 'reports/iphone-native-debug.json')), false, 'retired maestro-debug must not be published');
   const png = readFileSync(join(publicRoot, 'screenshots/iphone/01-native-glass.png')); assert.equal(png.includes(Buffer.from(marker)), false); assert.equal(png.includes(Buffer.from('tEXt')), false);
   assert.equal(existsSync(join(publicRoot, 'screenshots/iphone/unapproved.png')), false); assert.deepEqual(readdirSync(publicRoot).sort(), ['reports', 'screenshots']);
 });
-for (const xml of ['<!DOCTYPE a [<!ENTITY b SYSTEM "file:///SYNTHETIC-PRIVATE">]><testsuite/>', '<testsuite failures="1"><testcase name="x"/></testsuite>', '<testsuites errors="1"><testsuite><testcase name="x"/></testsuite></testsuites>', '<testsuite tests="2"><testcase name="missing"/></testsuite>', '<broken>']) test('unsafe/unrepresented JUnit is rejected', t => {
-  const f = fixture(t); const dir = join(f.root, 'runner-temp/native-private/ui/iphone'); mkdirSync(dir, { recursive: true }); writeFileSync(join(dir, 'native.xml'), xml);
-  const result = collect(f); assert.equal(result.status, 1); assert.equal(result.stdout.trim(), 'SYNTHETIC_EVIDENCE_REJECTED'); assert.equal(existsSync(join(f.root, 'artifacts/reports/iphone-native.xml')), false);
-});
+
 test('malformed screenshot never enters publish scope', t => {
   const f = fixture(t); const dir = join(f.root, 'runner-temp/native-private/screenshots/iphone'); mkdirSync(dir, { recursive: true }); writeFileSync(join(dir, '01-native-glass.png'), marker);
   assert.equal(collect(f).status, 1); assert.equal(existsSync(join(f.root, 'artifacts/screenshots/iphone/01-native-glass.png')), false);

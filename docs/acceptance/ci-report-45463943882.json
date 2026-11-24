@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 2,
+  "taskId": "M-1-infrastructure",
+  "commit": "cbaba6871587a6bce9902088c5fc2bbcf67c80fa",
+  "sourceFingerprint": "6e7a6a919475365de47983f258f09a8177739a5380d629a6ca07e9eae7e6aa9f",
+  "kind": "ci",
+  "scopes": [
+    "app",
+    "control",
+    "native-build",
+    "protocol",
+    "shared",
+    "tests"
+  ],
+  "scopeFingerprint": "e2066df800c86193c830cc1d3a9d55d1b6d6f16d939dbc5cd79f52bc450f1ccb",
+  "startedAt": "2026-11-24T19:40:19.941Z",
+  "finishedAt": "2026-11-24T19:40:19.941Z",
+  "passed": true,
+  "details": {
+    "ci": {
+      "id": "45463943882",
+      "head": "cbaba6871587a6bce9902088c5fc2bbcf67c80fa",
+      "workflow": ".github/workflows/native-infrastructure.yml",
+      "attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/HYJ1817/pi-gui-ios/actions/runs/45463943882"
+    },
+    "receiptPath": "docs/acceptance/ci-run-45463943882.json",
+    "receiptSha256": "b7e407f5047c08b23d8c00637953e37a75c7bc9c5d30d0ed26528b5d67e68976"
+  }
+}
