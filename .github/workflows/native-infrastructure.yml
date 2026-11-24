@@ -252,6 +252,10 @@ jobs:
         run: |
           mkdir -p "$RUNNER_TEMP/native-private"
           python3 scripts/ci/verify-handoff.py "$RUNNER_TEMP/handoff/sim-app-manifest.json" "$RUNNER_TEMP/handoff/sim-app.tar" "${{ inputs.app_run_id || github.run_id }}" "${{ inputs.app_sha || github.sha }}"
+          # Evidence for this run may only certify the commit this run actually
+          # reports: the exercised binary must have been built from github.sha,
+          # regardless of which earlier run produced it.
+          python3 -c "import json,sys,os;m=json.load(open('$RUNNER_TEMP/handoff/sim-app-manifest.json'));sys.exit(0 if m['head_sha']==os.environ['GITHUB_SHA'] else 1)"
           tar -xf "$RUNNER_TEMP/handoff/sim-app.tar" -C "$RUNNER_TEMP"
       - name: iPhone native interactions and appearance
         run: bash scripts/ci/run-step.sh iphone bash -c 'APP_PATH="$RUNNER_TEMP/PiGUIMobile.app" bash scripts/ci/simulator.sh "$IPHONE_UDID" iphone'
@@ -343,6 +347,9 @@ jobs:
       - name: Verify handoff provenance and digest
         run: |
           python3 scripts/ci/verify-handoff.py "$RUNNER_TEMP/handoff/device-app-manifest.json" "$RUNNER_TEMP/handoff/device-app.tar" "${{ inputs.app_run_id || github.run_id }}" "${{ inputs.app_sha || github.sha }}"
+          # Same binding: the IPA job may only ship an artifact built from the
+          # commit this run reports.
+          python3 -c "import json,sys,os;m=json.load(open('$RUNNER_TEMP/handoff/device-app-manifest.json'));sys.exit(0 if m['head_sha']==os.environ['GITHUB_SHA'] else 1)"
           mkdir -p "$RUNNER_TEMP/native-private"
           tar -xf "$RUNNER_TEMP/handoff/device-app.tar" -C "$RUNNER_TEMP"
       - name: Package and verify final device IPA in private staging
