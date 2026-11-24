@@ -1,0 +1,6 @@
+{
+  "taskId": "node:delegated-task:command%3Amcp%3A172f68fd-c749-4413-85d8-6ca556e69f55%3Adelegate-task%3Ab3cf4bd5-6529-49b7-a57b-75ab69f4e940",
+  "latestTerminalStatus": "completed",
+  "executedModel": "magpie/devin/swe-2",
+  "summary": "{\"schemaVersion\":1,\"kind\":\"independent-review\",\"decision\":\"pass\",\"reviewedCommit\":\"778b67eaf7f6cd87b6f6602e605ae979c533639d\",\"sourceFingerprint\":\"6e7a6a919475365de47983f258f09a8177739a5380d629a6ca07e9eae7e6aa9f\",\"unresolvedBlockers\":0,\"unresolvedImportant\":0,\"findings\":[],\"verification\":\"All checks pass at 778b67e: fingerprint matches; cbaba68 diff only fingerprint-excluded files; contract frozen-v1 holds (33/33); control schema+scopes validate; suite green (338; Ruby tests pass with env set).\"}"
+}

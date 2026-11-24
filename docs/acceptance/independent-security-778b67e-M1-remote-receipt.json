@@ -1,0 +1,6 @@
+{
+  "taskId": "node:delegated-task:command%3Amcp%3A172f68fd-c749-4413-85d8-6ca556e69f55%3Adelegate-task%3Ac47cc3f0-b7ec-4396-9ca6-dc616054d529",
+  "latestTerminalStatus": "completed",
+  "executedModel": "magpie/devin/swe-2",
+  "summary": "{\"schemaVersion\":1,\"kind\":\"independent-security\",\"decision\":\"pass\",\"reviewedCommit\":\"778b67eaf7f6cd87b6f6602e605ae979c533639d\",\"sourceFingerprint\":\"6e7a6a919475365de47983f258f09a8177739a5380d629a6ca07e9eae7e6aa9f\",\"unresolvedBlockers\":0,\"unresolvedImportant\":0,\"findings\":[{\"severity\":\"info\",\"summary\":\"src/ byte-identical to reviewed cbaba68; Ed25519/replay/epoch/pair-exchange carry forward; fp 6e7a6a91.\"},{\"severity\":\"info\",\"summary\":\"events.ts forbidden scans enforced: signed frame with credential/path payload drops frame_invalid; 18/18 m3-loop pass.\"},{\"severity\":\"info\",\"summary\":\"checkScopeFloor fail-closed; M1 [protocol] resolves [protocol,shared]; validateControl passes.\"},{\"severity\":\"info\",\"summary\":\"No leaks added by sandbox.ts; Maestro channel fully removed; install-pods manifest-compare before stamp (61/61 native-locks).\"},{\"severity\":\"info\",\"summary\":\"m3-loop initial failure was missing node_modules env artifact; resolved; not a code defect.\"}]}"
+}
