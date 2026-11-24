@@ -163,6 +163,16 @@ def collect(private, output):
                         out['errors'] = parsed['errors'][:16]
                     if isinstance(parsed.get('debugDir'), str) and parsed['debugDir'] == 'missing':
                         out['debugDir'] = 'missing'
+                    logs = parsed.get('logs')
+                    if (isinstance(logs, dict) and len(logs) <= 8
+                            and all(isinstance(v, dict) for v in logs.values())
+                            and all(k in ('console.log', 'maestro.log', 'device-xctest.log') for k in logs)):
+                        ok = all(
+                            (isinstance(v.get('bytes'), int) and isinstance(v.get('lines'), int))
+                            or v.get('unreadable') is True
+                            for v in logs.values())
+                        if ok:
+                            out['logs'] = logs
                     if len(verbs) == len(parsed['commands']):
                         target.write_text(json.dumps(out, sort_keys=True) + '\n', encoding='utf-8')
         for shot in SHOTS:
