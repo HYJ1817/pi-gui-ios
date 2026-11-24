@@ -29,13 +29,13 @@ name: Native shell and infrastructure interactions
 - takeScreenshot: ${SCREENSHOT_DIR}/01-native-glass
 # Native menu (top-right Menu button, iPhone header) via coordinate tap.
 - tapOn:
-    relativePoint: "88%,6%"
+    point: "88%,6%"
 - evalScript: |
     var __t = Date.now(); while (Date.now() - __t < 1500) {}
 - takeScreenshot: ${SCREENSHOT_DIR}/06-native-menu
 # Dismiss the menu: tap the middle of the dimmed backdrop.
 - tapOn:
-    relativePoint: "50%,50%"
+    point: "50%,50%"
 - evalScript: |
     var __t = Date.now(); while (Date.now() - __t < 1200) {}
 # Scroll to the label input and focus it by coordinate (no AX tap needed).
@@ -44,7 +44,7 @@ name: Native shell and infrastructure interactions
 - swipe:
     direction: UP
 - tapOn:
-    relativePoint: "50%,55%"
+    point: "50%,55%"
 - inputText: "CI synthetic device"
 - takeScreenshot: ${SCREENSHOT_DIR}/04-keyboard-visible
 - hideKeyboard
@@ -52,7 +52,7 @@ name: Native shell and infrastructure interactions
     direction: UP
 # Demo toggle sits under the input; the same row hits the switch area.
 - tapOn:
-    relativePoint: "80%,45%"
+    point: "80%,45%"
 - evalScript: |
     var __t = Date.now(); while (Date.now() - __t < 800) {}
 - takeScreenshot: ${SCREENSHOT_DIR}/02-interactions
@@ -60,14 +60,14 @@ name: Native shell and infrastructure interactions
     direction: UP
 # "Run native animation" button.
 - tapOn:
-    relativePoint: "50%,58%"
+    point: "50%,58%"
 - evalScript: |
     var __t = Date.now(); while (Date.now() - __t < 1200) {}
 - swipe:
     direction: UP
 # "Verify native gesture" button.
 - tapOn:
-    relativePoint: "50%,58%"
+    point: "50%,58%"
 - evalScript: |
     var __t = Date.now(); while (Date.now() - __t < 800) {}
 - takeScreenshot: ${SCREENSHOT_DIR}/05-native-motion
@@ -77,7 +77,7 @@ name: Native shell and infrastructure interactions
     direction: UP
 # "Infrastructure details" → Diagnostics screen.
 - tapOn:
-    relativePoint: "50%,68%"
+    point: "50%,68%"
 - evalScript: |
     var __t = Date.now(); while (Date.now() - __t < 2500) {}
 - takeScreenshot: ${SCREENSHOT_DIR}/03-navigation
