@@ -1,11 +1,11 @@
 {
   "schemaVersion": 2,
   "kind": "state",
-  "revision": 737,
-  "updatedAt": "2026-11-24T13:00:51.043Z",
+  "revision": 738,
+  "updatedAt": "2026-11-24T13:17:13.597Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "72ccad4c09b88446ba8b92b7685f7a5de96f4523b76062723eee375ce88f6d34",
+    "parentDigest": "9f7a9f04e26823c6a1d9fde340e21e19b6530e4294f0f21480bfc7cb6326a580",
     "phase": "M2",
     "currentTask": "M2-shell",
     "branch": "agent/m-1-bootstrap",
@@ -442,13 +442,13 @@
       {
         "taskId": "node:delegated-task:command%3Amcp%3A98737254-2f27-45ed-b038-23dc9c30c97e%3Adelegate-task%3Ae49289ac-8108-4b7e-95dd-7f5ecb0747dc",
         "role": "independent-review",
-        "status": "working",
+        "status": "completed",
         "sourceCommit": "07b76f2aa95d5892d01219f4b4d6fffe09c730a4"
       }
     ]
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "17658acb0e529905de7a8bdbacad94552c242e57c142d8c0459275149d2b23d1"
+    "digest": "677151ddc237e5d53d0f3e0a2c70d48469c1b38e5ca20c761983c52db147a294"
   }
 }

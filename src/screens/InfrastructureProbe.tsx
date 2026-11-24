@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { AccessibilityInfo, Platform, Pressable, StyleSheet, Switch, Text, TextInput, View, useWindowDimensions } from 'react-native';
-import { GlassView, isGlassEffectAPIAvailable, isLiquidGlassAvailable } from 'expo-glass-effect';
+import { Pressable, StyleSheet, Switch, Text, TextInput, View, useWindowDimensions } from 'react-native';
+import { GlassView } from 'expo-glass-effect';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { MenuView } from '@react-native-menu/menu';
@@ -11,13 +11,13 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { RootStackParamList } from '../navigation/types';
 import type { RouteProp } from '@react-navigation/native';
 import { useTheme } from '../theme';
+import { useGlassAvailable } from '../components/GlassSurface';
 
 export default function InfrastructureProbe() {
   const theme = useTheme(), insets = useSafeAreaInsets();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, 'InfrastructureProbe'>>();
   const route = useRoute<RouteProp<RootStackParamList, 'InfrastructureProbe'>>();
   const { width } = useWindowDimensions();
-  const [reducedTransparency, setReducedTransparency] = useState(true);
   const [label, setLabel] = useState('');
   const [enabled, setEnabled] = useState(false);
   const scrollRef = useRef<KeyboardAwareScrollViewRef>(null);
@@ -52,21 +52,16 @@ export default function InfrastructureProbe() {
       if (finished) runOnJS(setAnimationResult)('Animation completed');
     });
   };
-  // isLiquidGlassAvailable() already includes Reduce Transparency, so the
-  // local flag only tracks the preference for display copy — no fallback flash.
-  const glass = Platform.OS === 'ios' && isGlassEffectAPIAvailable() && isLiquidGlassAvailable();
-  const nativeAvailable = glass;
-
-  useEffect(() => {
-    let active = true;
-    AccessibilityInfo.isReduceTransparencyEnabled().then(value => { if (active) setReducedTransparency(value); }).catch(() => { if (active) setReducedTransparency(true); });
-    const subscription = AccessibilityInfo.addEventListener('reduceTransparencyChanged', setReducedTransparency);
-    return () => { active = false; subscription.remove(); };
-  }, []);
+  // Same gate as GlassSurface: the platform capability check plus the
+  // bootstrap-resolved Reduce Transparency preference. 'enabled' is false
+  // under RT (or while unresolvable), so the labeled opaque surface and its
+  // testID are the actual accessibility evidence, not a coincidental render.
+  const { native: nativeAvailable, reducedTransparency, enabled: glass } = useGlassAvailable();
   useLayoutEffect(() => {
     navigation.setOptions({ headerRight: () => <MenuView title="Native validation menu" themeVariant={theme.dark ? 'dark' : 'light'} shouldOpenOnLongPress={false} actions={[{ id: 'diagnostic', title: 'Show diagnostic' }, { id: 'cancel', title: 'Cancel' }]} onPressAction={({ nativeEvent }) => { if (nativeEvent.event === 'diagnostic') setMenuResult('Native menu confirmed'); }}><Pressable accessibilityRole="button" accessibilityLabel="Open native menu" style={styles.menuButton}><Text style={{ color: theme.accent, fontSize: 17 }}>Menu</Text></Pressable></MenuView> });
   }, [navigation, theme.dark, theme.accent]);
-  const glassContents = <><Text style={[styles.eyebrow, { color: theme.accent }]}>NATIVE MATERIAL</Text><Text testID="glass-status" style={[styles.cardTitle, { color: theme.text }]}>{glass ? 'Native Liquid Glass' : 'Opaque accessibility fallback'}</Text><Text style={[styles.body, { color: theme.secondary }]}>{nativeAvailable ? 'iOS glass API available' : 'iOS glass API unavailable'}</Text><Text style={[styles.body, { color: theme.secondary }]}>A real system material over a patterned canvas.</Text></>;
+  const glassReason = !nativeAvailable ? 'iOS glass API unavailable' : reducedTransparency !== false ? 'Reduce Transparency enabled' : 'iOS glass API available';
+  const glassContents = <><Text style={[styles.eyebrow, { color: theme.accent }]}>NATIVE MATERIAL</Text><Text testID="glass-status" style={[styles.cardTitle, { color: theme.text }]}>{glass ? 'Native Liquid Glass' : 'Opaque accessibility fallback'}</Text><Text style={[styles.body, { color: theme.secondary }]}>{glassReason}</Text><Text style={[styles.body, { color: theme.secondary }]}>A real system material over a patterned canvas.</Text></>;
 
   return <KeyboardAwareScrollView ref={scrollRef} testID="probe-scroll" contentInsetAdjustmentBehavior="automatic" keyboardShouldPersistTaps="handled" style={{ backgroundColor: theme.background }} contentContainerStyle={[styles.page, { paddingBottom: Math.max(32, insets.bottom + 20), paddingLeft: Math.max(20, insets.left + 12), paddingRight: Math.max(20, insets.right + 12) }]}>
     <View className="w-full self-center gap-6" style={{ maxWidth: width > 700 ? 760 : 560 }}>

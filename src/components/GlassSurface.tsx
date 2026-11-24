@@ -15,12 +15,49 @@ interface Props {
   tint?: 'regular' | 'clear';
 }
 
-export function useGlassAvailable(): { native: boolean; reducedTransparency: boolean; enabled: boolean } {
-  // isLiquidGlassAvailable() already folds the Reduce Transparency preference
-  // into its answer; tracking it ourselves would mount the opaque fallback for
-  // one frame on capable devices (children remount, visible flash).
+// isLiquidGlassAvailable() is a pure SDK/plist capability check and does NOT
+// fold Reduce Transparency (expo-glass-effect docs + GlassEffectModule.swift),
+// so the RT preference must gate 'enabled' ourselves. The RT value is async
+// only (AccessibilityInfo), which is why it is resolved once during app
+// bootstrap — before screens mount — via resolveGlassPreferences(). That makes
+// the first visible frame already correct in both directions: no glass flash
+// for RT users, no fallback flash for everyone else. The listener keeps the
+// cache live when the user toggles the setting mid-session.
+let cachedReduceTransparency: boolean | null = null;
+let listenerInstalled = false;
+
+export function glassPreferencesResolved(): boolean {
+  return cachedReduceTransparency !== null;
+}
+
+export async function resolveGlassPreferences(): Promise<void> {
+  try {
+    cachedReduceTransparency = await AccessibilityInfo.isReduceTransparencyEnabled();
+  } catch {
+    cachedReduceTransparency = true; // Unknown preference: fail toward the opaque fallback.
+  }
+  if (!listenerInstalled) {
+    listenerInstalled = true;
+    AccessibilityInfo.addEventListener('reduceTransparencyChanged', value => { cachedReduceTransparency = value; });
+  }
+}
+
+export function useGlassAvailable(): { native: boolean; reducedTransparency: boolean | null; enabled: boolean } {
+  const [reducedTransparency, setReducedTransparency] = useState<boolean | null>(cachedReduceTransparency);
+  useEffect(() => {
+    const subscription = AccessibilityInfo.addEventListener('reduceTransparencyChanged', setReducedTransparency);
+    if (cachedReduceTransparency === null) {
+      resolveGlassPreferences().then(() => setReducedTransparency(cachedReduceTransparency));
+    } else if (reducedTransparency !== cachedReduceTransparency) {
+      setReducedTransparency(cachedReduceTransparency);
+    }
+    return () => subscription.remove();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const native = Platform.OS === 'ios' && isGlassEffectAPIAvailable() && isLiquidGlassAvailable();
-  return { native, reducedTransparency: !native, enabled: native };
+  // An unresolved preference renders the solid fallback (spec-safe); glass
+  // requires the material API AND a resolved non-reduced preference.
+  return { native, reducedTransparency, enabled: native && reducedTransparency === false };
 }
 
 export function GlassSurface({ children, style, contentStyle, testID, tint = 'regular' }: Props) {
