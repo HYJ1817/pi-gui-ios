@@ -175,17 +175,22 @@ def plist_policy(value, allow_template_scene=False):
                     require((ats_key in ATS and ats_value is ATS[ats_key]) or
                             (ats_key == 'NSExceptionDomains' and ats_value == {}), 'ATS_POLICY')
                 continue
+            # Violating key names are project-declared Info.plist keys — public
+            # source vocabulary, safe to surface as a diagnostic suffix. Only
+            # the key name, never the key's value.
+            safe_key = ''.join(c for c in key if c.isalnum() or c in '._-')[:48] or 'UNKNOWN'
+            sensitive = 'PLIST_SENSITIVE_KEY_' + safe_key.upper()
             require(key not in DENIED_KEYS and not key.startswith(('com.apple.',
-                    'keychain-', 'application-identifier')), 'PLIST_SENSITIVE_KEY')
+                    'keychain-', 'application-identifier')), sensitive)
             if key in FALSE_KEYS:
-                require(item is False, 'PLIST_SENSITIVE_KEY')
+                require(item is False, sensitive)
             elif key == 'LSApplicationQueriesSchemes':
-                require(item == [], 'PLIST_SENSITIVE_KEY')
+                require(item == [], sensitive)
             elif ('UsageDescription' in key or key.startswith('NS')) and key not in BENIGN_NS:
-                require(key in PERMISSIONS and item == PERMISSIONS[key], 'PLIST_SENSITIVE_KEY')
+                require(key in PERMISSIONS and item == PERMISSIONS[key], sensitive)
             elif (key.startswith('UI') and key not in BENIGN_UI) or (
                     key.startswith('LS') and key not in BENIGN_LS) or key.startswith(('WK', 'UT', 'NFC')):
-                raise Invalid('PLIST_SENSITIVE_KEY')
+                raise Invalid(sensitive)
             if key == 'UIRequiredDeviceCapabilities':
                 require(isinstance(item, list) and set(item) <= {'arm64'}, 'PLIST_CAPABILITIES')
             if key == 'CFBundleURLTypes':

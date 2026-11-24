@@ -93,7 +93,7 @@ for (const [key, value, code] of [
   ['UIBackgroundModes', ['audio'], 'PLIST_SENSITIVE_KEY'], ['UIFileSharingEnabled', true, 'PLIST_SENSITIVE_KEY'],
   ['com.apple.developer.future-entitlement', true, 'PLIST_SENSITIVE_KEY'], ['get-task-allow', true, 'PLIST_SENSITIVE_KEY'],
   ['LSApplicationQueriesSchemes', ['secret'], 'PLIST_SENSITIVE_KEY'], ['CFBundleURLTypes', [{ CFBundleURLSchemes: ['unexpected'] }], 'PLIST_URL_SCHEME'],
-]) test(`deny sensitive/unknown plist field ${key}`, t => { const f = fixture(t); f.info[key] = value; f.update(); reject(archive(f), code); });
+]) test(`deny sensitive/unknown plist field ${key}`, t => { const f = fixture(t); f.info[key] = value; f.update(); reject(archive(f), code === 'PLIST_SENSITIVE_KEY' ? `PLIST_SENSITIVE_KEY_${key.replace(/[^A-Za-z0-9._-]/g, '').toUpperCase()}` : code); });
 for (const ats of [{ NSAllowsArbitraryLoads: true }, { NSAllowsLocalNetworking: true }, { NSAllowsArbitraryLoadsInWebContent: true }, { NSFutureRelaxation: true }, { NSExceptionDomains: { 'example.invalid': { NSIncludesSubdomains: true } } }, { NSAllowsArbitraryLoads: 0 }]) {
   test(`deny ATS ${JSON.stringify(ats)}`, t => { const f = fixture(t); f.info.NSAppTransportSecurity = ats; f.update(); reject(archive(f), 'ATS_POLICY'); });
 }
