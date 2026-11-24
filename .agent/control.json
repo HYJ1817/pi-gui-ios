@@ -1,8 +1,8 @@
 {
   "schemaVersion": 2,
   "kind": "control",
-  "revision": 690,
-  "updatedAt": "2026-11-24T08:06:47.883Z",
+  "revision": 702,
+  "updatedAt": "2026-11-24T08:36:09.411Z",
   "data": {
     "phase": "M2",
     "currentTask": "M2-shell",
@@ -952,6 +952,22 @@
             "sourceFingerprint": "ceeb588d13e8e5c610d52edd8e9aec1c2fb0ca0bfbc4cc54985bcfbb85c8a5b0",
             "commit": "14973c4fa705311b05c879666ebb559992f37461",
             "at": "2026-11-22T13:26:39.302Z"
+          },
+          {
+            "kind": "protocol-contract",
+            "path": "docs/acceptance/local-protocol-contract-M0-architecture.json",
+            "sha256": "dc2beb49b486670ec8a392f9e1ccf65facb18bb584dfe9ba3dc10c40194eb9c1",
+            "sourceFingerprint": "77ec78fcb3e32d547aa09880aaf6a88dfde075fb8d2d843cf5eba7c41fbae359",
+            "commit": "17e825507005ed5c763a2ca5eb174ddccb53d2bf",
+            "at": "2026-11-24T08:35:02.883Z"
+          },
+          {
+            "kind": "unit",
+            "path": "docs/acceptance/local-unit-M0-architecture.json",
+            "sha256": "2cfc4d19f3909310d6b853366f5c1b1463a2e995d2eacb082e66483fda5ab2f8",
+            "sourceFingerprint": "77ec78fcb3e32d547aa09880aaf6a88dfde075fb8d2d843cf5eba7c41fbae359",
+            "commit": "53ec2bf028065fe0279d3b603ed4c77df12b4008",
+            "at": "2026-11-24T08:35:04.872Z"
           }
         ],
         "updatedAt": "2026-11-22T05:04:14.175Z"
@@ -1003,6 +1019,22 @@
             "sourceFingerprint": "ceeb588d13e8e5c610d52edd8e9aec1c2fb0ca0bfbc4cc54985bcfbb85c8a5b0",
             "commit": "4b66caac82dd57b20cb937b6975965c89a52135d",
             "at": "2026-11-23T02:45:18.820Z"
+          },
+          {
+            "kind": "integration",
+            "path": "docs/acceptance/local-integration-M1-remote.json",
+            "sha256": "6f789208806afe61e9a3c18b1f402726fb5e75a3727968e57847e533b70e7890",
+            "sourceFingerprint": "77ec78fcb3e32d547aa09880aaf6a88dfde075fb8d2d843cf5eba7c41fbae359",
+            "commit": "17e825507005ed5c763a2ca5eb174ddccb53d2bf",
+            "at": "2026-11-24T08:35:03.867Z"
+          },
+          {
+            "kind": "unit",
+            "path": "docs/acceptance/local-unit-M1-remote.json",
+            "sha256": "9c64492ef293c3ffd87ecadce157c3f0d5601c10367fede8871dd4d343bbb92f",
+            "sourceFingerprint": "77ec78fcb3e32d547aa09880aaf6a88dfde075fb8d2d843cf5eba7c41fbae359",
+            "commit": "53ec2bf028065fe0279d3b603ed4c77df12b4008",
+            "at": "2026-11-24T08:35:05.875Z"
           }
         ],
         "updatedAt": "2026-11-23T02:45:31.115Z"
@@ -1101,6 +1133,14 @@
             "sourceFingerprint": "77ec78fcb3e32d547aa09880aaf6a88dfde075fb8d2d843cf5eba7c41fbae359",
             "commit": "53ec2bf028065fe0279d3b603ed4c77df12b4008",
             "at": "2026-11-24T08:06:47.832Z"
+          },
+          {
+            "kind": "independent-review",
+            "path": "docs/acceptance/m2-review-53ec2bf-review.json",
+            "sha256": "d6d51e5847d641c74a1c730d772ae42193157df9f55237e8d616422ae2ef8372",
+            "sourceFingerprint": "77ec78fcb3e32d547aa09880aaf6a88dfde075fb8d2d843cf5eba7c41fbae359",
+            "commit": "53ec2bf028065fe0279d3b603ed4c77df12b4008",
+            "at": "2026-11-24T08:36:09.315Z"
           }
         ],
         "updatedAt": "2026-11-23T02:47:37.213Z"
@@ -1176,25 +1216,36 @@
       }
     ],
     "checkpoint": {
-      "id": "v2-2026-11-24T08-06-47-883Z-182f82cb-d499-4b8f-9e2a-152f8583c662",
-      "path": ".agent/checkpoints/v2-2026-11-24T08-06-47-883Z-182f82cb-d499-4b8f-9e2a-152f8583c662.json",
-      "sha256": "5796c7ba057c4f32948a2606c8a0e437d556798e3e4aa11eebac578120aa39ff",
-      "authorityDigest": "9cae987a416d96beb1d21f7bc5869f7857c2dde1bd1d4ddd78461662018ea114",
-      "at": "2026-11-24T08:06:47.883Z",
+      "id": "v2-2026-11-24T08-36-09-411Z-ab21dc58-29f7-4778-ac05-4b88756ba947",
+      "path": ".agent/checkpoints/v2-2026-11-24T08-36-09-411Z-ab21dc58-29f7-4778-ac05-4b88756ba947.json",
+      "sha256": "448f4da7a92c0caadff94b4081895daeb89d24c8d103ee157ea1073dc3e5b8bb",
+      "authorityDigest": "71766443563b203c8425e01503d5f68ac94f1f5179ad878d2cad3c4bbe5fd696",
+      "at": "2026-11-24T08:36:09.411Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "53ec2bf028065fe0279d3b603ed4c77df12b4008",
+        "commit": "17e825507005ed5c763a2ca5eb174ddccb53d2bf",
         "dirty": [
           "M .agent/HANDOFF.md",
           " M .agent/control.json",
           " M .agent/state.json",
           " M .agent/tasks.json",
           " M PROGRESS.md",
-          " M docs/acceptance/local-unit-output.txt",
-          " M docs/acceptance/local-unit.json",
-          "?? .agent/checkpoints/v2-2026-11-24T07-59-25-505Z-72cec91f-30ee-4a97-8760-e87f0985c4f5.json",
-          "?? .agent/checkpoints/v2-2026-11-24T08-01-52-550Z-194e4a35-f285-482f-a16b-a4b438fbf47b.json",
-          "?? .agent/checkpoints/v2-2026-11-24T08-06-28-064Z-9559d553-a9a4-42ac-83ab-d45b71598b2e.json"
+          " M docs/acceptance/local-integration-output.txt",
+          " M docs/acceptance/local-integration.json",
+          " M docs/acceptance/local-protocol-contract-output.txt",
+          " M docs/acceptance/local-protocol-contract.json",
+          "?? .agent/checkpoints/v2-2026-11-24T08-32-34-505Z-130c9ff8-bffd-4404-83bf-a269a1c52af6.json",
+          "?? .agent/checkpoints/v2-2026-11-24T08-32-38-023Z-36b53c3b-ea4d-4ec0-94fb-95556f0f56d3.json",
+          "?? .agent/checkpoints/v2-2026-11-24T08-35-02-931Z-feba55c3-abab-437e-8ea4-4fd82e82cb72.json",
+          "?? .agent/checkpoints/v2-2026-11-24T08-35-03-917Z-c563af03-1db6-451e-9b14-8688b583ae47.json",
+          "?? .agent/checkpoints/v2-2026-11-24T08-35-04-923Z-14168b9c-fc1b-41b3-a369-c954a2104d18.json",
+          "?? .agent/checkpoints/v2-2026-11-24T08-35-05-927Z-7ff6f6a9-6572-4564-aa98-82e066a05f76.json",
+          "?? docs/acceptance/local-integration-M1-remote.json",
+          "?? docs/acceptance/local-protocol-contract-M0-architecture.json",
+          "?? docs/acceptance/local-unit-M0-architecture.json",
+          "?? docs/acceptance/local-unit-M1-remote.json",
+          "?? docs/acceptance/m2-review-53ec2bf-receipt.json",
+          "?? docs/acceptance/m2-review-53ec2bf-review.json"
         ]
       },
       "sourceFingerprint": "77ec78fcb3e32d547aa09880aaf6a88dfde075fb8d2d843cf5eba7c41fbae359",
@@ -1435,11 +1486,17 @@
         "role": "m2-shell-independent-review",
         "status": "completed",
         "sourceCommit": "097d10bd88136a62d2f66df7f28dd8052cf3a5ac"
+      },
+      {
+        "taskId": "node:delegated-task:command%3Amcp%3A571f0893-6372-4390-a2f5-e277a43aeec2%3Adelegate-task%3Ade93d571-9469-48d8-b040-95a83ab05214",
+        "role": "m2-shell-independent-review",
+        "status": "completed",
+        "sourceCommit": "53ec2bf028065fe0279d3b603ed4c77df12b4008"
       }
     ]
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "3e6ad0f3fa9836d0a259dc4c696406c57a9592a31263d437d39a68dad5d6801c"
+    "digest": "172a4ba21b183e2657c9fd53843dc3a6609efffdf2e50aadd177bedb183cce50"
   }
 }

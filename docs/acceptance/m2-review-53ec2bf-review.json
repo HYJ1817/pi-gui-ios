@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 2,
+  "kind": "independent-review",
+  "taskId": "M2-shell",
+  "commit": "53ec2bf028065fe0279d3b603ed4c77df12b4008",
+  "sourceFingerprint": "77ec78fcb3e32d547aa09880aaf6a88dfde075fb8d2d843cf5eba7c41fbae359",
+  "startedAt": "2026-11-24T08:10:00.000Z",
+  "finishedAt": "2026-11-24T08:26:54.221Z",
+  "passed": true,
+  "details": {
+    "receiptPath": "docs/acceptance/m2-review-53ec2bf-receipt.json",
+    "receiptSha256": "8b8c8626c698ab931814eaffbe6b1feccf5a818bc50a0567bddc30a5eb1eaaa5",
+    "scope": "Independent functional+security confirmation review of M2-shell @53ec2bf (swe-2): all 8 prior nits verified fixed; simctl deep-link evidence path, probe params, schemeapproval pre-write, BUNDLE_PLATFORM_* split audited; 3 residual nits, 0 blockers/important."
+  }
+}

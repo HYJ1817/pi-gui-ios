@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 2,
+  "kind": "unit",
+  "taskId": "M1-remote",
+  "commit": "53ec2bf028065fe0279d3b603ed4c77df12b4008",
+  "sourceFingerprint": "77ec78fcb3e32d547aa09880aaf6a88dfde075fb8d2d843cf5eba7c41fbae359",
+  "startedAt": "2026-11-24T08:05:38.530Z",
+  "finishedAt": "2026-11-24T08:06:27.883Z",
+  "passed": true,
+  "details": {
+    "command": "npm test",
+    "exitCode": 0,
+    "logPath": "docs/acceptance/local-unit-output.txt",
+    "logSha256": "f1795160cc8b9cff065584c78e95da659c8bd39ed66e406d6483e128b3ff6896"
+  }
+}
