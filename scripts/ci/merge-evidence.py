@@ -25,14 +25,25 @@ def read(path, limit):
     return path.read_bytes()
 
 
+def report_dir(directory):
+    # Artifacts upload flattens leading dirs: the canonical tree may arrive as
+    # <artifact>/reports/<file> or, when the stage only produced reports, as
+    # <artifact>/<file> directly. Accept both, prefer the explicit layout.
+    for candidate in (directory / 'reports', directory):
+        if (candidate / 'steps.json').is_file():
+            return candidate
+    return None
+
+
 def merge_steps(dirs):
     # Each step is produced by exactly one stage, so collisions are rare;
-    # prefer the last directory claiming a real status over 'not-run'.
+    # prefer a real status over 'not-run' (later dirs win among real ones).
     best = {}
     for directory in dirs:
-        path = directory / 'reports' / 'steps.json'
-        if not path.exists():
+        source = report_dir(directory)
+        if source is None:
             continue
+        path = source / 'steps.json'
         data = json.loads(read(path, 1024 * 1024))
         if data.get('schemaVersion') != 1 or not isinstance(data.get('steps'), list):
             raise ValueError()
@@ -54,7 +65,10 @@ def merge_steps(dirs):
 def merge_diagnostics(dirs):
     out = []
     for directory in dirs:
-        path = directory / 'reports' / 'diagnostics.json'
+        source = report_dir(directory)
+        if source is None:
+            continue
+        path = source / 'diagnostics.json'
         if not path.exists():
             continue
         data = json.loads(read(path, 4 * 1024 * 1024))
@@ -71,7 +85,10 @@ def merge_diagnostics(dirs):
 def merge_environment(dirs):
     best = None
     for directory in dirs:
-        path = directory / 'reports' / 'environment.json'
+        source = report_dir(directory)
+        if source is None:
+            continue
+        path = source / 'environment.json'
         if not path.exists():
             continue
         data = json.loads(read(path, 128 * 1024))
@@ -92,8 +109,8 @@ def main():
         (reports / 'diagnostics.json').write_text(json.dumps(merge_diagnostics(dirs), sort_keys=True) + '\n', encoding='utf-8')
         (reports / 'environment.json').write_text(json.dumps(merge_environment(dirs), sort_keys=True) + '\n', encoding='utf-8')
         for directory in dirs:
-            source = directory / 'reports'
-            if source.is_dir():
+            source = report_dir(directory)
+            if source is not None:
                 for path in source.iterdir():
                     target = reports / path.name
                     if REPORTS.match(path.name) and path.name not in ('steps.json', 'diagnostics.json', 'environment.json') \
