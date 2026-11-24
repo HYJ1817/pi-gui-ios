@@ -1,27 +1,52 @@
 {
   "schemaVersion": 2,
   "kind": "state",
-  "revision": 765,
-  "updatedAt": "2026-11-24T13:32:12.148Z",
+  "revision": 776,
+  "updatedAt": "2026-11-24T14:28:25.643Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "0879bf7f3fa3953ced19d84f306319490fd50c9df04239783b4e00d3cd04370f",
+    "parentDigest": "626a4c085d515f83348f632c282ad5acf59b716e7b1008cf16493b55cb6c56f5",
     "phase": "M2",
     "currentTask": "M2-shell",
     "branch": "agent/m-1-bootstrap",
     "checkpoint": {
-      "id": "v2-2026-11-24T13-32-12-148Z-f0e2092f-e82e-4e93-96f4-a3754a123f9c",
-      "path": ".agent/checkpoints/v2-2026-11-24T13-32-12-148Z-f0e2092f-e82e-4e93-96f4-a3754a123f9c.json",
-      "sha256": "f90457a8fe51c06975ec0709cfdbfd19afd562a03bea6ebb3bc1202a2606220d",
-      "authorityDigest": "80407dcbeb7f37fee1b2d588dce3afd97f39306ffa41737b33ca1a721f84bfcc",
-      "at": "2026-11-24T13:32:12.148Z",
+      "id": "v2-2026-11-24T14-28-25-643Z-ee2f84a4-9f0a-4b7c-8de5-60057ed20dbf",
+      "path": ".agent/checkpoints/v2-2026-11-24T14-28-25-643Z-ee2f84a4-9f0a-4b7c-8de5-60057ed20dbf.json",
+      "sha256": "4a63c5cead23fcf653bcaf7e91a3adc6fdeccd42d560e2bb377df2d37ae96be2",
+      "authorityDigest": "e089cb0f65c1282ca30563702df24705092564995350459b56e2a98b1405ce12",
+      "at": "2026-11-24T14:28:25.643Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "9b00266c6eb13f108d1b94dc8e4296b6fc0b1d53",
-        "dirty": []
+        "commit": "f9043a88a26f6ba268eaa73b0bf1a9bd7b348a4c",
+        "dirty": [
+          "M .agent/HANDOFF.md",
+          " D .agent/checkpoints/v2-2026-11-23T12-07-41-198Z-a97049a5-47a8-439a-b51c-84dc0c20dadd.json",
+          " D .agent/checkpoints/v2-2026-11-23T12-07-47-438Z-04ef4434-25aa-46a8-852a-1baf0a818930.json",
+          " D .agent/checkpoints/v2-2026-11-23T23-26-49-937Z-68b0b2e8-1a8e-4bbe-b7fc-bb1f0e5a7792.json",
+          " D .agent/checkpoints/v2-2026-11-24T07-59-25-505Z-72cec91f-30ee-4a97-8760-e87f0985c4f5.json",
+          " D .agent/checkpoints/v2-2026-11-24T08-01-52-550Z-194e4a35-f285-482f-a16b-a4b438fbf47b.json",
+          " D .agent/checkpoints/v2-2026-11-24T08-06-28-064Z-9559d553-a9a4-42ac-83ab-d45b71598b2e.json",
+          " M .agent/control.json",
+          " M .agent/state.json",
+          " M .agent/tasks.json",
+          " M PROGRESS.md",
+          " M docs/acceptance/local-unit-M0-architecture-output.txt",
+          " M docs/acceptance/local-unit-M0-architecture.json",
+          " M docs/acceptance/local-unit-M1-remote-output.txt",
+          " M docs/acceptance/local-unit-M1-remote.json",
+          " M docs/acceptance/local-unit-output.txt",
+          " M docs/acceptance/local-unit.json",
+          "?? .agent/checkpoints/v2-2026-11-24T14-25-33-840Z-34224b65-32a6-48ea-87ae-2b83ee4b061a.json",
+          "?? .agent/checkpoints/v2-2026-11-24T14-26-36-769Z-64cc9712-cc6b-41b4-ac79-9d30b375aa4b.json",
+          "?? .agent/checkpoints/v2-2026-11-24T14-27-25-943Z-65aa2ab9-9037-40ae-a3e0-451e48c7f98d.json",
+          "?? .agent/checkpoints/v2-2026-11-24T14-28-17-223Z-82dc9e24-c87c-4aaa-863f-404297240fce.json",
+          "?? .agent/checkpoints/v2-2026-11-24T14-28-23-102Z-3f870076-430a-4e6c-81c6-341428363f91.json",
+          "?? .agent/checkpoints/v2-2026-11-24T14-28-24-377Z-57c0e5b2-29ac-4004-93b1-e802bc83c901.json",
+          "?? docs/acceptance/ci-run-45403679142.json"
+        ]
       },
-      "sourceFingerprint": "42bab82c933864049cb3be62b1409b5c1f3d06eaf0a3df66ddc73ae6de7d0004",
-      "note": "Evidence chain: M0/M1 reviews imported; app_sha loophole closed; RT glass gate fixed+verified; CI 45403679142 in progress"
+      "sourceFingerprint": "b85b928b93f11cb14c66275b33e51b40eb347edfaa222e0d9ffb118d31431118",
+      "note": "agent-task evidence M2-shell"
     },
     "blockers": [],
     "ci": [
@@ -123,6 +148,15 @@
         "status": "completed",
         "conclusion": "cancelled",
         "url": "https://github.com/HYJ1817/pi-gui-ios/actions/runs/44911181329"
+      },
+      {
+        "id": "45403679142",
+        "head": "7df0cad92379bfad14f65a83a52a38d88e79aa79",
+        "workflow": ".github/workflows/native-infrastructure.yml",
+        "attempt": 1,
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/HYJ1817/pi-gui-ios/actions/runs/45403679142"
       }
     ],
     "desktop": {
@@ -413,6 +447,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "29229d058389123d4af174887ab5fe312a60e579e2f78278df10465505cf7d0e"
+    "digest": "02a2485b63027e3dc479366e748cf10a057f04ca1a9a276e87d8e52d1f81a3ef"
   }
 }
