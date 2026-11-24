@@ -33,6 +33,31 @@ LIFECYCLE = re.compile(
     re.IGNORECASE)
 
 
+# Closed vocabulary from this repo's committed flow verbs/fields and Maestro's
+# own CLI keywords. Matching a word says WHICH public token appeared, never
+# what the runner path or payload was — safe to surface as a step-log mark.
+CONSOLE_VOCAB = re.compile(r'\b(\w*(?:tapOn|relativePoint|doubleTapOn|longPressOn|evalScript|runScript|openLink|inputText|hideKeyboard|takeScreenshot|launchApp|extendedWaitUntil|assertVisible|waitForAnimationToEnd|scrollUntilVisible|setOrientation|runFlow|repeat|retry|swipe|scroll|eraseText|pressKey|stopApp|killApp|clearState|back|travel|addMedia|startRecording|stopRecording|pasteText|copyTextFrom|defineVariables|setAirplaneMode|toggleAirplaneMode|setDarkMode|toggleDarkMode|assertDarkMode|assertLightMode|assertScreenshot|assertNoDefectsWithAI|assertWithAI|assertTrue|inputRandom\w*|extractTextWithAI|command|commands|parse|parsed|parsing|flow|yaml|yml|property|field|unrecognized|unknown|expected|missing|required|option|usage|syntax|invalid|error|failed|failure|exception|timeout|timed|connect|refused|device|simulator|driver|listener|port|boot|license|permission|denied|network|reachable|file|exists|empty|line|column|position|version|supported|required|arguments|config)\w*)\b', re.IGNORECASE)
+
+
+def console_vocab(path, limit=20):
+    """Ordered set of closed-vocabulary words found in a log — marks only."""
+    words, seen = [], set()
+    try:
+        stream = pathlib.Path(path).open(encoding='utf-8', errors='replace')
+    except OSError:
+        return words
+    with stream:
+        for line in stream:
+            for match in CONSOLE_VOCAB.finditer(line[:65536]):
+                word = match.group(1).lower()
+                if word not in seen:
+                    seen.add(word)
+                    words.append(word)
+                if len(words) >= limit:
+                    return words
+    return words
+
+
 def reduce_log(path, limit=16):
     """Exception class names + lifecycle keywords from a Maestro/driver log."""
     found, seen = [], set()
@@ -127,6 +152,9 @@ def collect_debug(directory):
             break
     if errors:
         output['errors'] = errors[:12]
+    console = next(root.rglob('console.log'), None)
+    if console is not None:
+        output['vocab'] = console_vocab(console)
     return output
 
 
@@ -141,6 +169,8 @@ def failed_marks(output):
         marks.append('MAESTRO_DEBUG_DIR_MISSING')
     elif not output.get('commands'):
         marks.append('MAESTRO_DEBUG_NO_COMMANDS')
+    for word in output.get('vocab', []):
+        marks.append('MAESTRO_CONSOLE_' + ''.join(c for c in word.upper() if c.isalnum()))
     return marks
 
 

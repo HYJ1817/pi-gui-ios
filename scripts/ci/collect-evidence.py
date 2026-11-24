@@ -163,6 +163,10 @@ def collect(private, output):
                         out['errors'] = parsed['errors'][:16]
                     if isinstance(parsed.get('debugDir'), str) and parsed['debugDir'] == 'missing':
                         out['debugDir'] = 'missing'
+                    vocab = parsed.get('vocab')
+                    if (isinstance(vocab, list) and len(vocab) <= 24
+                            and all(isinstance(w, str) and len(w) <= 64 and w.isidentifier() for w in vocab)):
+                        out['vocab'] = vocab
                     logs = parsed.get('logs')
                     if (isinstance(logs, dict) and len(logs) <= 8
                             and all(isinstance(v, dict) for v in logs.values())
