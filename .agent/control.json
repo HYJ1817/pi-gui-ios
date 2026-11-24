@@ -1,11 +1,11 @@
 {
   "schemaVersion": 2,
   "kind": "control",
-  "revision": 790,
-  "updatedAt": "2026-11-24T15:16:51.070Z",
+  "revision": 807,
+  "updatedAt": "2026-11-24T16:53:13.795Z",
   "data": {
-    "phase": "M2",
-    "currentTask": "M2-shell",
+    "phase": "M3",
+    "currentTask": "M3-core",
     "branch": "agent/m-1-bootstrap",
     "protocolVersion": 1,
     "desktop": {
@@ -1456,7 +1456,7 @@
         "id": "M3-core",
         "phase": "M3",
         "title": "会话、消息、任务、模型、工具及审批",
-        "status": "pending",
+        "status": "testing",
         "dependsOn": [
           "M2-shell"
         ],
@@ -1468,7 +1468,40 @@
           "independent-security"
         ],
         "acceptance": "桌面/移动完整合成闭环，保持桌面审批",
-        "evidence": []
+        "evidence": [
+          {
+            "kind": "unit",
+            "path": "docs/acceptance/local-unit.json",
+            "sha256": "eda72873f9346bc2782d6b948c6867e7ae2b9cc0c144a347e4e858e93f5c2e7b",
+            "sourceFingerprint": "7e0f730b3f7d751c531d9e7f709cb23ae90b77d919be83c72672e05a44a68fd1",
+            "commit": "54798600e68b0438f8cde1018afa685462c46d71",
+            "at": "2026-11-24T16:51:13.840Z",
+            "scopes": [
+              "app",
+              "control",
+              "native-build",
+              "protocol",
+              "shared",
+              "tests"
+            ],
+            "scopeFingerprint": "7a9041fec38ed980e77009996b41e38c2fcfad53ed2b5ebe61a204bfff74f129"
+          },
+          {
+            "kind": "integration",
+            "path": "docs/acceptance/local-integration.json",
+            "sha256": "817b9c2aee36f22cc32d124a40c5e9af7bd5223d54d7817be43dc9305ff2b697",
+            "sourceFingerprint": "7e0f730b3f7d751c531d9e7f709cb23ae90b77d919be83c72672e05a44a68fd1",
+            "commit": "54798600e68b0438f8cde1018afa685462c46d71",
+            "at": "2026-11-24T16:51:39.691Z",
+            "scopes": [
+              "control",
+              "protocol",
+              "shared"
+            ],
+            "scopeFingerprint": "7c6452101455cd32d72402bd3272b27b425909dbae6b2b1b87b15a39ac08fbc4"
+          }
+        ],
+        "updatedAt": "2026-11-24T16:47:46.483Z"
       },
       {
         "id": "M4-sync",
@@ -1523,32 +1556,44 @@
       }
     ],
     "checkpoint": {
-      "id": "v2-2026-11-24T15-16-35-655Z-eb9e8028-dcba-41c6-a102-7b13bf7784a0",
-      "path": ".agent/checkpoints/v2-2026-11-24T15-16-35-655Z-eb9e8028-dcba-41c6-a102-7b13bf7784a0.json",
-      "sha256": "597c63e2c19f4331a89b36786ca9feb471cf45f67a36b80f9372acaeeb3b401b",
-      "authorityDigest": "a415041bd714a079f04cb134d45a41762825911181d8bd6ac00778554356571e",
-      "at": "2026-11-24T15:16:35.655Z",
+      "id": "v2-2026-11-24T16-53-13-795Z-27264049-3dfa-48a5-ab83-e7e1d15d9d7e",
+      "path": ".agent/checkpoints/v2-2026-11-24T16-53-13-795Z-27264049-3dfa-48a5-ab83-e7e1d15d9d7e.json",
+      "sha256": "35cdd250084f9f9fccf9bbcbfcc9997650294f36077ead50afa2db59fefdb4af",
+      "authorityDigest": "72f2dfb3b3d8dbc7781bbeffb90994735a795d17860f3883dfcf01bd93dac8be",
+      "at": "2026-11-24T16:53:13.795Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "0e6adb52e2cbe32cd26272da54926d578070bbca",
+        "commit": "54798600e68b0438f8cde1018afa685462c46d71",
         "dirty": [
           "M .agent/HANDOFF.md",
-          " D .agent/checkpoints/v2-2026-11-24T08-35-02-931Z-feba55c3-abab-437e-8ea4-4fd82e82cb72.json",
-          " D .agent/checkpoints/v2-2026-11-24T08-35-03-917Z-c563af03-1db6-451e-9b14-8688b583ae47.json",
-          " D .agent/checkpoints/v2-2026-11-24T08-35-04-923Z-14168b9c-fc1b-41b3-a369-c954a2104d18.json",
-          " D .agent/checkpoints/v2-2026-11-24T08-35-05-927Z-7ff6f6a9-6572-4564-aa98-82e066a05f76.json",
+          " D .agent/checkpoints/v2-2026-11-24T12-44-22-973Z-8189ff7a-d7e2-469f-bf28-992d2cde0d1e.json",
+          " D .agent/checkpoints/v2-2026-11-24T12-46-59-456Z-203d4057-039f-41f9-9ac5-dedb023710aa.json",
+          " D .agent/checkpoints/v2-2026-11-24T12-48-08-740Z-8338e957-d57d-4eab-bb18-c2c00cb66f5a.json",
+          " D .agent/checkpoints/v2-2026-11-24T12-49-12-718Z-c49bc981-c3f2-46e2-b32f-e35c3d76ef93.json",
+          " D .agent/checkpoints/v2-2026-11-24T12-49-16-029Z-6b903100-4986-449a-99d6-3c621229f21c.json",
+          " D .agent/checkpoints/v2-2026-11-24T12-50-15-435Z-d827457e-a2c2-47be-b87d-8bced7b8a3c5.json",
+          " D .agent/checkpoints/v2-2026-11-24T12-50-40-166Z-b60e7289-b05e-4ea5-b1a0-bb9d7901c7d9.json",
+          " D .agent/checkpoints/v2-2026-11-24T12-51-38-709Z-e7c842fe-1115-4d01-aa55-696285f21d48.json",
           " M .agent/control.json",
           " M .agent/state.json",
           " M .agent/tasks.json",
           " M PROGRESS.md",
-          "?? .agent/checkpoints/v2-2026-11-24T15-15-57-057Z-d6c65b80-d5bd-4a94-87c9-254670871c5d.json",
-          "?? .agent/checkpoints/v2-2026-11-24T15-15-57-820Z-02424ea5-eaa2-4d30-84e2-e26650d2c452.json",
-          "?? .agent/checkpoints/v2-2026-11-24T15-16-09-159Z-4714aaff-ca42-4dd1-b910-102319aa6508.json",
-          "?? .agent/checkpoints/v2-2026-11-24T15-16-17-362Z-420312ca-86b4-4718-b171-5b14a3abbbda.json"
+          " M docs/acceptance/local-integration-output.txt",
+          " M docs/acceptance/local-integration.json",
+          " M docs/acceptance/local-unit-output.txt",
+          " M docs/acceptance/local-unit.json",
+          "?? .agent/checkpoints/v2-2026-11-24T16-47-41-707Z-f95c337e-71ff-4ab6-a163-cca269b528de.json",
+          "?? .agent/checkpoints/v2-2026-11-24T16-47-46-541Z-4987fcc6-fd90-4cd7-b663-b61d471d76b6.json",
+          "?? .agent/checkpoints/v2-2026-11-24T16-48-49-670Z-2d4afc48-36b3-4d57-9e70-e03b555b043e.json",
+          "?? .agent/checkpoints/v2-2026-11-24T16-49-43-842Z-92118919-9e25-483d-8da4-f0e032d5784c.json",
+          "?? .agent/checkpoints/v2-2026-11-24T16-50-40-646Z-214e4db8-a645-4de8-8142-ecf980e19966.json",
+          "?? .agent/checkpoints/v2-2026-11-24T16-51-13-896Z-a2cba372-7c90-4644-ae61-e05d9bdbd25d.json",
+          "?? .agent/checkpoints/v2-2026-11-24T16-51-33-774Z-738c9dac-565f-4d56-8a47-288719d96f4d.json",
+          "?? .agent/checkpoints/v2-2026-11-24T16-51-39-752Z-6b58311b-7050-499e-ae88-f3cce3b5acf5.json"
         ]
       },
-      "sourceFingerprint": "b85b928b93f11cb14c66275b33e51b40eb347edfaa222e0d9ffb118d31431118",
-      "note": "M2-shell completed: full CI green 45413372694, unsigned IPA artifact, ui evidence + independent review; M0/M1 reviews+security grandfathered-valid"
+      "sourceFingerprint": "7e0f730b3f7d751c531d9e7f709cb23ae90b77d919be83c72672e05a44a68fd1",
+      "note": "record M3-core review delegates"
     },
     "nextAction": "M0/M1/M2 已完成（scoped evidence + 独立审查 + CI 绿 45413372694）。下一可执行任务：M-1-infrastructure 解除 blocked 并生成剩余证据（unit/typecheck/bundle/doctor/ui/ipa/independent-review/independent-security/independent-handoff）；M3-core 待 M-1-infra。真机 SideStore 仍留用户最终清单。",
     "delegates": [
@@ -1827,11 +1872,23 @@
         "role": "independent-review",
         "status": "completed",
         "sourceCommit": "7df0cad92379bfad14f65a83a52a38d88e79aa79"
+      },
+      {
+        "taskId": "node:delegated-task:command%3Amcp%3A990cd7cc-0588-4157-9cfd-fce17896f97a%3Adelegate-task%3Af26d985f-5967-4d70-acd8-fa220525eb40",
+        "role": "independent-review",
+        "status": "working",
+        "sourceCommit": "54798600e68b0438f8cde1018afa685462c46d71"
+      },
+      {
+        "taskId": "node:delegated-task:command%3Amcp%3A990cd7cc-0588-4157-9cfd-fce17896f97a%3Adelegate-task%3A45e33ede-9459-4c25-b1b6-bd7ba4c321cc",
+        "role": "independent-security",
+        "status": "working",
+        "sourceCommit": "54798600e68b0438f8cde1018afa685462c46d71"
       }
     ]
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "21d560e94e3b7f637ce8d2b7819ae135886a01fe9212eb7b17ba11d5055f9b04"
+    "digest": "f51a927edf75af001563005f75eb4abbf6b69ee39091d30af8e4f529c837bd7e"
   }
 }

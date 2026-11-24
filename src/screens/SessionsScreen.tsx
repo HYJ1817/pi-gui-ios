@@ -8,7 +8,8 @@ import { ListItem } from '../components/ListItem';
 import { EmptyState } from '../components/EmptyState';
 import { StatusBadge } from '../components/StatusBadge';
 import { useTheme } from '../theme';
-import { sessionsFor } from '../data/fixtures';
+import { useRemote } from '../remote/useRemote';
+import type { ConversationStatus } from '../remote/types';
 
 export default function SessionsScreen() {
   const theme = useTheme();
@@ -16,8 +17,20 @@ export default function SessionsScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, 'Sessions'>>();
   const route = useRoute<RouteProp<RootStackParamList, 'Sessions'>>();
   const { projectId } = route.params;
-  const items = sessionsFor(projectId);
+  const { state } = useRemote();
+  const items = state.sessions.filter(s => s.projectId === projectId);
   const col = Math.min(contentWidth({ width, height: 0 }), width);
+
+  const statusOf = (conversationId: string | undefined): { status: 'idle' | 'running' | 'pending' | 'warning' | 'danger'; label: string } => {
+    if (!conversationId) return { status: 'idle', label: 'Idle' };
+    const conv = state.conversations[conversationId];
+    const s: ConversationStatus = conv?.status ?? 'unknown';
+    const pending = conv?.approvals.length ?? 0;
+    if (pending > 0) return { status: 'warning', label: `${pending} approval${pending > 1 ? 's' : ''}` };
+    if (s === 'running' || s === 'stopping') return { status: 'running', label: s === 'stopping' ? 'Stopping' : 'Running' };
+    if (s === 'error') return { status: 'danger', label: 'Error' };
+    return { status: 'idle', label: 'Idle' };
+  };
 
   return (
     <FlatList
@@ -28,7 +41,7 @@ export default function SessionsScreen() {
       data={items}
       keyExtractor={s => s.sessionId}
       ListHeaderComponent={
-        <Text style={[styles.sub, { color: theme.secondary }]}>Synthetic sessions for this project (offline).</Text>
+        <Text style={[styles.sub, { color: theme.secondary }]}>Sessions projected through the synthetic remote/v1 loop.</Text>
       }
       renderItem={({ item }) => (
         <View style={{ maxWidth: col, alignSelf: 'center', width: '100%' }}>
@@ -36,13 +49,13 @@ export default function SessionsScreen() {
             title={item.displayName}
             subtitle={`${item.activeConversations.length} active · ${item.updatedAt.slice(0, 10)}`}
             testID={`session-${item.sessionId}`}
-            right={<StatusBadge status={item.activeConversations.length > 0 ? 'running' : 'idle'} label={item.activeConversations.length > 0 ? 'Active' : 'Idle'} />}
+            right={(() => { const s = statusOf(item.activeConversations[0]?.conversationId); return <StatusBadge status={s.status} label={s.label} />; })()}
             onPress={() => navigation.navigate('Conversation', { sessionId: item.sessionId, conversationId: item.activeConversations[0]?.conversationId ?? 'conversation-none', title: item.displayName })}
           />
         </View>
       )}
       ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
-      ListEmptyComponent={<EmptyState title="No sessions" message="This project has no sessions in the offline shell." />}
+      ListEmptyComponent={<EmptyState title="No sessions" message="This project has no sessions in the synthetic loop." />}
     />
   );
 }

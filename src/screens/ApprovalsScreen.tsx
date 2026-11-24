@@ -6,13 +6,19 @@ import type { RootStackParamList } from '../navigation/types';
 import { ListItem } from '../components/ListItem';
 import { EmptyState } from '../components/EmptyState';
 import { useTheme } from '../theme';
-import { pendingApprovals } from '../data/fixtures';
+import { useRemote } from '../remote/useRemote';
+import type { RemoteApproval } from '../remote/types';
+
+interface PendingRow extends RemoteApproval { conversationId: string }
 
 export default function ApprovalsScreen() {
   const theme = useTheme();
   const { width } = useWindowDimensions();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, 'Approvals'>>();
-  const items = pendingApprovals();
+  const { state } = useRemote();
+  const items: PendingRow[] = Object.entries(state.conversations)
+    .flatMap(([conversationId, conv]) => conv.approvals.map(a => ({ ...a, conversationId })))
+    .filter(a => state.decided[a.requestId] === undefined);
   const col = Math.min(contentWidth({ width, height: 0 }), width);
 
   return (
@@ -23,19 +29,19 @@ export default function ApprovalsScreen() {
       contentContainerStyle={styles.page}
       data={items}
       keyExtractor={a => a.requestId}
-      ListHeaderComponent={<Text style={[styles.sub, { color: theme.secondary }]}>Synthetic pending approvals (offline).</Text>}
+      ListHeaderComponent={<Text style={[styles.sub, { color: theme.secondary }]}>Pending approvals projected through the synthetic remote/v1 loop.</Text>}
       renderItem={({ item }) => (
         <View style={{ maxWidth: col, alignSelf: 'center', width: '100%' }}>
           <ListItem
             title={item.title}
             subtitle={`${item.method} · ${item.message}`}
             testID={`approval-${item.requestId}`}
-            onPress={() => navigation.navigate('ApprovalDetail', { requestId: item.requestId, title: item.title })}
+            onPress={() => navigation.navigate('ApprovalDetail', { requestId: item.requestId, conversationId: item.conversationId, title: item.title })}
           />
         </View>
       )}
       ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
-      ListEmptyComponent={<EmptyState title="No pending approvals" message="Nothing is waiting on you in the offline shell." />}
+      ListEmptyComponent={<EmptyState title="No pending approvals" message="Nothing is waiting on you in the synthetic loop." />}
     />
   );
 }

@@ -1,11 +1,11 @@
 {
   "schemaVersion": 2,
   "kind": "tasks",
-  "revision": 790,
-  "updatedAt": "2026-11-24T15:16:51.070Z",
+  "revision": 807,
+  "updatedAt": "2026-11-24T16:53:13.795Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "21d560e94e3b7f637ce8d2b7819ae135886a01fe9212eb7b17ba11d5055f9b04",
+    "parentDigest": "f51a927edf75af001563005f75eb4abbf6b69ee39091d30af8e4f529c837bd7e",
     "tasks": [
       {
         "id": "M-1-infrastructure",
@@ -1328,7 +1328,7 @@
         "id": "M3-core",
         "phase": "M3",
         "title": "会话、消息、任务、模型、工具及审批",
-        "status": "pending",
+        "status": "testing",
         "dependsOn": [
           "M2-shell"
         ],
@@ -1340,7 +1340,40 @@
           "independent-security"
         ],
         "acceptance": "桌面/移动完整合成闭环，保持桌面审批",
-        "evidence": []
+        "evidence": [
+          {
+            "kind": "unit",
+            "path": "docs/acceptance/local-unit.json",
+            "sha256": "eda72873f9346bc2782d6b948c6867e7ae2b9cc0c144a347e4e858e93f5c2e7b",
+            "sourceFingerprint": "7e0f730b3f7d751c531d9e7f709cb23ae90b77d919be83c72672e05a44a68fd1",
+            "commit": "54798600e68b0438f8cde1018afa685462c46d71",
+            "at": "2026-11-24T16:51:13.840Z",
+            "scopes": [
+              "app",
+              "control",
+              "native-build",
+              "protocol",
+              "shared",
+              "tests"
+            ],
+            "scopeFingerprint": "7a9041fec38ed980e77009996b41e38c2fcfad53ed2b5ebe61a204bfff74f129"
+          },
+          {
+            "kind": "integration",
+            "path": "docs/acceptance/local-integration.json",
+            "sha256": "817b9c2aee36f22cc32d124a40c5e9af7bd5223d54d7817be43dc9305ff2b697",
+            "sourceFingerprint": "7e0f730b3f7d751c531d9e7f709cb23ae90b77d919be83c72672e05a44a68fd1",
+            "commit": "54798600e68b0438f8cde1018afa685462c46d71",
+            "at": "2026-11-24T16:51:39.691Z",
+            "scopes": [
+              "control",
+              "protocol",
+              "shared"
+            ],
+            "scopeFingerprint": "7c6452101455cd32d72402bd3272b27b425909dbae6b2b1b87b15a39ac08fbc4"
+          }
+        ],
+        "updatedAt": "2026-11-24T16:47:46.483Z"
       },
       {
         "id": "M4-sync",
@@ -1397,6 +1430,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "c26a012682989f4cd52163dbfef571a51626e9a687703f318ddef3c1aa3d30fe"
+    "digest": "413d4639d95ca6f8a7d772d4c6ccfd86e4309e56567cb6ff6b3c2b604a6c157b"
   }
 }

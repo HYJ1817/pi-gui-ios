@@ -4,7 +4,7 @@ import type { NavigationProp } from '@react-navigation/native';
 import type { RootStackParamList } from './types';
 import { ListItem } from '../components/ListItem';
 import { useTheme } from '../theme';
-import { projects } from '../data/fixtures';
+import { useRemote } from '../remote/useRemote';
 
 /**
  * iPad split primary column. Sits OUTSIDE the stack navigator but inside the
@@ -24,10 +24,11 @@ const QUICK: { key: string; title: string; subtitle: string; route: QuickRoute }
 export default function SidebarScreen() {
   const theme = useTheme();
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const { state } = useRemote();
 
   const data = [
     ...QUICK.map(q => ({ kind: 'quick' as const, ...q })),
-    ...projects.map(p => ({ kind: 'project' as const, key: p.projectId, title: p.displayName, subtitle: p.description, projectId: p.projectId })),
+    ...state.projects.map(p => ({ kind: 'project' as const, key: p.projectId, title: p.displayName, subtitle: `${state.sessions.filter(s => s.projectId === p.projectId).length} sessions · synthetic`, projectId: p.projectId })),
   ];
 
   return (
