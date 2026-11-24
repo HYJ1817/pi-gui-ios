@@ -42,8 +42,10 @@ def reduce_log(path, limit=16):
         return found
     with stream:
         for line in stream:
-            if len(line) > 8192:
-                continue
+            if len(line) > 65536:
+                # One-line JSON blobs (junit results, trace dumps) carry the
+                # payload in their first/last segments; scan only those.
+                line = line[:8192] + ' ' + line[-8192:]
             for match in EXCEPTION.finditer(line):
                 name = match.group(1)
                 if name not in seen:
@@ -90,6 +92,19 @@ def collect_debug(directory):
     """Locate Maestro's debug artifacts under a --debug-output dir by basename."""
     root = pathlib.Path(directory)
     output = {'schemaVersion': 1, 'kind': 'maestro-debug', 'commands': []}
+    # Structural shape of each captured log: size and line count only — the
+    # content itself stays behind the fixed-vocabulary reductions below.
+    sizes = {}
+    for name in ('console.log', 'maestro.log', 'device-xctest.log'):
+        log = next(root.rglob(name), None)
+        if log is not None:
+            try:
+                text = log.read_text(encoding='utf-8', errors='replace')
+                sizes[name] = {'bytes': log.stat().st_size, 'lines': text.count('\n')}
+            except OSError:
+                sizes[name] = {'unreadable': True}
+    if sizes:
+        output['logs'] = sizes
     if not root.is_dir() or root.is_symlink():
         output['debugDir'] = 'missing'
         return output
