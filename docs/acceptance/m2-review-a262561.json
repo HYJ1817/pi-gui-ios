@@ -1,0 +1,20 @@
+{
+ "schemaVersion": 2,
+ "kind": "independent-review",
+ "taskId": "M2-shell",
+ "commit": "a2625611db266f69e44e10a1d01dc519ef31cc93",
+ "sourceFingerprint": "12fdbf79e4fb0b4ed93e3758d0a29e64045f35e27d55b094b36c5c7b50167c9d",
+ "scopes": [
+  "app",
+  "shared"
+ ],
+ "scopeFingerprint": "a0552b606d4eb60fcce6579d0b3e1367d217e0008bf26452a0ab8df8358db0c2",
+ "startedAt": "2026-11-24T21:15:00.000Z",
+ "finishedAt": "2026-11-24T21:35:00.000Z",
+ "passed": true,
+ "details": {
+  "receiptPath": "docs/acceptance/m2-review-a262561-receipt.json",
+  "receiptSha256": "0ca4ded03289b8adb6f89212797ff6f95f0066fe06d629f9973e1a9176f12791",
+  "scope": "Independent functional re-review @a262561 (swe-2): M2-shell re-verified after RT fix; glass gate folds Reduce Transparency via bootstrap-resolved preference without first-frame flash; honest fallback surfaces/copy; 0 blockers/important."
+ }
+}

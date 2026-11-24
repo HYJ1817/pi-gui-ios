@@ -1,0 +1,11 @@
+{
+ "childThreadId": "thread:delegated-task:command%3Amcp%3A98737254-2f27-45ed-b038-23dc9c30c97e%3Adelegate-task%3Ad5f6a1f6-4569-43fb-905d-1eb13b14f524",
+ "link": "[M2-shell independent-review @e07f2bb (RT fix)](t3-thread://v2/54c2be41-16aa-490a-8cc2-bfd447f6c2a5/thread:delegated-task:command%3Amcp%3A98737254-2f27-45ed-b038-23dc9c30c97e%3Adelegate-task%3Ad5f6a1f6-4569-43fb-905d-1eb13b14f524)",
+ "status": "completed",
+ "workState": "result_available",
+ "latestTerminalStatus": "completed",
+ "executedModel": "devin/swe-2",
+ "providerInstanceId": "claudeAgent",
+ "taskId": "node:delegated-task:command%3Amcp%3A98737254-2f27-45ed-b038-23dc9c30c97e%3Adelegate-task%3Ad5f6a1f6-4569-43fb-905d-1eb13b14f524",
+ "summary": "{\"reports\": [{\"decision\": \"pass\", \"kind\": \"independent-review\", \"reviewedCommit\": \"a2625611db266f69e44e10a1d01dc519ef31cc93\", \"schemaVersion\": 1, \"sourceFingerprint\": \"12fdbf79e4fb0b4ed93e3758d0a29e64045f35e27d55b094b36c5c7b50167c9d\", \"summary\": \"Re-review @a262561: prior Important (isLiquidGlassAvailable does not fold RT) correctly resolved; gate native&&rt===false via bootstrap-resolved preference, no first-frame flash either direction, honest testID/copy; CI path filter covers flagged files. 0 blockers, 0 important.\", \"taskId\": \"M2-shell\", \"unresolvedBlockers\": 0, \"unresolvedImportant\": 0}], \"schemaVersion\": 1}"
+}
