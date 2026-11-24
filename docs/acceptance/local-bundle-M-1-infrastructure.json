@@ -2,20 +2,20 @@
   "schemaVersion": 2,
   "kind": "bundle",
   "taskId": "M-1-infrastructure",
-  "commit": "054cc4a4dc2f67da5f9cb23bc68a876251fadc69",
-  "sourceFingerprint": "b198b4541873913568d8077a655185cf1b65b0bcea3b2befe94b3896cd1e5b12",
+  "commit": "60049fbef412cb1b2de2cfdbb36d6c8547b29f3c",
+  "sourceFingerprint": "103c2da34066e31c088a463692af7df1ba463d8af0728cfb499e9512bd8056fc",
   "scopes": [
     "app",
     "shared"
   ],
-  "scopeFingerprint": "778b2ab7679a9eefbffd141ebb36119784cbae3291d5441a9a722edbfc7bb6f7",
-  "startedAt": "2026-11-24T16:57:03.017Z",
-  "finishedAt": "2026-11-24T16:57:06.985Z",
+  "scopeFingerprint": "ebd3b3263f69e78e03eb13130160fbc15e81dbb413aa1e35882512bdffc5f68f",
+  "startedAt": "2026-11-24T18:26:16.061Z",
+  "finishedAt": "2026-11-24T18:26:22.350Z",
   "passed": true,
   "details": {
     "command": "npm run export:ios",
     "exitCode": 0,
     "logPath": "docs/acceptance/local-bundle-M-1-infrastructure-output.txt",
-    "logSha256": "e05f33689f96d2b021fe322348e3a13ab756b7964c712f79acbb5f67546e451c"
+    "logSha256": "d2a8ca9fa12d9ff5d46ac5bf6320e86fcfc7b76c91ab570eadbd2291232df712"
   }
 }
