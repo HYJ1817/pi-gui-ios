@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 2,
+  "kind": "typecheck",
+  "taskId": "M-1-infrastructure",
+  "commit": "da7636356dc98698f2df95368b73b6cfa8f12fa4",
+  "sourceFingerprint": "428c3e205e5e08feb6a953e09fe3243d5e65ef2edeef7dcd972d5142edc613ac",
+  "scopes": [
+    "app",
+    "shared"
+  ],
+  "scopeFingerprint": "a0552b606d4eb60fcce6579d0b3e1367d217e0008bf26452a0ab8df8358db0c2",
+  "startedAt": "2026-11-24T16:47:46.834Z",
+  "finishedAt": "2026-11-24T16:47:49.090Z",
+  "passed": true,
+  "details": {
+    "command": "npm run typecheck",
+    "exitCode": 0,
+    "logPath": "docs/acceptance/local-typecheck-M-1-infrastructure-output.txt",
+    "logSha256": "c3fefe23bd7768210a2aaef41e3a7a9441b1536192ed6a18df85563717628607"
+  }
+}

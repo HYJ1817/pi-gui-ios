@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 2,
+  "kind": "doctor",
+  "taskId": "M-1-infrastructure",
+  "commit": "da7636356dc98698f2df95368b73b6cfa8f12fa4",
+  "sourceFingerprint": "428c3e205e5e08feb6a953e09fe3243d5e65ef2edeef7dcd972d5142edc613ac",
+  "scopes": [
+    "app",
+    "shared"
+  ],
+  "scopeFingerprint": "a0552b606d4eb60fcce6579d0b3e1367d217e0008bf26452a0ab8df8358db0c2",
+  "startedAt": "2026-11-24T16:48:09.123Z",
+  "finishedAt": "2026-11-24T16:48:13.550Z",
+  "passed": true,
+  "details": {
+    "command": "node node_modules/expo-doctor/build/index.js",
+    "exitCode": 0,
+    "logPath": "docs/acceptance/local-doctor-M-1-infrastructure-output.txt",
+    "logSha256": "ab39d6a58873a0d1151d2a625641a5db22b312df3276b2c2ab3d03a3e9dbe4e1"
+  }
+}

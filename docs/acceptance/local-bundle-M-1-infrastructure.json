@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 2,
+  "kind": "bundle",
+  "taskId": "M-1-infrastructure",
+  "commit": "da7636356dc98698f2df95368b73b6cfa8f12fa4",
+  "sourceFingerprint": "428c3e205e5e08feb6a953e09fe3243d5e65ef2edeef7dcd972d5142edc613ac",
+  "scopes": [
+    "app",
+    "shared"
+  ],
+  "scopeFingerprint": "a0552b606d4eb60fcce6579d0b3e1367d217e0008bf26452a0ab8df8358db0c2",
+  "startedAt": "2026-11-24T16:47:49.808Z",
+  "finishedAt": "2026-11-24T16:48:08.223Z",
+  "passed": true,
+  "details": {
+    "command": "npm run export:ios",
+    "exitCode": 0,
+    "logPath": "docs/acceptance/local-bundle-M-1-infrastructure-output.txt",
+    "logSha256": "9c534e6622b1618d7b0247afcbac3c9f5639d9d6893947e797c03a3360f07534"
+  }
+}

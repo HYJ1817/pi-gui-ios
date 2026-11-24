@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 2,
+  "kind": "unit",
+  "taskId": "M-1-infrastructure",
+  "commit": "da7636356dc98698f2df95368b73b6cfa8f12fa4",
+  "sourceFingerprint": "428c3e205e5e08feb6a953e09fe3243d5e65ef2edeef7dcd972d5142edc613ac",
+  "scopes": [
+    "app",
+    "control",
+    "native-build",
+    "protocol",
+    "shared",
+    "tests"
+  ],
+  "scopeFingerprint": "28c84a1c5bd88fec649f61656b5b34494dd19f7ff5f68b6d852680ec1a2e412a",
+  "startedAt": "2026-11-24T16:46:45.505Z",
+  "finishedAt": "2026-11-24T16:47:42.672Z",
+  "passed": true,
+  "details": {
+    "command": "npm test",
+    "exitCode": 0,
+    "logPath": "docs/acceptance/local-unit-M-1-infrastructure-output.txt",
+    "logSha256": "48f452939342d30d643418f0a056b6e2bc654705119c20d39f0c8812a1f5e949"
+  }
+}
