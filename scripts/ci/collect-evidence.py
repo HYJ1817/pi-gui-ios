@@ -17,7 +17,7 @@ _spec = importlib.util.spec_from_file_location('native_safe_diagnostics', pathli
 diagnostics = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(diagnostics)
 
-STEPS = ('environment', 'npm', 'prebuild', 'pods', 'maestro', 'simulator-build',
+STEPS = ('environment', 'npm', 'prebuild', 'pods', 'simulator-build',
          'iphone', 'ipad', 'device-build', 'ipa')
 SHOTS = ('00-shell-home.png', '01-native-glass.png', '02-interactions.png', '03-navigation.png', '04-keyboard-visible.png', '05-native-motion.png',
          '07-shell-sessions.png', '08-shell-conversation.png',

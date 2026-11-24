@@ -2,7 +2,8 @@
 set -euo pipefail
 UDID="$1"
 DEVICE_NAME="$2"
-APP_PATH="build/simulator/Build/Products/Release-iphonesimulator/PiGUIMobile.app"
+# Default: same-run build tree. A scoped rerun passes APP_PATH explicitly.
+APP_PATH="${APP_PATH:-build/simulator/Build/Products/Release-iphonesimulator/PiGUIMobile.app}"
 BUNDLE_ID="io.github.hyj1817.piguimobile"
 : "${RUNNER_TEMP:?}"
 case "$DEVICE_NAME" in iphone|ipad) ;; *) exit 1 ;; esac
@@ -25,6 +26,7 @@ xcrun simctl boot "$UDID"
 xcrun simctl bootstatus "$UDID" -b
 xcrun simctl status_bar "$UDID" override --time '9:41' --dataNetwork wifi --wifiMode active --wifiBars 3 --batteryState charged --batteryLevel 100
 xcrun simctl ui "$UDID" appearance light
+[[ -d "$APP_PATH" ]] || { printf 'NATIVE_APP_MISSING\n'; exit 1; }
 xcrun simctl install "$UDID" "$APP_PATH"
 # Launch probe: a non-numeric result means the app could not start at all
 # (missing bundle, Hermes fault); a pid that disappears within 3s means an

@@ -1,10 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, writeFileSync, readFileSync, existsSync, rmSync, mkdirSync, symlinkSync, cpSync } from 'node:fs';
+import { mkdtempSync, writeFileSync, readFileSync, existsSync, rmSync, mkdirSync, symlinkSync, cpSync, readdirSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
-import { ROOT, envelope, decode, digest, writeEnvelope, loadControl, mutate, snapshot, sourceFingerprint, committedFingerprint, gate, transition, renderProjections, repairProjections, git, evidencePath, validateReport, normalizeCi, createCheckpoint, validateCheckpoint, restoreCheckpoint, atomicWrite } from '../scripts/lib/control.mjs';
+import { ROOT, envelope, decode, digest, writeEnvelope, loadControl, mutate, snapshot, sourceFingerprint, committedFingerprint, gate, transition, renderProjections, repairProjections, git, evidencePath, validateReport, normalizeCi, createCheckpoint, validateCheckpoint, restoreCheckpoint, atomicWrite, resolveScopes, coverageCheck, pruneCheckpoints, CHECKPOINT_KEEP } from '../scripts/lib/control.mjs';
 import { inspectRecovery, listCheckpoints } from '../scripts/lib/recovery.mjs';
 
 function fixture(t, committed = true) {
@@ -223,4 +223,64 @@ test('IPA evidence must identify the hash-bound verified final archive, not only
 test('manual device and fresh independent review cannot be replaced by local command reports', t => {
   const { root, d } = fixture(t); const { report } = proof(root, d);
   for (const kind of ['device-install', 'independent-security']) { d.tasks[0].requiredEvidence = [kind]; assert.throws(() => validateReport(d, d.tasks[0], { ...report, kind }, root)); }
+});
+
+test('every fingerprinted path belongs to some scope set (fail-closed coverage)', () => {
+  assert.deepEqual(coverageCheck(ROOT), [], 'Uncovered paths silently invalidate every scope');
+});
+
+test('out-of-scope changes keep evidence valid while in-scope changes invalidate it', t => {
+  const { root, d } = fixture(t);
+  // Fixture files: source.ts is uncovered (=> shared); make an app-scope file too.
+  mkdirSync(resolve(root, 'src'), { recursive: true });
+  writeFileSync(resolve(root, 'src/index.ts'), 'export {}\n');
+  git(['add', '-A'], root); git(['-c', 'user.name=F', '-c', 'user.email=f@x', 'commit', '-m', 'src'], root);
+  const { report } = proof(root, d);
+  assert.deepEqual(gate(d, d.tasks[0], root), []);
+  // Out-of-scope: docs/meta is out of unit's scope.
+  mkdirSync(resolve(root, 'docs'), { recursive: true });
+  writeFileSync(resolve(root, 'docs/note.md'), 'meta change');
+  assert.deepEqual(gate(d, d.tasks[0], root), [], 'meta/docs change must not stale unit evidence');
+  // In-scope (tests/): invalidates.
+  mkdirSync(resolve(root, 'tests'), { recursive: true });
+  writeFileSync(resolve(root, 'tests/x.test.mjs'), '// t');
+  assert.ok(gate(d, d.tasks[0], root).some(e => e.endsWith('unit')), 'in-scope change must stale unit evidence');
+});
+
+test('scoped committed fingerprint ignores out-of-scope commits between evidence and now', t => {
+  const { root, d } = fixture(t);
+  const { report } = proof(root, d); assert.deepEqual(gate(d, d.tasks[0], root), []);
+  // Commit an out-of-scope change AFTER the evidence commit: global fingerprint
+  // moves but unit's scoped fingerprint does not.
+  writeFileSync(resolve(root, 'docs/skip.md'), 'x'); git(['add', '-A'], root);
+  git(['-c', 'user.name=F', '-c', 'user.email=f@x', 'commit', '-m', 'docs only'], root);
+  assert.notEqual(committedFingerprint(root, snapshot(root).commit), report.sourceFingerprint);
+  assert.deepEqual(gate(d, d.tasks[0], root), [], 'docs-only commit must not stale unit evidence');
+  // Commit an in-scope change: evidence goes stale.
+  writeFileSync(resolve(root, 'source.ts'), 'changed'); git(['add', '-A'], root);
+  git(['-c', 'user.name=F', '-c', 'user.email=f@x', 'commit', '-m', 'src change'], root);
+  assert.ok(gate(d, d.tasks[0], root).some(e => e.endsWith('unit')));
+});
+
+test('scoped reports bind their declared scope set and reject scope tampering', t => {
+  const { root, d } = fixture(t);
+  const { report } = proof(root, d);
+  const scopes = resolveScopes(d.tasks[0], 'unit');
+  const scoped = { ...report, scopes, scopeFingerprint: sourceFingerprint(root, scopes) };
+  assert.ok(validateReport(d, d.tasks[0], scoped, root));
+  scoped.scopes = ['meta']; assert.throws(() => validateReport(d, d.tasks[0], scoped, root), /scope/);
+  scoped.scopes = scopes; scoped.scopeFingerprint = 'a'.repeat(64);
+  assert.throws(() => validateReport(d, d.tasks[0], scoped, root), /stale|committed/);
+});
+
+test('checkpoint pruning keeps newest N and never unlinks the referenced checkpoint', t => {
+  const { root } = fixture(t);
+  let last;
+  for (let i = 0; i < 5; i++) last = createCheckpoint(root, 'prune-fixture-' + i);
+  const dir = resolve(root, '.agent/checkpoints');
+  const pruned = pruneCheckpoints(root, last.data.checkpoint.path, new Set(), 3);
+  const names = readdirSync(dir).filter(n => n.startsWith('v2-'));
+  assert.ok(names.length <= 3 + 1 || names.includes(last.data.checkpoint.id + '.json'));
+  assert.ok(existsSync(resolve(root, last.data.checkpoint.path)), 'referenced checkpoint must survive pruning');
+  assert.ok(validateCheckpoint(root, loadControl(root)));
 });

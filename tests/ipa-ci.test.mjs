@@ -27,6 +27,7 @@ function py(f, code, ...args) { return spawnSync(PYTHON, ['-c', code, ...args], 
 function gate(f, mode = 'prepare') { return spawnSync(PYTHON, ['scripts/ci/native-dependencies.py', mode, f.root, join(f.root, 'private')], f.options); }
 function moduleCode(name, body) { return `import importlib.util,pathlib,json,hashlib\ns=importlib.util.spec_from_file_location('fixture_module', pathlib.Path('scripts/ci/${name}')); m=importlib.util.module_from_spec(s); s.loader.exec_module(m)\nroot=pathlib.Path.cwd()\n${body}`; }
 function collect(f) { return spawnSync(PYTHON, ['scripts/ci/collect-evidence.py'], f.options); }
+function runFile(name, args, env) { return spawnSync(PYTHON, [join(ROOT, 'scripts/ci', name), ...args], { encoding: 'utf8', env }); }
 
 test('bootstrap is explicit and never synthesizes committed native locks', t => {
   const f = fixture(t); const result = gate(f); assert.equal(result.status, 0, result.stdout + result.stderr); assert.match(result.stdout, /BOOTSTRAP_REQUIRED/);
@@ -136,6 +137,25 @@ test('interrupted step is distinguished from never started, using fixed public c
   assert.equal(collect(f).status, 0); const report = JSON.parse(readFileSync(join(f.root, 'artifacts/reports/steps.json')));
   assert.deepEqual(report.steps.find(s => s.step === 'iphone'), { step: 'iphone', status: 'interrupted', code: 'NATIVE_STEP_IPHONE_INTERRUPTED' }); assert.equal(report.steps.find(s => s.step === 'ipad').status, 'not-run');
 });
+test('build handoff manifests verify provenance and digest', () => {
+  const root = realpathSync(mkdtempSync(join(tmpdir(), 'handoff-')));
+  const tar = join(root, 'app.tar'); writeFileSync(tar, 'synthetic app tar');
+  const manifest = join(root, 'app-manifest.json');
+  const env = { ...process.env, GITHUB_RUN_ID: '123456789', GITHUB_RUN_ATTEMPT: '1', GITHUB_SHA: 'a'.repeat(40) };
+  const write = runFile('write-handoff.py', ['device', tar, manifest], env);
+  assert.equal(write.status, 0); assert.equal(write.stdout.trim(), 'HANDOFF_MANIFEST_WRITTEN');
+  const verify = (id, sha) => runFile('verify-handoff.py', [manifest, tar, id, sha]);
+  const ok = verify('123456789', 'a'.repeat(40));
+  assert.equal(ok.status, 0); assert.equal(ok.stdout.trim(), 'HANDOFF_VERIFIED');
+  assert.equal(verify('123456789', 'b'.repeat(40)).stdout.trim(), 'HANDOFF_SHA_REJECTED');
+  assert.equal(verify('987654321', 'a'.repeat(40)).stdout.trim(), 'HANDOFF_RUN_REJECTED');
+  const m = JSON.parse(readFileSync(manifest, 'utf8'));
+  writeFileSync(manifest, JSON.stringify({ ...m, sha256: '0'.repeat(64) }));
+  assert.equal(verify('123456789', 'a'.repeat(40)).stdout.trim(), 'HANDOFF_DIGEST_REJECTED');
+  assert.ok(!JSON.stringify([write, ok]).includes('synthetic app tar'));
+  rmSync(root, { recursive: true, force: true });
+});
+
 test('uploads require explicit verification/sanitization/bootstrap outcomes', () => {
   const workflow = readFileSync(join(ROOT, '.github/workflows/native-infrastructure.yml'), 'utf8');
   assert.match(workflow, /if: success\(\) && steps\.ipa\.outputs\.result == 'passed'/);

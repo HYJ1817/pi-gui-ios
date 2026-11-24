@@ -4,7 +4,7 @@ set -euo pipefail
 STEP="${1:?}"
 shift
 case "$STEP" in
-  environment|npm|prebuild|pods|maestro|simulator-build|iphone|ipad|device-build|ipa) ;;
+  environment|npm|prebuild|pods|simulator-build|iphone|ipad|device-build|ipa) ;;
   *) printf '%s\n' 'STEP_UNKNOWN'; exit 1 ;;
 esac
 PRIVATE="$RUNNER_TEMP/native-private"

@@ -16,7 +16,10 @@ import zipfile
 
 
 class Invalid(Exception):
-    pass
+    """One rejection, or a batch of independent check failures (a list of codes)."""
+    def __init__(self, code):
+        self.codes = [code] if isinstance(code, str) else list(code)
+        super().__init__(' '.join(self.codes))
 
 
 def require(condition, code):
@@ -44,10 +47,14 @@ BENIGN_UI = {'UIDeviceFamily', 'UILaunchStoryboardName', 'UIMainStoryboardFile',
              'UIViewControllerBasedStatusBarAppearance', 'UIWhitePointAdaptivityStyle',
              'UISupportedInterfaceOrientations', 'UISupportedInterfaceOrientations~ipad',
              'UIApplicationSupportsIndirectInputEvents', 'UILaunchScreen',
+             'UISupportedInterfaceOrientations~iphone',
              # Xcode storyboard archive bookkeeping emitted into built
              # Info.plists: identifier-name mapping only, no behavior switch.
              'UIViewControllerIdentifiersToNibNames',
              'UIStoryboardDesignatedEntryPointIdentifier', 'UIStoryboardVersion'}
+# Benign container keys whose child keys are exempt from the NS/UI/LS prefix
+# policy (a launch-screen dict legitimately carries UIImageName/UIColorName).
+SKIP_CHILDREN = {'UILaunchScreen'}
 DENIED_KEYS = {'CFBundleDocumentTypes', 'UTExportedTypeDeclarations', 'UTImportedTypeDeclarations',
                'UIBackgroundModes', 'NSExtension', 'LSEnvironment', 'SMPrivilegedExecutables',
                'WKAppBoundDomains', 'Entitlements', 'get-task-allow', 'aps-environment',
@@ -204,7 +211,8 @@ def plist_policy(value, allow_template_scene=False):
                         1 <= len(url['CFBundleURLSchemes']) <= 2 and
                         all(scheme in ('piguimobile', BUNDLE_ID) for scheme in url['CFBundleURLSchemes'])
                         for url in item), 'PLIST_URL_SCHEME')
-            plist_policy(item, allow_template_scene)
+            if key not in SKIP_CHILDREN:
+                plist_policy(item, allow_template_scene)
     elif isinstance(value, list):
         for item in value:
             plist_policy(item, allow_template_scene)
@@ -292,79 +300,130 @@ def verify(source):
         frameworks = {name for name in tree.directories if name.endswith('.framework')}
         require(not any('_CodeSignature' in pathlib.PurePosixPath(name).parts for name in tree.directories),
                 'SIGNING_MATERIAL')
+        # File-level checks are collected per file so one run reports every
+        # independent violation. Structural archive problems (Tree, PLIST_SIZE,
+        # PLIST_INVALID) remain fatal — the tree can't be trusted past them.
+        violations = []
         for name in sorted(tree.paths):
             path = pathlib.PurePosixPath(name)
             lower = name.lower()
-            require(not any(part.lower() == '_codesignature' for part in path.parts)
-                    and path.name.lower() not in ('coderesources', 'embedded.mobileprovision',
-                                                   'resourcerules.plist', 'exportoptions.plist')
-                    and not lower.endswith(('.mobileprovision', '.provisionprofile', '.entitlements',
-                                            '.xcent', 'entitlements.plist',
-                                            '.p12', '.pfx', '.pem', '.key', '.cer', '.der')),
-                    'SIGNING_MATERIAL')
-            require(not any(part.endswith(('.app', '.appex', '.xpc')) for part in path.parts[:-1]),
-                    'NESTED_EXECUTABLE_BUNDLE')
             for i, part in enumerate(path.parts[:-1]):
                 if part.endswith('.framework'):
                     frameworks.add('/'.join(path.parts[:i + 1]))
-            if lower.endswith('.plist'):
-                require(len(tree.read(name, 2 * 1024 * 1024 + 1)) <= 2 * 1024 * 1024, 'PLIST_SIZE')
-                try:
-                    info = plistlib.loads(tree.read(name))
-                except Exception as error:
-                    raise Invalid('PLIST_INVALID') from error
-                plist_policy(info)
-                plists[name] = info
-            head = tree.read(name, 4)
-            if head in MAGICS:
-                binaries[name] = macho(tree.read(name))
-            elif tree.executable(name):
-                raise Invalid('EXECUTABLE_NOT_MACHO')
-        main = plists['Info.plist']
-        require(isinstance(main, dict) and main.get('CFBundleIdentifier') == BUNDLE_ID,
-                'BUNDLE_IDENTIFIER')
-        require(main.get('UIDeviceFamily') == [1, 2], 'BUNDLE_DEVICE_FAMILY')
-        app_minimum = version(main.get('MinimumOSVersion'))
+            try:
+                require(not any(part.lower() == '_codesignature' for part in path.parts)
+                        and path.name.lower() not in ('coderesources', 'codesignature', 'codedirectory',
+                                                       'coderequirements', 'coderequirements-1',
+                                                       'embedded.mobileprovision',
+                                                       'resourcerules.plist', 'exportoptions.plist')
+                        and not lower.endswith(('.mobileprovision', '.provisionprofile', '.entitlements',
+                                                '.xcent', 'entitlements.plist',
+                                                '.p12', '.pfx', '.pem', '.key', '.cer', '.der')),
+                        'SIGNING_MATERIAL')
+                require(not any(part.endswith(('.app', '.appex', '.xpc')) for part in path.parts[:-1]),
+                        'NESTED_EXECUTABLE_BUNDLE')
+                if lower.endswith('.plist'):
+                    require(len(tree.read(name, 2 * 1024 * 1024 + 1)) <= 2 * 1024 * 1024, 'PLIST_SIZE')
+                    try:
+                        info = plistlib.loads(tree.read(name))
+                    except Exception as error:
+                        raise Invalid('PLIST_INVALID') from error
+                    plist_policy(info)
+                    plists[name] = info
+                head = tree.read(name, 4)
+                if head in MAGICS:
+                    binaries[name] = macho(tree.read(name))
+                elif tree.executable(name):
+                    raise Invalid('EXECUTABLE_NOT_MACHO')
+            except Invalid as error:
+                violations.extend(error.codes)
+        # App manifest identity first; a broken app minimum leaves downstream
+        # bounds checks skipped rather than masking the real violations.
+        main = plists.get('Info.plist')
+        app_minimum = None
+        try:
+            require(isinstance(main, dict) and main.get('CFBundleIdentifier') == BUNDLE_ID,
+                    'BUNDLE_IDENTIFIER')
+            family = main.get('UIDeviceFamily')
+            require(isinstance(family, list) and 0 < len(family) <= 2 and set(family) <= {1, 2},
+                    'BUNDLE_DEVICE_FAMILY')
+            app_minimum = version(main.get('MinimumOSVersion'))
+        except Invalid as error:
+            violations.extend(error.codes)
+        # Bundle metadata checks are independent per bundle: collect every
+        # violated rule so one IPA run reports all incompatibilities at once.
+        # The main app plist is checked first, then frameworks, then other
+        # executable bundles, so primary failures still surface first.
         declared = set()
-        for name, info in plists.items():
+        ordered = sorted(plists.items(), key=lambda item: (
+            0 if item[0] == 'Info.plist' else
+            1 if item[0].rsplit('/', 1)[0].removesuffix('/Resources') in frameworks else 2, item[0]))
+        for name, info in ordered:
             if pathlib.PurePosixPath(name).name != 'Info.plist' or not isinstance(info, dict):
                 continue
             directory = name.rsplit('/', 1)[0] if '/' in name else ''
             if directory.endswith('/Resources'):
                 directory = directory[:-len('/Resources')]
-            executable = info.get('CFBundleExecutable')
-            if not executable:
-                require(directory not in frameworks and name != 'Info.plist', 'BUNDLE_EXECUTABLE_MISSING')
+            try:
+                # Only the app manifest and each <framework>/Info.plist are
+                # executable-bundle manifests. A nested resource bundle that
+                # happens to declare CFBundleExecutable (e.g. a resolved
+                # $(EXECUTABLE_NAME) placeholder) is metadata, not a binary
+                # contract — its payload was already Mach-O scanned if present.
+                is_manifest = pathlib.PurePosixPath(name).name == 'Info.plist' and (
+                    directory == '' or directory in frameworks)
+                executable = info.get('CFBundleExecutable')
+                if not executable or not is_manifest:
+                    require(not is_manifest, 'BUNDLE_EXECUTABLE_MISSING')
+                    continue
+                require(isinstance(executable, str) and re.fullmatch(r'[A-Za-z0-9_.+-]+', executable)
+                        and executable not in ('.', '..'), 'BUNDLE_EXECUTABLE_NAME')
+                binary = (directory + '/' if directory else '') + executable
+                require(binary in binaries, 'BUNDLE_EXECUTABLE_MISSING')
+                expected_type = 2 if not directory else 6
+                require(binaries[binary]['filetype'] == expected_type, 'BUNDLE_EXECUTABLE_TYPE')
+                # Bundle directory stems are deterministic public build output names
+                # (app target / pod framework names) — the same public vocabulary as
+                # PLIST_SENSITIVE_KEY_* suffixes. Never emit file paths or values.
+                target = ''.join(c for c in directory.rsplit('/', 1)[-1].removesuffix('.framework')
+                                 if c.isalnum() or c in '._-')[:48].upper() or 'APP'
+                supported = info.get('CFBundleSupportedPlatforms')
+                if not directory:
+                    # The main app is always produced by Xcode which emits
+                    # CFBundleSupportedPlatforms: exact match stays strict there.
+                    require(supported == ['iPhoneOS'], 'BUNDLE_PLATFORM_SUPPORTED_' + target)
+                else:
+                    # Non-app bundles may be third-party prebuilt slices whose
+                    # hand-rolled Info.plist omits platform keys entirely (the
+                    # real Hermes 260318099.0.5 hermesvm.framework has none).
+                    # They are presence-conditional: when declared, iPhoneOS
+                    # must be included. Device correctness is enforced by the
+                    # binary Mach-O platform==2 + arm64 checks, not this key.
+                    require(supported is None or
+                            (isinstance(supported, list) and 'iPhoneOS' in supported and
+                             all(isinstance(p, str) and re.fullmatch(r'[A-Za-z]+', p)
+                                 for p in supported)), 'BUNDLE_PLATFORM_SUPPORTED_' + target)
+                require(info.get('DTPlatformName', 'iphoneos') == 'iphoneos',
+                        'BUNDLE_PLATFORM_NAME_' + target)
+                require(isinstance(info.get('DTSDKName', 'iphoneos'), str) and
+                        re.fullmatch(r'iphoneos(?:[1-9][0-9]?(?:\.[0-9]{1,2}){0,2})?',
+                                     info.get('DTSDKName', 'iphoneos')) is not None,
+                        'BUNDLE_PLATFORM_SDK_' + target)
+                minimum = version(info.get('MinimumOSVersion'))
+                require(app_minimum is not None and
+                        binaries[binary]['minimum'] <= minimum <= app_minimum, 'BUNDLE_MINIMUM_OS')
+            except Invalid as error:
+                violations.extend(error.codes)
                 continue
-            require(isinstance(executable, str) and re.fullmatch(r'[A-Za-z0-9_.+-]+', executable)
-                    and executable not in ('.', '..'), 'BUNDLE_EXECUTABLE_NAME')
-            binary = (directory + '/' if directory else '') + executable
-            require(binary in binaries, 'BUNDLE_EXECUTABLE_MISSING')
-            expected_type = 2 if not directory else 6 if directory in frameworks else 8
-            require(binaries[binary]['filetype'] == expected_type, 'BUNDLE_EXECUTABLE_TYPE')
-            # Bundle directory stems are deterministic public build output names
-            # (app target / pod framework names) — the same public vocabulary as
-            # PLIST_SENSITIVE_KEY_* suffixes. Never emit file paths or values.
-            target = ''.join(c for c in directory.rsplit('/', 1)[-1].removesuffix('.framework')
-                             if c.isalnum() or c in '._-')[:48].upper() or 'APP'
-            # XCFramework-style plists (e.g. hermesvm.framework) enumerate every
-            # supported platform; only iPhoneOS presence is required. The binary
-            # Mach-O platform==2 check remains the strict device guarantee.
-            supported = info.get('CFBundleSupportedPlatforms')
-            require(isinstance(supported, list) and 'iPhoneOS' in supported and
-                    all(isinstance(p, str) and re.fullmatch(r'[A-Za-z]+', p)
-                        for p in supported), 'BUNDLE_PLATFORM_SUPPORTED_' + target)
-            require(info.get('DTPlatformName', 'iphoneos') == 'iphoneos',
-                    'BUNDLE_PLATFORM_NAME_' + target)
-            require(isinstance(info.get('DTSDKName', 'iphoneos'), str) and
-                    re.fullmatch(r'iphoneos(?:[1-9][0-9]?(?:\.[0-9]{1,2}){0,2})?',
-                                 info.get('DTSDKName', 'iphoneos')) is not None,
-                    'BUNDLE_PLATFORM_SDK_' + target)
-            minimum = version(info.get('MinimumOSVersion'))
-            require(binaries[binary]['minimum'] <= minimum <= app_minimum, 'BUNDLE_MINIMUM_OS')
             declared.add(directory)
-        require('' in declared and frameworks <= declared, 'FRAMEWORK_EXECUTABLE_MISSING')
-        require(all(item['minimum'] <= app_minimum for item in binaries.values()), 'MACHO_MINIMUM_OS')
+        if not frameworks <= declared:
+            violations.append('FRAMEWORK_EXECUTABLE_MISSING')
+        if app_minimum is not None:
+            violations.extend('MACHO_MINIMUM_OS' for item in binaries.values()
+                              if item['minimum'] > app_minimum)
+        # Bounded, deduplicated: fixed codes only, no paths or values.
+        violations = list(dict.fromkeys(violations))[:64]
+        require(not violations, violations)
         if tree.zip:
             require(tree.zip.testzip() is None, 'ARCHIVE_CRC')
         return {'schemaVersion': 2, 'passed': True, 'kind': 'unsigned-device-archive' if tree.zip else
@@ -383,7 +442,10 @@ def main():
         print(json.dumps(result, sort_keys=True))
         return 0
     except Invalid as error:
-        print(json.dumps({'schemaVersion': 2, 'passed': False, 'code': str(error)}))
+        # `code` stays the first violation for single-code consumers; the full
+        # ordered list is in `violations` so one run reports everything found.
+        print(json.dumps({'schemaVersion': 2, 'passed': False, 'code': error.codes[0],
+                          'violations': error.codes}))
     except Exception:
         print(json.dumps({'schemaVersion': 2, 'passed': False, 'code': 'IPA_INSPECTION_ERROR'}))
     return 1

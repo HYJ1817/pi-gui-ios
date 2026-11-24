@@ -1,5 +1,5 @@
 import { createHash, randomUUID } from 'node:crypto';
-import { existsSync, readFileSync, writeFileSync, mkdirSync, renameSync, openSync, closeSync, unlinkSync, lstatSync, realpathSync, fsyncSync, constants } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync, mkdirSync, renameSync, openSync, closeSync, unlinkSync, lstatSync, realpathSync, fsyncSync, constants, readdirSync } from 'node:fs';
 import { dirname, resolve, relative, isAbsolute, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
@@ -89,16 +89,79 @@ export function git(args, root = ROOT) { return run('git', args, root); }
 export function snapshot(root = ROOT) { return { branch: git(['branch', '--show-current'], root).stdout.trim(), commit: git(['rev-parse', '--verify', 'HEAD'], root).stdout.trim() || null, dirty: git(['status', '--short'], root).stdout.trim().split(/\r?\n/).filter(Boolean) }; }
 function included(path) { return (!path.startsWith('.agent/') || path.startsWith('.agent/schemas/')) && !path.startsWith('docs/acceptance/') && !['PROGRESS.md', 'docs/source-research.md'].includes(path); }
 function hashFiles(entries) { const hash = createHash('sha256'); for (const [path, content] of entries.sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0)) { hash.update(`${path}\0`); hash.update(content); hash.update('\0'); } return hash.digest('hex'); }
-export function sourceFingerprint(root = ROOT) {
+
+// Scoped evidence (ADR: docs/decisions/0007-scoped-evidence.md). Each evidence
+// kind is bound to the named path sets it actually depends on. A file matched
+// by NO set is treated as shared — it belongs to every scope, so unknown new
+// surfaces fail closed instead of silently evading invalidation.
+export const SCOPE_SETS = {
+  app: ['src/', 'App.tsx', 'index.ts', 'global.css', 'metro.config.js', 'babel.config.js', 'app.json', 'expo-env.d.ts', 'modules/'],
+  tests: ['tests/'],
+  'native-build': ['scripts/ci/', 'native/', '.github/', '.maestro/', 'Gemfile', 'Gemfile.lock'],
+  control: ['scripts/lib/', 'scripts/agent-', 'scripts/verify.mjs', 'scripts/check-technology-stack.mjs', '.agent/schemas/'],
+  protocol: ['scripts/lib/remote-protocol-contract.mjs', 'scripts/desktop-remote-verify.mjs', 'tests/remote-contract.test.mjs', 'docs/contracts/', 'docs/design/', 'docs/remote-protocol.md'],
+  meta: ['docs/', 'AGENTS.md', 'REVIEW.md', 'ROADMAP.md', 'README.md', 'THIRD_PARTY_NOTICES.md'],
+  // 'shared' is unconditionally part of every evidence kind's scope.
+  shared: ['package.json', 'package-lock.json', 'tsconfig.json', '.gitignore', '.gitattributes'],
+};
+export const KIND_SCOPES = {
+  // npm test literally executes scripts/ci/*, native locks, control lib and the
+  // remote contract — broad by fact, not convenience.
+  unit: ['app', 'tests', 'control', 'native-build', 'protocol'],
+  typecheck: ['app'], bundle: ['app'], doctor: ['app'],
+  ci: ['app', 'tests', 'native-build', 'control', 'protocol'],
+  ui: ['app', 'native-build'], ipa: ['app', 'native-build'],
+  integration: ['protocol', 'control'], 'protocol-contract': ['protocol'],
+  'fault-injection': ['app', 'protocol', 'tests'],
+  // 'union': scopes of the task's own non-independent required evidence + meta.
+  // 'all': every set plus uncovered files — used for fresh-context recovery.
+  'independent-review': ['union'],
+  'independent-security': ['union', 'native-build'],
+  'independent-handoff': ['all'],
+  'device-install': ['app', 'native-build'], 'device-upgrade': ['app', 'native-build'],
+  'device-network': ['app', 'native-build', 'protocol'],
+};
+function matchesSet(path, set) { return (SCOPE_SETS[set] ?? []).some(prefix => path === prefix || path.startsWith(prefix)); }
+function uncovered(path) { return !Object.keys(SCOPE_SETS).some(set => matchesSet(path, set)); }
+export function resolveScopes(task, kind) {
+  const declared = task?.evidenceScopes?.[kind] ?? KIND_SCOPES[kind];
+  assert(Array.isArray(declared) && declared.length > 0, `No scope binding for evidence kind ${kind}`);
+  if (declared.includes('all')) return ['all'];
+  const resolved = new Set(['shared']);
+  for (const name of declared) {
+    if (name === 'union') {
+      assert(task, 'union scope requires a task');
+      // 'union' expands over the task's non-independent, non-device evidence
+      // only — independent evidence kinds are nested unions/all and would
+      // otherwise widen the union to every set.
+      for (const other of task.requiredEvidence) {
+        if (other === kind || other.startsWith('independent-') || other.startsWith('device-') || !(other in KIND_SCOPES)) continue;
+        for (const inner of KIND_SCOPES[other]) if (inner !== 'union' && inner !== 'all') resolved.add(inner);
+      }
+    } else {
+      assert(name in SCOPE_SETS, `Unknown evidence scope set ${name}`);
+      resolved.add(name);
+    }
+  }
+  return [...resolved].sort();
+}
+function inScopes(path, scopes) {
+  if (scopes[0] === 'all') return true;
+  return scopes.some(name => matchesSet(path, name)) || uncovered(path);
+}
+export function sourceFingerprint(root = ROOT, scopes) {
   const result = git(['ls-files', '--cached', '--others', '--exclude-standard', '-z'], root); assert(result.ok, 'Cannot enumerate source');
-  return hashFiles([...new Set(result.stdout.split('\0').filter(included).filter(Boolean))].map(path => [path, existsSync(resolve(root, path)) ? readSafe(root, path) : Buffer.from('<deleted>')]));
+  let paths = [...new Set(result.stdout.split('\0').filter(included).filter(Boolean))];
+  if (scopes) paths = paths.filter(path => inScopes(path, scopes));
+  return hashFiles(paths.map(path => [path, existsSync(resolve(root, path)) ? readSafe(root, path) : Buffer.from('<deleted>')]));
 }
 const commitCache = new Map();
-export function committedFingerprint(root, commit) {
+export function committedFingerprint(root, commit, scopes) {
   assert(COMMIT.test(commit ?? ''), 'Evidence requires a real Git commit');
-  const key = `${root}:${commit}`; if (commitCache.has(key)) return commitCache.get(key);
+  const key = `${root}:${commit}:${(scopes ?? []).join(',')}`; if (commitCache.has(key)) return commitCache.get(key);
   const tree = git(['ls-tree', '-rz', '--full-tree', commit], root); assert(tree.ok, 'Evidence commit not available in repository');
-  const rows = tree.stdout.split('\0').filter(Boolean).map(row => { const i = row.indexOf('\t'); return { header: row.slice(0, i).split(' '), path: row.slice(i + 1) }; }).filter(row => included(row.path));
+  let rows = tree.stdout.split('\0').filter(Boolean).map(row => { const i = row.indexOf('\t'); return { header: row.slice(0, i).split(' '), path: row.slice(i + 1) }; }).filter(row => included(row.path));
+  if (scopes) rows = rows.filter(row => inScopes(row.path, scopes));
   assert(rows.length > 0, 'Empty evidence source tree');
   for (const row of rows) assert(['100644', '100755'].includes(row.header[0]), 'Linked/submodule source cannot be accepted');
   const blobs = spawnSync('git', ['cat-file', '--batch'], { cwd: root, input: rows.map(r => r.header[2]).join('\n') + '\n', maxBuffer: 64 * 1024 * 1024, windowsHide: true });
@@ -106,6 +169,13 @@ export function committedFingerprint(root, commit) {
   let offset = 0; const entries = [];
   for (const row of rows) { const end = blobs.stdout.indexOf(10, offset); assert(end >= 0, 'Invalid Git object stream'); const header = blobs.stdout.subarray(offset, end).toString('utf8').split(' '); assert(header[1] === 'blob' && /^\d+$/.test(header[2]), 'Invalid Git blob'); const size = Number(header[2]); offset = end + 1; entries.push([row.path, blobs.stdout.subarray(offset, offset + size)]); offset += size + 1; }
   const value = hashFiles(entries); commitCache.set(key, value); return value;
+}
+export function coverageCheck(root = ROOT) {
+  // Fail-closed guard: every fingerprinted path must belong to some scope set,
+  // otherwise it silently invalidates (or evades) every kind's evidence.
+  const result = git(['ls-files', '--cached', '--others', '--exclude-standard', '-z'], root); assert(result.ok, 'Cannot enumerate source');
+  const missing = [...new Set(result.stdout.split('\0').filter(included).filter(Boolean))].filter(uncovered);
+  return missing;
 }
 export function evidencePath(root, path) {
   assert(typeof path === 'string' && /^(docs\/acceptance\/|\.agent\/evidence\/)/.test(path) && !path.includes('\\') && !isAbsolute(path), 'Evidence must be inside a dedicated repository evidence directory');
@@ -125,12 +195,36 @@ export function normalizeCi(raw) {
   const ci = { id: String(raw.id ?? ''), head: raw.head_sha, workflow: raw.path, attempt: raw.run_attempt, status: raw.status, conclusion: raw.conclusion || null, url: raw.html_url };
   return validateCiRecord(ci);
 }
-export function validateReport(d, task, report, root = ROOT, fingerprint = sourceFingerprint(root)) {
+function scopedFingerprint(ctx, root, scopes) {
+  const key = scopes.join(',');
+  if (!ctx.fpMemo.has(key)) ctx.fpMemo.set(key, sourceFingerprint(root, scopes));
+  return ctx.fpMemo.get(key);
+}
+export function validateReport(d, task, report, root = ROOT, context) {
+  const ctx = context && typeof context === 'object' ? context : { fingerprint: context ?? sourceFingerprint(root), memo: new Map(), fpMemo: new Map() };
   validateSchema(report, 'evidence.schema.json');
   assert(report.taskId === task.id && task.requiredEvidence.includes(report.kind), 'Wrong report task/kind');
   assert(report.passed === true, 'Failure report cannot satisfy acceptance');
   assert(Date.parse(report.finishedAt) >= Date.parse(report.startedAt), 'Invalid evidence time interval');
-  assert(report.sourceFingerprint === fingerprint && committedFingerprint(root, report.commit) === fingerprint, 'Evidence is stale or was not produced for committed source');
+  const scopes = resolveScopes(task, report.kind);
+  if (report.scopeFingerprint === undefined) {
+    // Legacy report: produced under the global fingerprint. It remains valid
+    // while (a) the report's global fingerprint still equals the committed
+    // tree's (it was produced clean at that commit) and (b) the parts this
+    // kind actually depends on have not changed since then.
+    assert(report.sourceFingerprint === committedFingerprint(root, report.commit) &&
+           committedFingerprint(root, report.commit, scopes) === scopedFingerprint(ctx, root, scopes),
+           'Evidence is stale or was not produced for committed source');
+  } else {
+    assert(typeof report.scopeFingerprint === 'string' && SHA.test(report.scopeFingerprint) &&
+           Array.isArray(report.scopes) && stable([...report.scopes].sort()) === stable(scopes),
+           'Report scope does not match the bound evidence scope');
+    assert(report.scopeFingerprint === committedFingerprint(root, report.commit, scopes) &&
+           report.scopeFingerprint === scopedFingerprint(ctx, root, scopes),
+           'Evidence is stale or was not produced for committed source');
+    assert(report.sourceFingerprint === committedFingerprint(root, report.commit),
+           'Evidence global fingerprint does not match its commit');
+  }
   const details = report.details;
   const commands = { unit: 'npm test', typecheck: 'npm run typecheck', bundle: 'npm run export:ios', doctor: 'node node_modules/expo-doctor/build/index.js' };
   if (commands[report.kind]) {
@@ -148,7 +242,7 @@ export function validateReport(d, task, report, root = ROOT, fingerprint = sourc
     const summary = JSON.parse(receipt.summary);
     if (Array.isArray(summary.reports)) assert(new Set(summary.reports.map(r => r.kind)).size === summary.reports.length, 'Duplicate independent result kinds');
     const result = Array.isArray(summary.reports) ? summary.reports.find(r => r.kind === report.kind) : summary;
-    assert(result && result.schemaVersion === 1 && result.kind === report.kind && result.decision === 'pass' && result.reviewedCommit === report.commit && result.sourceFingerprint === fingerprint && result.unresolvedBlockers === 0 && result.unresolvedImportant === 0, 'Independent review did not pass exact source');
+    assert(result && result.schemaVersion === 1 && result.kind === report.kind && result.decision === 'pass' && result.reviewedCommit === report.commit && result.sourceFingerprint === report.sourceFingerprint && result.unresolvedBlockers === 0 && result.unresolvedImportant === 0, 'Independent review did not pass exact source');
     assert(d.delegates.some(r => r.taskId === receipt.taskId && r.status === 'completed' && r.sourceCommit === report.commit), 'Independent task provenance missing');
     if (report.kind === 'independent-handoff') {
       assert(result.restoredTask === task.id && Array.isArray(result.commands) && result.commands.some(c => typeof c.command === 'string' && c.command.startsWith('node scripts/agent-resume.mjs') && c.exitCode === 0) && result.commands.some(c => ['npm test', 'npm run typecheck', 'npm run check:stack'].includes(c.command) && c.exitCode === 0), 'No actual independent recovery and follow-on verification');
@@ -175,7 +269,7 @@ export function validateReport(d, task, report, root = ROOT, fingerprint = sourc
   return report;
 }
 export function gate(d, task, root = ROOT, context) {
-  const ctx = context ?? { fingerprint: sourceFingerprint(root), memo: new Map() };
+  const ctx = context ?? { fingerprint: sourceFingerprint(root), memo: new Map(), fpMemo: new Map() };
   if (ctx.memo.has(task.id)) return ctx.memo.get(task.id);
   const errors = []; ctx.memo.set(task.id, errors);
   if (!snapshot(root).commit) errors.push('Acceptance requires committed source');
@@ -193,7 +287,7 @@ export function gate(d, task, root = ROOT, context) {
         const report = JSON.parse(checkFile(root, e.path, e.sha256));
         assert(report.kind === kind && e.kind === report.kind, 'Evidence kind substitution');
         assert(e.sourceFingerprint === report.sourceFingerprint && e.commit === report.commit, 'Restamped evidence metadata');
-        return !!validateReport(d, task, report, root, ctx.fingerprint);
+        return !!validateReport(d, task, report, root, ctx);
       } catch { return false; }
     });
     if (!valid) errors.push(`Missing/stale/failed evidence: ${kind}`);
@@ -228,6 +322,24 @@ export function mutate(root, fn) {
   return withLock(root, () => { const current = loadControl(root); const next = structuredClone(current.data); fn(next, current); validateControl(next); const control = envelope('control', current.revision + 1, next); commitControl(root, control); return control; });
 }
 export function repairProjections(root = ROOT) { return withLock(root, () => { const control = loadControl(root); renderProjections(root, control); return control; }); }
+export const CHECKPOINT_KEEP = 50;
+export function pruneCheckpoints(root, keepPath, keepNames = new Set(), keepCount = CHECKPOINT_KEEP) {
+  // Bounded retention: newest `keepCount` v2 snapshots plus any filename still
+  // referenced by the live authority (never unlink the recorded checkpoint).
+  // Filenames not matching the v2 pattern are never touched.
+  const directory = resolve(root, '.agent/checkpoints');
+  if (!existsSync(directory)) return [];
+  const names = readdirSync(directory).filter(name => /^v2-[a-zA-Z0-9_-]+\.json$/.test(name)).sort().reverse();
+  const removable = names.slice(keepCount);
+  const pruned = [];
+  for (const name of removable) {
+    const path = '.agent/checkpoints/' + name;
+    if (path === keepPath || keepNames.has(name)) continue;
+    const full = safePath(root, resolve(root, path));
+    if (lstatSync(full).isFile() && !lstatSync(full).isSymbolicLink()) { unlinkSync(full); pruned.push(path); }
+  }
+  return pruned;
+}
 export function createCheckpoint(root = ROOT, note = 'incremental checkpoint') {
   return withLock(root, () => {
     const current = loadControl(root), now = new Date().toISOString(), id = 'v2-' + now.replace(/[^a-zA-Z0-9]/g, '-') + '-' + randomUUID();
@@ -235,7 +347,12 @@ export function createCheckpoint(root = ROOT, note = 'incremental checkpoint') {
     const point = envelope('checkpoint', current.revision, { id, note, control: current, git: gitState, sourceFingerprint: fingerprint }, now);
     writeEnvelope(root, path, point); const bytes = readSafe(root, path); decode(bytes.toString('utf8'), 'checkpoint');
     const next = structuredClone(current.data); next.checkpoint = { id, path, sha256: digest(bytes), authorityDigest: current.integrity.digest, at: now, git: gitState, sourceFingerprint: fingerprint, note };
-    const control = envelope('control', current.revision + 1, next, now); commitControl(root, control); return control;
+    const control = envelope('control', current.revision + 1, next, now); commitControl(root, control);
+    // Any checkpoint filename still mentioned inside the live authority
+    // (current reference, evidence provenance) is protected; keep newest N.
+    const referenced = new Set([...JSON.stringify(control.data).matchAll(/\.agent\/checkpoints\/(v2-[a-zA-Z0-9_-]+\.json)/g)].map(m => m[1]));
+    pruneCheckpoints(root, path, referenced);
+    return control;
   });
 }
 export function validateCheckpoint(root, control) {

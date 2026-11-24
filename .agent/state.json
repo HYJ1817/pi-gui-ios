@@ -1,39 +1,60 @@
 {
   "schemaVersion": 2,
   "kind": "state",
-  "revision": 707,
-  "updatedAt": "2026-11-24T08:44:06.145Z",
+  "revision": 711,
+  "updatedAt": "2026-11-24T12:44:22.973Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "913449ae2a8ac399671baf06587ce3a37370610cbe2d3ca2495b6f72e9a7b243",
+    "parentDigest": "0f82b86886bdd04a37b29e8ce9eb2f87146e476d8bd084211bed3faf2b27b3ac",
     "phase": "M2",
     "currentTask": "M2-shell",
     "branch": "agent/m-1-bootstrap",
     "checkpoint": {
-      "id": "v2-2026-11-24T08-44-06-145Z-74e47d14-7e5b-4b27-956c-9ffd5963e174",
-      "path": ".agent/checkpoints/v2-2026-11-24T08-44-06-145Z-74e47d14-7e5b-4b27-956c-9ffd5963e174.json",
-      "sha256": "a140814dbb3d56e2b7ccb6a1fe8f6f9613c9391a3fa9f8c6200ca5610d3f7dc0",
-      "authorityDigest": "d8ddd750ff0d1ba8fd20b95b7698f60344f07598b4f200a57651a4f7bca0192b",
-      "at": "2026-11-24T08:44:06.145Z",
+      "id": "v2-2026-11-24T12-44-22-973Z-8189ff7a-d7e2-469f-bf28-992d2cde0d1e",
+      "path": ".agent/checkpoints/v2-2026-11-24T12-44-22-973Z-8189ff7a-d7e2-469f-bf28-992d2cde0d1e.json",
+      "sha256": "577927a4cdce15a609fd31f4ecc38fd1c2e9a798cd5a21b09e11c9f52c365395",
+      "authorityDigest": "978a41af96ee2349a6788f7f3a1eb47c857329b223668c465fb6baaa2fe9c2f7",
+      "at": "2026-11-24T12:44:22.973Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "73a68fe774e7497c01f79f5031035b4d92434ed9",
+        "commit": "2bbde62262d917eb07e6cbb62e3cb3cc87f00e6f",
         "dirty": [
           "M .agent/HANDOFF.md",
           " M .agent/control.json",
+          " M .agent/schemas/evidence.schema.json",
+          " M .agent/schemas/shared.schema.json",
           " M .agent/state.json",
           " M .agent/tasks.json",
+          " M .github/workflows/native-infrastructure.yml",
+          "D  .maestro/accessibility.yaml",
+          "D  .maestro/appearance.yaml",
+          "D  .maestro/native.yaml",
           " M PROGRESS.md",
-          "?? .agent/checkpoints/v2-2026-11-24T08-44-05-078Z-873efa31-317d-42d4-827d-afb03e480543.json",
-          "?? docs/acceptance/m0-architecture-security-17e8255-receipt.json",
-          "?? docs/acceptance/m0-architecture-security-17e8255.json",
-          "?? docs/acceptance/m0m1-security-17e8255-receipt.json",
-          "?? docs/acceptance/m1-remote-security-17e8255-receipt.json",
-          "?? docs/acceptance/m1-remote-security-17e8255.json"
+          " M scripts/agent-task.mjs",
+          " M scripts/ci/collect-evidence.py",
+          "D  scripts/ci/maestro-debug.py",
+          " M scripts/ci/run-step.sh",
+          " M scripts/ci/safe-diagnostics.py",
+          " M scripts/ci/simulator.sh",
+          " M scripts/ci/stage-ipa.py",
+          " M scripts/ci/verify-ipa.py",
+          " M scripts/lib/control.mjs",
+          " M scripts/lib/recovery.mjs",
+          " M scripts/verify.mjs",
+          " M tests/control.test.mjs",
+          " M tests/ipa-ci.test.mjs",
+          " M tests/ipa-integrity.test.mjs",
+          " M tests/native-links.test.mjs",
+          "?? docs/decisions/0007-scoped-evidence.md",
+          "?? scripts/ci/merge-evidence.py",
+          "?? scripts/ci/verify-handoff.py",
+          "?? scripts/ci/write-handoff.py",
+          "?? tests/fixtures/hermesvm-ios-arm64-info-source.json",
+          "?? tests/fixtures/hermesvm-ios-arm64-info.plist"
         ]
       },
-      "sourceFingerprint": "77ec78fcb3e32d547aa09880aaf6a88dfde075fb8d2d843cf5eba7c41fbae359",
-      "note": "agent-task evidence M1-remote"
+      "sourceFingerprint": "875bba896f24991dd632b287aab75df579a3e59d4fe71578aeb9a7d13f7abbc3",
+      "note": "CI split + verify-ipa batching + scoped evidence"
     },
     "blockers": [],
     "ci": [
@@ -390,11 +411,17 @@
         "role": "m0-m1-security-rereview",
         "status": "completed",
         "sourceCommit": "17e825507005ed5c763a2ca5eb174ddccb53d2bf"
+      },
+      {
+        "taskId": "node:delegated-task:command%3Amcp%3A571f0893-6372-4390-a2f5-e277a43aeec2%3Adelegate-task%3Aceb2b695-e1aa-42e7-b8f2-d40273bca560",
+        "role": "m0-m1-functional-rereview",
+        "status": "completed",
+        "sourceCommit": "17e825507005ed5c763a2ca5eb174ddccb53d2bf"
       }
     ]
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "211235d88c6aea30af3cf883696e2b9ff6798c5a1295fce6aff91e25c0b39e25"
+    "digest": "79c5abea30420584a43f0338dd4a3eb533a16de419d6617e61002b3ec4ea7fa7"
   }
 }

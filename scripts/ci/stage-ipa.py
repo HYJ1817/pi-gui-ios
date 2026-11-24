@@ -36,9 +36,14 @@ def normalize_frameworks(app):
         for seal in sorted(framework.rglob('_CodeSignature'), reverse=True):
             policy.require(seal.is_dir() and not seal.is_symlink(), 'SIGNING_MATERIAL')
             shutil.rmtree(seal)
-        for seal in framework.rglob('CodeResources'):
-            policy.require(seal.is_file() and not seal.is_symlink(), 'SIGNING_MATERIAL')
-            seal.unlink()
+        # Loose seal members anywhere inside a framework (same policy the
+        # final verifier denies at app level) — removed, never shipped.
+        for seal in list(framework.rglob('*')):
+            name = seal.name.lower()
+            if name in ('coderesources', 'codesignature', 'codedirectory',
+                        'coderequirements', 'coderequirements-1'):
+                policy.require(seal.is_file() and not seal.is_symlink(), 'SIGNING_MATERIAL')
+                seal.unlink()
 
 
 def package(source, work, output):
@@ -80,7 +85,10 @@ if __name__ == '__main__':
         policy.require(len(sys.argv) == 4, 'IPA_ARGUMENTS')
         package(*sys.argv[1:])
     except policy.Invalid as error:
-        print(str(error))
+        # One fixed code per line so safe-diagnostics picks up every violation,
+        # not just the first in a joined string.
+        for code in error.codes:
+            print(code)
         sys.exit(1)
     except Exception:
         print('IPA_PACKAGING_ERROR')

@@ -58,7 +58,7 @@ print('MANIFEST_V3_EMPTY_ALIASES')`), 'MANIFEST_V3_EMPTY_ALIASES');
 });
 test('macOS canonical tests are required before generating any native project', () => {
   const workflow = readFileSync(join(ROOT, '.github/workflows/native-infrastructure.yml'), 'utf8');
-  const ios = workflow.slice(workflow.indexOf('  ios:'));
+  const ios = workflow.slice(workflow.indexOf('  native-build:'));
   const canonical = ios.indexOf('run: npm test');
   assert.ok(canonical > ios.indexOf('Install locked JavaScript dependencies'));
   assert.ok(canonical < ios.indexOf('Generate native project'));

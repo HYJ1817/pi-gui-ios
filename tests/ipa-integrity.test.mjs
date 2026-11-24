@@ -4,6 +4,7 @@ import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, readdirSync, rmSyn
 import { tmpdir } from 'node:os';
 import { resolve, join, dirname } from 'node:path';
 import { spawnSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -52,6 +53,15 @@ function framework(f, opts = {}) {
   writePlist(join(dir, 'Info.plist'), { CFBundleExecutable: 'Synthetic', CFBundleSupportedPlatforms: ['iPhoneOS'], MinimumOSVersion: '13.0' });
   writeFileSync(join(dir, 'Synthetic'), binary({ type: 6, minimum: 0x0d0000, ...opts })); return dir;
 }
+// Real Meta prebuilt slice (see fixture source json): the embedded hermesvm
+// framework's Info.plist declares no platform keys at all.
+const HERMES_PLIST_SOURCE = JSON.parse(readFileSync(join(ROOT, 'tests/fixtures/hermesvm-ios-arm64-info-source.json'), 'utf8'));
+const HERMES_PLIST = readFileSync(join(ROOT, 'tests/fixtures/hermesvm-ios-arm64-info.plist'));
+function hermesvmFramework(f, opts = {}) {
+  const dir = join(f.app, 'Frameworks', 'hermesvm.framework'); mkdirSync(dir, { recursive: true });
+  writeFileSync(join(dir, 'Info.plist'), HERMES_PLIST);
+  writeFileSync(join(dir, 'hermesvm'), binary({ type: 6, minimum: 0x0f0100, ...opts })); return dir;
+}
 function archive(f, variant = '') {
   const target = join(f.root, 'fixture.ipa');
   const code = `import pathlib,sys,zipfile,stat\napp=pathlib.Path(sys.argv[1]); variant=sys.argv[3]\nwith zipfile.ZipFile(sys.argv[2], 'w', zipfile.ZIP_DEFLATED) as z:\n for p in sorted(app.rglob('*')):\n  if p.is_file(): z.write(p, 'Payload/PiGUIMobile.app/'+p.relative_to(app).as_posix())\n if variant == 'traversal': z.writestr('Payload/PiGUIMobile.app/../SYNTHETIC-PRIVATE', b'x')\n if variant == 'duplicate': z.writestr('Payload/PiGUIMobile.app/Info.plist', b'x')\n if variant == 'outside': z.writestr('SYNTHETIC-PRIVATE.txt', b'x')\n if variant == 'link':\n  e=zipfile.ZipInfo('Payload/PiGUIMobile.app/link'); e.create_system=3; e.external_attr=(stat.S_IFLNK|0o777)<<16; z.writestr(e, '../../SYNTHETIC-PRIVATE')\n if variant == 'empty-framework': z.writestr('Payload/PiGUIMobile.app/Frameworks/Empty.framework/', b'')\n`;
@@ -67,6 +77,34 @@ function pack(f, options) { return spawnSync('bash', ['scripts/ci/package-ipa.sh
 test('valid directory and final IPA are inspected without lipo/codesign mocks', t => {
   const f = fixture(t); framework(f); assert.equal(verify(f.app).report.executables, 2);
   const result = verify(archive(f)); assert.equal(result.status, 0, result.stdout); assert.equal(result.report.kind, 'unsigned-device-archive'); assert.equal(result.report.sideStoreInstallVerified, false);
+});
+test('the real locked hermesvm framework slice is a valid embedded framework', t => {
+  const f = fixture(t); assert.equal(createHash('sha256').update(HERMES_PLIST).digest('hex'), HERMES_PLIST_SOURCE.sha256);
+  hermesvmFramework(f); assert.equal(verify(f.app).status, 0);
+  const result = verify(archive(f)); assert.equal(result.status, 0, result.stdout); assert.equal(result.report.executables, 2);
+});
+test('non-app platform keys are presence-conditional but never a non-iOS declaration', t => {
+  const f = fixture(t); const dir = framework(f);
+  for (const [supported, code] of [[['iPhoneSimulator'], 'BUNDLE_PLATFORM_SUPPORTED_SYNTHETIC'], [['iPhoneOS', 'BAD-PLATFORM'], 'BUNDLE_PLATFORM_SUPPORTED_SYNTHETIC'], ['iPhoneOS', 'BUNDLE_PLATFORM_SUPPORTED_SYNTHETIC']]) {
+    writePlist(join(dir, 'Info.plist'), { CFBundleExecutable: 'Synthetic', CFBundleSupportedPlatforms: supported, MinimumOSVersion: '13.0' });
+    reject(archive(f), code);
+  }
+  writePlist(join(dir, 'Info.plist'), { CFBundleExecutable: 'Synthetic', MinimumOSVersion: '13.0' }); assert.equal(verify(archive(f)).status, 0);
+  writePlist(join(dir, 'Info.plist'), { CFBundleExecutable: 'Synthetic', CFBundleSupportedPlatforms: ['iPhoneOS'], DTPlatformName: 'iphonesimulator', MinimumOSVersion: '13.0' });
+  reject(archive(f), 'BUNDLE_PLATFORM_NAME_SYNTHETIC');
+  writePlist(join(dir, 'Info.plist'), { CFBundleExecutable: 'Synthetic', DTSDKName: 'iphoneossimulator26.0', MinimumOSVersion: '13.0' });
+  reject(archive(f), 'BUNDLE_PLATFORM_SDK_SYNTHETIC');
+});
+test('one run reports multiple independent bundle violations', t => {
+  const f = fixture(t); hermesvmFramework(f); const dir = framework(f);
+  writePlist(join(dir, 'Info.plist'), { CFBundleExecutable: 'Synthetic', CFBundleSupportedPlatforms: ['iPhoneSimulator'], MinimumOSVersion: '13.0' });
+  const hermes = join(f.app, 'Frameworks', 'hermesvm.framework');
+  writeFileSync(join(hermes, 'Info.plist'), `<?xml version="1.0"?><plist version="1.0"><dict><key>CFBundleExecutable</key><string>hermesvm</string><key>DTPlatformName</key><string>iphonesimulator</string><key>MinimumOSVersion</key><string>15.1</string></dict></plist>`);
+  const result = verify(archive(f)); assert.equal(result.status, 1);
+  assert.equal(result.report.passed, false); assert.equal(result.report.code, 'BUNDLE_PLATFORM_SUPPORTED_SYNTHETIC');
+  // Every independent failure surfaces in one run: both platform violations
+  // and the aggregate consequence (neither framework declared a valid binary).
+  assert.deepEqual(result.report.violations, ['BUNDLE_PLATFORM_SUPPORTED_SYNTHETIC', 'BUNDLE_PLATFORM_NAME_HERMESVM', 'FRAMEWORK_EXECUTABLE_MISSING']);
 });
 test('a genuine one-slice FAT arm64 header is parsed', t => { const f = fixture(t); writeFileSync(join(f.app, 'PiGUIMobile'), fat(binary())); assert.equal(verify(archive(f)).status, 0); });
 for (const [name, options, code] of [
@@ -131,6 +169,7 @@ test('invalid or simulator SDK metadata cannot masquerade as iphoneos', t => {
   const f = fixture(t); f.info.DTSDKName = 'iphoneossimulator26.0'; f.update(); reject(archive(f), 'BUNDLE_PLATFORM_SDK_APP');
   const p = fixture(t); p.info.DTPlatformName = 'iphonesimulator'; p.update(); reject(archive(p), 'BUNDLE_PLATFORM_NAME_APP');
   const s = fixture(t); s.info.CFBundleSupportedPlatforms = ['iPhoneSimulator']; s.update(); reject(archive(s), 'BUNDLE_PLATFORM_SUPPORTED_APP');
+  const extra = fixture(t); extra.info.CFBundleSupportedPlatforms = ['iPhoneOS', 'MacOSX']; extra.update(); reject(archive(extra), 'BUNDLE_PLATFORM_SUPPORTED_APP');
 });
 test('case-insensitive duplicate ZIP entries fail closed', t => {
   const f = fixture(t); writeFileSync(join(f.app, 'RESOURCE.txt'), 'one'); writeFileSync(join(f.app, 'resource.TXT'), 'two');
@@ -141,7 +180,9 @@ test('workflow upload paths form an exact file whitelist and exclude raw logs/in
   const workflow = readFileSync(join(ROOT, '.github/workflows/native-infrastructure.yml'), 'utf8');
   const paths = [...workflow.matchAll(/^            (artifacts\/[^\r\n]+)$/gm)].map(m => m[1]);
   const expected = ['artifacts/ipa/PiGUIMobile-unsigned.ipa', 'artifacts/ipa/verification.json', 'artifacts/ipa/SHA256SUMS', 'artifacts/reports/steps.json', 'artifacts/reports/diagnostics.json', 'artifacts/reports/environment.json', ...['iphone', 'ipad'].flatMap(device => ['native', 'dark', 'accessibility'].flatMap(phase => [`artifacts/reports/${device}-${phase}.xml`, `artifacts/reports/${device}-${phase}-debug.json`])), ...['iphone', 'ipad'].flatMap(device => ['00-shell-home.png', '01-native-glass.png', '02-interactions.png', '03-navigation.png', '04-keyboard-visible.png', '05-native-motion.png', '07-shell-sessions.png', '08-shell-conversation.png', 'dark/home.png', 'dark/appearance.png', 'accessibility/home.png', 'accessibility/reduce-transparency.png', 'accessibility/dynamic-type.png', 'final.png', 'failure.png'].map(shot => `artifacts/screenshots/${device}/${shot}`)), ...['Gemfile.lock', 'Podfile.lock', 'prebuilt-dependencies.json', 'review.json'].map(name => `artifacts/lock-candidates/${name}`)];
-  assert.equal(paths.length, expected.length); assert.deepEqual([...paths].sort(), expected.sort()); assert.equal(new Set(paths).size, paths.length);
+  // The same whitelist may be listed in several jobs (stage artifact + merged
+  // canonical artifact): the SET of published paths must be exactly expected.
+  assert.deepEqual([...new Set(paths)].sort(), expected.sort());
   assert.ok(paths.every(p => !/[?*]/.test(p) && /\.(?:ipa|json|xml|png|lock)$|\/SHA256SUMS$/.test(p)));
   assert.ok(paths.every(p => !/Payload|log|simulators|entitlements|mobileprovision/.test(p)));
   assert.equal(/path: artifacts\//.test(workflow), false);

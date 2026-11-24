@@ -192,6 +192,19 @@
         "at": {
           "type": "string",
           "format": "date-time"
+        },
+        "scopes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9-]*$"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "scopeFingerprint": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
         }
       },
       "additionalProperties": false
@@ -365,6 +378,18 @@
         "updatedAt": {
           "type": "string",
           "format": "date-time"
+        },
+        "evidenceScopes": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          }
         }
       },
       "additionalProperties": false

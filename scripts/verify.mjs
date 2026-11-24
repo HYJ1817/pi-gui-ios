@@ -1,7 +1,7 @@
 import { spawnSync } from 'node:child_process';
 import { resolve, dirname } from 'node:path';
 import { existsSync } from 'node:fs';
-import { ROOT, atomicWrite, sourceFingerprint, snapshot, loadControl, digest, createCheckpoint } from './lib/control.mjs';
+import { ROOT, atomicWrite, sourceFingerprint, snapshot, loadControl, digest, createCheckpoint, resolveScopes } from './lib/control.mjs';
 const kind = process.argv[2];
 const commands = {
   unit: { program: 'npm', args: ['test'], label: 'npm test' },
@@ -15,6 +15,8 @@ const commands = {
 };
 const command = commands[kind]; if (!command) throw new Error('Use unit, typecheck, bundle, doctor, protocol-contract, integration');
 const startedAt = new Date().toISOString(), fingerprint = sourceFingerprint(), commit = snapshot().commit;
+const task = loadControl().data.tasks.find(t => t.id === loadControl().data.currentTask);
+const scopes = resolveScopes(task, kind), scopeFingerprint = sourceFingerprint(ROOT, scopes);
 if (!commit) throw new Error('Commit the initial source before producing acceptance reports');
 const npmCli = command.program === 'npm' ? [process.env.npm_execpath, resolve(dirname(process.execPath), 'node_modules/npm/bin/npm-cli.js'), resolve(dirname(process.execPath), '../lib/node_modules/npm/bin/npm-cli.js')].find(path => path?.endsWith('npm-cli.js') && existsSync(path)) : null;
 if (command.program === 'npm' && !npmCli) throw new Error('Cannot locate the installed npm CLI; no shell fallback is allowed');
@@ -22,7 +24,7 @@ const args = command.program === 'npm' ? [npmCli, ...command.args] : command.arg
 const r = spawnSync(process.execPath, args, { cwd: ROOT, shell: false, encoding: 'utf8', windowsHide: true, maxBuffer: 32 * 1024 * 1024, env: { ...process.env, CI: '1', EXPO_NO_TELEMETRY: '1' } });
 const output = (r.stdout ?? '') + (r.stderr ?? '') + (r.error?.message ?? '');
 const logPath = 'docs/acceptance/local-' + kind + '-output.txt'; atomicWrite(resolve(ROOT, logPath), output);
-const report = { schemaVersion: 2, kind, taskId: loadControl().data.currentTask, commit, sourceFingerprint: fingerprint, startedAt, finishedAt: new Date().toISOString(), passed: r.status === 0 && fingerprint === sourceFingerprint(), details: { command: command.label, exitCode: r.status ?? 1, logPath, logSha256: digest(output) } };
+const report = { schemaVersion: 2, kind, taskId: loadControl().data.currentTask, commit, sourceFingerprint: fingerprint, scopes, scopeFingerprint, startedAt, finishedAt: new Date().toISOString(), passed: r.status === 0 && fingerprint === sourceFingerprint(), details: { command: command.label, exitCode: r.status ?? 1, logPath, logSha256: digest(output) } };
 atomicWrite(resolve(ROOT, 'docs/acceptance/local-' + kind + '.json'), JSON.stringify(report, null, 2) + '\n');
 console.log(output); console.log(JSON.stringify({ kind, passed: report.passed, exitCode: report.details.exitCode, sourceFingerprint: fingerprint, commit }));
 createCheckpoint(ROOT, '实际运行 ' + command.label + '，exit=' + report.details.exitCode);

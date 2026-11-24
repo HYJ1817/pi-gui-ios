@@ -1,11 +1,11 @@
 {
   "schemaVersion": 2,
   "kind": "tasks",
-  "revision": 707,
-  "updatedAt": "2026-11-24T08:44:06.145Z",
+  "revision": 711,
+  "updatedAt": "2026-11-24T12:44:22.973Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "913449ae2a8ac399671baf06587ce3a37370610cbe2d3ca2495b6f72e9a7b243",
+    "parentDigest": "0f82b86886bdd04a37b29e8ce9eb2f87146e476d8bd084211bed3faf2b27b3ac",
     "tasks": [
       {
         "id": "M-1-infrastructure",
@@ -868,7 +868,15 @@
             "at": "2026-11-24T08:44:05.019Z"
           }
         ],
-        "updatedAt": "2026-11-22T05:04:14.175Z"
+        "updatedAt": "2026-11-22T05:04:14.175Z",
+        "evidenceScopes": {
+          "independent-review": [
+            "protocol"
+          ],
+          "independent-security": [
+            "protocol"
+          ]
+        }
       },
       {
         "id": "M1-remote",
@@ -943,7 +951,15 @@
             "at": "2026-11-24T08:44:06.080Z"
           }
         ],
-        "updatedAt": "2026-11-23T02:45:31.115Z"
+        "updatedAt": "2026-11-23T02:45:31.115Z",
+        "evidenceScopes": {
+          "independent-review": [
+            "protocol"
+          ],
+          "independent-security": [
+            "protocol"
+          ]
+        }
       },
       {
         "id": "M2-shell",
@@ -1049,7 +1065,15 @@
             "at": "2026-11-24T08:36:09.315Z"
           }
         ],
-        "updatedAt": "2026-11-23T02:47:37.213Z"
+        "updatedAt": "2026-11-23T02:47:37.213Z",
+        "evidenceScopes": {
+          "independent-review": [
+            "app"
+          ],
+          "independent-security": [
+            "app"
+          ]
+        }
       },
       {
         "id": "M3-core",
@@ -1124,6 +1148,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "c7e6a76a797ef862b8336ce1e65f887ba020985e5a2f378ace3e32aa70144b4c"
+    "digest": "d9d32c3dbc11941428b6d5df9478bae3613594b09311ffdc23de6f6d1aa8b8c3"
   }
 }

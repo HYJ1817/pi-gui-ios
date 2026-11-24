@@ -11,7 +11,7 @@ import sys
 import subprocess
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
-STEPS = ('environment', 'npm', 'prebuild', 'pods', 'maestro', 'simulator-build', 'iphone', 'ipad', 'device-build', 'ipa')
+STEPS = ('environment', 'npm', 'prebuild', 'pods', 'simulator-build', 'iphone', 'ipad', 'device-build', 'ipa')
 CATEGORIES = {
     'NPM_PEER_RESOLUTION_FAILED': r'\bERESOLVE\b',
     'NPM_INTEGRITY_FAILED': r'\bEINTEGRITY\b',

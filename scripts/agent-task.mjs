@@ -17,7 +17,9 @@ if (action === 'transition') {
   }
   mutate(ROOT, d => {
     const task = d.tasks.find(t => t.id === id); assert(task, 'Unknown task'); validateReport(d, task, report);
-    task.evidence.push({ kind: report.kind, path: value, sha256: digest(bytes), sourceFingerprint: report.sourceFingerprint, commit: report.commit, at: new Date().toISOString() });
+    const record = { kind: report.kind, path: value, sha256: digest(bytes), sourceFingerprint: report.sourceFingerprint, commit: report.commit, at: new Date().toISOString() };
+    if (report.scopeFingerprint !== undefined) { record.scopes = report.scopes; record.scopeFingerprint = report.scopeFingerprint; }
+    task.evidence.push(record);
   });
   console.log('Imported verified ' + report.kind + ' report without altering its result/source.');
 } else if (action === 'ci') {
