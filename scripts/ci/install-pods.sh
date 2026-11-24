@@ -39,8 +39,11 @@ export RNS_GAMMA_ENABLED='1'
 # Pods/Manifest.lock. In locked/deployment mode Podfile.lock keeps the committed
 # bytes while pod install serializes a normalized copy to Manifest.lock — any
 # formatting drift fails the build even though the resolved set is identical.
-# Stamp the sandbox with the reviewed Podfile.lock so the check compares the
-# lock we actually reviewed, not a re-serialized variant.
+# The stamp below is ONLY for that byte-level drift: before copying we prove the
+# actually-installed manifest is semantically identical to the reviewed
+# Podfile.lock (same pods, sources, checkout options and checksums). A real
+# resolution difference aborts the pipeline here instead of being papered over.
 if [[ "$MODE" == locked && -f "$ROOT/ios/Pods/Manifest.lock" ]]; then
+  ruby "$ROOT/scripts/ci/validate-locks.rb" manifest-compare "$ROOT/ios/Podfile.lock" "$ROOT/ios/Pods/Manifest.lock"
   cp "$ROOT/ios/Podfile.lock" "$ROOT/ios/Pods/Manifest.lock"
 fi

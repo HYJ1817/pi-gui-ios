@@ -46,6 +46,7 @@ export function validateControl(d) {
   assert(d.tasks.find(t => t.id === d.currentTask).phase === d.phase, 'Current task/phase mismatch');
   for (const ci of d.ci) validateCiRecord(ci);
   assert(new Set(d.ci.map(c => `${c.id}/${c.attempt}`)).size === d.ci.length, 'Duplicate CI attempt');
+  validateEvidenceScopes(d);
   return d;
 }
 function within(root, path) { const r = relative(root, path); return !r.startsWith(`..${sep}`) && r !== '..' && !isAbsolute(r); }
@@ -97,7 +98,7 @@ function hashFiles(entries) { const hash = createHash('sha256'); for (const [pat
 export const SCOPE_SETS = {
   app: ['src/', 'App.tsx', 'index.ts', 'global.css', 'metro.config.js', 'babel.config.js', 'app.json', 'expo-env.d.ts', 'modules/'],
   tests: ['tests/'],
-  'native-build': ['scripts/ci/', 'native/', '.github/', '.maestro/', 'Gemfile', 'Gemfile.lock'],
+  'native-build': ['scripts/ci/', 'native/', '.github/', 'Gemfile', 'Gemfile.lock'],
   control: ['scripts/lib/', 'scripts/agent-', 'scripts/verify.mjs', 'scripts/check-technology-stack.mjs', '.agent/schemas/'],
   protocol: ['scripts/lib/remote-protocol-contract.mjs', 'scripts/desktop-remote-verify.mjs', 'tests/remote-contract.test.mjs', 'docs/contracts/', 'docs/design/', 'docs/remote-protocol.md'],
   meta: ['docs/', 'AGENTS.md', 'REVIEW.md', 'ROADMAP.md', 'README.md', 'THIRD_PARTY_NOTICES.md'],
@@ -123,7 +124,56 @@ export const KIND_SCOPES = {
 };
 function matchesSet(path, set) { return (SCOPE_SETS[set] ?? []).some(prefix => path === prefix || path.startsWith(prefix)); }
 function uncovered(path) { return !Object.keys(SCOPE_SETS).some(set => matchesSet(path, set)); }
+// Scope set names that carry actual product/infra source rather than plumbing.
+// A declared independent-review scope must keep at least one of these whenever
+// the kind's default scope covers any — otherwise a review could bind only
+// 'meta'/'control'/'tests' and evade the source it was meant to certify.
+const PRODUCT_SCOPES = ['app', 'native-build', 'protocol'];
+function resolveDefaultScopes(task, kind) {
+  const declared = KIND_SCOPES[kind];
+  assert(Array.isArray(declared) && declared.length > 0, `No scope binding for evidence kind ${kind}`);
+  if (declared.includes('all')) return ['all'];
+  const resolved = new Set(['shared']);
+  for (const name of declared) {
+    if (name === 'union') {
+      assert(task, 'union scope requires a task');
+      // 'union' expands over the task's non-independent, non-device evidence
+      // only — independent evidence kinds are nested unions/all and would
+      // otherwise widen the union to every set.
+      for (const other of task.requiredEvidence) {
+        if (other === kind || other.startsWith('independent-') || other.startsWith('device-') || !(other in KIND_SCOPES)) continue;
+        for (const inner of KIND_SCOPES[other]) if (inner !== 'union' && inner !== 'all') resolved.add(inner);
+      }
+    } else {
+      assert(name in SCOPE_SETS, `Unknown evidence scope set ${name}`);
+      resolved.add(name);
+    }
+  }
+  return [...resolved].sort();
+}
+// evidenceScopes is a narrowing-only declaration for independent-* kinds: the
+// task may bind a review to a subset of the scope it would cover by default
+// (e.g. a protocol-only phase reviewed on 'protocol'). It may never widen, add
+// unknown sets, remove the build/security surface from independent-security,
+// or shrink below the task's product sets. Anything else fails closed here,
+// before a report binds the wrong fingerprint.
+function checkScopeFloor(task, kind) {
+  const declared = task?.evidenceScopes?.[kind];
+  if (declared === undefined) return;
+  assert(Array.isArray(declared) && declared.length > 0, `Illegal evidenceScopes declaration for ${kind}`);
+  assert(kind.startsWith('independent-'), `evidenceScopes may only narrow independent evidence kinds, not ${kind}`);
+  const bound = resolveDefaultScopes(task, kind);
+  assert(!bound.includes('all'), `evidenceScopes cannot rebind the always-all kind ${kind}`);
+  for (const name of declared) assert(name in SCOPE_SETS, `Unknown evidence scope set ${name}`);
+  assert(declared.every(name => bound.includes(name)), `Illegal narrowing for ${kind}: declared scope must stay inside the default bound`);
+  if (bound.some(name => PRODUCT_SCOPES.includes(name)))
+    assert(declared.some(name => PRODUCT_SCOPES.includes(name)), `Illegal narrowing for ${kind}: no product scope set retained`);
+  if (kind === 'independent-security' && bound.includes('native-build'))
+    assert(declared.includes('native-build'), 'Illegal narrowing for independent-security: native-build is always in scope');
+}
+export function validateEvidenceScopes(d) { for (const task of d.tasks) for (const kind of Object.keys(task.evidenceScopes ?? {})) checkScopeFloor(task, kind); }
 export function resolveScopes(task, kind) {
+  checkScopeFloor(task, kind);
   const declared = task?.evidenceScopes?.[kind] ?? KIND_SCOPES[kind];
   assert(Array.isArray(declared) && declared.length > 0, `No scope binding for evidence kind ${kind}`);
   if (declared.includes('all')) return ['all'];

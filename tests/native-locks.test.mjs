@@ -172,3 +172,30 @@ for (const [name, gem, phase] of [
   ['different CocoaPods version', GEM.replaceAll('1.16.2', '1.16.1'), 'GEM_CONSTRAINTS'],
   ['different Bundler version', GEM.replaceAll('2.6.9', '2.6.8'), 'GEM_CONSTRAINTS'],
 ]) test(`reject ${name}`, t => reject(t, POD, phase, gem));
+
+// Pods Manifest.lock stamping: install-pods.sh may copy the reviewed Podfile.lock
+// onto Pods/Manifest.lock only to defeat byte-level serialization drift. The
+// manifest-compare mode must prove semantic equality first — equal resolutions
+// may differ in bytes, real differences must always block the stamp.
+function compare(t, left, right) {
+  const f = fixture(t);
+  writeFileSync(join(f.root, 'podfile.lock'), left);
+  writeFileSync(join(f.root, 'manifest.lock'), right);
+  return spawnSync(RUBY, [join(ROOT, 'scripts/ci/validate-locks.rb'), 'manifest-compare', join(f.root, 'podfile.lock'), join(f.root, 'manifest.lock')], f.options);
+}
+test('Manifest.lock stamping: byte-format drift passes semantic compare', t => {
+  const reformatted = POD.replace('  - Synthetic (1.0.0)', '  - Synthetic (1.0.0) ').replace('COCOAPODS: 1.16.2\n', 'COCOAPODS: 1.16.2\n\n');
+  const result = compare(t, POD, reformatted);
+  assert.equal(result.status, 0, result.stderr); assert.match(result.stdout, /POD_MANIFEST_MATCH/);
+});
+for (const [name, mutation] of [
+  ['different pod version', POD.replace('Synthetic (1.0.0)', 'Synthetic (1.0.1)')],
+  ['different spec checksum', POD.replace('SPEC CHECKSUMS:\n  Synthetic: aaaa', 'SPEC CHECKSUMS:\n  Synthetic: bbbb')],
+  ['different source path', POD.replace('../node_modules/synthetic', '../node_modules/other')],
+  ['unparseable manifest', 'not: [valid'],
+  ['empty manifest', ''],
+]) test(`Manifest.lock stamping refused on ${name}`, t => {
+  const result = compare(t, POD, mutation);
+  assert.equal(result.status, 1); assert.match(result.stderr, /POD_MANIFEST_DRIFT/);
+  assert.equal(result.stderr.includes(marker), false);
+});
