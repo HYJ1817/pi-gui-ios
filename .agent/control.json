@@ -1,8 +1,8 @@
 {
   "schemaVersion": 2,
   "kind": "control",
-  "revision": 856,
-  "updatedAt": "2026-11-24T21:47:43.788Z",
+  "revision": 870,
+  "updatedAt": "2026-11-24T21:55:13.976Z",
   "data": {
     "phase": "M3",
     "currentTask": "M3-core",
@@ -157,7 +157,7 @@
         "id": "M-1-infrastructure",
         "phase": "M-1",
         "title": "恢复控制层、Windows 原生探针、macOS/Simulator/Maestro/unsigned IPA 验证",
-        "status": "blocked",
+        "status": "completed",
         "dependsOn": [],
         "requiredEvidence": [
           "unit",
@@ -819,9 +819,21 @@
               "tests"
             ],
             "scopeFingerprint": "e2066df800c86193c830cc1d3a9d55d1b6d6f16d939dbc5cd79f52bc450f1ccb"
+          },
+          {
+            "kind": "independent-handoff",
+            "path": "docs/acceptance/local-independent-handoff-M-1-infrastructure.json",
+            "sha256": "ddedb4795634e509f43a10352085beefd56daafd62f52a31706614a7aec0e29a",
+            "sourceFingerprint": "6e7a6a919475365de47983f258f09a8177739a5380d629a6ca07e9eae7e6aa9f",
+            "commit": "778b67eaf7f6cd87b6f6602e605ae979c533639d",
+            "at": "2026-11-24T21:54:30.763Z",
+            "scopes": [
+              "all"
+            ],
+            "scopeFingerprint": "6e7a6a919475365de47983f258f09a8177739a5380d629a6ca07e9eae7e6aa9f"
           }
         ],
-        "updatedAt": "2026-11-21T13:07:50.951Z"
+        "updatedAt": "2026-11-24T21:54:57.771Z"
       },
       {
         "id": "M-1-device",
@@ -1853,58 +1865,38 @@
       }
     ],
     "checkpoint": {
-      "id": "v2-2026-11-24T21-47-43-788Z-90bb82a7-1f3e-420d-9cdf-53a6d3efb3ce",
-      "path": ".agent/checkpoints/v2-2026-11-24T21-47-43-788Z-90bb82a7-1f3e-420d-9cdf-53a6d3efb3ce.json",
-      "sha256": "0a8db351a09d30d1ab9b78502673d146c4f2981e42cfd04a750317fc2eb8c365",
-      "authorityDigest": "6e6ead48b3a65271f1c65000575a3371e1944b5ba19defe76608bc5aaf19f573",
-      "at": "2026-11-24T21:47:43.788Z",
+      "id": "v2-2026-11-24T21-54-57-837Z-cd419102-3b39-4798-b5a5-9c1c3aeab7bc",
+      "path": ".agent/checkpoints/v2-2026-11-24T21-54-57-837Z-cd419102-3b39-4798-b5a5-9c1c3aeab7bc.json",
+      "sha256": "caeec71424faee6f3df67c3d8f16a777d986ce9bea8061f7cb0a2b9920c16abe",
+      "authorityDigest": "54627082a9c347f015da2ca1223044df5e4e91fcdfa2a65e1b10bf7a7b124bb0",
+      "at": "2026-11-24T21:54:57.837Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "c0b42bc6b2d3b74df736b413122ca0a090dbe370",
+        "commit": "939fab2e2b8c8ca2f11a7660976df8f8efb35fc2",
         "dirty": [
           "M .agent/HANDOFF.md",
-          " D .agent/checkpoints/v2-2026-11-24T13-21-34-844Z-9982e13f-bfa5-44b4-8849-2cc874954fd8.json",
-          " D .agent/checkpoints/v2-2026-11-24T13-21-36-200Z-571e9950-5c3b-442e-a600-7d82d0ae4bf0.json",
-          " D .agent/checkpoints/v2-2026-11-24T13-21-37-598Z-e40c3c7f-3d72-4701-aa70-ece525e55fc5.json",
-          " D .agent/checkpoints/v2-2026-11-24T13-21-38-881Z-17837996-4cfb-49c2-86fd-4c45151759be.json",
-          " D .agent/checkpoints/v2-2026-11-24T13-27-03-919Z-b12218a0-cccc-4074-9be3-f09b21ab0f26.json",
-          " D .agent/checkpoints/v2-2026-11-24T13-27-05-092Z-0c6926a9-5444-4ae2-98eb-ae832e919af1.json",
-          " D .agent/checkpoints/v2-2026-11-24T13-31-39-023Z-5d28dfed-574a-43ff-be4a-5eba05f19e7e.json",
-          " D .agent/checkpoints/v2-2026-11-24T13-31-40-171Z-c290b335-33c5-44c9-a035-9220ae511bca.json",
-          " D .agent/checkpoints/v2-2026-11-24T13-32-12-148Z-f0e2092f-e82e-4e93-96f4-a3754a123f9c.json",
-          " D .agent/checkpoints/v2-2026-11-24T14-25-33-840Z-34224b65-32a6-48ea-87ae-2b83ee4b061a.json",
+          " D .agent/checkpoints/v2-2026-11-24T14-27-25-943Z-65aa2ab9-9037-40ae-a3e0-451e48c7f98d.json",
+          " D .agent/checkpoints/v2-2026-11-24T14-28-17-223Z-82dc9e24-c87c-4aaa-863f-404297240fce.json",
+          " D .agent/checkpoints/v2-2026-11-24T14-28-23-102Z-3f870076-430a-4e6c-81c6-341428363f91.json",
+          " D .agent/checkpoints/v2-2026-11-24T14-28-24-377Z-57c0e5b2-29ac-4004-93b1-e802bc83c901.json",
+          " D .agent/checkpoints/v2-2026-11-24T14-28-25-643Z-ee2f84a4-9f0a-4b7c-8de5-60057ed20dbf.json",
           " M .agent/control.json",
           " M .agent/state.json",
           " M .agent/tasks.json",
           " M PROGRESS.md",
-          "?? .agent/checkpoints/v2-2026-11-24T19-51-30-013Z-1b8cfbd0-c667-4cb5-b3b3-232e0808d668.json",
-          "?? .agent/checkpoints/v2-2026-11-24T19-51-31-751Z-4b368c0c-9f13-42d8-b11f-cd70159579dc.json",
-          "?? .agent/checkpoints/v2-2026-11-24T19-51-33-280Z-fea650cb-4b83-4f98-a0e6-9b7893b50ebb.json",
-          "?? .agent/checkpoints/v2-2026-11-24T19-51-34-982Z-0d351bc5-9a9c-4554-8ff5-ab382120512a.json",
-          "?? .agent/checkpoints/v2-2026-11-24T21-43-17-615Z-91de441c-0679-490e-aabc-5fab0cf6cd02.json",
-          "?? .agent/checkpoints/v2-2026-11-24T21-45-16-372Z-886c4e96-ee41-42dc-ad84-f5aafbd35376.json",
-          "?? .agent/checkpoints/v2-2026-11-24T21-47-39-010Z-914cc07c-4302-4d6b-a190-febb136a7959.json",
-          "?? .agent/checkpoints/v2-2026-11-24T21-47-40-204Z-16fd44c3-df3b-4c6b-bd51-bbc35c67bda4.json",
-          "?? .agent/checkpoints/v2-2026-11-24T21-47-41-382Z-25345dd1-4811-4dd8-8303-e7c41bbcf0b5.json",
-          "?? .agent/checkpoints/v2-2026-11-24T21-47-42-585Z-cb543af3-1e51-42a9-a81b-951967edf17b.json",
-          "?? docs/acceptance/independent-review-778b67e-M0-architecture-receipt.json",
-          "?? docs/acceptance/independent-review-778b67e-M1-remote-receipt.json",
-          "?? docs/acceptance/independent-review-778b67e-M2-shell-receipt.json",
-          "?? docs/acceptance/independent-security-778b67e-M0-architecture-receipt.json",
-          "?? docs/acceptance/independent-security-778b67e-M1-remote-receipt.json",
-          "?? docs/acceptance/local-independent-review-M0-architecture.json",
-          "?? docs/acceptance/local-independent-review-M1-remote.json",
-          "?? docs/acceptance/local-independent-review-M2-shell.json",
-          "?? docs/acceptance/local-independent-security-M0-architecture.json",
-          "?? docs/acceptance/local-independent-security-M1-remote.json",
-          "?? docs/acceptance/local-ui-M2-shell.json",
-          "?? docs/acceptance/ui-c0b42bc-m2/"
+          " M docs/acceptance/local-independent-handoff-M-1-infrastructure.json",
+          "?? .agent/checkpoints/v2-2026-11-24T21-54-30-827Z-58b01ff9-a656-4113-8f14-6cd6f65e2434.json",
+          "?? .agent/checkpoints/v2-2026-11-24T21-54-37-328Z-ea7ae3c4-2bae-47d4-85a6-ca2ebc26a2a6.json",
+          "?? .agent/checkpoints/v2-2026-11-24T21-54-37-968Z-41afb923-3670-415d-abaa-05262ce19e8a.json",
+          "?? .agent/checkpoints/v2-2026-11-24T21-54-38-596Z-1a380ea8-0b8b-42a8-aefb-63920211b201.json",
+          "?? .agent/checkpoints/v2-2026-11-24T21-54-53-189Z-07c1e647-1a4a-4da8-8d07-2a0455a6900a.json",
+          "?? docs/acceptance/independent-handoff-778b67e-M-1-infrastructure-receipt.json"
         ]
       },
       "sourceFingerprint": "6e7a6a919475365de47983f258f09a8177739a5380d629a6ca07e9eae7e6aa9f",
-      "note": "agent-task evidence M2-shell"
+      "note": "agent-task transition M-1-infrastructure"
     },
-    "nextAction": "M0/M1/M2 已完成（scoped evidence + 独立审查 + CI 绿 45413372694）。下一可执行任务：M-1-infrastructure 解除 blocked 并生成剩余证据（unit/typecheck/bundle/doctor/ui/ipa/independent-review/independent-security/independent-handoff）；M3-core 待 M-1-infra。真机 SideStore 仍留用户最终清单。",
+    "nextAction": "M3-core: resume testing evidence chain (unit+integration imported; CI 45473673853 green for ui import; delegates review+security pending). M-1-infrastructure completed via closeout PR #1.",
     "delegates": [
       {
         "taskId": "node:delegated-task:command%3Amcp%3Ac31b83bb-4e95-4301-8a91-f13f8295d85a%3Adelegate-task%3A4b75cf04-9360-469c-87e1-321a7e4b3149",
@@ -2241,11 +2233,17 @@
         "role": "independent-review",
         "status": "completed",
         "sourceCommit": "778b67eaf7f6cd87b6f6602e605ae979c533639d"
+      },
+      {
+        "taskId": "node:delegated-task:command%3Amcp%3A172f68fd-c749-4413-85d8-6ca556e69f55%3Adelegate-task%3A096ef259-eee9-4fcb-8ece-58723a5ed6cb",
+        "role": "independent-handoff",
+        "status": "completed",
+        "sourceCommit": "778b67eaf7f6cd87b6f6602e605ae979c533639d"
       }
     ]
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "cb9c215557bad028cc10325686bab6abbea1e5f1864e552b0e91661606781ca5"
+    "digest": "ddcd46d622cc37983eb06d599024a23e1eec2862beff6550d38f0cec53bc1c5d"
   }
 }

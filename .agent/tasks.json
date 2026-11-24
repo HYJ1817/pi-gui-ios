@@ -1,17 +1,17 @@
 {
   "schemaVersion": 2,
   "kind": "tasks",
-  "revision": 856,
-  "updatedAt": "2026-11-24T21:47:43.788Z",
+  "revision": 870,
+  "updatedAt": "2026-11-24T21:55:13.976Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "cb9c215557bad028cc10325686bab6abbea1e5f1864e552b0e91661606781ca5",
+    "parentDigest": "ddcd46d622cc37983eb06d599024a23e1eec2862beff6550d38f0cec53bc1c5d",
     "tasks": [
       {
         "id": "M-1-infrastructure",
         "phase": "M-1",
         "title": "恢复控制层、Windows 原生探针、macOS/Simulator/Maestro/unsigned IPA 验证",
-        "status": "blocked",
+        "status": "completed",
         "dependsOn": [],
         "requiredEvidence": [
           "unit",
@@ -673,9 +673,21 @@
               "tests"
             ],
             "scopeFingerprint": "e2066df800c86193c830cc1d3a9d55d1b6d6f16d939dbc5cd79f52bc450f1ccb"
+          },
+          {
+            "kind": "independent-handoff",
+            "path": "docs/acceptance/local-independent-handoff-M-1-infrastructure.json",
+            "sha256": "ddedb4795634e509f43a10352085beefd56daafd62f52a31706614a7aec0e29a",
+            "sourceFingerprint": "6e7a6a919475365de47983f258f09a8177739a5380d629a6ca07e9eae7e6aa9f",
+            "commit": "778b67eaf7f6cd87b6f6602e605ae979c533639d",
+            "at": "2026-11-24T21:54:30.763Z",
+            "scopes": [
+              "all"
+            ],
+            "scopeFingerprint": "6e7a6a919475365de47983f258f09a8177739a5380d629a6ca07e9eae7e6aa9f"
           }
         ],
-        "updatedAt": "2026-11-21T13:07:50.951Z"
+        "updatedAt": "2026-11-24T21:54:57.771Z"
       },
       {
         "id": "M-1-device",
@@ -1709,6 +1721,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "07de927fbe422f8c0305e0192b4baf72d64059bee0914562bb5845854108e1ff"
+    "digest": "c522a0d2400716be17630c3ebe7b3ab360e1aa7fb5c500fdc25987e2f0f0ace6"
   }
 }
