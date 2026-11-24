@@ -2,20 +2,20 @@
   "schemaVersion": 2,
   "kind": "protocol-contract",
   "taskId": "M0-architecture",
-  "commit": "bce4f9fac4b77be279db438bfe191ecaeea23949",
-  "sourceFingerprint": "7cc2760ae29b67bef2497330822405aadfe1a652a98374180b2708951e53f784",
+  "commit": "07b76f2aa95d5892d01219f4b4d6fffe09c730a4",
+  "sourceFingerprint": "88b0a2b5316197bc83a8eacd23f5012c5b55f90f13d84e453a979879f3075908",
   "scopes": [
     "protocol",
     "shared"
   ],
   "scopeFingerprint": "b8e43d36ca038ba8e2669dd6e04456bb2ecac4da0f8531889007f3a6f482dbdc",
-  "startedAt": "2026-11-24T12:46:58.357Z",
-  "finishedAt": "2026-11-24T12:46:59.230Z",
+  "startedAt": "2026-11-24T12:55:25.632Z",
+  "finishedAt": "2026-11-24T12:55:26.325Z",
   "passed": true,
   "details": {
     "command": "node --test tests/remote-contract.test.mjs",
     "exitCode": 0,
     "logPath": "docs/acceptance/local-protocol-contract-M0-architecture-output.txt",
-    "logSha256": "3736b5c2a2f5a64d5aa52e4dbc3620ec6c3c51952f6d55d23ced1e2b1173bb42"
+    "logSha256": "0e35f4d7ba9a2fc8538908a56c80efd7a65a719d5f0f30a3aa044f85ac1ca9ea"
   }
 }
