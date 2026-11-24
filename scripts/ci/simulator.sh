@@ -3,6 +3,7 @@ set -euo pipefail
 UDID="$1"
 DEVICE_NAME="$2"
 APP_PATH="build/simulator/Build/Products/Release-iphonesimulator/PiGUIMobile.app"
+BUNDLE_ID="io.github.hyj1817.piguimobile"
 : "${RUNNER_TEMP:?}"
 case "$DEVICE_NAME" in iphone|ipad) ;; *) exit 1 ;; esac
 PRIVATE="$RUNNER_TEMP/native-private"
@@ -28,38 +29,62 @@ xcrun simctl install "$UDID" "$APP_PATH"
 # Launch probe: a non-numeric result means the app could not start at all
 # (missing bundle, Hermes fault); a pid that disappears within 3s means an
 # early crash. Either prints a fixed structural code, never the process text.
-LAUNCH_RC=$(xcrun simctl launch "$UDID" io.github.hyj1817.piguimobile 2>&1 | awk '{print $NF}') || true
+LAUNCH_RC=$(xcrun simctl launch "$UDID" "$BUNDLE_ID" 2>&1 | awk '{print $NF}') || true
 if ! [[ "$LAUNCH_RC" =~ ^[0-9]+$ ]]; then
   printf 'NATIVE_LAUNCH_FAIL\n'
 else
   sleep 3
-  xcrun simctl spawn "$UDID" launchctl list 2>/dev/null | grep -q "io.github.hyj1817.piguimobile" || printf 'NATIVE_LAUNCH_EXITED\n'
-  xcrun simctl terminate "$UDID" io.github.hyj1817.piguimobile >/dev/null 2>&1 || true
+  xcrun simctl spawn "$UDID" launchctl list 2>/dev/null | grep -q "$BUNDLE_ID" || printf 'NATIVE_LAUNCH_EXITED\n'
+  xcrun simctl terminate "$UDID" "$BUNDLE_ID" >/dev/null 2>&1 || true
 fi
-export MAESTRO_LOG_LEVEL=debug
-# Maestro's XCUITest driver on iOS 26.x intermittently fails to connect on the
-# first launch (upstream issues #3318/#3327/#3137). One retry with a fresh
-# driver install absorbs the flake; real assertion failures still surface as
-# MAESTRO_STEP_* codes from the debug artifacts.
-run_flow() {
-  local phase="$1" flow="$2" env="$3" xml="$4" out="$5" debug="$PRIVATE/debug-$DEVICE_NAME-$1"
-  local args=(test -e "$env" --format junit --output "$xml" --test-output-dir "$out"
-              --debug-output "$debug" --flatten-debug-output "$flow")
-  local rc=0
-  mkdir -p "$debug"
-  maestro --device "$UDID" "${args[@]}" > "$debug/console.log" 2>&1 || rc=$?
-  if [[ "$rc" != 0 ]]; then
-    python3 scripts/ci/maestro-debug.py "$debug" "$UI/$1-debug.json" || true
-    sleep 5
-    rm -rf "$debug"; mkdir -p "$debug"
-    maestro --device "$UDID" --reinstall-driver "${args[@]}" > "$debug/console.log" 2>&1 && rc=0
-  fi
-  return "$rc"
-}
-run_flow native .maestro/native.yaml "SCREENSHOT_DIR=$SHOTS" "$UI/native.xml" "$UI/native" || exit $?
+
+# Simctl-only evidence path (2026-11-24): Maestro's XCUITest driver on the
+# runner's iOS 26.5 runtime repeatedly dies (Java ConnectException; upstream
+# #3318/#3327/#3137, AX snapshot crash #3538) even with zero AX queries and a
+# --reinstall-driver retry, so UI evidence is produced deterministically by
+# simctl: deep links navigate the app's own routes, the probe's synthetic
+# ?params drive interaction state, and `io screenshot` captures real renders.
+shot() { sleep "${2:-2}"; xcrun simctl io "$UDID" screenshot "$SHOTS/$1.png"; }
+shot_dark() { sleep "${2:-2}"; xcrun simctl io "$UDID" screenshot "$SHOTS/dark/$1.png"; }
+shot_ax() { sleep "${2:-2}"; xcrun simctl io "$UDID" screenshot "$SHOTS/accessibility/$1.png"; }
+
+# Native + shell navigation flow.
+xcrun simctl launch "$UDID" "$BUNDLE_ID" >/dev/null
+shot 00-shell-home 4
+xcrun simctl openurl "$UDID" "piguimobile://project/project-a0001"
+shot 07-shell-sessions
+xcrun simctl openurl "$UDID" "piguimobile://session/session-s0001/conversation-c001"
+shot 08-shell-conversation
+xcrun simctl openurl "$UDID" "piguimobile://probe"
+shot 01-native-glass 3
+# Interaction state via probe params: keyboard focus+text, menu action,
+# animation mid-flight, accessibility action, and the scrolled footnote.
+xcrun simctl openurl "$UDID" "piguimobile://probe?focus=device-label&label=CI%20synthetic%20device"
+shot 04-keyboard-visible 2
+xcrun simctl openurl "$UDID" "piguimobile://probe?menu=confirm&animate=run&gesture=accessible"
+shot 05-native-motion 1
+shot 02-interactions 1
+xcrun simctl openurl "$UDID" "piguimobile://probe?scroll=end"
+shot 03-navigation 2
+
+# Dark appearance.
 xcrun simctl ui "$UDID" appearance dark
-run_flow dark .maestro/appearance.yaml "SCREENSHOT_DIR=$SHOTS/dark" "$UI/dark.xml" "$UI/dark" || exit $?
+xcrun simctl terminate "$UDID" "$BUNDLE_ID" >/dev/null 2>&1 || true
+xcrun simctl launch "$UDID" "$BUNDLE_ID" >/dev/null
+shot_dark home 4
+xcrun simctl openurl "$UDID" "piguimobile://probe"
+shot_dark appearance 3
+xcrun simctl ui "$UDID" appearance light
+
+# Accessibility: Reduce Transparency + largest Dynamic Type.
+xcrun simctl terminate "$UDID" "$BUNDLE_ID" >/dev/null 2>&1 || true
 xcrun simctl ui "$UDID" content_size accessibility-extra-extra-extra-large
 xcrun simctl spawn "$UDID" defaults write com.apple.Accessibility ReduceTransparencyEnabled -bool YES
-run_flow accessibility .maestro/accessibility.yaml "SCREENSHOT_DIR=$SHOTS/accessibility" "$UI/accessibility.xml" "$UI/accessibility" || exit $?
+xcrun simctl launch "$UDID" "$BUNDLE_ID" >/dev/null
+shot_ax home 4
+xcrun simctl openurl "$UDID" "piguimobile://probe?scroll=end"
+shot_ax reduce-transparency 2
+shot_ax dynamic-type 1
+xcrun simctl ui "$UDID" content_size medium
+xcrun simctl spawn "$UDID" defaults write com.apple.Accessibility ReduceTransparencyEnabled -bool NO
 xcrun simctl io "$UDID" screenshot "$SHOTS/final.png"

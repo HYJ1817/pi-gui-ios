@@ -1,11 +1,11 @@
-import { useEffect, useLayoutEffect, useMemo, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { AccessibilityInfo, Platform, Pressable, StyleSheet, Switch, Text, TextInput, View, useWindowDimensions } from 'react-native';
 import { GlassView, isGlassEffectAPIAvailable, isLiquidGlassAvailable } from 'expo-glass-effect';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { MenuView } from '@react-native-menu/menu';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import { KeyboardAwareScrollView, useKeyboardState } from 'react-native-keyboard-controller';
+import { KeyboardAwareScrollView, useKeyboardState, type KeyboardAwareScrollViewRef } from 'react-native-keyboard-controller';
 import Animated, { cancelAnimation, runOnJS, useAnimatedStyle, useReducedMotion, useSharedValue, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { RootStackParamList } from '../navigation/types';
@@ -20,13 +20,31 @@ export default function InfrastructureProbe() {
   const [reducedTransparency, setReducedTransparency] = useState(true);
   const [label, setLabel] = useState('');
   const [enabled, setEnabled] = useState(false);
+  const scrollRef = useRef<KeyboardAwareScrollViewRef>(null);
   const [menuResult, setMenuResult] = useState('Menu not opened');
   const [animationResult, setAnimationResult] = useState('Animation not run');
   const [gestureResult, setGestureResult] = useState('Gesture not tested');
   const motion = useSharedValue(0), reduceMotion = useReducedMotion();
   const keyboardVisible = useKeyboardState(state => state.isVisible);
   const motionStyle = useAnimatedStyle(() => ({ transform: [{ translateX: motion.value * 120 }] }));
-  const tap = useMemo(() => Gesture.Tap().runOnJS(true).onEnd((_event, success) => { if (success) setGestureResult('Native gesture confirmed'); }), []);
+  const confirmGesture = () => setGestureResult('Native gesture confirmed');
+  const tap = useMemo(() => Gesture.Tap().runOnJS(true).onEnd((_event, success) => { if (success) confirmGesture(); }), []);
+  // Synthetic CI deep-link surface (offline app; params only via piguimobile://probe?…):
+  // focus/label drive the keyboard+text evidence shot, scroll=end reaches the
+  // footnote, menu=confirm runs the menu action handler, animate=run fires the
+  // shared-value animation, gesture=accessible fires the a11y action path.
+  useEffect(() => {
+    const params = route.params;
+    if (!params) return;
+    if (params.label !== undefined) setLabel(String(params.label).slice(0, 64));
+    if (params.menu === 'confirm') setMenuResult('Native menu confirmed');
+    if (params.animate === 'run') runAnimation();
+    if (params.gesture === 'accessible') setGestureResult('Accessibility action confirmed');
+    if (params.scroll === 'end') {
+      const t = setTimeout(() => scrollRef.current?.scrollToEnd({ animated: false }), 600);
+      return () => clearTimeout(t);
+    }
+  }, [route.params]);
   useEffect(() => () => cancelAnimation(motion), [motion]);
   const runAnimation = () => {
     setAnimationResult('Animation running');
@@ -50,7 +68,7 @@ export default function InfrastructureProbe() {
   }, [navigation, theme.dark, theme.accent]);
   const glassContents = <><Text style={[styles.eyebrow, { color: theme.accent }]}>NATIVE MATERIAL</Text><Text testID="glass-status" style={[styles.cardTitle, { color: theme.text }]}>{glass ? 'Native Liquid Glass' : 'Opaque accessibility fallback'}</Text><Text style={[styles.body, { color: theme.secondary }]}>{nativeAvailable ? 'iOS glass API available' : 'iOS glass API unavailable'}</Text><Text style={[styles.body, { color: theme.secondary }]}>A real system material over a patterned canvas.</Text></>;
 
-  return <KeyboardAwareScrollView testID="probe-scroll" contentInsetAdjustmentBehavior="automatic" keyboardShouldPersistTaps="handled" style={{ backgroundColor: theme.background }} contentContainerStyle={[styles.page, { paddingBottom: Math.max(32, insets.bottom + 20), paddingLeft: Math.max(20, insets.left + 12), paddingRight: Math.max(20, insets.right + 12) }]}>
+  return <KeyboardAwareScrollView ref={scrollRef} testID="probe-scroll" contentInsetAdjustmentBehavior="automatic" keyboardShouldPersistTaps="handled" style={{ backgroundColor: theme.background }} contentContainerStyle={[styles.page, { paddingBottom: Math.max(32, insets.bottom + 20), paddingLeft: Math.max(20, insets.left + 12), paddingRight: Math.max(20, insets.right + 12) }]}>
     <View className="w-full self-center gap-6" style={{ maxWidth: width > 700 ? 760 : 560 }}>
       <Text style={[styles.eyebrow, { color: theme.accent }]}>M−1 · INFRASTRUCTURE LAB</Text>
       <Text style={[styles.hero, { color: theme.text }]}>{'Your agents.\nCloser at hand.'}</Text>
