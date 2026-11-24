@@ -2,9 +2,9 @@ name: Native infrastructure
 on:
   push:
     branches: ['agent/**']
-    paths: ['App.tsx', 'index.ts', 'global.css', 'metro.config.js', 'babel.config.js', 'src/**', 'modules/**', 'expo-env.d.ts', 'scripts/**', 'tests/**', '.agent/schemas/**', 'native/**', 'Gemfile', 'Gemfile.lock', 'package.json', 'package-lock.json', 'app.json', 'tsconfig.json', '.github/workflows/**', 'docs/decisions/technology-stack.md', 'docs/acceptance/**']
+    paths: ['App.tsx', 'index.ts', 'global.css', 'metro.config.js', 'babel.config.js', 'src/**', 'modules/**', 'expo-env.d.ts', 'scripts/**', 'tests/**', '.agent/schemas/**', 'native/**', 'Gemfile', 'Gemfile.lock', 'package.json', 'package-lock.json', 'app.json', 'tsconfig.json', '.github/workflows/**', 'docs/decisions/technology-stack.md', 'docs/acceptance/t3-*.json']
   pull_request:
-    paths: ['App.tsx', 'index.ts', 'global.css', 'metro.config.js', 'babel.config.js', 'src/**', 'modules/**', 'expo-env.d.ts', 'scripts/**', 'tests/**', '.agent/schemas/**', 'native/**', 'Gemfile', 'Gemfile.lock', 'package.json', 'package-lock.json', 'app.json', 'tsconfig.json', '.github/workflows/**', 'docs/decisions/technology-stack.md', 'docs/acceptance/**']
+    paths: ['App.tsx', 'index.ts', 'global.css', 'metro.config.js', 'babel.config.js', 'src/**', 'modules/**', 'expo-env.d.ts', 'scripts/**', 'tests/**', '.agent/schemas/**', 'native/**', 'Gemfile', 'Gemfile.lock', 'package.json', 'package-lock.json', 'app.json', 'tsconfig.json', '.github/workflows/**', 'docs/decisions/technology-stack.md', 'docs/acceptance/t3-*.json']
   workflow_dispatch:
     inputs:
       stage:
