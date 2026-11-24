@@ -128,7 +128,9 @@ test('explicit own URL schemes and closed ATS are allowed', t => {
   const f = fixture(t); f.info.CFBundleURLTypes = [{ CFBundleURLSchemes: ['piguimobile', f.info.CFBundleIdentifier] }]; f.info.NSAppTransportSecurity = { NSAllowsLocalNetworking: false, NSExceptionDomains: {} }; f.update(); assert.equal(verify(archive(f)).status, 0);
 });
 test('invalid or simulator SDK metadata cannot masquerade as iphoneos', t => {
-  const f = fixture(t); f.info.DTSDKName = 'iphoneossimulator26.0'; f.update(); reject(archive(f), 'BUNDLE_PLATFORM');
+  const f = fixture(t); f.info.DTSDKName = 'iphoneossimulator26.0'; f.update(); reject(archive(f), 'BUNDLE_PLATFORM_SDK_APP');
+  const p = fixture(t); p.info.DTPlatformName = 'iphonesimulator'; p.update(); reject(archive(p), 'BUNDLE_PLATFORM_NAME_APP');
+  const s = fixture(t); s.info.CFBundleSupportedPlatforms = ['iPhoneSimulator']; s.update(); reject(archive(s), 'BUNDLE_PLATFORM_SUPPORTED_APP');
 });
 test('case-insensitive duplicate ZIP entries fail closed', t => {
   const f = fixture(t); writeFileSync(join(f.app, 'RESOURCE.txt'), 'one'); writeFileSync(join(f.app, 'resource.TXT'), 'two');

@@ -120,7 +120,8 @@ def scan(step, paths):
                 if len(line) > 65536:
                     continue
                 codes.update(token for token in re.findall(r'\b[A-Z][A-Z0-9_]{2,120}\b', line)
-                             if token in allowed or token.startswith('PLIST_SENSITIVE_KEY_'))
+                             if token in allowed or token.startswith(('PLIST_SENSITIVE_KEY_', 'BUNDLE_PLATFORM_SUPPORTED_',
+                                                    'BUNDLE_PLATFORM_NAME_', 'BUNDLE_PLATFORM_SDK_')))
                 codes.update(token for token in re.findall(r'\bMAESTRO_STEP_\d+_[A-Z0-9]{1,40}\b', line))
                 codes.update(token for token in re.findall(r'\bMAESTRO_CONSOLE_[A-Z0-9]{2,64}\b', line))
                 for code, pattern in CATEGORIES.items():

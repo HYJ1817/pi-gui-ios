@@ -342,11 +342,19 @@ def verify(source):
             require(binary in binaries, 'BUNDLE_EXECUTABLE_MISSING')
             expected_type = 2 if not directory else 6 if directory in frameworks else 8
             require(binaries[binary]['filetype'] == expected_type, 'BUNDLE_EXECUTABLE_TYPE')
-            require(info.get('CFBundleSupportedPlatforms') == ['iPhoneOS'] and
-                    info.get('DTPlatformName', 'iphoneos') == 'iphoneos' and
-                    isinstance(info.get('DTSDKName', 'iphoneos'), str) and
+            # Bundle directory stems are deterministic public build output names
+            # (app target / pod framework names) — the same public vocabulary as
+            # PLIST_SENSITIVE_KEY_* suffixes. Never emit file paths or values.
+            target = ''.join(c for c in directory.rsplit('/', 1)[-1].removesuffix('.framework')
+                             if c.isalnum() or c in '._-')[:48].upper() or 'APP'
+            require(info.get('CFBundleSupportedPlatforms') == ['iPhoneOS'],
+                    'BUNDLE_PLATFORM_SUPPORTED_' + target)
+            require(info.get('DTPlatformName', 'iphoneos') == 'iphoneos',
+                    'BUNDLE_PLATFORM_NAME_' + target)
+            require(isinstance(info.get('DTSDKName', 'iphoneos'), str) and
                     re.fullmatch(r'iphoneos(?:[1-9][0-9]?(?:\.[0-9]{1,2}){0,2})?',
-                                 info.get('DTSDKName', 'iphoneos')) is not None, 'BUNDLE_PLATFORM')
+                                 info.get('DTSDKName', 'iphoneos')) is not None,
+                    'BUNDLE_PLATFORM_SDK_' + target)
             minimum = version(info.get('MinimumOSVersion'))
             require(binaries[binary]['minimum'] <= minimum <= app_minimum, 'BUNDLE_MINIMUM_OS')
             declared.add(directory)
