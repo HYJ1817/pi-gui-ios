@@ -46,7 +46,8 @@ BENIGN_UI = {'UIDeviceFamily', 'UILaunchStoryboardName', 'UIMainStoryboardFile',
              'UIApplicationSupportsIndirectInputEvents', 'UILaunchScreen',
              # Xcode storyboard archive bookkeeping emitted into built
              # Info.plists: identifier-name mapping only, no behavior switch.
-             'UIViewControllerIdentifiersToNibNames'}
+             'UIViewControllerIdentifiersToNibNames',
+             'UIStoryboardDesignatedEntryPointIdentifier', 'UIStoryboardVersion'}
 DENIED_KEYS = {'CFBundleDocumentTypes', 'UTExportedTypeDeclarations', 'UTImportedTypeDeclarations',
                'UIBackgroundModes', 'NSExtension', 'LSEnvironment', 'SMPrivilegedExecutables',
                'WKAppBoundDomains', 'Entitlements', 'get-task-allow', 'aps-environment',
