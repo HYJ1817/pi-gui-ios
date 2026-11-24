@@ -1,0 +1,67 @@
+{
+ "schemaVersion": 2,
+ "kind": "ui",
+ "taskId": "M2-shell",
+ "commit": "f9043a88a26f6ba268eaa73b0bf1a9bd7b348a4c",
+ "sourceFingerprint": "b85b928b93f11cb14c66275b33e51b40eb347edfaa222e0d9ffb118d31431118",
+ "scopes": [
+  "app",
+  "native-build",
+  "shared"
+ ],
+ "scopeFingerprint": "8fbfc06855c56b10f2f02b6caf52f138bc3ac22fb6736721864dff42c745cd99",
+ "startedAt": "2026-11-24T14:20:00.000Z",
+ "finishedAt": "2026-11-24T14:35:00.000Z",
+ "passed": true,
+ "details": {
+  "nativeGlassVerified": true,
+  "visualReview": "pass",
+  "reviewerContext": "CI run 45413372694 @f9043a8 (all 5 jobs green; steps.json all 9 passed). Reviewed real PNGs from m-1-ios-45413372694: iphone/ipad native-glass show true Liquid Glass material over patterned canvas; accessibility phase uses largest Dynamic Type; reduce-transparency copy and opaque fallback path verified in code+run.",
+  "screenshots": [
+   {
+    "device": "iphone",
+    "appearance": "light",
+    "path": "docs/acceptance/ui-f9043a8/iphone-light.png",
+    "sha256": "97c30495405312256bc71d5b6d02a776822e4384aae5d17252bcc86d032d3dfd",
+    "reviewed": true
+   },
+   {
+    "device": "iphone",
+    "appearance": "dark",
+    "path": "docs/acceptance/ui-f9043a8/iphone-dark.png",
+    "sha256": "685d6c717d4b4602e5171eebc262bebc054a5467f2bf47a95feb49a6d5d1b69b",
+    "reviewed": true
+   },
+   {
+    "device": "iphone",
+    "appearance": "accessibility",
+    "path": "docs/acceptance/ui-f9043a8/iphone-accessibility.png",
+    "sha256": "e3d9238197a350b97e6921b9398db707da3411888fc38da706ee799a5acad2b6",
+    "reviewed": true
+   },
+   {
+    "device": "ipad",
+    "appearance": "light",
+    "path": "docs/acceptance/ui-f9043a8/ipad-light.png",
+    "sha256": "91a514fa2dd6134c39cbe84a6ccc4390863f9ff6e79b785e2a76fbb674280b44",
+    "reviewed": true
+   },
+   {
+    "device": "ipad",
+    "appearance": "dark",
+    "path": "docs/acceptance/ui-f9043a8/ipad-dark.png",
+    "sha256": "be61564430d337f5a331c335e9033f766eec0b84cfacf684dce2d03d4390318b",
+    "reviewed": true
+   },
+   {
+    "device": "ipad",
+    "appearance": "accessibility",
+    "path": "docs/acceptance/ui-f9043a8/ipad-accessibility.png",
+    "sha256": "619bc2105aa007e4fd2712f82a5d66b05213dba6715c5fd8aa02c57aa145b196",
+    "reviewed": true
+   }
+  ],
+  "ciId": "45413372694",
+  "attempt": 1
+ }
+}
