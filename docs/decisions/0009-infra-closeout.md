@@ -39,6 +39,13 @@ ADR-0008 已删除 `.maestro/` 与安装步骤，但白名单与管线仍保留 
 
 最小必要修复：stamp 前先用 `validate-locks.rb manifest-compare` 做语义级一致校验——同 `pod install` 产物共享 PODFILE CHECKSUM，任何版本/来源/CHECKOUT OPTIONS/SPEC CHECKSUMS 不同即 `POD_MANIFEST_DRIFT` 非零退出并阻断流水线，stamp 永不掩盖真实差异。格式纯漂移（字节不同、语义相同）允许 stamp。新增：五种差异/非法输入的回归测试 + 一个 stub 端到端测试（证明 drift 时 copy 不发生）。
 
+### 4. 独立复审追加修复（closeout 轮次）
+
+复审在 `4c4a2c2` 上新增两处整改，同属于证据链完整性而非范围扩大：
+
+- **`src/remote/events.ts` 契约镜像缺漏**：移动端 `validateEventEnvelope` 未执行参考实现（`scripts/lib/remote-protocol-contract.mjs` validateEventEnvelope）要求的 `hasForbiddenKey(event)` 与 `hasForbiddenKey/hasForbiddenValue(payload)` 扫描。签名正确的 approval 帧可借自由文本字段（title/message 等）把未过检的路径/凭据字符串送入 ConversationStore/UI。已补齐三次扫描，保持与合约 637-641 行语义一致，新增 m3-loop 负帧回归测试（`PI_GUI_TOKEN=` 与 `/Users/x/.env` 注入 → `frame_invalid`）。
+- **证据指纹字节漂移**：`sourceFingerprint` 对工作树裸字节哈希而 `committedFingerprint` 对 git blob 哈希；`.gitattributes` 声明 `eol=lf` 但 Windows 编辑器可写入 CRLF，造成 git status 干净但指纹不一致（`103c2da3` vs `35e74882`）。已把 `tests/ipa-ci.test.mjs` 恢复 LF、恢复 `native/prebuilt-dependencies.json` 跟踪文件；所有验收证据统一以 clean-tree `35e74882`（@`4c4a2c2`）及后续修复 commit 指纹为准。经验：Windows 上编辑 fingerprint 范围内文件后必须确认 `git ls-files --eol` 为 `w/lf`。
+
 ## 证据
 
-`npm test` 325 全绿（含 3 个新控制层测试、6 个 manifest-compare 测试、1 个 install-pods 端到端 stamp 测试）；CI 五 job 流水线绿跑 + ui/ipa/ci/独立审查证据见 M-1-infrastructure 验收记录。
+`npm test` 343 全绿（含控制层 scope-floor、manifest-compare 六例、install-pods stamp 顺序、m3-loop 禁值帧负测试）；CI 五 job 流水线绿跑 + ui/ipa/ci/独立审查证据见 M-1-infrastructure 验收记录。
