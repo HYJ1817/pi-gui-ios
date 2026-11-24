@@ -44,6 +44,14 @@ fi
 # --reinstall-driver retry, so UI evidence is produced deterministically by
 # simctl: deep links navigate the app's own routes, the probe's synthetic
 # ?params drive interaction state, and `io screenshot` captures real renders.
+
+# iOS 16+ shows a one-time "Open in <app>?" dialog before delivering a custom
+# scheme; it blocks every following openurl/screenshot. Pre-approve the
+# piguimobile scheme in launchservices exactly like eas-cli does
+# (expo/eas-cli#4274), best-effort: failure falls back to the dialog being
+# visible in evidence and this run failing visual review, never silently pass.
+xcrun simctl spawn "$UDID" defaults write com.apple.launchservices.schemeapproval \
+  "com.apple.CoreSimulator.CoreSimulatorBridge-->piguimobile" -string "$BUNDLE_ID" || true
 shot() { sleep "${2:-2}"; xcrun simctl io "$UDID" screenshot "$SHOTS/$1.png"; }
 shot_dark() { sleep "${2:-2}"; xcrun simctl io "$UDID" screenshot "$SHOTS/dark/$1.png"; }
 shot_ax() { sleep "${2:-2}"; xcrun simctl io "$UDID" screenshot "$SHOTS/accessibility/$1.png"; }
