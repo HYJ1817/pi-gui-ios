@@ -2,8 +2,8 @@
   "schemaVersion": 2,
   "kind": "unit",
   "taskId": "M-1-infrastructure",
-  "commit": "da7636356dc98698f2df95368b73b6cfa8f12fa4",
-  "sourceFingerprint": "428c3e205e5e08feb6a953e09fe3243d5e65ef2edeef7dcd972d5142edc613ac",
+  "commit": "054cc4a4dc2f67da5f9cb23bc68a876251fadc69",
+  "sourceFingerprint": "b198b4541873913568d8077a655185cf1b65b0bcea3b2befe94b3896cd1e5b12",
   "scopes": [
     "app",
     "control",
@@ -12,14 +12,14 @@
     "shared",
     "tests"
   ],
-  "scopeFingerprint": "28c84a1c5bd88fec649f61656b5b34494dd19f7ff5f68b6d852680ec1a2e412a",
-  "startedAt": "2026-11-24T16:46:45.505Z",
-  "finishedAt": "2026-11-24T16:47:42.672Z",
+  "scopeFingerprint": "a74aa7388e636c3de0a408c6fc01263ccb319e844d80f691077c58c96259a486",
+  "startedAt": "2026-11-24T16:56:07.976Z",
+  "finishedAt": "2026-11-24T16:56:59.301Z",
   "passed": true,
   "details": {
     "command": "npm test",
     "exitCode": 0,
     "logPath": "docs/acceptance/local-unit-M-1-infrastructure-output.txt",
-    "logSha256": "48f452939342d30d643418f0a056b6e2bc654705119c20d39f0c8812a1f5e949"
+    "logSha256": "574461f5f3289c234160154166fe1a45fa41f3a5569f4150683b08b0f2000eab"
   }
 }
