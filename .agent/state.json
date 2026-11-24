@@ -1,38 +1,41 @@
 {
   "schemaVersion": 2,
   "kind": "state",
-  "revision": 780,
-  "updatedAt": "2026-11-24T15:15:35.515Z",
+  "revision": 790,
+  "updatedAt": "2026-11-24T15:16:51.070Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "9e0b608871a173c78fda74722f648d28ce56f7ea7d816fc742dc87482af327e0",
+    "parentDigest": "21d560e94e3b7f637ce8d2b7819ae135886a01fe9212eb7b17ba11d5055f9b04",
     "phase": "M2",
     "currentTask": "M2-shell",
     "branch": "agent/m-1-bootstrap",
     "checkpoint": {
-      "id": "v2-2026-11-24T15-15-35-515Z-64fc429d-eb92-4fdb-888b-b8b754775ff6",
-      "path": ".agent/checkpoints/v2-2026-11-24T15-15-35-515Z-64fc429d-eb92-4fdb-888b-b8b754775ff6.json",
-      "sha256": "ab9efd341b0692e1c26fa672b45ab19a7b5ca3f3cd830014571dddb797ec3e2e",
-      "authorityDigest": "a3b4e62536a1877ae9649346204799214c552fa16089b7181d2001dbbfbf5d9f",
-      "at": "2026-11-24T15:15:35.515Z",
+      "id": "v2-2026-11-24T15-16-35-655Z-eb9e8028-dcba-41c6-a102-7b13bf7784a0",
+      "path": ".agent/checkpoints/v2-2026-11-24T15-16-35-655Z-eb9e8028-dcba-41c6-a102-7b13bf7784a0.json",
+      "sha256": "597c63e2c19f4331a89b36786ca9feb471cf45f67a36b80f9372acaeeb3b401b",
+      "authorityDigest": "a415041bd714a079f04cb134d45a41762825911181d8bd6ac00778554356571e",
+      "at": "2026-11-24T15:16:35.655Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "91cd39738d3610a2682660f52dd9311ae5aa872a",
+        "commit": "0e6adb52e2cbe32cd26272da54926d578070bbca",
         "dirty": [
           "M .agent/HANDOFF.md",
-          " D .agent/checkpoints/v2-2026-11-24T08-32-34-505Z-130c9ff8-bffd-4404-83bf-a269a1c52af6.json",
+          " D .agent/checkpoints/v2-2026-11-24T08-35-02-931Z-feba55c3-abab-437e-8ea4-4fd82e82cb72.json",
+          " D .agent/checkpoints/v2-2026-11-24T08-35-03-917Z-c563af03-1db6-451e-9b14-8688b583ae47.json",
+          " D .agent/checkpoints/v2-2026-11-24T08-35-04-923Z-14168b9c-fc1b-41b3-a369-c954a2104d18.json",
+          " D .agent/checkpoints/v2-2026-11-24T08-35-05-927Z-7ff6f6a9-6572-4564-aa98-82e066a05f76.json",
           " M .agent/control.json",
           " M .agent/state.json",
           " M .agent/tasks.json",
           " M PROGRESS.md",
-          "?? .agent/checkpoints/v2-2026-11-24T15-14-29-559Z-093d2ef7-bd86-4dfb-8094-208f7c006d5b.json",
-          "?? docs/acceptance/ci-run-45413372694.json",
-          "?? docs/acceptance/local-ui.json",
-          "?? docs/acceptance/ui-f9043a8/"
+          "?? .agent/checkpoints/v2-2026-11-24T15-15-57-057Z-d6c65b80-d5bd-4a94-87c9-254670871c5d.json",
+          "?? .agent/checkpoints/v2-2026-11-24T15-15-57-820Z-02424ea5-eaa2-4d30-84e2-e26650d2c452.json",
+          "?? .agent/checkpoints/v2-2026-11-24T15-16-09-159Z-4714aaff-ca42-4dd1-b910-102319aa6508.json",
+          "?? .agent/checkpoints/v2-2026-11-24T15-16-17-362Z-420312ca-86b4-4718-b171-5b14a3abbbda.json"
         ]
       },
       "sourceFingerprint": "b85b928b93f11cb14c66275b33e51b40eb347edfaa222e0d9ffb118d31431118",
-      "note": "agent-task evidence M2-shell"
+      "note": "M2-shell completed: full CI green 45413372694, unsigned IPA artifact, ui evidence + independent review; M0/M1 reviews+security grandfathered-valid"
     },
     "blockers": [],
     "ci": [
@@ -442,6 +445,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "60f96d700e85c90b7db0299fe2fcb6e847074e25a932e9d880dae18ea8066c71"
+    "digest": "82c6b489dba02f0dd5df138f61fad7c31eb3a367bfb1073683f2d0039aeaf3d0"
   }
 }

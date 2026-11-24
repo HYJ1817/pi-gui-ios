@@ -1,16 +1,16 @@
 {
   "schemaVersion": 2,
   "kind": "checkpoint",
-  "revision": 695,
-  "updatedAt": "2026-11-24T08:35:03.917Z",
+  "revision": 781,
+  "updatedAt": "2026-11-24T15:15:57.057Z",
   "data": {
-    "id": "v2-2026-11-24T08-35-03-917Z-c563af03-1db6-451e-9b14-8688b583ae47",
-    "note": "agent-task evidence M1-remote",
+    "id": "v2-2026-11-24T15-15-57-057Z-d6c65b80-d5bd-4a94-87c9-254670871c5d",
+    "note": "agent-task transition M2-shell",
     "control": {
       "schemaVersion": 2,
       "kind": "control",
-      "revision": 695,
-      "updatedAt": "2026-11-24T08:35:03.870Z",
+      "revision": 781,
+      "updatedAt": "2026-11-24T15:15:56.978Z",
       "data": {
         "phase": "M2",
         "currentTask": "M2-shell",
@@ -121,6 +121,24 @@
             "status": "completed",
             "conclusion": "cancelled",
             "url": "https://github.com/HYJ1817/pi-gui-ios/actions/runs/44911181329"
+          },
+          {
+            "id": "45403679142",
+            "head": "7df0cad92379bfad14f65a83a52a38d88e79aa79",
+            "workflow": ".github/workflows/native-infrastructure.yml",
+            "attempt": 1,
+            "status": "completed",
+            "conclusion": "success",
+            "url": "https://github.com/HYJ1817/pi-gui-ios/actions/runs/45403679142"
+          },
+          {
+            "id": "45413372694",
+            "head": "f9043a88a26f6ba268eaa73b0bf1a9bd7b348a4c",
+            "workflow": ".github/workflows/native-infrastructure.yml",
+            "attempt": 1,
+            "status": "completed",
+            "conclusion": "success",
+            "url": "https://github.com/HYJ1817/pi-gui-ios/actions/runs/45413372694"
           }
         ],
         "blockers": [],
@@ -968,9 +986,118 @@
                 "sourceFingerprint": "77ec78fcb3e32d547aa09880aaf6a88dfde075fb8d2d843cf5eba7c41fbae359",
                 "commit": "17e825507005ed5c763a2ca5eb174ddccb53d2bf",
                 "at": "2026-11-24T08:35:02.883Z"
+              },
+              {
+                "kind": "unit",
+                "path": "docs/acceptance/local-unit-M0-architecture.json",
+                "sha256": "2cfc4d19f3909310d6b853366f5c1b1463a2e995d2eacb082e66483fda5ab2f8",
+                "sourceFingerprint": "77ec78fcb3e32d547aa09880aaf6a88dfde075fb8d2d843cf5eba7c41fbae359",
+                "commit": "53ec2bf028065fe0279d3b603ed4c77df12b4008",
+                "at": "2026-11-24T08:35:04.872Z"
+              },
+              {
+                "kind": "independent-security",
+                "path": "docs/acceptance/m0-architecture-security-17e8255.json",
+                "sha256": "2cb55b430b3a5c742bb1f5d53cdec2fc5cfac3fa48a8f218b35b7df0968fba1a",
+                "sourceFingerprint": "77ec78fcb3e32d547aa09880aaf6a88dfde075fb8d2d843cf5eba7c41fbae359",
+                "commit": "17e825507005ed5c763a2ca5eb174ddccb53d2bf",
+                "at": "2026-11-24T08:44:05.019Z"
+              },
+              {
+                "kind": "protocol-contract",
+                "path": "docs/acceptance/local-protocol-contract-M0-architecture.json",
+                "sha256": "b55546567f3fd74f12e3d0c5f14f02370abff573bd44583b6afed6d8cda7ee62",
+                "sourceFingerprint": "88b0a2b5316197bc83a8eacd23f5012c5b55f90f13d84e453a979879f3075908",
+                "commit": "07b76f2aa95d5892d01219f4b4d6fffe09c730a4",
+                "at": "2026-11-24T12:58:14.011Z",
+                "scopes": [
+                  "protocol",
+                  "shared"
+                ],
+                "scopeFingerprint": "b8e43d36ca038ba8e2669dd6e04456bb2ecac4da0f8531889007f3a6f482dbdc"
+              },
+              {
+                "kind": "unit",
+                "path": "docs/acceptance/local-unit-M0-architecture.json",
+                "sha256": "f910d4409b344b85401d1d4cabc404a7839ca837a10aa7f7d1fbe94e79301a18",
+                "sourceFingerprint": "88b0a2b5316197bc83a8eacd23f5012c5b55f90f13d84e453a979879f3075908",
+                "commit": "07b76f2aa95d5892d01219f4b4d6fffe09c730a4",
+                "at": "2026-11-24T12:58:15.336Z",
+                "scopes": [
+                  "app",
+                  "control",
+                  "native-build",
+                  "protocol",
+                  "shared",
+                  "tests"
+                ],
+                "scopeFingerprint": "5a605c9f6a02e8e816b61273bf3b2caf1b9936e0d92792fbf282069b1189a177"
+              },
+              {
+                "kind": "unit",
+                "path": "docs/acceptance/local-unit-M0-architecture.json",
+                "sha256": "38a8b31c1010fd652928fc55f13cfd5356374c618d5252dc43bc123d73a62057",
+                "sourceFingerprint": "12fdbf79e4fb0b4ed93e3758d0a29e64045f35e27d55b094b36c5c7b50167c9d",
+                "commit": "a2625611db266f69e44e10a1d01dc519ef31cc93",
+                "at": "2026-11-24T13:21:36.144Z",
+                "scopes": [
+                  "app",
+                  "control",
+                  "native-build",
+                  "protocol",
+                  "shared",
+                  "tests"
+                ],
+                "scopeFingerprint": "9d058b2a3d04a22c4144c4b235d8939962eace7e548f4779ac07bb2d8c0fa7db"
+              },
+              {
+                "kind": "independent-review",
+                "path": "docs/acceptance/m0-architecture-review-17e8255.json",
+                "sha256": "3278487acfaa95bdc3378fc6e5409ade37e8c1d8277d9639b31db1444e356f68",
+                "sourceFingerprint": "77ec78fcb3e32d547aa09880aaf6a88dfde075fb8d2d843cf5eba7c41fbae359",
+                "commit": "17e825507005ed5c763a2ca5eb174ddccb53d2bf",
+                "at": "2026-11-24T13:27:03.864Z"
+              },
+              {
+                "kind": "independent-review",
+                "path": "docs/acceptance/m0-review-7df0cad.json",
+                "sha256": "e56210428ec4cb2b01d84aafd721ee0452c4faa297b9b372f1d16dbf50ae3d26",
+                "sourceFingerprint": "42bab82c933864049cb3be62b1409b5c1f3d06eaf0a3df66ddc73ae6de7d0004",
+                "commit": "7df0cad92379bfad14f65a83a52a38d88e79aa79",
+                "at": "2026-11-24T13:31:38.966Z",
+                "scopes": [
+                  "protocol",
+                  "shared"
+                ],
+                "scopeFingerprint": "b8e43d36ca038ba8e2669dd6e04456bb2ecac4da0f8531889007f3a6f482dbdc"
+              },
+              {
+                "kind": "unit",
+                "path": "docs/acceptance/local-unit-M0-architecture.json",
+                "sha256": "0633ca8dea07e8a0969b83bd4443980d622c48ebc1c44e5d66b6342f755fa5ab",
+                "sourceFingerprint": "b85b928b93f11cb14c66275b33e51b40eb347edfaa222e0d9ffb118d31431118",
+                "commit": "f9043a88a26f6ba268eaa73b0bf1a9bd7b348a4c",
+                "at": "2026-11-24T14:28:23.049Z",
+                "scopes": [
+                  "app",
+                  "control",
+                  "native-build",
+                  "protocol",
+                  "shared",
+                  "tests"
+                ],
+                "scopeFingerprint": "3cc063264891b33782f0f885eb9e598b62f05bebbf6bbac5ec51718958872434"
               }
             ],
-            "updatedAt": "2026-11-22T05:04:14.175Z"
+            "updatedAt": "2026-11-22T05:04:14.175Z",
+            "evidenceScopes": {
+              "independent-review": [
+                "protocol"
+              ],
+              "independent-security": [
+                "protocol"
+              ]
+            }
           },
           {
             "id": "M1-remote",
@@ -1027,15 +1154,125 @@
                 "sourceFingerprint": "77ec78fcb3e32d547aa09880aaf6a88dfde075fb8d2d843cf5eba7c41fbae359",
                 "commit": "17e825507005ed5c763a2ca5eb174ddccb53d2bf",
                 "at": "2026-11-24T08:35:03.867Z"
+              },
+              {
+                "kind": "unit",
+                "path": "docs/acceptance/local-unit-M1-remote.json",
+                "sha256": "9c64492ef293c3ffd87ecadce157c3f0d5601c10367fede8871dd4d343bbb92f",
+                "sourceFingerprint": "77ec78fcb3e32d547aa09880aaf6a88dfde075fb8d2d843cf5eba7c41fbae359",
+                "commit": "53ec2bf028065fe0279d3b603ed4c77df12b4008",
+                "at": "2026-11-24T08:35:05.875Z"
+              },
+              {
+                "kind": "independent-security",
+                "path": "docs/acceptance/m1-remote-security-17e8255.json",
+                "sha256": "38bbf5f0b6937d56241e6c7da758f4f6cbb32506c22a6b9d612c9f80c83b6613",
+                "sourceFingerprint": "77ec78fcb3e32d547aa09880aaf6a88dfde075fb8d2d843cf5eba7c41fbae359",
+                "commit": "17e825507005ed5c763a2ca5eb174ddccb53d2bf",
+                "at": "2026-11-24T08:44:06.080Z"
+              },
+              {
+                "kind": "unit",
+                "path": "docs/acceptance/local-unit-M1-remote.json",
+                "sha256": "76b401bf9361908fc3b6f30f10dd9253dec0f1353f0115dc546f08a27e5fcbfd",
+                "sourceFingerprint": "88b0a2b5316197bc83a8eacd23f5012c5b55f90f13d84e453a979879f3075908",
+                "commit": "07b76f2aa95d5892d01219f4b4d6fffe09c730a4",
+                "at": "2026-11-24T12:58:16.555Z",
+                "scopes": [
+                  "app",
+                  "control",
+                  "native-build",
+                  "protocol",
+                  "shared",
+                  "tests"
+                ],
+                "scopeFingerprint": "5a605c9f6a02e8e816b61273bf3b2caf1b9936e0d92792fbf282069b1189a177"
+              },
+              {
+                "kind": "integration",
+                "path": "docs/acceptance/local-integration-M1-remote.json",
+                "sha256": "b493fb3d750c3f6e57161581fbb61b260b5625f5b1d8238ebe28e4ca46dc3be8",
+                "sourceFingerprint": "88b0a2b5316197bc83a8eacd23f5012c5b55f90f13d84e453a979879f3075908",
+                "commit": "07b76f2aa95d5892d01219f4b4d6fffe09c730a4",
+                "at": "2026-11-24T12:58:17.696Z",
+                "scopes": [
+                  "control",
+                  "protocol",
+                  "shared"
+                ],
+                "scopeFingerprint": "7c6452101455cd32d72402bd3272b27b425909dbae6b2b1b87b15a39ac08fbc4"
+              },
+              {
+                "kind": "unit",
+                "path": "docs/acceptance/local-unit-M1-remote.json",
+                "sha256": "0be2820fa27405cb63f8aeffbf2a05b728bbc8c153f9477851142075fbc097c8",
+                "sourceFingerprint": "12fdbf79e4fb0b4ed93e3758d0a29e64045f35e27d55b094b36c5c7b50167c9d",
+                "commit": "a2625611db266f69e44e10a1d01dc519ef31cc93",
+                "at": "2026-11-24T13:21:37.545Z",
+                "scopes": [
+                  "app",
+                  "control",
+                  "native-build",
+                  "protocol",
+                  "shared",
+                  "tests"
+                ],
+                "scopeFingerprint": "9d058b2a3d04a22c4144c4b235d8939962eace7e548f4779ac07bb2d8c0fa7db"
+              },
+              {
+                "kind": "independent-review",
+                "path": "docs/acceptance/m1-remote-review-17e8255.json",
+                "sha256": "cc91dce6bd7c26491cd6ec91b795a6ff2cf7cfb00c0922ff9f1f31621b85b1bd",
+                "sourceFingerprint": "77ec78fcb3e32d547aa09880aaf6a88dfde075fb8d2d843cf5eba7c41fbae359",
+                "commit": "17e825507005ed5c763a2ca5eb174ddccb53d2bf",
+                "at": "2026-11-24T13:27:05.033Z"
+              },
+              {
+                "kind": "independent-review",
+                "path": "docs/acceptance/m1-review-7df0cad.json",
+                "sha256": "487a65dbf1ee8ef5f5b86e202971fffc303f9cee833bac3b0d5d761bb238bae4",
+                "sourceFingerprint": "42bab82c933864049cb3be62b1409b5c1f3d06eaf0a3df66ddc73ae6de7d0004",
+                "commit": "7df0cad92379bfad14f65a83a52a38d88e79aa79",
+                "at": "2026-11-24T13:31:40.115Z",
+                "scopes": [
+                  "protocol",
+                  "shared"
+                ],
+                "scopeFingerprint": "b8e43d36ca038ba8e2669dd6e04456bb2ecac4da0f8531889007f3a6f482dbdc"
+              },
+              {
+                "kind": "unit",
+                "path": "docs/acceptance/local-unit-M1-remote.json",
+                "sha256": "030083ee9661be736dc9542307e4cc2ddb524056465b5c2a769de59f5bc2d7cd",
+                "sourceFingerprint": "b85b928b93f11cb14c66275b33e51b40eb347edfaa222e0d9ffb118d31431118",
+                "commit": "f9043a88a26f6ba268eaa73b0bf1a9bd7b348a4c",
+                "at": "2026-11-24T14:28:24.322Z",
+                "scopes": [
+                  "app",
+                  "control",
+                  "native-build",
+                  "protocol",
+                  "shared",
+                  "tests"
+                ],
+                "scopeFingerprint": "3cc063264891b33782f0f885eb9e598b62f05bebbf6bbac5ec51718958872434"
               }
             ],
-            "updatedAt": "2026-11-23T02:45:31.115Z"
+            "updatedAt": "2026-11-23T02:45:31.115Z",
+            "evidenceScopes": {
+              "independent-review": [
+                "protocol"
+              ],
+              "independent-security": [
+                "protocol"
+              ]
+            }
           },
           {
             "id": "M2-shell",
             "phase": "M2",
             "title": "原生设计系统与 iPad 导航布局",
-            "status": "in_progress",
+            "status": "testing",
             "dependsOn": [
               "M1-remote"
             ],
@@ -1125,9 +1362,103 @@
                 "sourceFingerprint": "77ec78fcb3e32d547aa09880aaf6a88dfde075fb8d2d843cf5eba7c41fbae359",
                 "commit": "53ec2bf028065fe0279d3b603ed4c77df12b4008",
                 "at": "2026-11-24T08:06:47.832Z"
+              },
+              {
+                "kind": "independent-review",
+                "path": "docs/acceptance/m2-review-53ec2bf-review.json",
+                "sha256": "d6d51e5847d641c74a1c730d772ae42193157df9f55237e8d616422ae2ef8372",
+                "sourceFingerprint": "77ec78fcb3e32d547aa09880aaf6a88dfde075fb8d2d843cf5eba7c41fbae359",
+                "commit": "53ec2bf028065fe0279d3b603ed4c77df12b4008",
+                "at": "2026-11-24T08:36:09.315Z"
+              },
+              {
+                "kind": "unit",
+                "path": "docs/acceptance/local-unit.json",
+                "sha256": "c3adb0c7f0995d097841cae02217749ac66224dd5dfbc6c970512d98f0e756b6",
+                "sourceFingerprint": "88b0a2b5316197bc83a8eacd23f5012c5b55f90f13d84e453a979879f3075908",
+                "commit": "07b76f2aa95d5892d01219f4b4d6fffe09c730a4",
+                "at": "2026-11-24T12:58:19.020Z",
+                "scopes": [
+                  "app",
+                  "control",
+                  "native-build",
+                  "protocol",
+                  "shared",
+                  "tests"
+                ],
+                "scopeFingerprint": "5a605c9f6a02e8e816b61273bf3b2caf1b9936e0d92792fbf282069b1189a177"
+              },
+              {
+                "kind": "independent-review",
+                "path": "docs/acceptance/m2-review-a262561.json",
+                "sha256": "833c38d38625c25810a6e9dcdd2c8046aa1b1646eed8b6241e8330a53c90cdd0",
+                "sourceFingerprint": "12fdbf79e4fb0b4ed93e3758d0a29e64045f35e27d55b094b36c5c7b50167c9d",
+                "commit": "a2625611db266f69e44e10a1d01dc519ef31cc93",
+                "at": "2026-11-24T13:21:34.796Z",
+                "scopes": [
+                  "app",
+                  "shared"
+                ],
+                "scopeFingerprint": "a0552b606d4eb60fcce6579d0b3e1367d217e0008bf26452a0ab8df8358db0c2"
+              },
+              {
+                "kind": "unit",
+                "path": "docs/acceptance/local-unit.json",
+                "sha256": "f32d1d86441c6707f1a62f87c4225a314d1525774889f19ef2ef0583cfc1d097",
+                "sourceFingerprint": "12fdbf79e4fb0b4ed93e3758d0a29e64045f35e27d55b094b36c5c7b50167c9d",
+                "commit": "a2625611db266f69e44e10a1d01dc519ef31cc93",
+                "at": "2026-11-24T13:21:38.829Z",
+                "scopes": [
+                  "app",
+                  "control",
+                  "native-build",
+                  "protocol",
+                  "shared",
+                  "tests"
+                ],
+                "scopeFingerprint": "9d058b2a3d04a22c4144c4b235d8939962eace7e548f4779ac07bb2d8c0fa7db"
+              },
+              {
+                "kind": "unit",
+                "path": "docs/acceptance/local-unit.json",
+                "sha256": "696404441e40b49ab207ec2e156c8155b7936c05e45b89c75de594f90e8e200a",
+                "sourceFingerprint": "b85b928b93f11cb14c66275b33e51b40eb347edfaa222e0d9ffb118d31431118",
+                "commit": "f9043a88a26f6ba268eaa73b0bf1a9bd7b348a4c",
+                "at": "2026-11-24T14:28:25.591Z",
+                "scopes": [
+                  "app",
+                  "control",
+                  "native-build",
+                  "protocol",
+                  "shared",
+                  "tests"
+                ],
+                "scopeFingerprint": "3cc063264891b33782f0f885eb9e598b62f05bebbf6bbac5ec51718958872434"
+              },
+              {
+                "kind": "ui",
+                "path": "docs/acceptance/local-ui.json",
+                "sha256": "f5d8a0235010e29e20f5f4d66478dee68e8ff5edcda7d54712a323e8b03679aa",
+                "sourceFingerprint": "b85b928b93f11cb14c66275b33e51b40eb347edfaa222e0d9ffb118d31431118",
+                "commit": "f9043a88a26f6ba268eaa73b0bf1a9bd7b348a4c",
+                "at": "2026-11-24T15:15:35.453Z",
+                "scopes": [
+                  "app",
+                  "native-build",
+                  "shared"
+                ],
+                "scopeFingerprint": "8fbfc06855c56b10f2f02b6caf52f138bc3ac22fb6736721864dff42c745cd99"
               }
             ],
-            "updatedAt": "2026-11-23T02:47:37.213Z"
+            "updatedAt": "2026-11-24T15:15:56.973Z",
+            "evidenceScopes": {
+              "independent-review": [
+                "app"
+              ],
+              "independent-security": [
+                "app"
+              ]
+            }
           },
           {
             "id": "M3-core",
@@ -1200,36 +1531,29 @@
           }
         ],
         "checkpoint": {
-          "id": "v2-2026-11-24T08-35-02-931Z-feba55c3-abab-437e-8ea4-4fd82e82cb72",
-          "path": ".agent/checkpoints/v2-2026-11-24T08-35-02-931Z-feba55c3-abab-437e-8ea4-4fd82e82cb72.json",
-          "sha256": "9ff6c71bff66ba4a9eff9268bbfd0f621f7e29f84429abdc32ae9d408ba1649b",
-          "authorityDigest": "ccfbdb5d5658dbdf83ccd57a3fa73606eccbab5a6c77c0d1e14819f6d171b500",
-          "at": "2026-11-24T08:35:02.931Z",
+          "id": "v2-2026-11-24T15-15-35-515Z-64fc429d-eb92-4fdb-888b-b8b754775ff6",
+          "path": ".agent/checkpoints/v2-2026-11-24T15-15-35-515Z-64fc429d-eb92-4fdb-888b-b8b754775ff6.json",
+          "sha256": "ab9efd341b0692e1c26fa672b45ab19a7b5ca3f3cd830014571dddb797ec3e2e",
+          "authorityDigest": "a3b4e62536a1877ae9649346204799214c552fa16089b7181d2001dbbfbf5d9f",
+          "at": "2026-11-24T15:15:35.515Z",
           "git": {
             "branch": "agent/m-1-bootstrap",
-            "commit": "17e825507005ed5c763a2ca5eb174ddccb53d2bf",
+            "commit": "91cd39738d3610a2682660f52dd9311ae5aa872a",
             "dirty": [
               "M .agent/HANDOFF.md",
+              " D .agent/checkpoints/v2-2026-11-24T08-32-34-505Z-130c9ff8-bffd-4404-83bf-a269a1c52af6.json",
               " M .agent/control.json",
               " M .agent/state.json",
               " M .agent/tasks.json",
               " M PROGRESS.md",
-              " M docs/acceptance/local-integration-output.txt",
-              " M docs/acceptance/local-integration.json",
-              " M docs/acceptance/local-protocol-contract-output.txt",
-              " M docs/acceptance/local-protocol-contract.json",
-              "?? .agent/checkpoints/v2-2026-11-24T08-32-34-505Z-130c9ff8-bffd-4404-83bf-a269a1c52af6.json",
-              "?? .agent/checkpoints/v2-2026-11-24T08-32-38-023Z-36b53c3b-ea4d-4ec0-94fb-95556f0f56d3.json",
-              "?? docs/acceptance/local-integration-M1-remote.json",
-              "?? docs/acceptance/local-protocol-contract-M0-architecture.json",
-              "?? docs/acceptance/local-unit-M0-architecture.json",
-              "?? docs/acceptance/local-unit-M1-remote.json",
-              "?? docs/acceptance/m2-review-53ec2bf-receipt.json",
-              "?? docs/acceptance/m2-review-53ec2bf-review.json"
+              "?? .agent/checkpoints/v2-2026-11-24T15-14-29-559Z-093d2ef7-bd86-4dfb-8094-208f7c006d5b.json",
+              "?? docs/acceptance/ci-run-45413372694.json",
+              "?? docs/acceptance/local-ui.json",
+              "?? docs/acceptance/ui-f9043a8/"
             ]
           },
-          "sourceFingerprint": "77ec78fcb3e32d547aa09880aaf6a88dfde075fb8d2d843cf5eba7c41fbae359",
-          "note": "agent-task evidence M0-architecture"
+          "sourceFingerprint": "b85b928b93f11cb14c66275b33e51b40eb347edfaa222e0d9ffb118d31431118",
+          "note": "agent-task evidence M2-shell"
         },
         "nextAction": "M1-remote completed（desktop 74d252f5，final 审查 pass，四类证据齐）。下一可执行任务：M2-shell（原生设计系统与 iPad 导航布局，依赖 M1-remote 已满足）。M-1-infrastructure 仍 blocked（ADR 0006 owner waiver，NATIVE_DEPENDENCIES_REJECTED，不重试）。M2 开始：调研现有 app 结构与技术栈决策记录，然后实现设计系统/导航并补 unit+ui+independent-review 证据。",
         "delegates": [
@@ -1472,42 +1796,65 @@
             "role": "m2-shell-independent-review",
             "status": "completed",
             "sourceCommit": "53ec2bf028065fe0279d3b603ed4c77df12b4008"
+          },
+          {
+            "taskId": "node:delegated-task:command%3Amcp%3A571f0893-6372-4390-a2f5-e277a43aeec2%3Adelegate-task%3A20e58c56-11a2-4d1f-a875-c4fe9d7f98d0",
+            "role": "m0-m1-security-rereview",
+            "status": "completed",
+            "sourceCommit": "17e825507005ed5c763a2ca5eb174ddccb53d2bf"
+          },
+          {
+            "taskId": "node:delegated-task:command%3Amcp%3A571f0893-6372-4390-a2f5-e277a43aeec2%3Adelegate-task%3Aceb2b695-e1aa-42e7-b8f2-d40273bca560",
+            "role": "m0-m1-functional-rereview",
+            "status": "completed",
+            "sourceCommit": "17e825507005ed5c763a2ca5eb174ddccb53d2bf"
+          },
+          {
+            "taskId": "node:delegated-task:command%3Amcp%3A98737254-2f27-45ed-b038-23dc9c30c97e%3Adelegate-task%3Af89da012-b3b9-49f9-9c51-001e96833f16",
+            "role": "independent-review",
+            "status": "completed",
+            "sourceCommit": "07b76f2aa95d5892d01219f4b4d6fffe09c730a4"
+          },
+          {
+            "taskId": "node:delegated-task:command%3Amcp%3A98737254-2f27-45ed-b038-23dc9c30c97e%3Adelegate-task%3Ae49289ac-8108-4b7e-95dd-7f5ecb0747dc",
+            "role": "independent-review",
+            "status": "completed",
+            "sourceCommit": "07b76f2aa95d5892d01219f4b4d6fffe09c730a4"
+          },
+          {
+            "taskId": "node:delegated-task:command%3Amcp%3A98737254-2f27-45ed-b038-23dc9c30c97e%3Adelegate-task%3Ad5f6a1f6-4569-43fb-905d-1eb13b14f524",
+            "role": "independent-review",
+            "status": "completed",
+            "sourceCommit": "a2625611db266f69e44e10a1d01dc519ef31cc93"
+          },
+          {
+            "taskId": "node:delegated-task:command%3Amcp%3A98737254-2f27-45ed-b038-23dc9c30c97e%3Adelegate-task%3A2c44d663-e814-4be2-8378-3563f47fd642",
+            "role": "independent-review",
+            "status": "completed",
+            "sourceCommit": "7df0cad92379bfad14f65a83a52a38d88e79aa79"
           }
         ]
       },
       "integrity": {
         "algorithm": "sha256",
-        "digest": "e8285c1e3d7757b17e8a7607fe3c1720fed4540880d9e929c250265d3bd55a2d"
+        "digest": "20636914bb9be5612eaccf7955097fe1d3d171408be9b8809424e46516ef7f59"
       }
     },
     "git": {
       "branch": "agent/m-1-bootstrap",
-      "commit": "17e825507005ed5c763a2ca5eb174ddccb53d2bf",
+      "commit": "0e6adb52e2cbe32cd26272da54926d578070bbca",
       "dirty": [
         "M .agent/HANDOFF.md",
         " M .agent/control.json",
         " M .agent/state.json",
         " M .agent/tasks.json",
-        " M PROGRESS.md",
-        " M docs/acceptance/local-integration-output.txt",
-        " M docs/acceptance/local-integration.json",
-        " M docs/acceptance/local-protocol-contract-output.txt",
-        " M docs/acceptance/local-protocol-contract.json",
-        "?? .agent/checkpoints/v2-2026-11-24T08-32-34-505Z-130c9ff8-bffd-4404-83bf-a269a1c52af6.json",
-        "?? .agent/checkpoints/v2-2026-11-24T08-32-38-023Z-36b53c3b-ea4d-4ec0-94fb-95556f0f56d3.json",
-        "?? .agent/checkpoints/v2-2026-11-24T08-35-02-931Z-feba55c3-abab-437e-8ea4-4fd82e82cb72.json",
-        "?? docs/acceptance/local-integration-M1-remote.json",
-        "?? docs/acceptance/local-protocol-contract-M0-architecture.json",
-        "?? docs/acceptance/local-unit-M0-architecture.json",
-        "?? docs/acceptance/local-unit-M1-remote.json",
-        "?? docs/acceptance/m2-review-53ec2bf-receipt.json",
-        "?? docs/acceptance/m2-review-53ec2bf-review.json"
+        " M PROGRESS.md"
       ]
     },
-    "sourceFingerprint": "77ec78fcb3e32d547aa09880aaf6a88dfde075fb8d2d843cf5eba7c41fbae359"
+    "sourceFingerprint": "b85b928b93f11cb14c66275b33e51b40eb347edfaa222e0d9ffb118d31431118"
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "bf235b6f89c54586781f2bd21ca1f07f6b5b3db62b0edbed8d59cfee618207df"
+    "digest": "699308acc3107fb6150a060a2052b8615c874a9803694c354857038fa8ddb7be"
   }
 }
