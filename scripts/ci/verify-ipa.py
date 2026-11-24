@@ -43,7 +43,10 @@ BENIGN_UI = {'UIDeviceFamily', 'UILaunchStoryboardName', 'UIMainStoryboardFile',
              'UIStatusBarHidden', 'UIUserInterfaceStyle', 'UIAppFonts',
              'UIViewControllerBasedStatusBarAppearance', 'UIWhitePointAdaptivityStyle',
              'UISupportedInterfaceOrientations', 'UISupportedInterfaceOrientations~ipad',
-             'UIApplicationSupportsIndirectInputEvents', 'UILaunchScreen'}
+             'UIApplicationSupportsIndirectInputEvents', 'UILaunchScreen',
+             # Xcode storyboard archive bookkeeping emitted into built
+             # Info.plists: identifier-name mapping only, no behavior switch.
+             'UIViewControllerIdentifiersToNibNames'}
 DENIED_KEYS = {'CFBundleDocumentTypes', 'UTExportedTypeDeclarations', 'UTImportedTypeDeclarations',
                'UIBackgroundModes', 'NSExtension', 'LSEnvironment', 'SMPrivilegedExecutables',
                'WKAppBoundDomains', 'Entitlements', 'get-task-allow', 'aps-environment',
