@@ -17,8 +17,9 @@ ADR-0007 允许 `evidenceScopes` 为 independent-* 复审声明更窄作用域�
 - `evidenceScopes` 只能收窄 `independent-*` 证据种类；非独立种类的 `KIND_SCOPES` 是事实绑定，不允许重声明；
 - 声明的作用域集合必须是该 kind 默认解析边界的子集（不得借声明扩大复审范围或引入未知集合）；
 - 默认边界覆盖任一产品集合（`app`/`native-build`/`protocol`）时，声明必须至少保留一个产品集合——不允许把复审绑定到只有 `meta`/`control`/`tests` 的表面；
-- `independent-security` 收窄不得丢弃 `native-build`（构建脚本、CI、锁文件是安全审查不可分离的表面）；
 - `independent-handoff`（`['all']`）不允许任何收窄。
+
+收窄在边界内的复审域选择（例如 protocol 阶段复审绑 `protocol`、安全复审按复审人实际覆盖绑 `['app']` 或 `['native-build']`）保留 ADR-0007 语义，由复审 receipt 的 reviewedCommit 与审查职责约束，不做机械全集强制；floor 阻断的是“复审证据与受审源码面脱节”的配置错误。
 
 现有 M0/M1/M2 的收窄声明全部满足下限，已存证据不失效。回归测试覆盖全部拒绝路径。
 

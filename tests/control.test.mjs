@@ -304,17 +304,19 @@ test('evidenceScopes narrowing floor: only independent kinds, subset of bound, p
   d.tasks[0].evidenceScopes = { 'independent-handoff': ['app'] };
   assert.throws(() => validateEvidenceScopes(d), /always-all/);
 });
-test('security review narrowing keeps the native-build surface', t => {
+test('security and review narrowing honor declared product boundaries inside the bound', t => {
   const { root, d } = fixture(t);
   d.tasks[0].requiredEvidence = ['unit', 'ui', 'independent-security'];
-  // Default union already includes native-build via ui; a declared narrowing
-  // that drops it must be rejected, keeping it must pass.
-  d.tasks[0].evidenceScopes = { 'independent-security': ['app', 'native-build'] };
-  assert.equal(validateEvidenceScopes(d), undefined);
-  assert.deepEqual(resolveScopes(d.tasks[0], 'independent-security'), ['app', 'native-build', 'shared']);
-  d.tasks[0].evidenceScopes = { 'independent-security': ['app'] };
-  assert.throws(() => validateEvidenceScopes(d), /native-build is always/);
-  assert.throws(() => resolveScopes(d.tasks[0], 'independent-security'), /native-build is always/);
+  // Default union includes native-build via ui; declared narrowing inside the
+  // bound that keeps a product set is a legitimate reviewer boundary (ADR-0007).
+  for (const declared of [['app', 'native-build'], ['app'], ['native-build']]) {
+    d.tasks[0].evidenceScopes = { 'independent-security': declared };
+    assert.equal(validateEvidenceScopes(d), undefined, JSON.stringify(declared));
+    assert.deepEqual(resolveScopes(d.tasks[0], 'independent-security'), [...declared, 'shared'].sort());
+  }
+  // But a narrowing that retains no product set at all is rejected.
+  d.tasks[0].evidenceScopes = { 'independent-security': ['tests'] };
+  assert.throws(() => validateEvidenceScopes(d), /no product scope set/);
 });
 test('validateControl rejects illegal evidenceScopes before any report is read', t => {
   const { root } = fixture(t);

@@ -154,9 +154,12 @@ function resolveDefaultScopes(task, kind) {
 // evidenceScopes is a narrowing-only declaration for independent-* kinds: the
 // task may bind a review to a subset of the scope it would cover by default
 // (e.g. a protocol-only phase reviewed on 'protocol'). It may never widen, add
-// unknown sets, remove the build/security surface from independent-security,
-// or shrink below the task's product sets. Anything else fails closed here,
-// before a report binds the wrong fingerprint.
+// unknown/meta sets, or shrink to a scope containing no product surface at all
+// (e.g. 'meta'/'control'/'tests' only) — before this check, such a declaration
+// silently detached review evidence from the source it was meant to certify.
+// Anything outside the default bound fails closed here, before a report can
+// bind the wrong fingerprint. Reviewer-declared boundaries that stay inside
+// the bound and keep at least one product set remain legitimate (ADR-0007).
 function checkScopeFloor(task, kind) {
   const declared = task?.evidenceScopes?.[kind];
   if (declared === undefined) return;
@@ -168,8 +171,6 @@ function checkScopeFloor(task, kind) {
   assert(declared.every(name => bound.includes(name)), `Illegal narrowing for ${kind}: declared scope must stay inside the default bound`);
   if (bound.some(name => PRODUCT_SCOPES.includes(name)))
     assert(declared.some(name => PRODUCT_SCOPES.includes(name)), `Illegal narrowing for ${kind}: no product scope set retained`);
-  if (kind === 'independent-security' && bound.includes('native-build'))
-    assert(declared.includes('native-build'), 'Illegal narrowing for independent-security: native-build is always in scope');
 }
 export function validateEvidenceScopes(d) { for (const task of d.tasks) for (const kind of Object.keys(task.evidenceScopes ?? {})) checkScopeFloor(task, kind); }
 export function resolveScopes(task, kind) {
