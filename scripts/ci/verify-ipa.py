@@ -347,8 +347,13 @@ def verify(source):
             # PLIST_SENSITIVE_KEY_* suffixes. Never emit file paths or values.
             target = ''.join(c for c in directory.rsplit('/', 1)[-1].removesuffix('.framework')
                              if c.isalnum() or c in '._-')[:48].upper() or 'APP'
-            require(info.get('CFBundleSupportedPlatforms') == ['iPhoneOS'],
-                    'BUNDLE_PLATFORM_SUPPORTED_' + target)
+            # XCFramework-style plists (e.g. hermesvm.framework) enumerate every
+            # supported platform; only iPhoneOS presence is required. The binary
+            # Mach-O platform==2 check remains the strict device guarantee.
+            supported = info.get('CFBundleSupportedPlatforms')
+            require(isinstance(supported, list) and 'iPhoneOS' in supported and
+                    all(isinstance(p, str) and re.fullmatch(r'[A-Za-z]+', p)
+                        for p in supported), 'BUNDLE_PLATFORM_SUPPORTED_' + target)
             require(info.get('DTPlatformName', 'iphoneos') == 'iphoneos',
                     'BUNDLE_PLATFORM_NAME_' + target)
             require(isinstance(info.get('DTSDKName', 'iphoneos'), str) and
