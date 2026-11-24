@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 2,
+  "kind": "unit",
+  "taskId": "M2-shell",
+  "commit": "778b67eaf7f6cd87b6f6602e605ae979c533639d",
+  "sourceFingerprint": "6e7a6a919475365de47983f258f09a8177739a5380d629a6ca07e9eae7e6aa9f",
+  "scopes": [
+    "app",
+    "control",
+    "native-build",
+    "protocol",
+    "shared",
+    "tests"
+  ],
+  "scopeFingerprint": "e2066df800c86193c830cc1d3a9d55d1b6d6f16d939dbc5cd79f52bc450f1ccb",
+  "startedAt": "2026-11-24T19:48:54.261Z",
+  "finishedAt": "2026-11-24T19:50:00.729Z",
+  "passed": true,
+  "details": {
+    "command": "npm test",
+    "exitCode": 0,
+    "logPath": "docs/acceptance/local-unit-M2-shell-output.txt",
+    "logSha256": "1e44e38a92ff456d2437a1068fd1271e7058ed661ecf63e2414e859df830d44f"
+  }
+}
