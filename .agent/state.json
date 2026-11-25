@@ -1,30 +1,48 @@
 {
   "schemaVersion": 2,
   "kind": "state",
-  "revision": 1295,
-  "updatedAt": "2026-11-25T12:15:15.548Z",
+  "revision": 1306,
+  "updatedAt": "2026-11-25T13:19:15.573Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "23d1e6744883a20418b8a529c7bd58db5602ca3837a655ac16ce97dab36bc4de",
+    "parentDigest": "1be094fe86bf6f04d07abecb2bd9cc5305436f44e336af0abec27825eb4746e3",
     "phase": "M5",
     "currentTask": "M5-tailscale",
     "branch": "agent/m-1-bootstrap",
     "checkpoint": {
-      "id": "v2-2026-11-25T12-14-01-985Z-74a4ca0e-8679-445a-89c8-89afa0362275",
-      "path": ".agent/checkpoints/v2-2026-11-25T12-14-01-985Z-74a4ca0e-8679-445a-89c8-89afa0362275.json",
-      "sha256": "818b087ccb8ddf26b20e3cd4acfb920a45517550bedb0a07854a5210158ad395",
-      "authorityDigest": "493be504571c82f5a35ff68c970244d3d1cdddb764f71af6ec07e013588c063e",
-      "at": "2026-11-25T12:14:01.985Z",
+      "id": "v2-2026-11-25T13-19-15-573Z-1a61a9e3-6b0a-4e5f-94ce-3a69065c5755",
+      "path": ".agent/checkpoints/v2-2026-11-25T13-19-15-573Z-1a61a9e3-6b0a-4e5f-94ce-3a69065c5755.json",
+      "sha256": "a4ffd5c8d4431a3127f6ea26ce18c873c85c7e11b68ed0b68cbf661b5f12f744",
+      "authorityDigest": "414cacf573451f7448ba2cbecf9d6f285d382eb687d7d1fc00461b9f4e3c16bb",
+      "at": "2026-11-25T13:19:15.573Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "e43b3a16a0e156ba222a126f8761d97b72e76b91",
+        "commit": "44f04dca223ca367b6caa8fc7ef8d34069331dd3",
         "dirty": [
-          "M docs/acceptance/local-protocol-contract-output.txt",
-          " M docs/acceptance/local-protocol-contract.json"
+          "M .agent/HANDOFF.md",
+          " D .agent/checkpoints/v2-2026-11-25T10-52-29-897Z-438434ab-416a-4606-b002-6b933526c34e.json",
+          " D .agent/checkpoints/v2-2026-11-25T10-52-32-145Z-49113056-ac83-4c89-b209-23c6d84a059f.json",
+          " D .agent/checkpoints/v2-2026-11-25T10-52-34-513Z-cd705512-c2f8-41d8-a5b1-8dbb4148f81f.json",
+          " D .agent/checkpoints/v2-2026-11-25T10-52-36-718Z-e9846fb5-7cdf-4267-9ebe-58633f6f6d7e.json",
+          " M .agent/control.json",
+          " M .agent/state.json",
+          " M .agent/tasks.json",
+          " M PROGRESS.md",
+          " M docs/acceptance/local-integration-M1-remote.json",
+          " M docs/acceptance/local-integration-M3-core.json",
+          " M docs/acceptance/local-integration-M4-sync.json",
+          " M docs/acceptance/local-integration-output.txt",
+          " M docs/acceptance/local-integration.json",
+          " M docs/acceptance/local-protocol-contract-output.txt",
+          " M docs/acceptance/local-protocol-contract.json",
+          "?? .agent/checkpoints/v2-2026-11-25T13-19-02-380Z-f97256f5-f639-4146-a523-e9645c6b6af1.json",
+          "?? .agent/checkpoints/v2-2026-11-25T13-19-11-586Z-47bf99ed-195a-430b-b9c6-d3ce31c896b4.json",
+          "?? .agent/checkpoints/v2-2026-11-25T13-19-13-012Z-9487efae-220a-4ec1-8c54-a14ee060513a.json",
+          "?? .agent/checkpoints/v2-2026-11-25T13-19-14-275Z-ad9d9388-5cc9-4fec-82c8-c407bd0a4456.json"
         ]
       },
       "sourceFingerprint": "eb74e94998c2fa9eab69c75defb524b044c92448e4db8a42f0fa28d0b9f92481",
-      "note": "实际运行 node --test tests/remote-contract.test.mjs，exit=0"
+      "note": "agent-task evidence M4-sync"
     },
     "blockers": [],
     "ci": [
@@ -194,7 +212,7 @@
     "desktop": {
       "repo": "HYJ1817/pi-gui",
       "branch": "feat/mobile-remote-protocol-v1",
-      "commit": "c29b7c2aba701e93293d53f358e3c86e1e8ed061",
+      "commit": "cff10262eecde3a66afcef061320f2ba04adf941",
       "protocolVersion": 1
     },
     "protocolVersion": 1,
@@ -701,6 +719,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "c9f7a8e0968e280107de163e677e0b9dfea61077d9b95b5775a5b924de2f6dfe"
+    "digest": "e8ca50d27fdfd887d724cea5893d87102685b0cfd5a03bd1de20174b4ceafd5f"
   }
 }

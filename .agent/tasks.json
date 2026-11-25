@@ -1,11 +1,11 @@
 {
   "schemaVersion": 2,
   "kind": "tasks",
-  "revision": 1295,
-  "updatedAt": "2026-11-25T12:15:15.548Z",
+  "revision": 1306,
+  "updatedAt": "2026-11-25T13:19:15.573Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "23d1e6744883a20418b8a529c7bd58db5602ca3837a655ac16ce97dab36bc4de",
+    "parentDigest": "1be094fe86bf6f04d07abecb2bd9cc5305436f44e336af0abec27825eb4746e3",
     "tasks": [
       {
         "id": "M-1-infrastructure",
@@ -1971,6 +1971,20 @@
               "shared"
             ],
             "scopeFingerprint": "98041aea2d9b10702cf2558cf9278dabe2743b974208d7d676b31453cafcad8b"
+          },
+          {
+            "kind": "integration",
+            "path": "docs/acceptance/local-integration-M1-remote.json",
+            "sha256": "e21d03073f10169bf92a43787bbd79fcbd24dbf06939192299ce825795121d51",
+            "sourceFingerprint": "eb74e94998c2fa9eab69c75defb524b044c92448e4db8a42f0fa28d0b9f92481",
+            "commit": "44f04dca223ca367b6caa8fc7ef8d34069331dd3",
+            "at": "2026-11-25T13:19:12.929Z",
+            "scopes": [
+              "control",
+              "protocol",
+              "shared"
+            ],
+            "scopeFingerprint": "98041aea2d9b10702cf2558cf9278dabe2743b974208d7d676b31453cafcad8b"
           }
         ],
         "updatedAt": "2026-11-25T08:07:57.510Z",
@@ -2881,6 +2895,20 @@
               "shared"
             ],
             "scopeFingerprint": "98041aea2d9b10702cf2558cf9278dabe2743b974208d7d676b31453cafcad8b"
+          },
+          {
+            "kind": "integration",
+            "path": "docs/acceptance/local-integration-M3-core.json",
+            "sha256": "1be0adf26c0bb543fc7a42ec005640ea6ef4d25763da8e808fee1926ae3c66f1",
+            "sourceFingerprint": "eb74e94998c2fa9eab69c75defb524b044c92448e4db8a42f0fa28d0b9f92481",
+            "commit": "44f04dca223ca367b6caa8fc7ef8d34069331dd3",
+            "at": "2026-11-25T13:19:14.196Z",
+            "scopes": [
+              "control",
+              "protocol",
+              "shared"
+            ],
+            "scopeFingerprint": "98041aea2d9b10702cf2558cf9278dabe2743b974208d7d676b31453cafcad8b"
           }
         ],
         "updatedAt": "2026-11-25T08:07:56.005Z"
@@ -3299,6 +3327,20 @@
               "tests"
             ],
             "scopeFingerprint": "a896eefc95a6187a291579a3daa64ac8bd37fbf71e698c5cd073e97705409177"
+          },
+          {
+            "kind": "integration",
+            "path": "docs/acceptance/local-integration-M4-sync.json",
+            "sha256": "cd82a5a8bdea2d68fcaf5bff1081940bdd164bdee49687a3e7a039ae85d7408e",
+            "sourceFingerprint": "eb74e94998c2fa9eab69c75defb524b044c92448e4db8a42f0fa28d0b9f92481",
+            "commit": "44f04dca223ca367b6caa8fc7ef8d34069331dd3",
+            "at": "2026-11-25T13:19:15.491Z",
+            "scopes": [
+              "control",
+              "protocol",
+              "shared"
+            ],
+            "scopeFingerprint": "98041aea2d9b10702cf2558cf9278dabe2743b974208d7d676b31453cafcad8b"
           }
         ],
         "updatedAt": "2026-11-25T08:07:55.269Z"
@@ -3578,6 +3620,20 @@
               "shared"
             ],
             "scopeFingerprint": "98041aea2d9b10702cf2558cf9278dabe2743b974208d7d676b31453cafcad8b"
+          },
+          {
+            "kind": "integration",
+            "path": "docs/acceptance/local-integration.json",
+            "sha256": "aa5ddbe6762892d48cfed2d6d3a0db54e9ca33e922dce0daf20c5d4480776f4d",
+            "sourceFingerprint": "eb74e94998c2fa9eab69c75defb524b044c92448e4db8a42f0fa28d0b9f92481",
+            "commit": "44f04dca223ca367b6caa8fc7ef8d34069331dd3",
+            "at": "2026-11-25T13:19:11.502Z",
+            "scopes": [
+              "control",
+              "protocol",
+              "shared"
+            ],
+            "scopeFingerprint": "98041aea2d9b10702cf2558cf9278dabe2743b974208d7d676b31453cafcad8b"
           }
         ],
         "updatedAt": "2026-11-25T07:17:37.479Z"
@@ -3603,6 +3659,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "d17c9821ac85c3a70cfcbf5b40df64f4b1b8f7063685722c707e80926d9362b6"
+    "digest": "4a8578ef16d72a1edc3feba11a180757a8e7896f1cac96dccb7c93582fe6a8c0"
   }
 }
