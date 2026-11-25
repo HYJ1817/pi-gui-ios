@@ -2,18 +2,20 @@
   "schemaVersion": 2,
   "taskId": "M1-remote",
   "kind": "independent-review",
-  "commit": "778b67eaf7f6cd87b6f6602e605ae979c533639d",
-  "sourceFingerprint": "6e7a6a919475365de47983f258f09a8177739a5380d629a6ca07e9eae7e6aa9f",
+  "commit": "51bc1b63914a7e9023a0276ed9e6e540d17768c5",
+  "sourceFingerprint": "885e2fbf91da4375ffdd0d38544976c796ab119366369d4d4feb7a400b228a65",
   "scopes": [
     "protocol",
     "shared"
   ],
   "scopeFingerprint": "b8e43d36ca038ba8e2669dd6e04456bb2ecac4da0f8531889007f3a6f482dbdc",
-  "startedAt": "2026-11-24T21:47:32.695Z",
-  "finishedAt": "2026-11-24T21:47:32.695Z",
+  "startedAt": "2026-11-25T06:20:49.750Z",
+  "finishedAt": "2026-11-25T06:20:49.750Z",
   "passed": true,
   "details": {
-    "receiptPath": "docs/acceptance/independent-review-778b67e-M1-remote-receipt.json",
-    "receiptSha256": "3f3cca66b71345f5c879bed1d3be67841bb17d2361ed11156725ca5fb3f828ea"
+    "receiptPath": "docs/acceptance/independent-review-51bc1b6-M4-sync-receipt.json",
+    "receiptSha256": "a0b73ad6935b61bf247d8601361e9c2a835f8b4b3f18d120a0fb87760b5e14a5",
+    "sameRunEvidence": "docs/acceptance/independent-review-51bc1b6-M4-sync-receipt.json",
+    "note": "One independent verification run certifies the current tree as a whole (reviewer mandate covered M4 delta plus sound-core re-verification of the invariants every milestone depends on). Cloned verbatim — not an independent per-task run."
   }
 }

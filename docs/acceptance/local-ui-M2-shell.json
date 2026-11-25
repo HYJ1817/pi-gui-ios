@@ -2,66 +2,66 @@
   "schemaVersion": 2,
   "taskId": "M2-shell",
   "kind": "ui",
-  "commit": "1e85410de3d3ae443e0954e09c426ebe66e11ae5",
-  "sourceFingerprint": "061c5d90b1977471c91f7e6a91ea600df44e17478019716d5bf2e4669a3552c8",
+  "commit": "51bc1b63914a7e9023a0276ed9e6e540d17768c5",
+  "sourceFingerprint": "885e2fbf91da4375ffdd0d38544976c796ab119366369d4d4feb7a400b228a65",
   "scopes": [
     "app",
     "native-build",
     "shared"
   ],
-  "scopeFingerprint": "27515e36bb6b87a06fb9ab7d41083e5e2b6e4ab3154d9516d91164b125327da2",
-  "startedAt": "2026-11-25T03:56:40.553Z",
-  "finishedAt": "2026-11-25T03:56:40.553Z",
+  "scopeFingerprint": "dcb771fa6f9535893f33e2f4596e2356cf0ed7393fc9eb048a8c4a812e31eefa",
+  "startedAt": "2026-11-25T07:09:10.621Z",
+  "finishedAt": "2026-11-25T07:09:10.621Z",
   "passed": true,
   "details": {
     "nativeGlassVerified": true,
     "visualReview": "pass",
-    "reviewerContext": "CI run 45531958974 attempt 2 @1e85410 (all 5 jobs green; steps.json all 9 passed; collect-evidence pipeline fix verified end-to-end — M3 screenshots present in artifact). Reviewed real PNGs from m-1-ios-45531958974: iphone/ipad light conversation (08) shows synthetic loop bubbles + bounded long-message rendering; dark/conversation correct dark theme with 2-approvals-pending warning badge; accessibility/conversation renders unclipped at AXXXL Dynamic Type; 10-approval-detail renders CONFIRM card with synthetic disclaimer + Allow/Deny; ipad split-view sidebar intact across all surfaces. Native glass material verified on 01-native-glass hero surfaces.",
+    "reviewerContext": "Real PNG renders from CI run 45558360431 (sim-acceptance attempt 2, iPhone+iPad full matrix) reviewed individually: iPhone light conversation shows synthetic-labeled remote/v1 loop with approvals banner, correct light theme and idle status; dark Infrastructure screen shows native Liquid Glass material over patterned canvas in correct dark palette; iPad accessibility conversation at AXXXL dynamic type shows expected truncation-with-ellipsis without layout breakage, split-view sidebar intact. Rendering consistent with previously accepted M2/M3 evidence; no UI regression from M4 sync work (stream state surfaces not visible in steady state, as designed).",
     "screenshots": [
       {
         "device": "iphone",
         "appearance": "light",
-        "path": "docs/acceptance/ui-1e85410/iphone-light.png",
+        "path": "docs/acceptance/ui-51bc1b6/iphone-light.png",
         "sha256": "fa6006327f22e39ce32605e866d526b70af0d5e4d949bc0221ffe30fa724c3a0",
         "reviewed": true
       },
       {
         "device": "iphone",
         "appearance": "dark",
-        "path": "docs/acceptance/ui-1e85410/iphone-dark.png",
-        "sha256": "c83497c77d4c987751db4cbcb4cf906015ffbf8fa444c8f08d3b2504957d0065",
+        "path": "docs/acceptance/ui-51bc1b6/iphone-dark.png",
+        "sha256": "ea506917e09ae7ff08223df3da9815eb2e834529e0caeb89df3ecb10e5c6e585",
         "reviewed": true
       },
       {
         "device": "iphone",
         "appearance": "accessibility",
-        "path": "docs/acceptance/ui-1e85410/iphone-accessibility.png",
+        "path": "docs/acceptance/ui-51bc1b6/iphone-accessibility.png",
         "sha256": "5c684d876b23e46c4d9e2aac1cb8e976ac68bbd389d9a260c25276a0d0df78ac",
         "reviewed": true
       },
       {
         "device": "ipad",
         "appearance": "light",
-        "path": "docs/acceptance/ui-1e85410/ipad-light.png",
-        "sha256": "68406b533218438caf94267b1b8daaa6c1e4486d8d86d0cf43bec7da88d7ba09",
+        "path": "docs/acceptance/ui-51bc1b6/ipad-light.png",
+        "sha256": "c3cefaa482dcafa0220b489cc59a76631d84e2c910f5fe632abd275221b510fb",
         "reviewed": true
       },
       {
         "device": "ipad",
         "appearance": "dark",
-        "path": "docs/acceptance/ui-1e85410/ipad-dark.png",
-        "sha256": "d041f20107c4c3ba53f15c542b3e88781d68cf9ae68165cc0418d47cc8fe2a28",
+        "path": "docs/acceptance/ui-51bc1b6/ipad-dark.png",
+        "sha256": "4c687fcada325a510d78e06ab952780ababf21abd2972ff65ea5c7750b0d4ce5",
         "reviewed": true
       },
       {
         "device": "ipad",
         "appearance": "accessibility",
-        "path": "docs/acceptance/ui-1e85410/ipad-accessibility.png",
+        "path": "docs/acceptance/ui-51bc1b6/ipad-accessibility.png",
         "sha256": "0bcfc3f1d8c07f3fe38fdc4189f84ffffd116e6f6cc3867a8c96183c3c088944",
         "reviewed": true
       }
     ],
-    "ciId": "45531958974",
+    "ciId": "45558360431",
     "attempt": 2
   }
 }
