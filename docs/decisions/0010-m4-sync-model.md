@@ -64,3 +64,17 @@ M3 安全审查 note F3：`lastError` 复用会掩盖 `stream_unavailable`。M4 
 | 撤销 | fault-injection #7：mid-stream 撤销 → 帧停止 + reset，无泄漏 |
 | 双设备一致性 | fault-injection #9：并发 mutation + 各自断线恢复终态一致 |
 | 状态可靠恢复 | 全部上述 + 水位线原子续传单测 + integration 桌面复验 |
+
+## 补遗（2026-11-25，独立审查两轮后）
+
+**已修复并经回归测试钉死**：
+1. reset 帧为每订阅瞬时投递，不进共享 journal（审查 important：共享序号空洞杀共谋订阅——契约 concurrency 违反）。
+2. cursor MAC 加钥（service key material 为 synthetic 密钥替身；真实桌面必须使用秘密 MAC key——本文档为 M5 记录此要求）+ 代际盐绑定（重启后的同值 journal/head 不再错误验证旧 cursor——跨代际静默丢失闭环）。
+3. grant/owner 撤销重置订阅（原 emit 内 resetOne 因流级 continue 不可达，死代码激活为 grantProject/rollOwnerEpoch 显式重置）。
+4. envelope additionalProperties:false 客户端封闭校验；cursor 常量时间比较；快照水位线 minimum（generation/sequence >= 1）。
+5. backlog 续传连续性规则（first-needed-retained）经独立审查验证为正确——比参考 floor 规则更忠实于契约水位线保证（参考规则会误杀 head-0 水位线）。
+
+**已知限制（如实记录，defer M5 真实传输加固时解决）**：
+- 首帧盲区（审查 nit 5）：`open()` 重置 position 后传输若恰好丢弃重放的第一帧则不可检测。合成传输有序故不可达；真实网络的缓解是 recoverStream 先经请求面刷新基线。契约 acceptance 未要求。
+- recoverStream 在 open() 后立即标记 live（nit 8）：若重订阅被 admission 拒绝（如限流），store 误读 live。装饰级——传输 onClose/onDrop 通道仍在。
+- fault 6 绕过 events.open 路径（nit 6）：reset 断言成立但生产 wiring 连续性未被同路径行使。由 regression co-subscription/cross-incarnation 测试补足覆盖。
