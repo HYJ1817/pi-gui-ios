@@ -1,11 +1,11 @@
 {
   "schemaVersion": 2,
   "kind": "tasks",
-  "revision": 1079,
-  "updatedAt": "2026-11-25T07:09:13.451Z",
+  "revision": 1088,
+  "updatedAt": "2026-11-25T07:10:44.420Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "fa8af02d300d23d7d815507e3e8b3503814aab757396f888d17e86c154aa254e",
+    "parentDigest": "e9e9e72b19791f3fd648874f24282ef524d7f1c05d09d4e4bfa9ba1429babfbd",
     "tasks": [
       {
         "id": "M-1-infrastructure",
@@ -2478,7 +2478,7 @@
         "id": "M4-sync",
         "phase": "M4",
         "title": "实时同步、断线补发、多设备一致性",
-        "status": "in_progress",
+        "status": "completed",
         "dependsOn": [
           "M3-core"
         ],
@@ -2738,7 +2738,7 @@
             "scopeFingerprint": "7b78624152a0852a1bd824eb9bf3079d072747024e20c903e0c01ae13c8df583"
           }
         ],
-        "updatedAt": "2026-11-25T03:58:32.943Z"
+        "updatedAt": "2026-11-25T07:10:32.115Z"
       },
       {
         "id": "M5-tailscale",
@@ -2778,6 +2778,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "37f996b6da9ab00b6f796f619d0d166e425a27c82639d11649245ce9dfb7785b"
+    "digest": "1cd7aaa33387b37f4d11d5cabb1e132211d4189f56fc779bd1c3771d79ab090d"
   }
 }
