@@ -1,27 +1,47 @@
 {
   "schemaVersion": 2,
   "kind": "state",
-  "revision": 1390,
-  "updatedAt": "2026-11-25T15:03:37.324Z",
+  "revision": 1401,
+  "updatedAt": "2026-11-25T15:49:10.489Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "eae6e78f99c77c55455e693890867a8b2b929d80a84d1738311dd2254d4a693d",
+    "parentDigest": "46b7e779159b68c4654f9585d8a5a5c5305ebe622db9def53ac0e56d29bd25ee",
     "phase": "M5",
     "currentTask": "M5-tailscale",
     "branch": "agent/m-1-bootstrap",
     "checkpoint": {
-      "id": "v2-2026-11-25T15-01-32-864Z-c25d2337-9f75-4084-9b65-95ae81000610",
-      "path": ".agent/checkpoints/v2-2026-11-25T15-01-32-864Z-c25d2337-9f75-4084-9b65-95ae81000610.json",
-      "sha256": "87ee603a91ece14a6ad3101ad87535aea8257064910dd4bb081972eb0341d328",
-      "authorityDigest": "73e22af519444f3594bfe11a724a03a2a3a0463824c289f4de3b9455d208bec2",
-      "at": "2026-11-25T15:01:32.864Z",
+      "id": "v2-2026-11-25T15-49-10-489Z-093d785a-5f3a-4da7-bcd8-85211a3bfe37",
+      "path": ".agent/checkpoints/v2-2026-11-25T15-49-10-489Z-093d785a-5f3a-4da7-bcd8-85211a3bfe37.json",
+      "sha256": "aa2f539e061b54da7012b333e143885fea5cf2f26f447236aeb3cfc34c7b096f",
+      "authorityDigest": "01fb7e81b7e2791cd1a5501cfa10ff96d7b1c0424a6c4eea0dfa9cdfcfaed574",
+      "at": "2026-11-25T15:49:10.489Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "bafe98bfcfd2b9c96fb29e4d4d193a703d71ee94",
-        "dirty": []
+        "commit": "27f82202aab386390ce6f8bc2ed8a6d6bf5b4a68",
+        "dirty": [
+          "M .agent/HANDOFF.md",
+          " D .agent/checkpoints/v2-2026-11-25T12-13-17-649Z-c5bf4bc7-94d6-4ea3-aa0e-0351aa4b1c85.json",
+          " D .agent/checkpoints/v2-2026-11-25T12-14-01-985Z-74a4ca0e-8679-445a-89c8-89afa0362275.json",
+          " D .agent/checkpoints/v2-2026-11-25T13-19-02-380Z-f97256f5-f639-4146-a523-e9645c6b6af1.json",
+          " D .agent/checkpoints/v2-2026-11-25T13-19-11-586Z-47bf99ed-195a-430b-b9c6-d3ce31c896b4.json",
+          " M .agent/control.json",
+          " M .agent/state.json",
+          " M .agent/tasks.json",
+          " M PROGRESS.md",
+          " M docs/acceptance/local-integration-M1-remote.json",
+          " M docs/acceptance/local-integration-M3-core.json",
+          " M docs/acceptance/local-integration-M4-sync.json",
+          " M docs/acceptance/local-integration-output.txt",
+          " M docs/acceptance/local-integration.json",
+          "?? .agent/checkpoints/v2-2026-11-25T15-48-49-915Z-b90a1360-a581-4109-8462-32768881ea75.json",
+          "?? .agent/checkpoints/v2-2026-11-25T15-49-06-414Z-d18c9d3c-8101-4d41-98a6-d1174f21d410.json",
+          "?? .agent/checkpoints/v2-2026-11-25T15-49-07-750Z-8d08e4c0-2e7e-4d63-a592-ddffea2d8901.json",
+          "?? .agent/checkpoints/v2-2026-11-25T15-49-09-107Z-486f9420-f23b-43a1-9d4c-07ceec8877c7.json",
+          "?? docs/acceptance/local-integration-M5-tailscale.json"
+        ]
       },
-      "sourceFingerprint": "4f85b14a506459c459c466a16f120b4aeca356a7a5a27edce6b6a615bd589dda",
-      "note": "M0 protocol-contract fresh. Remaining gaps: independent-review all tasks (round-6 conformance 87f0b1f0 in flight), consolidated security (3b22cca3 in flight), M-1 handoff redo (after final commit), M5 device-network (user final checklist). NO in-scope source changes permitted until reviews complete."
+      "sourceFingerprint": "e78af94c071aee6ee08b59c41df2ae4beea5dee2e6567ca11215854e33215907",
+      "note": "agent-task evidence M4-sync"
     },
     "blockers": [],
     "ci": [
@@ -200,7 +220,7 @@
     "desktop": {
       "repo": "HYJ1817/pi-gui",
       "branch": "feat/mobile-remote-protocol-v1",
-      "commit": "4a61f6d2ed3993fbd8a59f03b37e182b6d0b6221",
+      "commit": "988d6a30bd17c46c0da841bb6f00763d2aada12e",
       "protocolVersion": 1
     },
     "protocolVersion": 1,
@@ -731,6 +751,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "a324bb70daa5be4f0965e895df4aa93dfa006a4b3af9eadf6f55342846514513"
+    "digest": "0364b489554987af5bc3787db3bf08f74098f74b18b3d3f761dfef60ba31120c"
   }
 }
