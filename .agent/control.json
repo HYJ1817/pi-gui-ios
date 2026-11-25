@@ -1,8 +1,8 @@
 {
   "schemaVersion": 2,
   "kind": "control",
-  "revision": 1546,
-  "updatedAt": "2026-11-25T20:33:58.691Z",
+  "revision": 1548,
+  "updatedAt": "2026-11-25T20:45:54.667Z",
   "data": {
     "phase": "M5",
     "currentTask": "M5-tailscale",
@@ -5118,7 +5118,7 @@
         "title": "IPA、版本检测、SideStore 源与发布候选",
         "status": "pending",
         "dependsOn": [
-          "M5-tailscale"
+          "M4-sync"
         ],
         "requiredEvidence": [
           "unit",
@@ -5149,53 +5149,20 @@
       }
     ],
     "checkpoint": {
-      "id": "v2-2026-11-25T20-32-06-647Z-ac6ce249-d573-4511-ae6c-3628c3f7da20",
-      "path": ".agent/checkpoints/v2-2026-11-25T20-32-06-647Z-ac6ce249-d573-4511-ae6c-3628c3f7da20.json",
-      "sha256": "eabf1f2080f71b910282c8db6208c401271b5268a82e769cd6216457864d9b91",
-      "authorityDigest": "17dfcc81648f8a53784edcd7438dda50c2adf0bb744cfd378661d1bd92a93c66",
-      "at": "2026-11-25T20:32:06.647Z",
+      "id": "v2-2026-11-25T20-34-02-927Z-0d8bbea3-91e9-4ee3-892c-5f54682ef382",
+      "path": ".agent/checkpoints/v2-2026-11-25T20-34-02-927Z-0d8bbea3-91e9-4ee3-892c-5f54682ef382.json",
+      "sha256": "7ee9abd4149fdaa1569f22a996815db442f77b0ccfb6b044dfb6ff3b653d6150",
+      "authorityDigest": "25995e7afb69e54ab54923550f249a3d07148a4a2c85d75dd0ae4186f0f109a8",
+      "at": "2026-11-25T20:34:02.927Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "06be276b565e2999041e70a028a3ac1646fd79c5",
-        "dirty": [
-          "M .agent/HANDOFF.md",
-          " D .agent/checkpoints/v2-2026-11-25T16-00-24-033Z-dcf942a8-fc5e-4e3e-aeed-d0606ef84ed5.json",
-          " D .agent/checkpoints/v2-2026-11-25T16-00-25-802Z-0416671c-b8cc-46f3-ac5d-f136e0f4dff9.json",
-          " D .agent/checkpoints/v2-2026-11-25T16-00-27-599Z-ed76d778-b2e0-4b8f-b0c2-cebbcf8c2d88.json",
-          " D .agent/checkpoints/v2-2026-11-25T16-00-29-313Z-dd5538be-6a1f-4a3d-8e67-631b1b49f80f.json",
-          " D .agent/checkpoints/v2-2026-11-25T16-00-31-077Z-17e2ad8c-86e9-4b5d-a0c4-53cebf5fcd5c.json",
-          " D .agent/checkpoints/v2-2026-11-25T16-00-32-762Z-32fd7a4e-6b17-4483-a2b0-bc711bf7bb2d.json",
-          " D .agent/checkpoints/v2-2026-11-25T16-00-34-359Z-adb524c8-7e50-4f61-9762-81d2d4dd74e0.json",
-          " D .agent/checkpoints/v2-2026-11-25T16-00-35-909Z-973664f5-4467-42c5-bbc8-d1f81363ba65.json",
-          " D .agent/checkpoints/v2-2026-11-25T16-00-37-505Z-3fa0a604-ada0-49ae-9f6e-57b4f7c6f0d4.json",
-          " M .agent/control.json",
-          " M .agent/state.json",
-          " M .agent/tasks.json",
-          " M PROGRESS.md",
-          "?? .agent/checkpoints/v2-2026-11-25T19-52-46-471Z-6ce9b53a-10c9-49a9-8122-33653a691d60.json",
-          "?? .agent/checkpoints/v2-2026-11-25T19-55-10-839Z-1517478a-4db2-43a3-ac42-9d455c424914.json",
-          "?? .agent/checkpoints/v2-2026-11-25T20-31-55-527Z-1a513661-2a29-4ede-abff-12c6218fec1b.json",
-          "?? .agent/checkpoints/v2-2026-11-25T20-31-57-053Z-bf7a33aa-9d77-4e79-8447-5aeb5d4f39a3.json",
-          "?? .agent/checkpoints/v2-2026-11-25T20-31-58-519Z-56a256ca-b065-4450-93c5-3e1fb7cd5fd3.json",
-          "?? .agent/checkpoints/v2-2026-11-25T20-32-00-013Z-3a310d3b-8beb-4fd2-a695-66b71260bc6c.json",
-          "?? .agent/checkpoints/v2-2026-11-25T20-32-01-683Z-9bd0b122-99e6-4d65-b435-57ca178295d3.json",
-          "?? .agent/checkpoints/v2-2026-11-25T20-32-03-296Z-54da72dd-145a-4fa5-a7dc-94289b467864.json",
-          "?? .agent/checkpoints/v2-2026-11-25T20-32-04-965Z-9d015ba8-6ceb-424e-84f6-aa8c47ef1080.json",
-          "?? docs/acceptance/review-round12b-M-1-infrastructure.json",
-          "?? docs/acceptance/review-round12b-M0-architecture.json",
-          "?? docs/acceptance/review-round12b-M1-remote.json",
-          "?? docs/acceptance/review-round12b-M2-shell.json",
-          "?? docs/acceptance/review-round12b-M3-core.json",
-          "?? docs/acceptance/review-round12b-M4-sync.json",
-          "?? docs/acceptance/review-round12b-M5-tailscale.json",
-          "?? docs/acceptance/review-round12b-M6-distribution.json",
-          "?? docs/acceptance/review-round12b-receipt.json"
-        ]
+        "commit": "6cb02ad6bcd3a2289ed9c68255b48fa69865356a",
+        "dirty": []
       },
       "sourceFingerprint": "e78af94c071aee6ee08b59c41df2ae4beea5dee2e6567ca11215854e33215907",
-      "note": "agent-task evidence M6-distribution"
+      "note": "CLOSURE PIPELINE ACTIVE: round-12b PASS (0B/0I, 15/15) — first pass in 7 rounds; independent-review imported ×8 tasks; security 52014294 + handoff 7767eb73 delegates in flight; remaining: security/handoff evidence import, validate M-1..M6, transitions"
     },
-    "nextAction": "M5: round-6 87f0b1f0 + native-security round-2 回包→independent 证据链→CI 45623367812(d76c7f2)/新run 全绿→ci/ipa/ui→validate→transitions",
+    "nextAction": "收口流水线：security 52014294 + handoff 重跑回包→收据/报告→evidence 导入→validate M-1..M6 按依赖序→transitions。M5 device-network 永久待用户最终真机清单（ADR 0006：真机验收在全部软件工作完成后集中一次）。H-002 修复：M6 dependsOn 解除对 M5 completed 的死锁依赖，恢复 ADR 批准的软件优先顺序。",
     "delegates": [
       {
         "taskId": "node:delegated-task:command%3Amcp%3Ac31b83bb-4e95-4301-8a91-f13f8295d85a%3Adelegate-task%3A4b75cf04-9360-469c-87e1-321a7e4b3149",
@@ -5825,6 +5792,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "25995e7afb69e54ab54923550f249a3d07148a4a2c85d75dd0ae4186f0f109a8"
+    "digest": "15b4ea67d2f75fbc292f255b3fd86ada573cb5ad74fe0f71744ac20bda451554"
   }
 }

@@ -1,11 +1,11 @@
 {
   "schemaVersion": 2,
   "kind": "tasks",
-  "revision": 1546,
-  "updatedAt": "2026-11-25T20:33:58.691Z",
+  "revision": 1548,
+  "updatedAt": "2026-11-25T20:45:54.667Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "25995e7afb69e54ab54923550f249a3d07148a4a2c85d75dd0ae4186f0f109a8",
+    "parentDigest": "15b4ea67d2f75fbc292f255b3fd86ada573cb5ad74fe0f71744ac20bda451554",
     "tasks": [
       {
         "id": "M-1-infrastructure",
@@ -4927,7 +4927,7 @@
         "title": "IPA、版本检测、SideStore 源与发布候选",
         "status": "pending",
         "dependsOn": [
-          "M5-tailscale"
+          "M4-sync"
         ],
         "requiredEvidence": [
           "unit",
@@ -4960,6 +4960,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "0124ccdd3b51469ae89f6f74f960b60f935bf06f05ffccd462ab94cf19566743"
+    "digest": "aee8f608e636410c24d314823bcffb946c956dd14bf302b5915e96f820ea4a02"
   }
 }
