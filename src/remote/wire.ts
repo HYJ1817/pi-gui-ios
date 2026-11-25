@@ -144,7 +144,7 @@ export function isForbiddenKey(key: string): boolean {
 }
 
 const FORBIDDEN_VALUE = new RegExp([
-  /(?:^|[^A-Za-z0-9_.\/~])\/(?!\/)/.source,
+  /(?:^|[^A-Za-z0-9_.\\/~])\/(?!\/)/.source,
   /\w+:\/\/+[A-Za-z]:[\\/]/.source,
   /\w+:\/\/\/(?:[A-Za-z0-9._~-]+\/)*[A-Za-z0-9._~-]+/.source,
   /\/\/+[A-Za-z0-9._~:@-]+\/[A-Za-z0-9._~-]/.source,

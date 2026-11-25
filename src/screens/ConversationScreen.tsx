@@ -9,6 +9,7 @@ import type { RootStackParamList } from '../navigation/types';
 import { useTheme } from '../theme';
 import { useRemote, remoteRuntime } from '../remote/useRemote';
 import { StatusBadge } from '../components/StatusBadge';
+import { StreamErrorCard } from '../components/StreamErrorCard';
 import { utf8Bytes, uuidFromBytes } from '../remote/wire';
 import { MAX_TRANSCRIPT_BYTES, type RemoteMessage } from '../remote/types';
 
@@ -84,6 +85,7 @@ export default function ConversationScreen() {
           label={status === 'unknown' ? 'Idle' : status.charAt(0).toUpperCase() + status.slice(1)}
         />
       </View>
+      {state.lastError === 'stream_unavailable' ? <StreamErrorCard /> : null}
       {conv?.snapshotTruncated ? <Text style={[styles.trunc, { color: theme.tertiary }]}>Earlier history truncated by projection bounds.</Text> : null}
       {approvals.length > 0 ? (
         <Text testID="conversation-approvals" style={[styles.pending, { color: theme.warning }]}>

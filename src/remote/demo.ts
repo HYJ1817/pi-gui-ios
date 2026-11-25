@@ -26,6 +26,8 @@ export interface DemoRuntime {
   openStream: () => void;
   /** close + reopen (resubscribe path) */
   reopenStream: () => void;
+  /** recovery after terminal stream death: reload baselines + fresh resubscribe */
+  recoverStream: () => Promise<void>;
   closeStream: () => void;
 }
 
@@ -180,6 +182,7 @@ export function demoRuntime(): DemoRuntime {
     },
     onReset: () => { /* reset applied event already rebuilt baselines via store.apply */ },
     onEvent: applied => { storeRef?.apply(applied); },
+    onStreamError: () => { storeRef?.markStreamError(); },
   });
 
   const store = new ConversationStore(client, events);
@@ -202,6 +205,14 @@ export function demoRuntime(): DemoRuntime {
     reopenStream: () => {
       events.close();
       events.open(streamTransport, client.buildEventsRequest(events.latestCursor()), events.latestCursor());
+    },
+    /** Recovery after a terminal stream error: pull fresh baselines over the
+     *  reliable request/response plane, then resubscribe WITHOUT a cursor so
+     *  the position re-establishes at the live head. */
+    recoverStream: async () => {
+      events.close();
+      await store.load();
+      events.open(streamTransport, client.buildEventsRequest(), undefined);
     },
     closeStream: () => events.close(),
   };

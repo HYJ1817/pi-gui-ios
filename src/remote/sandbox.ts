@@ -79,7 +79,7 @@ const MAX_NONCES = 4096;
 const NONCE_RETENTION_MS = 180_000;
 const MAX_STREAMS_PER_DEVICE = 2;
 const MAX_STREAMS_TOTAL = 8;
-const TIMESTAMP_MS = /^[0-9]{10,14}$/;
+const TIMESTAMP_MS = /^[0-9]{13}$/;
 const NONCE_B64URL = /^[A-Za-z0-9_-]{43}$/;
 const BODY_SHA256 = /^[0-9a-f]{64}$/;
 const DEVICE_ID = /^[A-Za-z0-9_-]{8,128}$/;
@@ -117,14 +117,10 @@ export class LocalSyntheticGateway {
   pairingSessionId(): string { return 'pairing-demo0000000000'; }
 
   private recordMutation(key: string, record: MutationRecord): void {
-    // FIFO-bound the idempotency ledger: a live outcome is never evicted while
-    // retained, and growth past the cap fails closed via capacity (oldest-first).
+    // Contract idempotency.evictionRule: outcomes are NEVER evicted while the
+    // owner epoch is live; capacity overflow refuses NEW mutations (checked
+    // at the mutation sites) instead of evicting — replay integrity holds.
     this.mutations.set(key, record);
-    while (this.mutations.size > MAX_MUTATIONS) {
-      const oldest = this.mutations.keys().next().value;
-      if (oldest === undefined) break;
-      this.mutations.delete(oldest);
-    }
   }
 
   /**
@@ -283,8 +279,12 @@ export class LocalSyntheticGateway {
     for (const h of Object.keys(headers)) if (!ALLOWED_HEADERS.has(h)) return unauthorized();
     for (const h of REQUIRED_HEADERS) if (typeof headers[h] !== 'string' || !headers[h]) return unauthorized();
     if (request.method === 'GET' && request.rawBody !== '') return unauthorized();
+    if (request.method === 'GET' && headers['content-type'] !== undefined) return unauthorized();
     if (utf8Bytes(request.rawBody) > MAX_REQUEST_BYTES) return unauthorized();
     if (request.method === 'POST' && headers['content-type'] !== 'application/json; charset=utf-8') return unauthorized();
+    // Reference parity: non-stream operations accept exactly application/json
+    // when the header is present (the client always sends it).
+    if (route.op.id !== 'events.subscribe' && headers.accept !== undefined && headers.accept !== 'application/json') return unauthorized();
     const requestIdHeader = headers['x-pi-remote-request-id']!;
     if (!isUuid(requestIdHeader) || requestIdHeader === ZERO_ID) return unauthorized();
     if (!DEVICE_ID.test(headers['x-pi-remote-device']!)) return unauthorized();
@@ -426,6 +426,8 @@ export class LocalSyntheticGateway {
           if (prior.payloadSha256 !== digest) return this.error('payload_invalid', requestId);
           return respond(prior.outcome);
         }
+        // Capacity is refused BEFORE applying — never reject after mutating.
+        if (this.mutations.size >= MAX_MUTATIONS) return this.error('operation_rejected', requestId);
         const conversationId = 'conv_' + sha256hex(`${device.deviceId}:${params.projectId}:${String(payload.clientConversationId)}`).slice(0, 16);
         const sessionId = 'sess_' + sha256hex(conversationId).slice(0, 12);
         const conversation: SandboxConversation = {
@@ -460,6 +462,8 @@ export class LocalSyntheticGateway {
           if (prior.payloadSha256 !== digest) return this.error('payload_invalid', requestId);
           return respond(prior.outcome);
         }
+        // Capacity is refused BEFORE applying — never reject after mutating.
+        if (this.mutations.size >= MAX_MUTATIONS) return this.error('operation_rejected', requestId);
         const text = String(payload.text);
         const message: RemoteMessage = { messageId: 'msg_' + sha256hex(`${conv.conversationId}:${String(payload.clientMessageId)}`).slice(0, 14), role: 'user', text };
         conv.messages.push(message);
@@ -627,9 +631,21 @@ export class LocalSyntheticGateway {
         stream.journalSeq += 1;
         const resetEntry: JournalEntry = {
           seq: stream.journalSeq, event: 'reset', conversationId: 'stream-reset', ownerRevision: 0,
-          payload: { reason: decoded === 'foreign' ? 'owner_changed' : 'cursor_expired' },
+          // foreign is indistinguishable from wellformedStale (contract
+          // cursorTransitionTable) — never leak whether the deviceId exists.
+          payload: { reason: 'cursor_expired' },
         };
         stream.journal.push(resetEntry);
+        // Co-subscriptions on this device were bound to the now-defunct
+        // generation: rebind them and deliver the reset to every one —
+        // otherwise they silently orphan while occupying stream slots.
+        for (const other of this.subscriptions) {
+          if (other.deviceId === device.deviceId && other !== sub) {
+            other.generation = generation;
+            other.lastSeq = 0;
+            this.deliver(other, resetEntry);
+          }
+        }
         this.subscriptions.push(sub);
         this.deliver(sub, resetEntry);
         return { ok: true, close: () => { this.subscriptions = this.subscriptions.filter(s => s !== sub); } };
@@ -662,9 +678,9 @@ export class LocalSyntheticGateway {
       expiresAtMs: approval.expiresAtMs ?? Date.now() + 120_000,
     };
     conv.approvals.push(record);
-    for (const device of this.devices.values()) {
-      if (device.grants[conv.projectId] === true) this.emit(device.deviceId, 'approval.pending', conv, { requestId: record.requestId, method: record.method, title: record.title, message: record.message, ...(record.options ? { options: record.options } : {}) });
-    }
+    // emit() already fans out to every granted+scoped device's stream exactly
+    // once — do NOT loop per device here or entries duplicate into journals.
+    this.emit(conv.owner, 'approval.pending', conv, { requestId: record.requestId, method: record.method, title: record.title, message: record.message, ...(record.options ? { options: record.options } : {}) });
   }
 
   expireApproval(conversationId: string, requestId: string): void {

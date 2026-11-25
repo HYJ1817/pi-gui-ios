@@ -56,6 +56,10 @@ export interface EventClientOptions {
   onReset: (reason: string) => void;
   onEvent: (applied: AppliedEvent) => void;
   onDrop?: (code: string) => void;
+  /** Called once when the stream dies irrecoverably (sequence gap). The UI
+   *  surfaces this and the only recovery is a close+reopen that resubscribes
+   *  — a stale/foreign cursor then forces a reset-rebuild of the baseline. */
+  onStreamError?: (code: string) => void;
 }
 
 export function validateEventEnvelope(event: unknown): event is EventEnvelope {
@@ -130,6 +134,7 @@ export class EventStreamClient {
   private readonly onReset: EventClientOptions['onReset'];
   private readonly onEvent: EventClientOptions['onEvent'];
   private readonly onDrop: EventClientOptions['onDrop'];
+  private readonly onStreamError: EventClientOptions['onStreamError'];
   private position: Position | undefined;
   private cursor: string | undefined;
   private handle: { close(): void } | null = null;
@@ -141,17 +146,28 @@ export class EventStreamClient {
     this.onReset = options.onReset;
     this.onEvent = options.onEvent;
     this.onDrop = options.onDrop ?? (() => {});
+    this.onStreamError = options.onStreamError ?? (() => {});
   }
 
   latestCursor(): string | undefined { return this.cursor; }
   expectedPosition(): Position | undefined { return this.position; }
 
-  /** Open a stream; `cursor` resumes a prior position when well-formed. */
+  /** Open a stream; `cursor` resumes a prior position when well-formed.
+   *  Every (re)subscribe starts WITHOUT a position: with no cursor the first
+   *  frame establishes the live head; with a cursor the backlog replay
+   *  establishes it. Carrying a stale position across resubscribe would drop
+   *  every replayed frame as a sequence gap (the journal continues the same
+   *  generation) and would wedge the stream permanently. */
   open(stream: StreamTransport, request: SignedRequest, cursor?: string): void {
     this.close();
     this.cursor = cursor;
+    this.position = undefined;
+    this.dead = null;
     this.handle = stream.subscribe(request, frame => this.accept(frame), reason => this.onDrop?.(`closed:${reason}`));
   }
+
+  /** Irrecoverable stream death (sequence gap). UI-facing, drives the reload affordance. */
+  streamError(): string | undefined { return this.dead ?? undefined; }
 
   close(): void {
     this.handle?.close();
@@ -160,6 +176,7 @@ export class EventStreamClient {
 
   /** Frame acceptance — structural validity + signature + scope + position. */
   accept(frame: unknown): FrameResult {
+    if (this.dead) return this.drop('sequence_gap');
     if (!validateEventEnvelope(frame)) return this.drop('frame_invalid');
     const message = buildEventFrameMessage(frame, this.credentials.deviceId, this.credentials.serviceId);
     if (message === null || !this.crypto.verify(this.credentials.servicePublicKey, frame.frameSignature, message)) return this.drop('frame_signature_invalid');
@@ -171,12 +188,17 @@ export class EventStreamClient {
       this.position = position;
       this.cursor = frame.cursor;
       this.onReset(String((frame.payload as Record<string, unknown>).reason));
-      return { ok: true, applied: this.toApplied(frame), position, isReset: true };
+      // The reset is an APPLIED event: it must reach the store through the
+      // same onEvent path as ordinary frames or the baseline rebuild never
+      // happens in production wiring (onReset is informational only).
+      const applied = this.toApplied(frame);
+      this.onEvent(applied);
+      return { ok: true, applied, position, isReset: true };
     }
     // Fresh subscribe (cursorTransitionTable.absent): the stream starts at the
     // live head with no reset, so the FIRST ordinary frame of its generation
     // establishes the position instead of matching a prior expected one.
-    if (this.position !== undefined && (frame.streamGeneration !== this.position.streamGeneration || frame.sequence !== this.position.sequence + 1)) return this.drop('sequence_gap');
+    if (this.position !== undefined && (frame.streamGeneration !== this.position.streamGeneration || frame.sequence !== this.position.sequence + 1)) return this.fatal('sequence_gap');
     let granted = false;
     try {
       granted = this.authorize({ conversationId: frame.conversationId, ownerRevision: frame.ownerRevision, event: frame.event }) === true;
@@ -197,7 +219,22 @@ export class EventStreamClient {
     this.onDrop?.(code);
     return { ok: false, code };
   }
+
+  /** A continuity break cannot self-heal: every later frame in this generation
+   *  keeps gapping, so the stream is declared dead once, onStreamError fires,
+   *  and further frames are rejected until open() resubscribes. */
+  private fatal(code: FrameError): { ok: false; code: FrameError } {
+    if (!this.dead) {
+      this.dead = code;
+      this.onStreamError?.(code);
+    }
+    return this.drop(code);
+  }
+
+  private dead: string | null = null;
 }
+
+
 
 export type { AppliedEvent as AppliedRemoteEvent };
 export type ApprovalPayload = RemoteApproval;

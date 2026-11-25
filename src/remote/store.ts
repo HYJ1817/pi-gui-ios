@@ -75,6 +75,13 @@ export class ConversationStore {
 
   conversation(id: string): ConversationState { return this.state.conversations[id] ?? EMPTY; }
 
+  /** Irrecoverable stream death: surfaced as a closed, generic token the UI
+   *  can recognize to offer a reload. Never carries transport internals. */
+  markStreamError(): void {
+    if (this.state.lastError !== 'stream_unavailable') this.setState({ lastError: 'stream_unavailable' });
+  }
+  streamErrorActive(): boolean { return this.state.lastError === 'stream_unavailable'; }
+
   /** Bootstrap: projects + sessions + all known snapshots. */
   async load(): Promise<void> {
     const projects = await this.client.listProjects();

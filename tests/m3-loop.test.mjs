@@ -363,11 +363,6 @@ test('event stream: signed frames, order, scope drop, tamper drop, cursor resume
   assert.equal(res.ok, false);
   assert.equal(res.code, 'frame_signature_invalid');
   assert.equal(store.conversation(CONV).status, 'idle');
-  // sequence gap → dropped (valid signature, wrong sequence)
-  const skipped = { protocolVersion: 1, sequence: legit.sequence + 7, conversationId: CONV, ownerRevision: legit.ownerRevision, event: 'conversation.status', payload: { status: 'running' }, streamGeneration: legit.streamGeneration, cursor: 'cur7gap', frameSignature: 'x'.repeat(86) };
-  skipped.frameSignature = r.serviceCrypto.sign(r.M.events.buildEventFrameMessage(skipped, r.credentials.deviceId, r.credentials.serviceId));
-  const gapRes = ev.accept(skipped);
-  assert.equal(gapRes.code, 'sequence_gap');
   // contract parity: forbidden values inside a correctly-signed payload must
   // still drop the frame (free-text fields are not a credential/path channel)
   const leaked = { protocolVersion: 1, sequence: legit.sequence + 1, conversationId: CONV, ownerRevision: legit.ownerRevision, event: 'approval.pending', payload: { requestId: 'approval-lk01', method: 'confirm', title: 'PI_GUI_TOKEN=hunter2secret', message: 'see /Users/x/.env' }, streamGeneration: legit.streamGeneration, cursor: 'cur_leak', frameSignature: '' };
@@ -375,6 +370,13 @@ test('event stream: signed frames, order, scope drop, tamper drop, cursor resume
   const leakRes = ev.accept(leaked);
   assert.equal(leakRes.ok, false);
   assert.equal(leakRes.code, 'frame_invalid');
+  // sequence gap → fatal LAST: once fired the stream is dead and every later
+  // frame (even valid next-in-order) is rejected until open() resubscribes.
+  const skipped = { protocolVersion: 1, sequence: legit.sequence + 7, conversationId: CONV, ownerRevision: legit.ownerRevision, event: 'conversation.status', payload: { status: 'running' }, streamGeneration: legit.streamGeneration, cursor: 'cur7gap', frameSignature: 'x'.repeat(86) };
+  skipped.frameSignature = r.serviceCrypto.sign(r.M.events.buildEventFrameMessage(skipped, r.credentials.deviceId, r.credentials.serviceId));
+  const gapRes = ev.accept(skipped);
+  assert.equal(gapRes.code, 'sequence_gap');
+  assert.equal(ev.streamError(), 'sequence_gap');
   // approval frame needs approvals.read: device lacking the scope drops it
   const r2 = rig(t, { scopes: ALL_SCOPES.filter(s => s !== 'approvals.read') });
   const ev2 = new r.M.events.EventStreamClient({
@@ -396,6 +398,24 @@ test('event stream: signed frames, order, scope drop, tamper drop, cursor resume
   const bad = client.buildEventsRequest('!!!bad cursor!!!');
   const subBad = gateway.subscribe(r.credentials, bad, () => {});
   assert.equal(subBad.ok, false);
+  // Malformed cursor is a PRE-authentication failure: the body code is the
+  // closed pre-auth 'unauthorized', never an operational vocabulary word.
+  assert.equal(JSON.parse(subBad.response.body).error.code, 'unauthorized');
+  // Stale-cursor co-subscriptions are rebound to the new generation instead of
+  // silently orphaned: both subscribers receive the reset frame. Close the
+  // primary stream first — per-device stream cap is 2.
+  ev.close();
+  const fresh = client.buildEventsRequest();
+  const firstFrames = [];
+  const sub1 = gateway.subscribe(r.credentials, fresh, f => firstFrames.push(f));
+  assert.equal(sub1.ok, true);
+  const staleAgain = client.buildEventsRequest(staleCursor);
+  const resetsSeen = [];
+  const sub2 = gateway.subscribe(r.credentials, staleAgain, f => { if (f.event === 'reset') resetsSeen.push(f); });
+  assert.equal(sub2.ok, true);
+  assert.equal(resetsSeen.length, 1);
+  assert.ok(firstFrames.some(f => f.event === 'reset'), 'co-subscription must be rebound + receive the reset');
+  sub1.close(); sub2.close();
 });
 
 test('store: load maps projects/sessions/conversations; approvals flow; reset rebuilds', async (t) => {
@@ -488,18 +508,66 @@ test('event stream: open() resume path — position cleared, reset reaches store
   assert.ok(frames.length >= 2);
   const cursor = ev.latestCursor();
   assert.ok(cursor);
-  // Close + reopen WITHOUT cursor: position must be cleared (B2 regression).
+  // Close, EMIT during the gap (the window a stale position would silently
+  // lose), then reopen WITHOUT cursor: position must be cleared so the
+  // live-head continuation is accepted instead of gap-looping forever.
+  ev.close();
+  const revGap = (await client.snapshot(CONV)).result.ownerRevision;
+  await client.sendMessage(CONV, randomUUID(), 'emitted-while-closed', revGap);
   ev.open(stream, client.buildEventsRequest(), undefined);
   const rev2 = (await client.snapshot(CONV)).result.ownerRevision;
   await client.sendMessage(CONV, randomUUID(), 'second', rev2);
-  // The new generation's first frames establish a fresh position — no drops.
-  assert.equal(store.conversation(CONV).messages.length, 4);
-  // Reopen WITH a valid cursor: backlog replay in same generation (no reset).
+  assert.equal(ev.streamError(), undefined, 'reopened stream must not die on live-head continuation');
+  // Reopen WITH a valid cursor: backlog replay in same generation must not be
+  // dropped as sequence_gap (the stale-position defect this guards).
   ev.close();
-  const before = frames.length;
   ev.open(stream, client.buildEventsRequest(cursor), cursor);
-  assert.ok(ev.expectedPosition()); // replayed frames established a position
+  assert.ok(ev.expectedPosition(), 'replayed backlog must establish a position');
+  assert.equal(ev.streamError(), undefined);
+  const texts = store.conversation(CONV).messages.map(m => m.text);
+  assert.ok(texts.includes('emitted-while-closed'), 'backlog replay delivers the gap emission');
 });
+
+test('event stream: sequence gap kills the stream, recovery resubscribes clean', async (t) => {
+  const r = rig(t);
+  const { client, store, stream } = r;
+  const streamErrors = [];
+  const ev = new r.M.events.EventStreamClient({
+    credentials: r.credentials, crypto: r.deviceCrypto,
+    authorizeResource: () => true,
+    onReset: () => {}, onEvent: a => store.apply(a), onDrop: () => {},
+    onStreamError: code => streamErrors.push(code),
+  });
+  ev.open(stream, client.buildEventsRequest(), undefined);
+  const rev = (await client.snapshot(CONV)).result.ownerRevision;
+  await client.sendMessage(CONV, randomUUID(), 'one', rev);
+  // Forge a frame that SKIPS ahead of the tracked position (continuity break).
+  const position = ev.expectedPosition();
+  const frame = {
+    protocolVersion: 1, streamGeneration: position.streamGeneration, sequence: position.sequence + 2,
+    cursor: 'curgaptest', conversationId: CONV, ownerRevision: rev + 5, event: 'conversation.status',
+    frameSignature: '', payload: { status: 'idle' },
+  };
+  // Sign it properly so the ONLY defect is the sequence jump.
+  const canonical = r.M.events.buildEventFrameMessage(frame, r.credentials.deviceId, r.credentials.serviceId);
+  frame.frameSignature = r.serviceCrypto.sign(canonical);
+  const result = ev.accept(frame);
+  assert.equal(result.ok, false);
+  assert.equal(result.code, 'sequence_gap');
+  assert.deepEqual(streamErrors, ['sequence_gap'], 'fatal continuity break fires onStreamError exactly once');
+  assert.equal(ev.streamError(), 'sequence_gap');
+  // While dead, even VALID next-in-order frames are rejected — no self-heal.
+  const rev2 = (await client.snapshot(CONV)).result.ownerRevision;
+  await client.sendMessage(CONV, randomUUID(), 'two', rev2);
+  assert.ok(!store.conversation(CONV).messages.some(m => m.text === 'two'), 'dead stream must not apply frames');
+  // Recovery: resubscribe without cursor — fresh position at live head.
+  ev.open(stream, client.buildEventsRequest(), undefined);
+  assert.equal(ev.streamError(), undefined, 'resubscribe clears death');
+  const rev3 = (await client.snapshot(CONV)).result.ownerRevision;
+  await client.sendMessage(CONV, randomUUID(), 'three', rev3);
+  assert.ok(store.conversation(CONV).messages.some(m => m.text === 'three'), 'recovered stream applies frames');
+});
+
 
 test('reset frame through the REAL client path rebuilds the store baseline', async (t) => {
   const r = rig(t);
@@ -512,15 +580,27 @@ test('reset frame through the REAL client path rebuilds the store baseline', asy
   await store.load();
   assert.equal(store.conversation(CONV).loaded, true);
   ev.open(stream, client.buildEventsRequest(), undefined);
+  // THE GAP: mutate server state while the stream cannot observe it (no live
+  // subscription) — a pending approval whose frame is never seen live. The
+  // reset's baseline rebuild is the ONLY mechanism that can surface it.
+  ev.close();
+  gateway.raiseApproval(CONV, { requestId: 'approval-gap01', method: 'confirm', title: 'gap approval', message: 'raised during the gap' });
+  assert.equal(store.conversation(CONV).approvals.some(a => a.requestId === 'approval-gap01'), false, 'precondition: gap mutation is invisible to the store');
   // Stale cursor subscribe → new generation + exactly one reset frame; the
-  // store's reset branch rebuilds baselines through accept → onEvent → apply.
+  // store's reset branch must rebuild baselines through accept → onEvent →
+  // store.apply → refresh — including the approval raised during the gap.
   const staleCursor = Buffer.from('cur:' + r.credentials.deviceId + ':999:0').toString('base64url');
   const reqStale = client.buildEventsRequest(staleCursor);
   const applied = [];
   const sub = gateway.subscribe(r.credentials, reqStale, f => { const r2 = ev.accept(f); if (r2.ok) applied.push(r2.applied); });
   assert.equal(sub.ok, true);
-  // The store applied the reset (refresh re-pulls loaded=true, still consistent).
-  assert.equal(store.conversation(CONV).loaded, true);
+  assert.ok(applied.some(a => a.event === 'reset'), 'reset frame must reach onEvent as an applied event');
+  // store.apply(reset) fires an async refresh — wait for it to land.
+  await new Promise(resolve => setTimeout(resolve, 50));
+  assert.ok(
+    store.conversation(CONV).approvals.some(a => a.requestId === 'approval-gap01'),
+    `baseline rebuild must surface the gap approval; approvals: ${JSON.stringify(store.conversation(CONV).approvals.map(a=>a.requestId))}`,
+  );
   // Live frames after the reset arrive in the new generation.
   const rev = (await client.snapshot(CONV)).result.ownerRevision;
   const sent = await client.sendMessage(CONV, randomUUID(), 'post-reset', rev);
