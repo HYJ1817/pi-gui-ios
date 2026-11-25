@@ -1,8 +1,8 @@
 {
   "schemaVersion": 2,
   "kind": "control",
-  "revision": 1222,
-  "updatedAt": "2026-11-25T11:05:53.615Z",
+  "revision": 1227,
+  "updatedAt": "2026-11-25T11:10:41.683Z",
   "data": {
     "phase": "M5",
     "currentTask": "M5-tailscale",
@@ -905,6 +905,14 @@
               "shared"
             ],
             "scopeFingerprint": "c938c031249776827fa451e7744e77b439bc118e65bd9de76492e8073dd532be"
+          },
+          {
+            "kind": "independent-handoff",
+            "path": "docs/acceptance/independent-handoff-fc9b7c7-M-1-infrastructure.json",
+            "sha256": "529921af8e58c419ef1e0d885e1c0949e6bbcfe4a47e4de4f44d78d69b74879e",
+            "sourceFingerprint": "66da978e67eb1ec04c62ab5f5d59051130635b1e2f400910d25d505cdfa82405",
+            "commit": "fc9b7c747a337356d8afe9272464812ab79cfca0",
+            "at": "2026-11-25T11:10:30.175Z"
           }
         ],
         "updatedAt": "2026-11-25T07:17:28.394Z"
@@ -3394,20 +3402,29 @@
       }
     ],
     "checkpoint": {
-      "id": "v2-2026-11-25T10-59-41-875Z-2a973dde-9e8e-4d97-9ff5-e00604d95ff0",
-      "path": ".agent/checkpoints/v2-2026-11-25T10-59-41-875Z-2a973dde-9e8e-4d97-9ff5-e00604d95ff0.json",
-      "sha256": "953d4caca347bc2eacba226ff61fef034b22406bfec10f53aac1c9d5cc278075",
-      "authorityDigest": "3b8fb6ef7c9a13742288108e38a308a37c52712fa427a4b7026731eed3341647",
-      "at": "2026-11-25T10:59:41.875Z",
+      "id": "v2-2026-11-25T11-10-30-253Z-5eb4d156-18aa-4ac5-b9af-748120a4feff",
+      "path": ".agent/checkpoints/v2-2026-11-25T11-10-30-253Z-5eb4d156-18aa-4ac5-b9af-748120a4feff.json",
+      "sha256": "9ee416c64b491601a752fb762608d411d246fec0267950635d6bb746bcd85f5f",
+      "authorityDigest": "1d02da13a8894585d651d3a6c9306fa20f8dd3957eba8c025d763cc2eec97c18",
+      "at": "2026-11-25T11:10:30.253Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "768a8af2638bc7156ace8ea1b4e3b8a27f2a04dd",
-        "dirty": []
+        "commit": "c802f06ea5826728692dab8311af67b95745664c",
+        "dirty": [
+          "M .agent/HANDOFF.md",
+          " M .agent/control.json",
+          " M .agent/state.json",
+          " M .agent/tasks.json",
+          " M PROGRESS.md",
+          "?? docs/acceptance/independent-handoff-fc9b7c7-M-1-infrastructure-receipt.json",
+          "?? docs/acceptance/independent-handoff-fc9b7c7-M-1-infrastructure.json",
+          "?? docs/acceptance/m5-round3/probe-results-cancelled-f8583a8c.json"
+        ]
       },
       "sourceFingerprint": "66da978e67eb1ec04c62ab5f5d59051130635b1e2f400910d25d505cdfa82405",
-      "note": "round-3 安全验证 PASS 已导入；等功能 delegate + CI 45596517960；D5 背压 nit 延期记录"
+      "note": "agent-task evidence M-1-infrastructure"
     },
-    "nextAction": "Resume M5 isolated default-off work. Resolve source-pod lock from actual CI 45571632914; failed native 45571632902 preserved. Address pending native review, then desktop cursor/auth in C:/pi-GUI-remote-protocol. Upstream stale evidence moved to testing; all require current-source revalidation.",
+    "nextAction": "M5: 等功能审查 449a7a55 回包→independent-review 导入；CI 45596517960 绿→ci/ipa/ui 证据链；validate M-1..M5；transitions。device-network 由用户最终清单覆盖。",
     "delegates": [
       {
         "taskId": "node:delegated-task:command%3Amcp%3Ac31b83bb-4e95-4301-8a91-f13f8295d85a%3Adelegate-task%3A4b75cf04-9360-469c-87e1-321a7e4b3149",
@@ -3874,19 +3891,19 @@
       {
         "taskId": "node:delegated-task:command%3Amcp%3A17846bd5-b663-43a8-b635-1fb1d105ec66%3Adelegate-task%3A9eb649c5-577c-4ae1-ab86-7a4f28781364",
         "role": "independent-handoff",
-        "status": "working",
-        "sourceCommit": "768a8af2638bc7156ace8ea1b4e3b8a27f2a04dd"
+        "status": "completed",
+        "sourceCommit": "fc9b7c747a337356d8afe9272464812ab79cfca0"
       },
       {
         "taskId": "node:delegated-task:command%3Amcp%3A17846bd5-b663-43a8-b635-1fb1d105ec66%3Adelegate-task%3A449a7a55-a57c-4248-9b95-7fe30dae9bb2",
         "role": "independent-review",
         "status": "working",
-        "sourceCommit": "fc9b7c747a337356d8afe9272464812ab79cfca0"
+        "sourceCommit": "ee0778534e9d864de691ccb65fd6aa43cc5da219"
       }
     ]
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "448236a753212e2648ecd38cbfa9005ce90e9caa24b00e1239c2801076a23a61"
+    "digest": "ad6e63ea84b56c891d8ce806b05933a9d6c4965e3300ac9b5197ef14cf66e635"
   }
 }

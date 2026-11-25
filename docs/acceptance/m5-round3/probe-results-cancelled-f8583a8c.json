@@ -1,0 +1,577 @@
+{
+ "meta": {
+  "reviewer": "independent functional review, round-2 remediation validation",
+  "generated": "2026-11-25T11:03:49.526Z",
+  "desktopRepo": "C:/pi-GUI-remote-protocol",
+  "desktopCommit": "b67adb4d09f2eb176fe2ed19ffa0b7959aa3f732",
+  "desktopBase": "1d846458",
+  "mobileRepo": "C:/pi-gui-ios",
+  "mobileCommit": "ee0778534e9d864de691ccb65fd6aa43cc5da219",
+  "probesAreSynthetic": true,
+  "reposModified": false,
+  "probeScriptsDir": "C:\\Users\\21022\\AppData\\Local\\Temp/probe-r2 (os.tmpdir, repos untouched)"
+ },
+ "regressionSuites": {
+  "tests/remote-contract.test.mjs": {
+   "pass": 33,
+   "fail": 0,
+   "total": 33,
+   "exitCode": 0
+  },
+  "tests/remote-gateway.cjs": {
+   "pass": 15,
+   "fail": 0,
+   "total": 15,
+   "exitCode": 0,
+   "note": "15/15 passed incl. new round-2 pins (revocation reset frame, post-revision replay continuity)"
+  }
+ },
+ "probes": {
+  "p1_revocation_reset_frame": {
+   "probe": "p1-revocation-reset-frame",
+   "checks": [
+    {
+     "name": "both streams open 200",
+     "ok": true
+    },
+    {
+     "name": "revokeDevice transaction accepted",
+     "ok": true
+    },
+    {
+     "name": "both streams ended after revocation",
+     "ok": true,
+     "detail": "s1.ended=true s2.ended=true"
+    },
+    {
+     "name": "sub1: exactly one reset frame",
+     "ok": true,
+     "detail": "resets=1 events=message.append,reset"
+    },
+    {
+     "name": "sub1: reset reason authorization_changed",
+     "ok": true,
+     "detail": "reason=authorization_changed"
+    },
+    {
+     "name": "sub1: reset conversationId stream-reset",
+     "ok": true
+    },
+    {
+     "name": "sub1: reset validates as event envelope",
+     "ok": true
+    },
+    {
+     "name": "sub1: reset frame signature valid",
+     "ok": true
+    },
+    {
+     "name": "sub1: no event frames after reset",
+     "ok": true,
+     "detail": "after="
+    },
+    {
+     "name": "sub1: pre-revocation frame precedes reset",
+     "ok": true,
+     "detail": "pre=0 reset=1"
+    },
+    {
+     "name": "sub2: exactly one reset frame",
+     "ok": true,
+     "detail": "resets=1 events=message.append,reset"
+    },
+    {
+     "name": "sub2: reset reason authorization_changed",
+     "ok": true,
+     "detail": "reason=authorization_changed"
+    },
+    {
+     "name": "sub2: reset conversationId stream-reset",
+     "ok": true
+    },
+    {
+     "name": "sub2: reset validates as event envelope",
+     "ok": true
+    },
+    {
+     "name": "sub2: reset frame signature valid",
+     "ok": true
+    },
+    {
+     "name": "sub2: no event frames after reset",
+     "ok": true,
+     "detail": "after="
+    },
+    {
+     "name": "sub2: pre-revocation frame precedes reset",
+     "ok": true,
+     "detail": "pre=0 reset=1"
+    },
+    {
+     "name": "post-revocation subscribe rejected unauthorized",
+     "ok": true,
+     "detail": "status=401 body={\"protocolVersion\":1,\"requestId\":\"d0a4c90b-7225-4b66-90b7-e590bfe9f90c\",\"error\":{\"code\":\"unauthorized\",\"retryable\":false"
+    },
+    {
+     "name": "structural: exactly one _writeRaw call site",
+     "ok": true,
+     "detail": "callSites=1"
+    },
+    {
+     "name": "structural: the call site is the bypass branch of _resetOne",
+     "ok": true
+    },
+    {
+     "name": "structural: bypass:true passed only from dropDevice",
+     "ok": true
+    },
+    {
+     "name": "structural: bypass frame content is hardcoded stream-reset",
+     "ok": true
+    },
+    {
+     "name": "structural: reset reason vocabulary closed (never attacker-controlled)",
+     "ok": true
+    }
+   ],
+   "pass": true
+  },
+  "p2_replay_continuity": {
+   "probe": "p2-replay-continuity",
+   "checks": [
+    {
+     "name": "2a: live stream received frame A",
+     "ok": true,
+     "detail": "events=message.append"
+    },
+    {
+     "name": "2a: post-revision-advance resume does NOT reset",
+     "ok": true,
+     "detail": "events=message.append"
+    },
+    {
+     "name": "2a: frame B replayed",
+     "ok": true,
+     "detail": "replayed=msg_probe_B001"
+    },
+    {
+     "name": "2a: replay continues the SAME generation",
+     "ok": true,
+     "detail": "genA=2 gens=2"
+    },
+    {
+     "name": "2b: owner identity transition invalidates cursor (exactly one reset)",
+     "ok": true,
+     "detail": "resets=1 events=reset"
+    },
+    {
+     "name": "2b: reset reason is cursor_expired or owner_changed/authorization_changed",
+     "ok": true,
+     "detail": "reason=cursor_expired"
+    },
+    {
+     "name": "2b: reset generation strictly greater than pre-transition",
+     "ok": true,
+     "detail": "resetGen=6 genBefore=2"
+    },
+    {
+     "name": "2c: workspaceEpoch bump invalidates cursor (exactly one reset)",
+     "ok": true,
+     "detail": "resets=1 events=reset"
+    },
+    {
+     "name": "2d: device granted both projects",
+     "ok": true,
+     "detail": "grants=2"
+    },
+    {
+     "name": "2d: cross-project transfer invalidates cursor (exactly one reset)",
+     "ok": true,
+     "detail": "resets=1 events=reset"
+    }
+   ],
+   "pass": true
+  },
+  "p3_malformed_cursor_semantics": {
+   "probe": "p3-malformed-cursor-semantics",
+   "checks": [
+    {
+     "name": "3a: charset-invalid cursor rejected 401 unauthorized",
+     "ok": true,
+     "detail": "status=401 body={\"protocolVersion\":1,\"requestId\":\"53769785-3566-4f0b-94cd-7c354671da65\",\"error\":{\"code\":\"unauthorized\",\"retryable\":false}}"
+    },
+    {
+     "name": "3a: no SSE stream opened (no reset frame delivered)",
+     "ok": true,
+     "detail": "rawLen=0"
+    },
+    {
+     "name": "3a: rejection is non-retryable",
+     "ok": true
+    },
+    {
+     "name": "3b: over-length cursor rejected 401 unauthorized",
+     "ok": true,
+     "detail": "status=401"
+    },
+    {
+     "name": "3c: shape-invalid cursor opens stream with exactly one reset",
+     "ok": true,
+     "detail": "resets=1 ended=false events=reset"
+    },
+    {
+     "name": "3c: reset reason cursor_expired",
+     "ok": true,
+     "detail": "reason=cursor_expired"
+    },
+    {
+     "name": "3d: HMAC-foreign cursor yields exactly one reset",
+     "ok": true,
+     "detail": "resets=1"
+    },
+    {
+     "name": "3d: reset reason cursor_expired",
+     "ok": true,
+     "detail": "reason=cursor_expired"
+    },
+    {
+     "name": "3e: captured genuine device-B cursor",
+     "ok": true
+    },
+    {
+     "name": "3e: cross-device cursor yields exactly one reset cursor_expired (no leak)",
+     "ok": true,
+     "detail": "resets=1 status=200 err= rawLen=326"
+    },
+    {
+     "name": "3e: reset payload carries only the reason (no foreign data)",
+     "ok": true,
+     "detail": "keys=reason"
+    },
+    {
+     "name": "3e: no cross-device frame replay",
+     "ok": true,
+     "detail": "leaked=0"
+    }
+   ],
+   "pass": true
+  },
+  "p45_device_inactive_and_epochs": {
+   "probe": "p45-device-inactive+epochs",
+   "checks": [
+    {
+     "name": "4-structural: post-commit liveness passes through wireErrorCode",
+     "ok": true
+    },
+    {
+     "name": "4-structural: device_inactive is not a wire vocabulary word",
+     "ok": true
+    },
+    {
+     "name": "4: race-window request answered 401",
+     "ok": true,
+     "detail": "status=401 body={\"protocolVersion\":1,\"requestId\":\"9e5eb62a-0f26-430f-a23c-84fb5c22bcb8\",\"error\":{\"code\":\"unauthorized\",\"retryable\":false}}"
+    },
+    {
+     "name": "4: wire code is unauthorized (closed vocabulary)",
+     "ok": true,
+     "detail": "code=unauthorized"
+    },
+    {
+     "name": "4: internal code never leaks to wire",
+     "ok": true
+    },
+    {
+     "name": "4: retryable flag correct for unauthorized",
+     "ok": true
+    },
+    {
+     "name": "4: echoes the authenticated requestId (post-admission failure)",
+     "ok": true,
+     "detail": "requestId=9e5eb62a-0f26-430f-a23c-84fb5c22bcb8"
+    },
+    {
+     "name": "5a: fresh identities start at epoch 1",
+     "ok": true,
+     "detail": "e1a=1 e1b=1"
+    },
+    {
+     "name": "5a: epochs persisted to disk",
+     "ok": true
+    },
+    {
+     "name": "5a: epoch survives restart (no regression to undefined)",
+     "ok": true,
+     "detail": "e2a=1"
+    },
+    {
+     "name": "5a: re-encounter after restart does not re-persist or duplicate",
+     "ok": true,
+     "detail": "size=2"
+    },
+    {
+     "name": "5b: 100 first-encounters write cost measured",
+     "ok": true,
+     "detail": "176ms total, file 2280 bytes (one full rewrite per first-encounter — worst case 100 writes in 176ms)"
+    },
+    {
+     "name": "5c: pre-seeded 4096 entries load",
+     "ok": true,
+     "detail": "size=4096"
+    },
+    {
+     "name": "5c: cap enforced at 4096 after overflow",
+     "ok": true,
+     "detail": "size=4096"
+    },
+    {
+     "name": "5c: newest identity present",
+     "ok": true
+    },
+    {
+     "name": "5c: oldest evicted in insertion order",
+     "ok": true,
+     "detail": "has seed-id-0=false has seed-id-1=true"
+    },
+    {
+     "name": "5c-structural: epochFor assigns only map-lookup + literal 1, never increments (eviction regression is value-neutral)",
+     "ok": true,
+     "detail": "assignments=2 initialGet=true literalOne=true noIncrement=true"
+    },
+    {
+     "name": "5c-structural: persisted epoch load validates v>=1 integers",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "writeCost": {
+    "identities": 100,
+    "ms": 176,
+    "fileBytes": 2280
+   }
+  },
+  "p6_immaterializable_replay": {
+   "probe": "p6-immaterializable-replay",
+   "checks": [
+    {
+     "name": "6a: oversized publish produces exactly one reset for live subscriber",
+     "ok": true,
+     "detail": "resets=1 events=message.append,reset"
+    },
+    {
+     "name": "6a: reset reason is sequence_gap",
+     "ok": true,
+     "detail": "reason=sequence_gap"
+    },
+    {
+     "name": "6a: oversized frame never journaled (no sequence consumed)",
+     "ok": true,
+     "detail": "headBefore=2 headAfter=2"
+    },
+    {
+     "name": "6a: journal contains no oversized entry",
+     "ok": true
+    },
+    {
+     "name": "6a: stream STAYS OPEN after sequence_gap reset (no close)",
+     "ok": true,
+     "detail": "ended=false"
+    },
+    {
+     "name": "6a: normal frame after the reset is delivered",
+     "ok": true,
+     "detail": "events=message.append,reset,message.append"
+    },
+    {
+     "name": "6b: baseline frame captured",
+     "ok": true
+    },
+    {
+     "name": "6b: immaterializable template injected into journal",
+     "ok": true,
+     "detail": "injected seq=3 head=3"
+    },
+    {
+     "name": "6b: replay of dead frame yields exactly one reset",
+     "ok": true,
+     "detail": "resets=1 events=reset"
+    },
+    {
+     "name": "6b: reset reason sequence_gap",
+     "ok": true,
+     "detail": "reason=sequence_gap"
+    },
+    {
+     "name": "6b: reset cursor points AT head (past the dead frame)",
+     "ok": true,
+     "detail": "resetSeq=3 head=3"
+    },
+    {
+     "name": "6b: stream CLOSED after the reset (ended)",
+     "ok": true,
+     "detail": "ended=true"
+    },
+    {
+     "name": "6b: dead frame never delivered",
+     "ok": true
+    },
+    {
+     "name": "6b: reconnect with reset cursor resumes WITHOUT reset",
+     "ok": true,
+     "detail": "resets=0 events="
+    },
+    {
+     "name": "6b: resumed stream stays open",
+     "ok": true,
+     "detail": "ended=false"
+    },
+    {
+     "name": "6b: stale-cursor retry yields exactly one reset per connection (bounded, no storm)",
+     "ok": true,
+     "detail": "resets=1 ended=true"
+    }
+   ],
+   "pass": true
+  },
+  "p7_misc_pairing_expired_expiry_zombies": {
+   "probe": "p7-misc",
+   "checks": [
+    {
+     "name": "7a: pairing session exists in manager",
+     "ok": true
+    },
+    {
+     "name": "7a: expired pairing session yields wire pairing_expired",
+     "ok": true,
+     "detail": "status=401 code=pairing_expired body={\"protocolVersion\":1,\"requestId\":\"00000000-0000-0000-0000-000000000000\",\"error\":{\"code\":\"pairing_expired\",\"retryable\":false}}"
+    },
+    {
+     "name": "7a: pairing_expired status is 401",
+     "ok": true,
+     "detail": "status=401"
+    },
+    {
+     "name": "7a: pairing_expired is non-retryable on the wire",
+     "ok": true,
+     "detail": "retryable=false"
+    },
+    {
+     "name": "7a-mobile: swift preserves pairing_expired wire code",
+     "ok": true
+    },
+    {
+     "name": "7a-mobile: swift retryable requires code == pairing_rejected (expired never retryable)",
+     "ok": true
+    },
+    {
+     "name": "7b: expiry stream behavior documented",
+     "ok": true,
+     "detail": "resets=1 ended=true (reset+close via dropDevice path)"
+    },
+    {
+     "name": "7c: client disconnect does NOT reap subscription (mechanism confirmation)",
+     "ok": true,
+     "detail": "atOpen=1 afterDestroy+500ms=1"
+    },
+    {
+     "name": "7c-structural: reaping hook is req.on(close) — ineffective for SSE",
+     "ok": true
+    },
+    {
+     "name": "7c-structural: no res.on(close) or socket close hook exists",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "expiryBehavior": {
+    "resets": 1,
+    "reasons": [
+     "authorization_changed"
+    ],
+    "ended": true
+   },
+   "zombieReaping": {
+    "reapingMechanism": "keepalive-write-failure only",
+    "measuredReapSeconds": 15.1,
+    "hook": "req.on('close') ineffective"
+   }
+  }
+ },
+ "fixAssessment": {
+  "1_revocation_reset_frame": {
+   "verdict": "CONFIRMED",
+   "evidence": "probe1 (23/23 checks): two concurrent subscribers each received exactly one signed reset frame, reason authorization_changed, conversationId stream-reset, validated by validateEventEnvelope and Ed25519 signature verification against the pinned service key; reset was the LAST event before end (no frames after); pre-revocation frame preceded reset (ordering proof); post-revocation subscribe rejected 401 unauthorized. Bypass-hole analysis: exactly one _writeRaw call site exists (the bypass branch of _resetOne); bypass:true is passed only from dropDevice; the bypass frame content is hardcoded {conversationId: stream-reset, ownerRevision: 0, event: reset} — attacker-influenced non-reset frames cannot reach the bypass path because _writeRaw is never invoked with ordinary journal frames. dropDevice triggers only on device-inactive or null-authority (revocation, re-pair, replay-epoch loss, expiry) — never attacker-triggerable for an active device."
+  },
+  "2_replay_continuity": {
+   "verdict": "CONFIRMED",
+   "evidence": "probe2 (10/10): revision advancement (+5) after journaling does NOT reset; replay continues the SAME streamGeneration (genA=2, replay gens=2). Regression directions probed: backendInstance change → exactly one reset (cursor_expired, generation strictly advanced 2→6); workspaceEpoch bump → exactly one reset; cross-project transfer to another GRANTED project (cwd move) → exactly one reset. Masking analysis: the epoch-invalidation argument is sound because authorizationState() hashes per-conversation [conversationId, namespace, identity, epoch, projectId] for every granted conversation; identity embeds backendInstance/workspaceId/workspaceEpoch/conversationId; project transfer either flips projectId in the hash or (ungranted target) drops the tuple — every authority transition changes the hash, and reconcile runs before any publish delivery and at subscribe admission. Revision number never enters the authority string, so revision advancement cannot mask a real ownership change."
+  },
+  "3_malformed_cursor_semantics": {
+   "verdict": "CONFIRMED",
+   "evidence": "probe3 (12/12): charset-invalid cursor (embedded space) → 401 unauthorized, no stream opened, non-retryable, zero-uuid requestId; over-length (129 chars) → 401 unauthorized; charset-valid but shape-invalid (not_a_cursor_at_all) → exactly one reset cursor_expired, stream stays open; HMAC-mismatch well-formed cursor → exactly one reset cursor_expired; cross-device cursor minted for another device → exactly one reset cursor_expired, payload carries only {reason}, zero cross-device frame replay. Matches contract cursorTransitionTable (malformed = charset/pattern/length-invalid → reject; wellformedStale/foreign → reset)."
+  },
+  "4_device_inactive_vocabulary": {
+   "verdict": "CONFIRMED",
+   "evidence": "probe45: behavioral probe forcing active()=null at the post-commit liveness re-read yields 401 with error.code unauthorized (closed vocabulary), retryable=false, authenticated requestId echoed, internal device_inactive never leaks. Structural: wireErrorCode(device_inactive) at the call site; device_inactive absent from WIRE_STATUS (pre-fix would have answered 500 internal_error with the internal code leaked). NOTE: admission→dispatch is fully synchronous so a real revocation cannot interleave in production — the check is pure defense-in-depth, and the probe exercises it by fault injection."
+  },
+  "5_epoch_persistence": {
+   "verdict": "CONFIRMED with caveat (see finding F3)",
+   "evidence": "probe45: epochs persist across restart (fresh identities 1, re-encounter after restart still 1, no duplicate/re-persist); 100 first-encounters cost 176ms with 2280-byte file (one full atomic rewrite per first-encounter — bounded linear write cost, worst-case file ~150KB at 4096 entries); 4096-cap enforced exactly, newest survives, oldest evicted in insertion order. Eviction-regression analysis: epochFor only ever assigns literal 1 — no increment path exists anywhere — so an evicted identity reappearing at epoch 1 is value-neutral (the same value it always had); replay-protection impact is nil because owner epochs are never >1 through clock.epochFor (real epochs ride the embedded workspaceEpoch component of the identity)."
+  },
+  "6_immaterializable_replay": {
+   "verdict": "CONFIRMED",
+   "evidence": "probe6 (16/16). 6a realistic path: oversized payload (9000 chars > 8KiB schema cap) fails the publish-time materialize probe — never journaled (head unchanged 2→2), exactly one reset sequence_gap delivered to live subscribers, stream STAYS OPEN, subsequent normal frame delivered. 6b whitebox journal injection (the state where a journaled frame cannot materialize at replay): replay emits exactly one reset sequence_gap then closes; reset cursor points AT head (past the dead frame); dead frame never delivered; reconnect with reset cursor resumes clean with no reset, stream open; stale-cursor retry yields exactly one reset per connection — bounded, no double-reset, no reset storm. Note: payload schemas cap text at 8KiB vs 64KiB frame budget, so production immaterializability is effectively unreachable — the reset-before-close logic is pure defense-in-depth, correct as implemented."
+  },
+  "7_mobile_pairing_expired": {
+   "verdict": "CONFIRMED",
+   "evidence": "probe7: server emits wire pairing_expired (401, retryable=false) for a dead pairing session — end-to-end observed. Swift structural verification: RemoteService.swift preserves wireCode==pairing_expired as code pairing_expired and the final retryable expression is retryable && code == pairing_rejected — pairing_expired can never be retryable; rate_limited (429) is also never retryable against the dead pairing session (attempts are budgeted server-side per session), consistent with the pre-existing design."
+  },
+  "8_contract_comment_repair": {
+   "verdict": "CONFIRMED",
+   "evidence": "both copies carry the corrected validateRawTarget comment (a=1&a=2); corrupted variant absent; systematic scan of every line/block comment in protocol.mjs (104 comments) and the mobile copy (103 comments) found zero embedded code fragments of the same kind (no for(const / if(names / names.has embedded in prose)."
+  }
+ },
+ "newFindings": [
+  {
+   "id": "F1",
+   "severity": "IMPORTANT",
+   "status": "PRE-EXISTING (not a round-2 regression — identical hook in 1d846458)",
+   "title": "SSE subscriptions are never reaped on client disconnect; zombies hold the 2-per-device stream slots until keepalive write failure (~15s)",
+   "reproduction": "probe7c + direct measurement: open stream (subs=1), destroy client socket, subscribers still 1 at +500ms/+3s; reaping occurred at 15.1s (the first keepalive interval). Root cause: handleSubscribe registers req.on('close') AFTER the awaits in the request pipeline, and Node fires request close at request-read completion for GET — the hook is dead code for SSE disconnects; res.on('close') is the correct signal and is never registered. In probe3e a legitimately-signed fresh subscribe was answered 503 server_busy solely because two client-closed streams were still zombies.",
+   "impact": "availability-only: a mobile client that disconnects/reconnects twice within ~15s (normal on network flaps or app backgrounding) gets transient 503 server_busy; self-heals at the next keepalive failure; retryable=true on the wire so contract-conformant clients recover. No security or data-integrity impact.",
+   "recommendation": "register res.on('close') (or res.socket.once('close')) instead of/in addition to req.on('close'); add a contract test that destroys a subscriber and asserts prompt reaping + resubscribe capacity."
+  },
+  {
+   "id": "F2",
+   "severity": "NIT",
+   "status": "PRE-EXISTING divergence, UNDOCUMENTED",
+   "title": "mobile sandbox treats charset-valid-but-shape-invalid cursors as malformed (reject unauthorized); desktop treats them as wellformedStale/foreign (exactly one reset cursor_expired)",
+   "reproduction": "src/remote/sandbox.ts decodeCursor: any cursor failing the strict g<n>_s<n>_<tag> shape returns malformed → unauthorized (line 860), whereas desktop handleSubscribe resets (probe3c confirmed reset). Contract cursorPattern (^[A-Za-z0-9_-]{1,128}$) makes only charset/length the malformed grammar, so desktop is contract-correct and the sandbox diverges.",
+   "impact": "test-fidelity only: sandbox serves no production traffic and clients never construct cursors (contract cursorDelivery.format); but sandbox-driven client tests cannot exercise the reset-rebuild path for shape-invalid cursors, and m5-deferred-items.md does not record the divergence.",
+   "recommendation": "record in docs/acceptance/m5-deferred-items.md or align sandbox decodeCursor with desktop semantics."
+  },
+  {
+   "id": "F3",
+   "severity": "NIT",
+   "status": "round-2 addition is inert-but-harmless",
+   "title": "epoch persistence mechanism cannot deliver its stated replay-protection purpose: epochFor never increments — every identity's epoch is always literal 1",
+   "reproduction": "probe45-structural: epochFor assigns only the map lookup and literal 1; no bump path exists anywhere in adapters.mjs; therefore the eviction regression (reappearing identity → 1) is value-neutral and restart persistence protects nothing that memory did not already. Real replay protection rides the workspaceEpoch embedded in the identity string (and device replayEpoch), both unaffected.",
+   "impact": "none on security or correctness; cosmetic/measurement debt — the persisted epochs map grows and rewrites on every first-encounter (measured 176ms/100 identities, file ~2.3KB at 100 entries, worst-case ~150KB at the 4096 cap) for zero protective effect.",
+   "recommendation": "either implement actual epoch bumping on authority re-encounter (if intended) or drop the persistence and document that workspaceEpoch carries epoch semantics; in neither case is this a blocker for round-2 acceptance."
+  }
+ ],
+ "summary": {
+  "verdict": "PASS",
+  "fixesConfirmed": "8/8",
+  "regressionSuites": "contract 33/33, gateway 15/15 (both at b67adb4d)",
+  "newFindings": {
+   "critical": 0,
+   "important": 1,
+   "nit": 2
+  },
+  "importantPreExisting": [
+   "F1 zombie-stream reaping — recommend fixing before production use but not a round-2 regression"
+  ],
+  "reposUnmodified": true
+ }
+}
