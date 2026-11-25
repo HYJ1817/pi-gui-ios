@@ -1,0 +1,30 @@
+{
+  "ciCommit": "88b9d84afe96747d6f3b43404f4d354a68f1d563",
+  "ciRun": 45649373150,
+  "images": {
+    "ipad-accessibility.png": {
+      "bytes": 462948,
+      "sha256": "974ddb1a17f108d1d0320751345108bf8e5bd3514ec09c156a9d337bcb7f7bc6"
+    },
+    "ipad-dark.png": {
+      "bytes": 327649,
+      "sha256": "d47bfe17e34a2bbaa701b0ac7597ea1939617e3111bb6c7e33362a5f90a8f5fa"
+    },
+    "ipad-light.png": {
+      "bytes": 340950,
+      "sha256": "5ded07911a057c331db7216f20f0f6a3af0003c4c5c6c21399db3ea38aeec9d4"
+    },
+    "iphone-accessibility.png": {
+      "bytes": 181056,
+      "sha256": "e3d9238197a350b97e6921b9398db707da3411888fc38da706ee799a5acad2b6"
+    },
+    "iphone-dark.png": {
+      "bytes": 293515,
+      "sha256": "c83497c77d4c987751db4cbcb4cf906015ffbf8fa444c8f08d3b2504957d0065"
+    },
+    "iphone-light.png": {
+      "bytes": 306823,
+      "sha256": "fdea26ae6908e88388fc0a9184ce9e0433735003d4b2dc37c5f59d15c869fb0c"
+    }
+  }
+}

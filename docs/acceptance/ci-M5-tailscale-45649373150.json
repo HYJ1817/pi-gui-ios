@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 2,
+  "kind": "ci",
+  "taskId": "M5-tailscale",
+  "commit": "88b9d84afe96747d6f3b43404f4d354a68f1d563",
+  "sourceFingerprint": "e78af94c071aee6ee08b59c41df2ae4beea5dee2e6567ca11215854e33215907",
+  "scopes": [
+    "app",
+    "control",
+    "native-build",
+    "protocol",
+    "shared",
+    "tests"
+  ],
+  "scopeFingerprint": "0a32dd9eaacaa8603903b52c5d71ff8cc73d879b457d7a3597a1b1724ea8f553",
+  "startedAt": "2026-11-25T17:10:09.958Z",
+  "finishedAt": "2026-11-25T17:10:09.958Z",
+  "passed": true,
+  "details": {
+    "id": "45649373150",
+    "head": "88b9d84afe96747d6f3b43404f4d354a68f1d563",
+    "workflow": ".github/workflows/native-infrastructure.yml",
+    "attempt": 1,
+    "status": "completed",
+    "conclusion": "success",
+    "url": "https://github.com/HYJ1817/pi-gui-ios/actions/runs/45649373150",
+    "ci": {
+      "id": "45649373150",
+      "head": "88b9d84afe96747d6f3b43404f4d354a68f1d563",
+      "workflow": ".github/workflows/native-infrastructure.yml",
+      "attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/HYJ1817/pi-gui-ios/actions/runs/45649373150"
+    },
+    "receiptPath": "docs/acceptance/ci-run-45649373150.json",
+    "receiptSha256": "6e8f607b1ee0cea589f5b6d2674ffc27f476c574969b81553cfcae1448146d4c",
+    "ciId": "45649373150"
+  }
+}

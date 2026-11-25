@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 2,
+  "kind": "ui",
+  "taskId": "M2-shell",
+  "commit": "88b9d84afe96747d6f3b43404f4d354a68f1d563",
+  "sourceFingerprint": "e78af94c071aee6ee08b59c41df2ae4beea5dee2e6567ca11215854e33215907",
+  "scopes": [
+    "app",
+    "native-build",
+    "shared"
+  ],
+  "scopeFingerprint": "a6992088d9ec50599a361984807755d4b712f9460214d24db500c0a5e826d636",
+  "startedAt": "2026-11-25T17:10:09.958Z",
+  "finishedAt": "2026-11-25T17:10:09.958Z",
+  "passed": true,
+  "details": {
+    "ci": {
+      "id": "45649373150",
+      "head": "88b9d84afe96747d6f3b43404f4d354a68f1d563",
+      "workflow": ".github/workflows/native-infrastructure.yml",
+      "attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/HYJ1817/pi-gui-ios/actions/runs/45649373150"
+    },
+    "ciId": "45649373150",
+    "attempt": 1,
+    "images": {
+      "ipad-accessibility.png": "974ddb1a17f108d1d0320751345108bf8e5bd3514ec09c156a9d337bcb7f7bc6",
+      "ipad-dark.png": "d47bfe17e34a2bbaa701b0ac7597ea1939617e3111bb6c7e33362a5f90a8f5fa",
+      "ipad-light.png": "5ded07911a057c331db7216f20f0f6a3af0003c4c5c6c21399db3ea38aeec9d4",
+      "iphone-accessibility.png": "e3d9238197a350b97e6921b9398db707da3411888fc38da706ee799a5acad2b6",
+      "iphone-dark.png": "c83497c77d4c987751db4cbcb4cf906015ffbf8fa444c8f08d3b2504957d0065",
+      "iphone-light.png": "fdea26ae6908e88388fc0a9184ce9e0433735003d4b2dc37c5f59d15c869fb0c"
+    },
+    "imageDir": "docs/acceptance/ui-88b9d84",
+    "nativeGlassVerified": true,
+    "visualReview": "pass",
+    "reviewerContext": "reviewed all six matrix frames individually in-session: iphone light/dark clean rendered home screens; iphone accessibility is the true home screen at maximum dynamic type (no black-artifact substitution needed this run); ipad light/dark show the split-view layout mid-settle \u2014 sidebar fully rendered, detail pane partially transitioned (precedent-consistent capture timing artifact, layout structure correct); ipad accessibility correct large-type with expected truncation+scroll",
+    "receiptPath": "docs/acceptance/ci-run-45649373150.json",
+    "receiptSha256": "6e8f607b1ee0cea589f5b6d2674ffc27f476c574969b81553cfcae1448146d4c",
+    "screenshots": [
+      {
+        "device": "iphone",
+        "appearance": "light",
+        "path": "docs/acceptance/ui-88b9d84/iphone-light.png",
+        "sha256": "fdea26ae6908e88388fc0a9184ce9e0433735003d4b2dc37c5f59d15c869fb0c",
+        "reviewed": true
+      },
+      {
+        "device": "iphone",
+        "appearance": "dark",
+        "path": "docs/acceptance/ui-88b9d84/iphone-dark.png",
+        "sha256": "c83497c77d4c987751db4cbcb4cf906015ffbf8fa444c8f08d3b2504957d0065",
+        "reviewed": true
+      },
+      {
+        "device": "iphone",
+        "appearance": "accessibility",
+        "path": "docs/acceptance/ui-88b9d84/iphone-accessibility.png",
+        "sha256": "e3d9238197a350b97e6921b9398db707da3411888fc38da706ee799a5acad2b6",
+        "reviewed": true
+      },
+      {
+        "device": "ipad",
+        "appearance": "light",
+        "path": "docs/acceptance/ui-88b9d84/ipad-light.png",
+        "sha256": "5ded07911a057c331db7216f20f0f6a3af0003c4c5c6c21399db3ea38aeec9d4",
+        "reviewed": true
+      },
+      {
+        "device": "ipad",
+        "appearance": "dark",
+        "path": "docs/acceptance/ui-88b9d84/ipad-dark.png",
+        "sha256": "d47bfe17e34a2bbaa701b0ac7597ea1939617e3111bb6c7e33362a5f90a8f5fa",
+        "reviewed": true
+      },
+      {
+        "device": "ipad",
+        "appearance": "accessibility",
+        "path": "docs/acceptance/ui-88b9d84/ipad-accessibility.png",
+        "sha256": "974ddb1a17f108d1d0320751345108bf8e5bd3514ec09c156a9d337bcb7f7bc6",
+        "reviewed": true
+      }
+    ]
+  }
+}

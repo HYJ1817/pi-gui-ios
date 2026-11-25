@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 2,
+  "kind": "ipa",
+  "taskId": "M5-tailscale",
+  "commit": "88b9d84afe96747d6f3b43404f4d354a68f1d563",
+  "sourceFingerprint": "e78af94c071aee6ee08b59c41df2ae4beea5dee2e6567ca11215854e33215907",
+  "scopes": [
+    "app",
+    "native-build",
+    "shared"
+  ],
+  "scopeFingerprint": "a6992088d9ec50599a361984807755d4b712f9460214d24db500c0a5e826d636",
+  "startedAt": "2026-11-25T17:10:09.958Z",
+  "finishedAt": "2026-11-25T17:10:09.958Z",
+  "passed": true,
+  "details": {
+    "ci": {
+      "id": "45649373150",
+      "head": "88b9d84afe96747d6f3b43404f4d354a68f1d563",
+      "workflow": ".github/workflows/native-infrastructure.yml",
+      "attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/HYJ1817/pi-gui-ios/actions/runs/45649373150"
+    },
+    "ciId": "45649373150",
+    "attempt": 1,
+    "verificationPath": "docs/acceptance/ipa-verification-45649373150.json",
+    "verificationSha256": "7129b3c598f588a92a19ce80c7a630e4dd5ddc75320db9cbd26c5938c59b3f16",
+    "bundleId": "io.github.hyj1817.piguimobile",
+    "minimumOS": "16.4.0",
+    "architectures": [
+      "arm64"
+    ],
+    "executables": 9,
+    "frameworks": 8,
+    "sideStoreInstallVerified": false,
+    "archiveSha256": "5f9d339067f6cabe1aaed969556ee8924906b006ecd8d880b227aad80a06ca35"
+  }
+}
