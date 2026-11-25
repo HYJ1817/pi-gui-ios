@@ -1,36 +1,27 @@
 {
   "schemaVersion": 2,
   "kind": "state",
-  "revision": 811,
-  "updatedAt": "2026-11-25T01:47:58.555Z",
+  "revision": 812,
+  "updatedAt": "2026-11-25T01:55:40.893Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "5198ad29093a111b17437b938146e5338f5d5c6ebef9dfde6922a92849223984",
+    "parentDigest": "83641ad875f1472685373b78f30ce916e56418e284638f21a7f282031b8f81c5",
     "phase": "M3",
     "currentTask": "M3-core",
     "branch": "agent/m-1-bootstrap",
     "checkpoint": {
-      "id": "v2-2026-11-25T01-47-58-555Z-e96f5586-ebfe-4ecd-bb3c-e270ca685c08",
-      "path": ".agent/checkpoints/v2-2026-11-25T01-47-58-555Z-e96f5586-ebfe-4ecd-bb3c-e270ca685c08.json",
-      "sha256": "2a364beb765554bc153762ce2bbd2f27c48094909b6cc183692f1faa95396518",
-      "authorityDigest": "0965c759daa6f166b73bee56c3720c2e9c26bbedb02c7d864426faa687c8ffbb",
-      "at": "2026-11-25T01:47:58.555Z",
+      "id": "v2-2026-11-25T01-55-40-893Z-c6a0d25e-0782-47df-8253-7666ea1bc187",
+      "path": ".agent/checkpoints/v2-2026-11-25T01-55-40-893Z-c6a0d25e-0782-47df-8253-7666ea1bc187.json",
+      "sha256": "937cf6cbc9b7f960c6109b5564f584eedf7c0d9759fa6f30407881935a27fa42",
+      "authorityDigest": "5198ad29093a111b17437b938146e5338f5d5c6ebef9dfde6922a92849223984",
+      "at": "2026-11-25T01:55:40.893Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "7f8b0d6c396ecd24d35baa0fd4b83e4018b5d664",
-        "dirty": [
-          "M .agent/HANDOFF.md",
-          " D .agent/checkpoints/v2-2026-11-24T12-53-26-824Z-b1d5c6ec-b152-432a-9694-6f5705e2a91e.json",
-          " M .agent/control.json",
-          " M .agent/state.json",
-          " M .agent/tasks.json",
-          " M PROGRESS.md",
-          "?? .agent/checkpoints/v2-2026-11-24T17-27-21-004Z-76a43211-5f6d-4872-a07a-bc34591df3a9.json",
-          "?? docs/acceptance/ci-45448754841.json"
-        ]
+        "commit": "cc58a481afbd3ab72dc97150f4f6658e285ff5db",
+        "dirty": []
       },
-      "sourceFingerprint": "da8b664802aba8a84b33b8395d6ae3399b67f99d3f6e972361a8e7c769ae39c4",
-      "note": "agent-task ci current"
+      "sourceFingerprint": "e0d1b7502aa140fcca936980c2e8c83cf31261db005b97ed1a7aa839a3cee9ba",
+      "note": "M3-core final fix round; CI+delegates restart on new commit"
     },
     "blockers": [],
     "ci": [
@@ -461,6 +452,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "56929e673e9996e19d76872bc1349bf2b155c7d8b1a28bae629b347e45e4d802"
+    "digest": "8462698ff2a9b835480c74596d1597abab6c399dc75ef0b3a30f0d6923de62ec"
   }
 }
