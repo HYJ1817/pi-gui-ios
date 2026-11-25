@@ -1,8 +1,8 @@
 {
   "schemaVersion": 2,
   "kind": "control",
-  "revision": 1306,
-  "updatedAt": "2026-11-25T13:19:15.573Z",
+  "revision": 1307,
+  "updatedAt": "2026-11-25T13:19:49.889Z",
   "data": {
     "phase": "M5",
     "currentTask": "M5-tailscale",
@@ -3864,7 +3864,7 @@
       "sourceFingerprint": "eb74e94998c2fa9eab69c75defb524b044c92448e4db8a42f0fa28d0b9f92481",
       "note": "agent-task evidence M4-sync"
     },
-    "nextAction": "M5: round-4 b034b60a + NI-01 reverify e858c4c9 回包→independent-review/security 证据链→CI 45611695800 全绿→ci/ipa/ui 证据→validate→transitions",
+    "nextAction": "M5: round-5 b3add3f4 + NI-01 reverify e858c4c9 回包→independent 证据链→CI 45611695800 rerun 全绿→ci/ipa/ui 证据→validate→transitions",
     "delegates": [
       {
         "taskId": "node:delegated-task:command%3Amcp%3Ac31b83bb-4e95-4301-8a91-f13f8295d85a%3Adelegate-task%3A4b75cf04-9360-469c-87e1-321a7e4b3149",
@@ -4355,7 +4355,7 @@
       {
         "taskId": "node:delegated-task:command%3Amcp%3A17846bd5-b663-43a8-b635-1fb1d105ec66%3Adelegate-task%3Ab034b60a-c632-439a-bc95-56addbab3107",
         "role": "independent-review",
-        "status": "working",
+        "status": "completed",
         "sourceCommit": "ee0778534e9d864de691ccb65fd6aa43cc5da219"
       },
       {
@@ -4363,11 +4363,17 @@
         "role": "independent-security",
         "status": "working",
         "sourceCommit": "8afae6d0a51d925d83aa3255a5daecef02ec2dee"
+      },
+      {
+        "taskId": "node:delegated-task:command%3Amcp%3A17846bd5-b663-43a8-b635-1fb1d105ec66%3Adelegate-task%3Ab3add3f4-78bf-426d-8043-11e3fe125159",
+        "role": "independent-review",
+        "status": "working",
+        "sourceCommit": "ee0778534e9d864de691ccb65fd6aa43cc5da219"
       }
     ]
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "1be094fe86bf6f04d07abecb2bd9cc5305436f44e336af0abec27825eb4746e3"
+    "digest": "4bc7c53353f83c60326ac011a619e3e65f9b34209db484eb56d2db45eeca34a7"
   }
 }
