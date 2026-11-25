@@ -1,11 +1,11 @@
 {
   "schemaVersion": 2,
   "kind": "tasks",
-  "revision": 918,
-  "updatedAt": "2026-11-25T02:47:35.696Z",
+  "revision": 931,
+  "updatedAt": "2026-11-25T03:58:07.241Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "c9287d22ee8e8943bc8c9b460f57ae48842faf7d92fe850f0f0758233d7a8c66",
+    "parentDigest": "5cc9b806cd29085615d1d49a6465b2ff28c497915b1612af769158dda5fc558f",
     "tasks": [
       {
         "id": "M-1-infrastructure",
@@ -1680,6 +1680,20 @@
               "shared"
             ],
             "scopeFingerprint": "398b1c3e62f07aa83cadf15dce84693a5b9c9a2ef7a2436ea22eb45ab383841d"
+          },
+          {
+            "kind": "ui",
+            "path": "docs/acceptance/local-ui-M2-shell.json",
+            "sha256": "3920a6f7a8b4d30c9e3bb6f758a350a97e8b2cf2aeea598f432fce70d05ae730",
+            "sourceFingerprint": "061c5d90b1977471c91f7e6a91ea600df44e17478019716d5bf2e4669a3552c8",
+            "commit": "1e85410de3d3ae443e0954e09c426ebe66e11ae5",
+            "at": "2026-11-25T03:56:43.152Z",
+            "scopes": [
+              "app",
+              "native-build",
+              "shared"
+            ],
+            "scopeFingerprint": "27515e36bb6b87a06fb9ab7d41083e5e2b6e4ab3154d9516d91164b125327da2"
           }
         ],
         "updatedAt": "2026-11-24T15:16:17.188Z",
@@ -1696,7 +1710,7 @@
         "id": "M3-core",
         "phase": "M3",
         "title": "会话、消息、任务、模型、工具及审批",
-        "status": "testing",
+        "status": "completed",
         "dependsOn": [
           "M2-shell"
         ],
@@ -1835,9 +1849,23 @@
               "tests"
             ],
             "scopeFingerprint": "8f182300133d6692bad2d0ebef9d4e86a05927c50b9baba191cbf49d4859d6bf"
+          },
+          {
+            "kind": "ui",
+            "path": "docs/acceptance/local-ui-M3-core.json",
+            "sha256": "199625ccbe9c171f205328f114b867fa9046e2f641322e40caae48edffbed4b9",
+            "sourceFingerprint": "061c5d90b1977471c91f7e6a91ea600df44e17478019716d5bf2e4669a3552c8",
+            "commit": "1e85410de3d3ae443e0954e09c426ebe66e11ae5",
+            "at": "2026-11-25T03:56:41.596Z",
+            "scopes": [
+              "app",
+              "native-build",
+              "shared"
+            ],
+            "scopeFingerprint": "27515e36bb6b87a06fb9ab7d41083e5e2b6e4ab3154d9516d91164b125327da2"
           }
         ],
-        "updatedAt": "2026-11-24T16:47:46.483Z"
+        "updatedAt": "2026-11-25T03:57:48.451Z"
       },
       {
         "id": "M4-sync",
@@ -1894,6 +1922,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "14eb28d2a9c18f4af060db29c997aefce7c6f559f02165c2ab8b31c1a0ffd1ba"
+    "digest": "d1fef2d51eca93234ee43f2b3ffd54c93f15ba22d08385d1d721eeacdcb91ac3"
   }
 }

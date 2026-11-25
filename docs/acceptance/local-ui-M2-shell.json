@@ -2,66 +2,66 @@
   "schemaVersion": 2,
   "taskId": "M2-shell",
   "kind": "ui",
-  "commit": "778b67eaf7f6cd87b6f6602e605ae979c533639d",
-  "sourceFingerprint": "6e7a6a919475365de47983f258f09a8177739a5380d629a6ca07e9eae7e6aa9f",
+  "commit": "1e85410de3d3ae443e0954e09c426ebe66e11ae5",
+  "sourceFingerprint": "061c5d90b1977471c91f7e6a91ea600df44e17478019716d5bf2e4669a3552c8",
   "scopes": [
     "app",
     "native-build",
     "shared"
   ],
-  "scopeFingerprint": "639e85f444291c8a064678ae5dae65481e3c9ccc1d24a2dedf1e175e0eb549ef",
-  "startedAt": "2026-11-24T21:45:06.404Z",
-  "finishedAt": "2026-11-24T21:45:06.404Z",
+  "scopeFingerprint": "27515e36bb6b87a06fb9ab7d41083e5e2b6e4ab3154d9516d91164b125327da2",
+  "startedAt": "2026-11-25T03:56:40.553Z",
+  "finishedAt": "2026-11-25T03:56:40.553Z",
   "passed": true,
   "details": {
     "nativeGlassVerified": true,
     "visualReview": "pass",
-    "reviewerContext": "CI run 45473673853 attempt 4 @c0b42bc: real PNGs from merged m-1-ios artifact reviewed; iPhone/iPad light/dark Liquid Glass renders and accessibility (largest Dynamic Type + Reduce Transparency fallback) confirmed; 9/9 native steps passed",
+    "reviewerContext": "CI run 45531958974 attempt 2 @1e85410 (all 5 jobs green; steps.json all 9 passed; collect-evidence pipeline fix verified end-to-end — M3 screenshots present in artifact). Reviewed real PNGs from m-1-ios-45531958974: iphone/ipad light conversation (08) shows synthetic loop bubbles + bounded long-message rendering; dark/conversation correct dark theme with 2-approvals-pending warning badge; accessibility/conversation renders unclipped at AXXXL Dynamic Type; 10-approval-detail renders CONFIRM card with synthetic disclaimer + Allow/Deny; ipad split-view sidebar intact across all surfaces. Native glass material verified on 01-native-glass hero surfaces.",
     "screenshots": [
       {
         "device": "iphone",
         "appearance": "light",
-        "path": "docs/acceptance/ui-c0b42bc-m2/iphone-light.png",
-        "sha256": "6743cd1052d140679b7c322fd15a1e1ac8a4e8daa94a09a37394920165002ed5",
+        "path": "docs/acceptance/ui-1e85410/iphone-light.png",
+        "sha256": "fa6006327f22e39ce32605e866d526b70af0d5e4d949bc0221ffe30fa724c3a0",
         "reviewed": true
       },
       {
         "device": "iphone",
         "appearance": "dark",
-        "path": "docs/acceptance/ui-c0b42bc-m2/iphone-dark.png",
-        "sha256": "e9388795258949b4fb3d231fd8b541c38cf9f72050109c118a91ca1c35ecad53",
+        "path": "docs/acceptance/ui-1e85410/iphone-dark.png",
+        "sha256": "c83497c77d4c987751db4cbcb4cf906015ffbf8fa444c8f08d3b2504957d0065",
         "reviewed": true
       },
       {
         "device": "iphone",
         "appearance": "accessibility",
-        "path": "docs/acceptance/ui-c0b42bc-m2/iphone-accessibility.png",
-        "sha256": "e3d9238197a350b97e6921b9398db707da3411888fc38da706ee799a5acad2b6",
+        "path": "docs/acceptance/ui-1e85410/iphone-accessibility.png",
+        "sha256": "5c684d876b23e46c4d9e2aac1cb8e976ac68bbd389d9a260c25276a0d0df78ac",
         "reviewed": true
       },
       {
         "device": "ipad",
         "appearance": "light",
-        "path": "docs/acceptance/ui-c0b42bc-m2/ipad-light.png",
-        "sha256": "88ae838e90c59010c08e2e2ea8b836b25ff307611b9d61c78d6dab81ed495636",
+        "path": "docs/acceptance/ui-1e85410/ipad-light.png",
+        "sha256": "68406b533218438caf94267b1b8daaa6c1e4486d8d86d0cf43bec7da88d7ba09",
         "reviewed": true
       },
       {
         "device": "ipad",
         "appearance": "dark",
-        "path": "docs/acceptance/ui-c0b42bc-m2/ipad-dark.png",
-        "sha256": "ee6ecf9d820ae3595aaf4bb3514cfa3f892e48e5742acd7dd2bded18da877c71",
+        "path": "docs/acceptance/ui-1e85410/ipad-dark.png",
+        "sha256": "d041f20107c4c3ba53f15c542b3e88781d68cf9ae68165cc0418d47cc8fe2a28",
         "reviewed": true
       },
       {
         "device": "ipad",
         "appearance": "accessibility",
-        "path": "docs/acceptance/ui-c0b42bc-m2/ipad-accessibility.png",
-        "sha256": "7f444238a6cab5c816d92333f2a423b4109d6a7c884a4640e70df3289191ebc3",
+        "path": "docs/acceptance/ui-1e85410/ipad-accessibility.png",
+        "sha256": "0bcfc3f1d8c07f3fe38fdc4189f84ffffd116e6f6cc3867a8c96183c3c088944",
         "reviewed": true
       }
     ],
-    "ciId": "45473673853",
-    "attempt": 4
+    "ciId": "45531958974",
+    "attempt": 2
   }
 }

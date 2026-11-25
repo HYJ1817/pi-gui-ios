@@ -1,42 +1,49 @@
 {
   "schemaVersion": 2,
   "kind": "state",
-  "revision": 918,
-  "updatedAt": "2026-11-25T02:47:35.696Z",
+  "revision": 931,
+  "updatedAt": "2026-11-25T03:58:07.241Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "c9287d22ee8e8943bc8c9b460f57ae48842faf7d92fe850f0f0758233d7a8c66",
+    "parentDigest": "5cc9b806cd29085615d1d49a6465b2ff28c497915b1612af769158dda5fc558f",
     "phase": "M3",
     "currentTask": "M3-core",
     "branch": "agent/m-1-bootstrap",
     "checkpoint": {
-      "id": "v2-2026-11-25T02-47-35-696Z-921a7bd2-8111-4408-970c-e730e0b64372",
-      "path": ".agent/checkpoints/v2-2026-11-25T02-47-35-696Z-921a7bd2-8111-4408-970c-e730e0b64372.json",
-      "sha256": "0c9b5f3727621d15ab2b59abe6c204663edc4b36acc9267de28ebda22b2fc3cf",
-      "authorityDigest": "916c0253c0144eaef34e03ca4ce9cfaccdb6382dc8903fe05c2ddf33adaea385",
-      "at": "2026-11-25T02:47:35.696Z",
+      "id": "v2-2026-11-25T03-58-07-241Z-05444ca0-a962-4f09-a2a0-5dfd9371cf27",
+      "path": ".agent/checkpoints/v2-2026-11-25T03-58-07-241Z-05444ca0-a962-4f09-a2a0-5dfd9371cf27.json",
+      "sha256": "4af488092800916ce2430d4b283f0a2aed46a612566edb5819d39f630d4d38bc",
+      "authorityDigest": "d772cebf864f66c95e747770a36abebb97a8bd85d1128837d9635bc557abd14f",
+      "at": "2026-11-25T03:58:07.241Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "963058c4f9130e9bd30e093d060ec029cdf333b7",
+        "commit": "b84e26e8ebca8508f27ac9785d86e800fe65a77d",
         "dirty": [
           "M .agent/HANDOFF.md",
-          " D .agent/checkpoints/v2-2026-11-24T19-40-37-551Z-34409189-e44f-4383-bcbc-d6c70b84fe09.json",
-          " D .agent/checkpoints/v2-2026-11-24T19-47-49-380Z-f8488e3c-e6f4-4287-8986-e21ee75d558b.json",
-          " D .agent/checkpoints/v2-2026-11-24T19-48-53-653Z-7dd0f095-76e4-45fe-a396-8cb4890322de.json",
+          " D .agent/checkpoints/v2-2026-11-24T19-50-09-731Z-237bf86a-a2e4-4200-8cfb-6a7ea0c82768.json",
+          " D .agent/checkpoints/v2-2026-11-24T19-51-30-013Z-1b8cfbd0-c667-4cb5-b3b3-232e0808d668.json",
+          " D .agent/checkpoints/v2-2026-11-24T19-51-31-751Z-4b368c0c-9f13-42d8-b11f-cd70159579dc.json",
+          " D .agent/checkpoints/v2-2026-11-24T19-51-33-280Z-fea650cb-4b83-4f98-a0e6-9b7893b50ebb.json",
+          " D .agent/checkpoints/v2-2026-11-24T19-51-34-982Z-0d351bc5-9a9c-4554-8ff5-ab382120512a.json",
+          " D .agent/checkpoints/v2-2026-11-24T21-43-17-615Z-91de441c-0679-490e-aabc-5fab0cf6cd02.json",
           " M .agent/control.json",
           " M .agent/state.json",
           " M .agent/tasks.json",
           " M PROGRESS.md",
-          " M docs/acceptance/local-independent-review-M2-shell.json",
-          " M docs/acceptance/local-typecheck-M-1-infrastructure.json",
-          "?? .agent/checkpoints/v2-2026-11-25T02-45-31-192Z-59646511-9c30-4128-85ec-a9a59e28a81c.json",
-          "?? .agent/checkpoints/v2-2026-11-25T02-45-32-633Z-c9ae8ed8-a5bb-4cb3-8d89-eabbacae3b2b.json",
-          "?? .agent/checkpoints/v2-2026-11-25T02-45-51-588Z-95e5a7bb-2aa4-4823-99ca-492c7bd577e5.json",
-          "?? docs/acceptance/independent-review-1e85410-M2-shell-receipt.json"
+          " M docs/acceptance/local-ui-M2-shell.json",
+          "?? .agent/checkpoints/v2-2026-11-25T03-55-31-452Z-15022d61-9889-4462-a45f-7f31657de42b.json",
+          "?? .agent/checkpoints/v2-2026-11-25T03-56-41-667Z-4b7caeba-abb4-4cf2-9a1d-96820955d49b.json",
+          "?? .agent/checkpoints/v2-2026-11-25T03-56-43-236Z-982e249b-2f4a-417d-930d-312f7c91490a.json",
+          "?? .agent/checkpoints/v2-2026-11-25T03-57-23-194Z-b28f05b0-a02a-4dd5-b9aa-e0f78d64e709.json",
+          "?? .agent/checkpoints/v2-2026-11-25T03-57-35-306Z-93774154-114d-401b-b580-e118935e37ec.json",
+          "?? .agent/checkpoints/v2-2026-11-25T03-57-48-657Z-1e52772e-a70b-4e1d-9062-a32767a8c86e.json",
+          "?? docs/acceptance/ci-45531958974.json",
+          "?? docs/acceptance/local-ui-M3-core.json",
+          "?? docs/acceptance/ui-1e85410/"
         ]
       },
       "sourceFingerprint": "c9c1fa88782b691ac4c53c6545bfba8839bec5730f31e1d9eb52b76242033325",
-      "note": "M3 gate: all audit evidence valid; only ui (M2+M3) pending on CI 45531958974; M-1 typecheck re-baselined after delegate incident"
+      "note": "M3-core COMPLETED — all 5 evidence kinds verified @1e85410; starting M4-sync per user authorization"
     },
     "blockers": [],
     "ci": [
@@ -174,6 +181,15 @@
         "status": "completed",
         "conclusion": "success",
         "url": "https://github.com/HYJ1817/pi-gui-ios/actions/runs/45473673853"
+      },
+      {
+        "id": "45531958974",
+        "head": "1e85410de3d3ae443e0954e09c426ebe66e11ae5",
+        "workflow": ".github/workflows/native-infrastructure.yml",
+        "attempt": 2,
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/HYJ1817/pi-gui-ios/actions/runs/45531958974"
       }
     ],
     "desktop": {
@@ -572,6 +588,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "e1630df2a16944ff1e139a18fb31150a9b739005286ea0f14e3f65385aac9a43"
+    "digest": "31fef06d3fb7be099a77b27291b13ee3da56705e19ccc2c80b41bc5df70ebe66"
   }
 }
