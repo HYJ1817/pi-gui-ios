@@ -343,10 +343,24 @@ def prepare(root, private):
     print('NATIVE_DEPENDENCIES_' + ('LOCKED' if mode == 'locked' else 'BOOTSTRAP_REQUIRED'))
 
 
+LOCK_MISMATCH_KEYS = {
+    'gemfileSha256': 'NATIVE_LOCK_MISMATCH_GEMFILE',
+    'gemLockSha256': 'NATIVE_LOCK_MISMATCH_GEM_LOCK',
+    'packageLockSha256': 'NATIVE_LOCK_MISMATCH_PACKAGE_LOCK',
+    'podfileSha256': 'NATIVE_LOCK_MISMATCH_PODFILE',
+    'podLockSha256': 'NATIVE_LOCK_MISMATCH_POD_LOCK',
+    'prebuiltManifestSha256': 'NATIVE_LOCK_MISMATCH_PREBUILT_MANIFEST',
+    'templateVerifierSha256': 'NATIVE_LOCK_MISMATCH_TEMPLATE_VERIFIER',
+}
+
+
 def verify_locked(root, candidate, manifest):
     review = load(root / 'native/lock-review.json')
-    check(review.get('schemaVersion') == 1 and review.get('approved') is True
-          and review.get('hashes') == hashes(root, candidate))
+    check(review.get('schemaVersion') == 1 and review.get('approved') is True)
+    # Fixed structural codes only: which reviewed input diverged, never values.
+    actual, expected = hashes(root, candidate), review.get('hashes', {})
+    mismatches = [LOCK_MISMATCH_KEYS[key] for key in sorted(LOCK_MISMATCH_KEYS) if actual.get(key) != expected.get(key)]
+    check(not mismatches, mismatches[0] if len(mismatches) == 1 else 'NATIVE_LOCK_MISMATCH_MULTIPLE')
     check(manifest == load(root / 'native/prebuilt-dependencies.json'), 'NATIVE_PREBUILT_BYTES_CHANGED')
 
 
