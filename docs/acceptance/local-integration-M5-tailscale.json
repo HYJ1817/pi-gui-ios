@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "kind": "integration",
   "taskId": "M5-tailscale",
-  "commit": "bb56ba62f748229a82f127f2c13e33e22a52652d",
+  "commit": "921044e1f8cc99a46752f8cfeaecedc6dd24ebb5",
   "sourceFingerprint": "e78af94c071aee6ee08b59c41df2ae4beea5dee2e6567ca11215854e33215907",
   "scopes": [
     "control",
@@ -10,13 +10,13 @@
     "shared"
   ],
   "scopeFingerprint": "98041aea2d9b10702cf2558cf9278dabe2743b974208d7d676b31453cafcad8b",
-  "startedAt": "2026-11-25T19:18:17.076Z",
-  "finishedAt": "2026-11-25T19:20:36.516Z",
+  "startedAt": "2026-11-25T19:50:15.702Z",
+  "finishedAt": "2026-11-25T19:52:35.386Z",
   "passed": true,
   "details": {
     "command": "node scripts/desktop-remote-verify.mjs",
     "exitCode": 0,
     "logPath": "docs/acceptance/local-integration-output.txt",
-    "logSha256": "4a3bb96159923dddc65da092a33a206d4650f6aa766465029c4c1453f1f6fdae"
+    "logSha256": "05677f7b87d462d612a421b1a1e3bec7f7656ca3041f0909f272c0febc0661c6"
   }
 }
