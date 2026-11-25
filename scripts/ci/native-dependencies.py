@@ -401,6 +401,15 @@ def finish(root, private):
 
 if __name__ == '__main__':
     try:
+        if len(sys.argv) == 4 and sys.argv[1] == 'inventory-candidate':
+            # Bootstrap tooling only: serialize the exact inventory structure
+            # finish() compares. Produces a REVIEW INPUT, never reviewed bytes —
+            # adopting it still requires the independent lock/manifest review.
+            root, target = map(pathlib.Path, sys.argv[2:])
+            manifest = inventory(root)
+            target.write_text(json.dumps(manifest, sort_keys=True, indent=2) + chr(10), encoding='utf-8')
+            print('NATIVE_INVENTORY_CANDIDATE_WRITTEN')
+            sys.exit(0)
         check(len(sys.argv) == 4 and sys.argv[1] in ('prepare', 'finish'))
         root, private = map(pathlib.Path, sys.argv[2:])
         if sys.argv[1] == 'prepare':

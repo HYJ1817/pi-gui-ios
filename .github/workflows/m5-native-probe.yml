@@ -4,6 +4,13 @@ on:
     branches: ['agent/**']
     paths: ['modules/pi-gui-remote/**', 'scripts/ci/m5-*', '.github/workflows/m5-native-probe.yml']
   workflow_dispatch:
+    inputs:
+      regenerate:
+        description: 'Force first-party lock+manifest candidate regeneration even when the committed lock already contains PiGuiRemote'
+        required: false
+        default: 'false'
+        type: choice
+        options: ['true', 'false']
 permissions:
   contents: read
 concurrency:
@@ -44,8 +51,10 @@ jobs:
       - name: Identify whether a source-pod candidate is still needed
         id: needed
         shell: bash
+        env:
+          INPUT_REGENERATE: ${{ inputs.regenerate }}
         run: |
-          node -e 'const fs=require("fs");fs.appendFileSync(process.env.GITHUB_OUTPUT,"needed="+(!fs.readFileSync("native/Podfile.lock","utf8").includes("PiGuiRemote (0.0.1)"))+"\n")'
+          node -e 'const fs=require("fs");const missing=!fs.readFileSync("native/Podfile.lock","utf8").includes("PiGuiRemote (0.0.1)");const forced=(process.env.GITHUB_EVENT_NAME==="workflow_dispatch"&&process.env.INPUT_REGENERATE==="true");fs.appendFileSync(process.env.GITHUB_OUTPUT,"needed="+(missing||forced)+"\n")'
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
         if: steps.needed.outputs.needed == 'true'
         with:
@@ -77,11 +86,17 @@ jobs:
           cp Gemfile Gemfile.lock "$RUNNER_TEMP/m5-lock-safe/"
           cp ios/Podfile.lock "$RUNNER_TEMP/m5-lock-safe/Podfile.lock"
           ruby scripts/ci/validate-locks.rb "$RUNNER_TEMP/m5-lock-safe"
+          # The full prebuilt inventory is part of the reviewed lock set: emit it
+          # as a candidate too. It is a review input only — production builds
+          # still require the exact committed bytes.
+          python3 scripts/ci/native-dependencies.py inventory-candidate "$PWD" "$RUNNER_TEMP/m5-lock-safe/prebuilt-dependencies.json"
       - name: Upload only parser-validated candidate lock bytes
         if: success() && steps.needed.outputs.needed == 'true'
         uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4
         with:
           name: m5-source-pod-lock-${{ github.run_id }}
-          path: ${{ runner.temp }}/m5-lock-safe/Podfile.lock
+          path: |
+            ${{ runner.temp }}/m5-lock-safe/Podfile.lock
+            ${{ runner.temp }}/m5-lock-safe/prebuilt-dependencies.json
           if-no-files-found: error
           retention-days: 7
