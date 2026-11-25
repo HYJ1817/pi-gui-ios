@@ -77,3 +77,24 @@ future reviewer does not re-file it.
 Device-network evidence remains deferred per `device-network-deferral.md`
 (ADR 0006): the one-time user-operated device checklist performs SideStore
 install + network acceptance. Simulator success is never device evidence.
+
+## D5. SSE write backpressure misread (NIT-1, security round-3)
+
+**Facts.** `_writeBytes` in the desktop event-stream treats `res.write() === false`
+as a write failure and closes the stream. In Node, `false` is only a
+backpressure hint — the bytes are still queued and delivered. Under modest
+backpressure streams close spuriously. Availability-only, pre-existing
+semantics the round-2 refactor consolidated; the revocation notice is
+unaffected (already queued at write time). Empirically reproduced by the
+round-3 security review (1MB write returns false yet all bytes deliver).
+
+**Why deferred.** The one-line fix (drop the `=== false` failure branch and
+rely on the `writableLength` ceiling check already present) would invalidate
+the round-3 review binding, which must certify the exact final tree. Batching
+the fix with any future hardening round costs less than a full review cycle
+for a nit. Impact in practice is rare: frames are capped at 64 KiB and kernel
+buffers rarely fill at SSE rates.
+
+**Recovery condition.** Apply the one-line fix in the next desktop hardening
+pass together with a regression test that fills the socket buffer and asserts
+the stream survives.

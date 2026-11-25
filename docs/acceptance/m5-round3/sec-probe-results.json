@@ -1,0 +1,111 @@
+{
+  "review": "round-3 narrow security validation",
+  "commits": {
+    "desktop": "b67adb4d09f2eb176fe2ed19ffa0b7959aa3f732 (diff base 1d846458)",
+    "mobile": "ee0778534e9d864de691ccb65fd6aa43cc5da219",
+    "contract": "server/remote/contract-v1.json byte-identical to pi-gui-ios/docs/contracts/remote-v1.json (verified)"
+  },
+  "testSuites": {
+    "remote-contract": { "command": "node --test tests/remote-contract.test.mjs", "result": "33/33 pass", "ran": true },
+    "remote-gateway": { "command": "node tests/remote-gateway.cjs", "result": "15/15 pass", "ran": true, "note": "includes the new real-socket revocation-reset pin and the R1 revision-advancement regression pin" }
+  },
+  "scope1_writeRawBypass": {
+    "verdict": "sound",
+    "callSiteEnumeration": {
+      "_writeRaw": ["event-stream.mjs:125 (inside _resetOne, only when bypass===true)"],
+      "_resetOne(bypass:true)": ["event-stream.mjs:90 (inside dropDevice only) — every other call site omits the options argument, so bypass is always false there"],
+      "dropDevice": ["event-stream.mjs:98 (authorizationChanged: non-grants_changed transitions)", "event-stream.mjs:106/108 (_reconcile: inactive device or null authority)"],
+      "productionWiring": "index.mjs:102 — deviceStore.onAuthorizationChanged -> stream.authorizationChanged, synchronous, exactly once"
+    },
+    "empiricalProbes": {
+      "P1": "PASS — revoke with live subscription: exactly 1 reset frame (reason authorization_changed) then close; zero non-reset frames after revoke",
+      "P2": "PASS — instrumented _writeRaw across revoke/re-pair/expiry sequences: bypass carried ONLY reset frames (bypassTotal=1, nonResetBypass=0); payload exactly {reason:'authorization_changed'}",
+      "P3": "PASS — publish() after revocation delivers and journals nothing; timeline destroyed on drop (no replay surface remains)",
+      "P4": "PASS — reset payload keys exactly ['reason']; conversationId 'stream-reset'; ownerRevision 0; no conversation-scoped data; frame signed",
+      "P5": "PASS — double-revoke and revoke-after-client-close: no duplicate resets, no post-close writes, no crash",
+      "P6": "PASS — control experiment: the same reset via the non-bypass path IS suppressed for an inactive device (proves _mayDeliver gate exists and the bypass is necessary, not a loophole)",
+      "P7": "PASS — device-key rotation re-pair atomically revokes the old binding and delivers exactly one bypass reset",
+      "P8": "PASS — grants_changed (device stays active) uses the GATED non-bypass path and still delivers (device active + sessions.read scope always held)",
+      "P9": "PASS — expiry-only inactivity: lazy reconcile drops with bypass reset, zero other frames",
+      "R1": "PASS — hostile res.write synchronously re-entering dropDevice mid-reset: s.resetting guard + device-store no-op second revoke prevent duplication (exactly 1 reset, clean end)",
+      "R4": "PASS — client-close racing revocation: nothing written to a dead stream"
+    },
+    "inFlightFrames": "frames already queued in the kernel/socket buffer before revocation are unavoidably delivered (TCP); they were authorized at write time and every journaled frame re-passes _mayDeliver at write time. No post-revocation frame is ever WRITTEN. Synchronous single-threaded wiring means revocation cannot interleave inside publish()/handleSubscribe().",
+    "suppressionAnalysis": "_resetOne failure modes only reduce to close-without-reset when the transport is already dead (bytes undeliverable anyway) or the device is inactive on the non-bypass path; the bypass path has no authorization-dependent suppression. Duplication is impossible: _resetOne is fully synchronous, resetting flag is set before any write, and dropDevice closes immediately after the single write."
+  },
+  "scope2_replayContinuity": {
+    "verdict": "sound — defense claim verified empirically",
+    "empiricalProbes": {
+      "C1": "PASS — revision-only advancement (+5) after journaling: resume is continuous, same generation, next sequence, no reset (the fix's intent)",
+      "C2": "PASS — pre-transition cursor after grants revocation: exactly one cursor_expired reset, zero pre-transition frames replayed",
+      "C3": "PASS — resume from the post-transition reset cursor: shadowed pre-reset journal frames (same sequence space) never replay; only post-reset frames, same generation",
+      "C4": "PASS — 15-row mutation matrix on _authority() composition: grant add/remove, replayEpoch, scope add/remove, conversation appear/disappear, workspaceEpoch/backendInstance/workspaceId change, project disappearance ALL flip the authority string; revision-only, lifecycle-only, message-append-only and falsy-grant-key mutations correctly do NOT",
+      "C5": "PASS — conversation rebind to another project flips authority even though the identity string is unchanged (projectId is inside the hashed owner tuple)",
+      "C7": "PASS — superseded-generation cursor rejected with cursor_expired"
+    },
+    "structuralCompleteness": {
+      "composition": "_authority = JSON [replayEpoch, serviceId, sorted grantedScopes, sorted true-grant keys, sha256 of sorted per-conversation owner tuples (conversationId, namespace, identity, epoch, projectId)]",
+      "deliveryDecisionInputs": "frame delivery depends on: device active (null authority -> drop), scopes, grants, conversation existence, project binding. Every input is inside the composition — verified row by row in C4/C5.",
+      "singleThreaded": "authorization transitions are synchronous transactions (device-store persists then notifies in the same call stack); no async gap exists in the subscribe path (admission + handleSubscribe synchronous), and mutations re-verify liveness at commit time (commitAdmission + listener live re-check, both reading the in-place-mutated record).",
+      "ownerRevisionEcho": "frame ownerRevision is echoed state, not an authorization input; the mobile client's authorizeResource mirror (src/remote/events.ts + demo wiring) likewise ignores ownerRevision for the grant decision — the removal of exact-equality re-check is coherent on both sides."
+    }
+  },
+  "scope3_epochPersistence": {
+    "verdict": "sound — the theorized regression window does not exist",
+    "keyFacts": {
+      "ownerEpochConstantOne": "EMPIRICAL (E3): epochFor NEVER increments an existing entry; the identity string itself carries workspaceEpoch, so every authority transition is a NEW identity starting at 1. Distinct epoch values observed across 200 identities: [1]. An evicted-then-reappearing identity returning epoch 1 is therefore IDENTICAL to it never having been evicted — there is nothing to regress from.",
+      "signatureReplayIndependent": "signed-request replay protection binds device.replayEpoch (per-device, in the signature message), never the owner epoch. The owner epoch only partitions mutation idempotency keys and feeds commitAdmission's owner-roll detection.",
+      "noncePersistence": "EMPIRICAL (E4): nonces AND timestampFloor persist in remote-devices.json; a validly-signed request accepted pre-restart is rejected as request_replayed post-restart within the skew window. Even if epochs COULD regress, signature replay would remain impossible.",
+      "timestampFloorStrict": "EMPIRICAL (E5): a freshly-signed request with timestamp below the persisted floor is rejected (request_replayed at the nonce layer) even inside the 60s skew window",
+      "epochBumpInvalidation": "EMPIRICAL (E6): bumpReplayEpoch invalidates all prior-epoch signatures (signature_invalid)"
+    },
+    "persistenceChangeAssessment": "the in-scope epochs-persistence change is harmless-but-vestigial hardening: since values can only ever be 1, persisting them changes no outcome. Eviction correctness itself (oldest-first, capacity 4096, persist per insertion) verified (E2: sizeBefore=4096, firstEvicted=true, reappearedEpoch=1). No severity.",
+    "honestResiduals": [
+      "IdempotencyStore refuses all NEW mutation keys permanently once 4096 records accumulate (no eviction) — pre-existing, out of diff scope, availability-only",
+      "contract skew is 60s (not 5 minutes as the brief suggested); retention 180s — the replay surface is smaller than assumed, and entirely covered by nonce persistence"
+    ]
+  },
+  "scope4_mobilePairingExpired": {
+    "verdict": "sound — closed semantics, no fail-open, no amplification",
+    "empiricalProbes": {
+      "M1": "PASS — 10-row truth table replicating Swift decision logic (RemoteService.swift 71-80) composed with the JS boundary (native-port.ts 54-55): expired-session-401 -> (pairing_expired,false); rejected-403 -> (pairing_rejected,true); 429 always -> (rate_limited,false) even when the wire says pairing_rejected; unauthorized/unavailable/internal/garbled/unknown all collapse to (pairing_rejected,false)",
+      "M2": "PASS — zero rows where pairing_expired is retryable",
+      "M3": "PASS — zero fail-open rows for unknown/garbled/internal inputs",
+      "M5": "PASS after manual verification — initial regex hits were false positives: every use of retryable in app code is pass-through metadata (client.ts:181 return value; parseError validation); no if/while/setTimeout control flow consumes it anywhere in src/"
+    },
+    "structuralGuards": {
+      "attemptCap": "draft.attempts < 5 per draft (pre-network)",
+      "localExpiryPreCheck": "draft.bootstrap.expires > Date() throws pairing_expired before ANY network use on every retry",
+      "inFlightSerialization": "!draft.inFlight — one outstanding exchange per draft",
+      "postResponseExpiryRecheck": "bootstrap expiry re-verified after the response arrives",
+      "serverSide": "pairing_session_invalid maps to pairing_expired per contract internalCodeMapping.pairExchange (verified in contract JSON); wire status 401",
+      "defenseInDepth": "even if the native layer regressed, the JS boundary independently recomputes retryable = out.retryable === true && code === 'pairing_rejected'"
+    },
+    "residualBehavior": "a draft whose session died server-side but is locally unexpired can be manually retried up to 5 times, each returning pairing_expired/retryable:false — user-driven only, bounded, correct (informs the user the pairing must be restarted). No automatic amplification."
+  },
+  "additionalVerified": {
+    "wireVocabularyFix": "wireErrorCode('device_inactive') -> 'unauthorized' (401): 'device_inactive' is in PRE_AUTHENTICATION_CODES, so the previous literal emission was an out-of-vocabulary wire code; the fix is correct and the closed 17-code vocabulary is intact",
+    "sequenceGapResetBeforeClose": "the new _deliverTemplate reset-before-close path is defense-in-depth for a practically unreachable state (publish never journals immaterializable frames — immaterialize triggers resetDevice without journaling); direction is fail-safe",
+    "resetSequenceSharing": "reset frames occupy headSequence without advancing it; post-reset replay filter (f.sequence > bound.sequence) can never resurrect pre-reset frames — verified empirically in C3",
+    "contractCommentRepair": "protocol.mjs comment fix is comment-only; hasDuplicateQueryParams remains intentional dead code (duplicate detection happens in validateRawTarget pre-parse) — no behavioral impact"
+  },
+  "findings": [
+    {
+      "id": "NIT-1",
+      "severity": "NIT",
+      "title": "res.write()===false misread as write failure — spurious stream close under backpressure",
+      "location": "server/remote/event-stream.mjs _writeBytes (in-scope refactor consolidated the pattern; identical semantics pre-existed in _write and the keepalive path)",
+      "evidence": "probe5 R2/R3 + Node semantics reproduction (1MB write returns false yet all 1048581 bytes including the trailing marker are delivered): write()===false is a backpressure hint, the bytes are still queued. Consequence: an ordinary publish whose socket buffer exceeds the 16KB HWM — far below the 1MB budget — closes the stream even though the frame was successfully queued. Security impact: none — the frame bytes are delivered before close, the revocation reset is likewise already queued (so the revocation-notice contract is not weakened), integrity is enforced by client-side signature+position verification, and pre-close frames remain journaled for replay. Impact is availability-only: streams may die spuriously on slow links (Tailscale) or frame bursts, requiring client resubscribe.",
+      "reproduction": "probe5-results.json R2/R3 — backpressured publish delivered the frame (ordinaryFrameDelivered=1) but the subscriber was closed before revocation arrived; direct Node repro in review transcript",
+      "disposition": "non-blocking; inherited semantics, correct fix is to honor backpressure (drain-aware) or drop the write()===false close condition, but not required for acceptance of this diff"
+    }
+  ],
+  "observationsNotFindings": [
+    "Owner-epoch persistence is vestigial (values can only be 1) — harmless hardening, not a defect",
+    "_expire() closes expired-device streams without a reset frame — pre-existing, contract requires rejection of requests (satisfied) and clients hold expiresAt locally; expiry is locally knowable so the missing notification is acceptable",
+    "D1-D4 deferral records in docs/acceptance/m5-deferred-items.md are pre-existing honest records, notably D1 (production publish pipeline unwired — zero live conversation frames in production, which is a fail-silent-safe direction: no unauthorized frame can be published either)"
+  ],
+  "blockingFindings": { "critical": 0, "important": 0 },
+  "probeArtifacts": "C:/Users/21022/AppData/Local/Temp/sec-probe/ (probe1-5 scripts + results JSON; synthetic fixtures only, os.tmpdir, no repo files modified — verified git status clean in desktop repo; mobile repo dirty state predates this review)",
+  "reasoningOnlyItems": "none — every verdict is backed by either the empirical probes above, the two passing test suites, or line-level structural verification cited by file:line"
+}
