@@ -387,8 +387,13 @@ test('event stream: signed frames, order, scope drop, tamper drop, cursor resume
   const m2 = r.M.events.buildEventFrameMessage(fakeApproval, r2.credentials.deviceId, r2.credentials.serviceId);
   fakeApproval.frameSignature = r2.serviceCrypto.sign(m2);
   assert.equal(ev2.accept(fakeApproval).code, 'scope_denied'); // signature ok, approvals.read missing
-  // malformed cursor → invalid_request; stale cursor → reset frame
-  const staleCursor = Buffer.from('cur:' + r.credentials.deviceId + ':999:0').toString('base64url');
+  // malformed cursor → invalid_request; stale/foreign cursor → reset frame.
+  // ADR-0010: cursors are HMAC-bound opaque tokens; a tampered/foreign tag is
+  // indistinguishable from wellformed-stale (contract cursorTransitionTable).
+  const snapForCursor = await client.snapshot(CONV);
+  const realCursor = snapForCursor.result.cursor;
+  assert.match(realCursor, /^g[0-9]+_s[0-9]+_[A-Za-z0-9_-]{22}$/, `cursor must be reference-shaped, got: ${realCursor}`);
+  const staleCursor = realCursor.slice(0, -1) + (realCursor.endsWith('a') ? 'b' : 'a');
   const reqStale = client.buildEventsRequest(staleCursor);
   let gotReset = null;
   const sub = gateway.subscribe(r.credentials, reqStale, f => { if (f.event === 'reset') gotReset = f; });
@@ -401,9 +406,9 @@ test('event stream: signed frames, order, scope drop, tamper drop, cursor resume
   // Malformed cursor is a PRE-authentication failure: the body code is the
   // closed pre-auth 'unauthorized', never an operational vocabulary word.
   assert.equal(JSON.parse(subBad.response.body).error.code, 'unauthorized');
-  // Stale-cursor co-subscriptions are rebound to the new generation instead of
-  // silently orphaned: both subscribers receive the reset frame. Close the
-  // primary stream first — per-device stream cap is 2.
+  // ADR-0010 D2: stale-cursor resubscribe isolates ITS OWN generation space —
+  // co-subscriptions are NEVER perturbed and never receive the reset. Close
+  // the primary stream first — per-device stream cap is 2.
   ev.close();
   const fresh = client.buildEventsRequest();
   const firstFrames = [];
@@ -413,8 +418,12 @@ test('event stream: signed frames, order, scope drop, tamper drop, cursor resume
   const resetsSeen = [];
   const sub2 = gateway.subscribe(r.credentials, staleAgain, f => { if (f.event === 'reset') resetsSeen.push(f); });
   assert.equal(sub2.ok, true);
-  assert.equal(resetsSeen.length, 1);
-  assert.ok(firstFrames.some(f => f.event === 'reset'), 'co-subscription must be rebound + receive the reset');
+  assert.equal(resetsSeen.length, 1, 'the stale subscriber gets exactly one reset');
+  assert.ok(!firstFrames.some(f => f.event === 'reset'), 'co-subscription must NOT be perturbed — generations are isolated');
+  // but the co-subscription keeps receiving live frames in ITS OWN space.
+  const revCo = (await client.snapshot(CONV)).result.ownerRevision;
+  await client.sendMessage(CONV, randomUUID(), 'co-live', revCo);
+  assert.ok(firstFrames.some(f => f.event === 'message.append'), 'co-subscription keeps receiving live frames');
   sub1.close(); sub2.close();
 });
 
@@ -589,7 +598,9 @@ test('reset frame through the REAL client path rebuilds the store baseline', asy
   // Stale cursor subscribe → new generation + exactly one reset frame; the
   // store's reset branch must rebuild baselines through accept → onEvent →
   // store.apply → refresh — including the approval raised during the gap.
-  const staleCursor = Buffer.from('cur:' + r.credentials.deviceId + ':999:0').toString('base64url');
+  // ADR-0010: tampered tag stands in for the indistinguishable stale path.
+  const snapCursor = (await client.snapshot(CONV)).result.cursor;
+  const staleCursor = snapCursor.slice(0, -1) + (snapCursor.endsWith('a') ? 'b' : 'a');
   const reqStale = client.buildEventsRequest(staleCursor);
   const applied = [];
   const sub = gateway.subscribe(r.credentials, reqStale, f => { const r2 = ev.accept(f); if (r2.ok) applied.push(r2.applied); });

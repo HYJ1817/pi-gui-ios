@@ -71,7 +71,11 @@ export function GlassSurface({ children, style, contentStyle, testID, tint = 're
     );
   }
   return (
-    <View testID={testID ? `${testID}-fallback` : undefined} style={[contentStyle, style, { backgroundColor: theme.surfaceElevated }]}>
+    // ADR-0010 D7 (M2 nit fix-forward): the elevated tint is the DEFAULT —
+    // it must precede contentStyle/style so callers (e.g. approvalSurface's
+    // warning tint) can override it. Previously it was appended LAST and
+    // always clobbered caller tints in the Reduce-Transparency fallback path.
+    <View testID={testID ? `${testID}-fallback` : undefined} style={[{ backgroundColor: theme.surfaceElevated }, contentStyle, style]}>
       {children}
     </View>
   );

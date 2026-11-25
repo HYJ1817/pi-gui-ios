@@ -37,7 +37,7 @@ export default function HomeScreen() {
             <Text style={[styles.heroCardTitle, { color: theme.text }]}>Native navigation + Liquid Glass</Text>
             <Text style={[styles.heroCardBody, { color: theme.secondary }]}>Real iOS materials over a themed surface; a solid fallback under Reduce Transparency.</Text>
           </GlassSurface>
-          {state.lastError === 'stream_unavailable' ? <StreamErrorCard /> : null}
+          {state.stream.state !== 'live' ? <StreamErrorCard /> : null}
           <View style={styles.sectionRow}>
             <Text accessibilityRole="header" style={[styles.sectionTitle, { color: theme.text }]}>Projects</Text>
             <StatusBadge status={state.lastError ? 'danger' : running > 0 ? 'running' : 'idle'} label={state.lastError ? 'Error' : running > 0 ? `${running} running` : 'Synthetic loop'} />

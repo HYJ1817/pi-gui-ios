@@ -74,7 +74,7 @@ function demoDomain(): SandboxDomain {
             pending: true, expiresAtMs: Date.now() + 600_000, owner: 'runtime:synthetic:conv1', revision: 3,
           },
         ],
-        script: { afterSend: { text: 'Synthetic assistant reply — sent through the same event frames a real run emits.' } },
+        script: { afterSend: { text: 'Synthetic assistant reply — sent through the same event frames a real run emits.', chunks: 4 } },
       },
       {
         conversationId: conv2, sessionId: 'session-s0002', projectId: projectA, title: 'Theme tokens',
@@ -206,13 +206,18 @@ export function demoRuntime(): DemoRuntime {
       events.close();
       events.open(streamTransport, client.buildEventsRequest(events.latestCursor()), events.latestCursor());
     },
-    /** Recovery after a terminal stream error: pull fresh baselines over the
-     *  reliable request/response plane, then resubscribe WITHOUT a cursor so
-     *  the position re-establishes at the live head. */
+    /** Recovery after a terminal stream error (ADR-0010 D1): pull fresh
+     *  baselines over the reliable request/response plane, then resubscribe
+     *  FROM THE ATOMIC SNAPSHOT WATERMARK — frames emitted between the
+     *  snapshot and the resubscribe replay out of the server backlog, so the
+     *  recovery window loses nothing. A stale watermark resets cleanly. */
     recoverStream: async () => {
       events.close();
+      store.markStreamRecovering();
       await store.load();
-      events.open(streamTransport, client.buildEventsRequest(), undefined);
+      const cursor = store.latestWatermarkCursor();
+      events.open(streamTransport, client.buildEventsRequest(cursor), cursor);
+      store.markStreamLive();
     },
     closeStream: () => events.close(),
   };

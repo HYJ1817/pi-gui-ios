@@ -20,6 +20,10 @@ export interface ConversationState {
   approvals: RemoteApproval[];
   snapshotTruncated: boolean;
   loaded: boolean;
+  /** ADR-0010 D1: atomic resume point returned by the latest snapshot —
+   *  cursor+generation+sequence are consistent with exactly this baseline.
+   *  The stream can always be resumed from here without a gap window. */
+  watermark: { cursor: string; generation: number; sequence: number } | null;
 }
 
 export interface StoreState {
@@ -30,14 +34,17 @@ export interface StoreState {
   /** per-requestId resolution flag so a settled approval greys out instantly */
   decided: Record<string, 'allowed' | 'denied' | 'cancelled' | 'answered' | 'expired'>;
   lastError: string | null;
+  /** ADR-0010 D6: dedicated stream-state channel — never multiplexed through
+   *  lastError so operation failures cannot mask a dead stream (M3 note F3). */
+  stream: { state: 'live' | 'dead' | 'recovering' };
 }
 
-const EMPTY: ConversationState = { status: 'unknown', messages: [], ownerRevision: 0, approvals: [], snapshotTruncated: false, loaded: false };
+const EMPTY: ConversationState = { status: 'unknown', messages: [], ownerRevision: 0, approvals: [], snapshotTruncated: false, loaded: false, watermark: null };
 
 export class ConversationStore {
   private readonly client: RemoteClient;
   private readonly events: EventStreamClient;
-  private state: StoreState = { projects: [], sessions: [], registryRevision: 0, conversations: {}, decided: {}, lastError: null };
+  private state: StoreState = { projects: [], sessions: [], registryRevision: 0, conversations: {}, decided: {}, lastError: null, stream: { state: 'live' } };
   private listeners = new Set<() => void>();
   private version = 0;
 
@@ -75,12 +82,32 @@ export class ConversationStore {
 
   conversation(id: string): ConversationState { return this.state.conversations[id] ?? EMPTY; }
 
-  /** Irrecoverable stream death: surfaced as a closed, generic token the UI
-   *  can recognize to offer a reload. Never carries transport internals. */
+  /** Irrecoverable stream death (ADR-0010 D6): the dedicated stream channel
+   *  flips to 'dead' — immune to later lastError writes; the UI's recovery
+   *  affordance keys off this, never off operation errors. */
   markStreamError(): void {
-    if (this.state.lastError !== 'stream_unavailable') this.setState({ lastError: 'stream_unavailable' });
+    if (this.state.stream.state !== 'dead') this.setState({ stream: { state: 'dead' } });
   }
-  streamErrorActive(): boolean { return this.state.lastError === 'stream_unavailable'; }
+  /** Recovery bookkeeping: 'recovering' while baselines re-pull, back to
+   *  'live' once the stream is re-established at the watermark. */
+  markStreamRecovering(): void {
+    if (this.state.stream.state !== 'recovering') this.setState({ stream: { state: 'recovering' } });
+  }
+  markStreamLive(): void {
+    if (this.state.stream.state !== 'live') this.setState({ stream: { state: 'live' } });
+  }
+  streamErrorActive(): boolean { return this.state.stream.state !== 'live'; }
+
+  /** ADR-0010 D1: the freshest snapshot watermark across all loaded
+   *  conversations — the atomic cursor the stream should resume from after a
+   *  reload. Returns undefined when nothing has been snapshotted yet. */
+  latestWatermarkCursor(): string | undefined {
+    let best: { cursor: string; sequence: number; generation: number } | null = null;
+    for (const conv of Object.values(this.state.conversations)) {
+      if (conv.watermark && (best === null || conv.watermark.sequence > best.sequence || conv.watermark.generation > best.generation)) best = conv.watermark;
+    }
+    return best?.cursor;
+  }
 
   /** Bootstrap: projects + sessions + all known snapshots. */
   async load(): Promise<void> {
@@ -104,10 +131,15 @@ export class ConversationStore {
     // (e.g. a reset-triggered refresh racing an in-flight mutation). Never
     // downgrade messages/status with a stale baseline — approvals still
     // re-pull below regardless.
+    // ADR-0010 D1: the watermark is adopted even when the body is skipped as
+    // stale — it is the SERVER's atomic resume point, always safe to keep.
+    const watermark = {
+      cursor: snap.result.cursor,
+      generation: snap.result.streamGeneration,
+      sequence: snap.result.sequence,
+    };
     if (snap.result.ownerRevision < this.conversation(conversationId).ownerRevision) {
-      if (!this.conversation(conversationId).loaded) {
-        this.setConversation(conversationId, { loaded: true });
-      }
+      this.setConversation(conversationId, { loaded: true, watermark });
     } else {
       this.setConversation(conversationId, {
         status: snap.result.status,
@@ -115,6 +147,7 @@ export class ConversationStore {
         ownerRevision: snap.result.ownerRevision,
         snapshotTruncated: snap.result.snapshotTruncated === true,
         loaded: true,
+        watermark,
       });
     }
     const approvals = await this.client.listApprovals(conversationId);
@@ -148,7 +181,18 @@ export class ConversationStore {
     if (event === 'message.append') {
       const current = this.conversation(conversationId);
       const message = payload as unknown as RemoteMessage;
-      if (current.messages.some(m => m.messageId === message.messageId)) return;
+      // ADR-0010 D3 chunk-append: repeated frames for the SAME messageId are
+      // progressive chunks — each carries the complete text SO FAR, so the
+      // later frame replaces the earlier one (upsert), never a new bubble.
+      // Exactly-once replay of the identical text is a no-op by construction.
+      const existing = current.messages.findIndex(m => m.messageId === message.messageId);
+      if (existing >= 0) {
+        if (current.messages[existing]!.text === message.text) return;
+        const merged = [...current.messages];
+        merged[existing] = message;
+        this.setConversation(conversationId, { messages: merged.slice(-MAX_SNAPSHOT_MESSAGES) });
+        return;
+      }
       this.setConversation(conversationId, { messages: [...current.messages, message].slice(-MAX_SNAPSHOT_MESSAGES) });
       return;
     }

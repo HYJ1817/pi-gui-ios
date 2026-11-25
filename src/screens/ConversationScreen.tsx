@@ -85,7 +85,7 @@ export default function ConversationScreen() {
           label={status === 'unknown' ? 'Idle' : status.charAt(0).toUpperCase() + status.slice(1)}
         />
       </View>
-      {state.lastError === 'stream_unavailable' ? <StreamErrorCard /> : null}
+      {state.stream.state !== 'live' ? <StreamErrorCard /> : null}
       {conv?.snapshotTruncated ? <Text style={[styles.trunc, { color: theme.tertiary }]}>Earlier history truncated by projection bounds.</Text> : null}
       {approvals.length > 0 ? (
         <Text testID="conversation-approvals" style={[styles.pending, { color: theme.warning }]}>

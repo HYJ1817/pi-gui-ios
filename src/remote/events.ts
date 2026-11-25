@@ -195,10 +195,27 @@ export class EventStreamClient {
       this.onEvent(applied);
       return { ok: true, applied, position, isReset: true };
     }
-    // Fresh subscribe (cursorTransitionTable.absent): the stream starts at the
-    // live head with no reset, so the FIRST ordinary frame of its generation
-    // establishes the position instead of matching a prior expected one.
-    if (this.position !== undefined && (frame.streamGeneration !== this.position.streamGeneration || frame.sequence !== this.position.sequence + 1)) return this.fatal('sequence_gap');
+    // Position continuity (ADR-0010 / M4 fault-injection semantics):
+    //   - REWIND (older generation, or sequence at-or-below the position):
+    //     the frame's effects are already in the store — exactly-once replay
+    //     out of a backlog, duplicated network delivery, and reordered stale
+    //     arrivals all land here. Drop SILENTLY: reordering/duplication must
+    //     not corrupt state, and no new information is lost by ignoring a
+    //     frame whose effects we already hold.
+    //   - GAP (same generation, sequence ahead of position+1): intermediate
+    //     frames are missing and their effects can never be reconstructed
+    //     locally — terminal death, recovery via snapshot watermark resume.
+    if (this.position !== undefined) {
+      if (frame.streamGeneration < this.position.streamGeneration) return this.drop('sequence_gap');
+      if (frame.streamGeneration > this.position.streamGeneration) {
+        // A non-reset frame of a NEWER generation means the reset that opens
+        // that generation's isolated space was missed — jumping in would skip
+        // the mandatory baseline rebuild. Terminal death; watermark recovery.
+        return this.fatal('sequence_gap');
+      }
+      if (frame.sequence <= this.position.sequence) return this.drop('sequence_gap');
+      if (frame.sequence !== this.position.sequence + 1) return this.fatal('sequence_gap');
+    }
     let granted = false;
     try {
       granted = this.authorize({ conversationId: frame.conversationId, ownerRevision: frame.ownerRevision, event: frame.event }) === true;

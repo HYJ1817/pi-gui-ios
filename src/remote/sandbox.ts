@@ -15,7 +15,7 @@ import type {
   EventEnvelope, RemoteApproval, RemoteMessage, RemoteProject, RemoteSession, Scope, SignedRequest,
 } from './types';
 import { OPERATIONS } from './client';
-import { b64urlDecode, b64urlEncode, canonicalJson, hasForbiddenKey, hasForbiddenValue, isUuid, serializedJsonBytes, sha256hex, utf8Bytes } from './wire';
+import { b64urlEncode, canonicalJson, hasForbiddenKey, hasForbiddenValue, isUuid, serializedJsonBytes, sha256hex, utf8Bytes } from './wire';
 import { buildEventFrameMessage } from './events';
 
 export interface SandboxProject extends RemoteProject { description: string }
@@ -38,7 +38,7 @@ export interface SandboxConversation {
   ownerEpoch: number;
   messages: RemoteMessage[];
   approvals: SandboxApproval[];
-  script: { afterSend?: { text: string } };
+  script: { afterSend?: { text: string; chunks?: number } };
 }
 export interface SandboxDomain {
   projects: SandboxProject[];
@@ -52,12 +52,28 @@ interface DeviceRecord {
   deviceId: string; devicePublicKey: string; grantedScopes: Scope[]; grants: Record<string, true>;
   active: boolean; revoked: boolean; replayEpoch: number; expiresAt: string;
 }
-interface StreamState { generation: number; journalSeq: number; journal: JournalEntry[] }
-interface JournalEntry { seq: number; event: EventEnvelope['event']; conversationId: string; ownerRevision: number; payload: Record<string, unknown> }
+// ADR-0010: aligned with the reference event-stream semantics — a shared
+// per-device backlog of unsigned templates; every subscription owns an
+// ISOLATED (generation, cursor) space; backlog overflow advances the
+// device epoch so a resumed client hits the reset path instead of a gap.
+interface StreamState { epoch: number; journalSeq: number; journal: JournalEntry[]; bytes: number }
+interface JournalEntry { seq: number; event: EventEnvelope['event']; conversationId: string; ownerRevision: number; payload: Record<string, unknown>; size: number; at: number }
 interface Subscription {
   deviceId: string; generation: number; lastSeq: number;
   onFrame: (frame: EventEnvelope) => void;
 }
+// Fault injection (ADR-0010 D5): test-only hooking of the delivery path.
+export interface FaultInjection {
+  /** Drop every nth frame per device (1-based count). */
+  dropEvery?: number;
+  /** Deliver each frame twice. */
+  duplicate?: boolean;
+  /** Buffer frames and flush them in reverse order after N accumulated. */
+  reorderAfter?: number;
+}
+const MAX_BACKLOG_BYTES = 1048576;
+const MAX_BACKLOG_AGE_MS = 300_000;
+const CURSOR_RE = /^g([0-9]+)_s([0-9]+)_([A-Za-z0-9_-]{22})$/;
 
 /** Gateway crypto: verify checks device-signed request signatures;
  * sign produces service-signed frames/pair responses with the service key. */
@@ -91,7 +107,8 @@ export class LocalSyntheticGateway {
   readonly serviceId: string;
   readonly servicePublicKey: string;
   private readonly crypto: GatewayCrypto;
-  private readonly domain: SandboxDomain;
+  /** Test-visible authoritative server state (synthetic loop only). */
+  readonly domain: SandboxDomain;
   private devices = new Map<string, DeviceRecord>();
   private streams = new Map<string, StreamState>();
   private nonces = new Map<string, Map<string, number>>();
@@ -202,7 +219,7 @@ export class LocalSyntheticGateway {
       expiresAt: input.expiresAt ?? new Date(Date.now() + 24 * 3600 * 1000).toISOString(),
     };
     this.devices.set(device.deviceId, device);
-    this.streams.set(device.deviceId, { generation: ++this.generationCounter, journalSeq: 0, journal: [] });
+    this.streams.set(device.deviceId, { epoch: ++this.generationCounter, journalSeq: 0, journal: [], bytes: 0 });
     return this.toCredentials(device);
   }
 
@@ -217,8 +234,26 @@ export class LocalSyntheticGateway {
   revokeDevice(deviceId: string): void {
     const device = this.devices.get(deviceId);
     if (device) { device.active = false; device.revoked = true; }
+    // Contract deviceLifecycle.revocation: EVERY subscription of the device
+    // receives exactly one reset (reason authorization_changed) before close.
+    for (const sub of this.subscriptions.filter(s => s.deviceId === deviceId)) {
+      this.resetOne(sub, 'authorization_changed');
+    }
     this.subscriptions = this.subscriptions.filter(s => s.deviceId !== deviceId);
   }
+
+  /** Test hook (ADR-0010 D4): roll the owner epoch of a conversation — retries
+   * under the old epoch become fresh keys again (contract idempotency). */
+  rollOwnerEpoch(conversationId: string): void {
+    const conv = this.domain.conversations.find(c => c.conversationId === conversationId);
+    if (conv) conv.ownerEpoch += 1;
+  }
+
+  /** Test hook (ADR-0010 D5): install/remove fault injection on delivery. */
+  setFaultInjection(fi: FaultInjection | null): void { this.faults = fi; this.faultCount.clear(); }
+  private faults: FaultInjection | null = null;
+  private faultCount = new Map<string, number>();
+  private reorderBuffers = new Map<string, EventEnvelope[]>();
 
   grantProject(deviceId: string, projectId: string, granted: boolean): void {
     const device = this.devices.get(deviceId);
@@ -422,6 +457,8 @@ export class LocalSyntheticGateway {
         const key = `runtime.create:${device.deviceId}:${params.projectId}:${String(payload.clientConversationId)}`;
         const prior = this.mutations.get(key);
         const digest = sha256hex(canonicalJson(payload)!);
+        // runtime.create precedes the owner epoch it would be namespaced by
+        // (sandbox does not model project epochs) — replays always hit.
         if (prior) {
           if (prior.payloadSha256 !== digest) return this.error('payload_invalid', requestId);
           return respond(prior.outcome);
@@ -445,11 +482,14 @@ export class LocalSyntheticGateway {
         const conv = owner!;
         const messages = conv.messages.slice(-MAX_SNAPSHOT);
         const truncated = conv.messages.length > MAX_SNAPSHOT;
-        const stream = this.streamFor(device.deviceId);
+        // Contract runtime.snapshot.watermark: cursor+generation+sequence is
+        // an atomic resume point — the client can always continue the stream
+        // from exactly here (ADR-0010 D1).
+        const wm = this.watermark(device.deviceId);
         return respond({
           ownerRevision: conv.ownerRevision, status: conv.status, messages,
-          cursor: this.cursorFor(device.deviceId, stream.generation, stream.journalSeq),
-          streamGeneration: stream.generation, sequence: stream.journalSeq,
+          cursor: wm.cursor,
+          streamGeneration: wm.generation, sequence: wm.sequence,
           ...(truncated ? { snapshotTruncated: true } : {}),
         });
       }
@@ -458,7 +498,9 @@ export class LocalSyntheticGateway {
         const key = `chat.send:${device.deviceId}:${conv.conversationId}:${String(payload.clientMessageId)}`;
         const digest = sha256hex(canonicalJson(payload)!);
         const prior = this.mutations.get(key);
-        if (prior) {
+        // Contract idempotency: recognized ONLY within the current owner
+        // epoch — after rollOwnerEpoch the same clientMessageId is fresh.
+        if (prior && prior.ownerEpoch === conv.ownerEpoch) {
           if (prior.payloadSha256 !== digest) return this.error('payload_invalid', requestId);
           return respond(prior.outcome);
         }
@@ -479,9 +521,21 @@ export class LocalSyntheticGateway {
           const reply: RemoteMessage = { messageId: 'msg_' + sha256hex(`reply:${message.messageId}`).slice(0, 14), role: 'assistant', text: script.text };
           conv.messages.push(reply);
           this.trimMessages(conv);
-          conv.status = 'idle';
           conv.ownerRevision += 1;
-          this.emit(device.deviceId, 'message.append', conv, { messageId: reply.messageId, role: 'assistant', text: reply.text });
+          // ADR-0010 D3 chunk-append: the assistant reply MAY stream as
+          // progressive message.append frames under ONE messageId — each
+          // carries the complete text so far; the final frame is the full
+          // message. Contract event/payload schema unchanged.
+          const chunks = Math.max(1, Math.min(16, script.chunks ?? 1));
+          if (chunks <= 1) {
+            this.emit(device.deviceId, 'message.append', conv, { messageId: reply.messageId, role: 'assistant', text: reply.text });
+          } else {
+            for (let i = 1; i <= chunks; i += 1) {
+              const cut = Math.ceil((reply.text.length * i) / chunks);
+              this.emit(device.deviceId, 'message.append', conv, { messageId: reply.messageId, role: 'assistant', text: reply.text.slice(0, cut) });
+            }
+          }
+          conv.status = 'idle';
           this.emit(device.deviceId, 'conversation.status', conv, { status: 'idle' });
         }
         return respond(outcome);
@@ -523,34 +577,44 @@ export class LocalSyntheticGateway {
 
   // ---- event stream ---------------------------------------------------------------
 
-  private streamFor(deviceId: string): StreamState {
+  streamFor(deviceId: string): StreamState {
     let stream = this.streams.get(deviceId);
     if (!stream) {
-      stream = { generation: ++this.generationCounter, journalSeq: 0, journal: [] };
+      stream = { epoch: ++this.generationCounter, journalSeq: 0, journal: [], bytes: 0 };
       this.streams.set(deviceId, stream);
     }
     return stream;
   }
 
+  /** HMAC-equivalent opaque cursor: g<generation>_s<sequence>_<22-char tag>
+   * bound to (deviceId, generation, sequence). Foreign/tampered is
+   * indistinguishable from wellformed-stale (contract cursorTransitionTable).
+   * Synthetic crypto: keyed digest stands in for HMAC. */
+  private cursorTag(deviceId: string, generation: number, seq: number): string {
+    return sha256hex(`remote-cursor:${deviceId}:${generation}.${seq}`).slice(0, 22).replace(/[+/=]/g, c => c === '+' ? '-' : c === '/' ? '_' : '');
+  }
   private cursorFor(deviceId: string, generation: number, seq: number): string {
-    return b64urlEncode([...new TextEncoder().encode(`cur:${deviceId}:${generation}:${seq}`)]);
+    return `g${generation}_s${seq}_${this.cursorTag(deviceId, generation, seq)}`;
+  }
+  private decodeCursor(deviceId: string, cursor: string): { generation: number; seq: number } | 'foreign' | 'malformed' {
+    if (!CURSOR_RE.test(cursor)) return 'malformed';
+    const m = CURSOR_RE.exec(cursor)!;
+    const generation = Number(m[1]), seq = Number(m[2]);
+    if (!Number.isSafeInteger(generation) || !Number.isSafeInteger(seq)) return 'malformed';
+    if (m[3] !== this.cursorTag(deviceId, generation, seq)) return 'foreign';
+    return { generation, seq };
   }
 
-  private decodeCursor(deviceId: string, cursor: string): { generation: number; seq: number } | 'foreign' | 'stale' | 'malformed' {
-    if (!/^[A-Za-z0-9_-]{1,128}$/.test(cursor)) return 'malformed';
-    const bytes = b64urlDecode(cursor);
-    if (bytes === null) return 'malformed';
-    const decoded = new TextDecoder('utf-8', { fatal: false }).decode(bytes);
-    const match = /^cur:([A-Za-z0-9_-]+):([0-9]+):([0-9]+)$/.exec(decoded);
-    if (!match) return 'stale';
-    if (match[1] !== deviceId) return 'foreign';
-    const stream = this.streamFor(deviceId);
-    const generation = Number(match[2]), seq = Number(match[3]);
-    if (generation !== stream.generation || seq > stream.journalSeq) return 'stale';
-    // Backlog window: a cursor older than the earliest retained frame expired.
-    const oldest = stream.journal.length ? stream.journal[0]!.seq : 0;
-    if (seq < oldest && stream.journal.length) return 'stale';
-    return { generation, seq };
+  /** Trim the device backlog to the contract budgets; overflow evicts the
+   * oldest frames — a cursor naming them becomes stale and hits the reset
+   * path instead of producing a real gap (reference overflow semantics). */
+  private trimBacklog(stream: StreamState): void {
+    while (stream.journal.length > MAX_BACKLOG
+      || stream.bytes > MAX_BACKLOG_BYTES
+      || (stream.journal.length > 0 && Date.now() - stream.journal[0]!.at > MAX_BACKLOG_AGE_MS)) {
+      stream.bytes -= stream.journal[0]!.size;
+      stream.journal.shift();
+    }
   }
 
   private materialize(sub: Subscription, entry: JournalEntry): EventEnvelope | null {
@@ -576,8 +640,48 @@ export class LocalSyntheticGateway {
   private deliver(sub: Subscription, entry: JournalEntry): void {
     const frame = this.materialize(sub, entry);
     if (frame === null) return;
-    sub.onFrame(frame);
+    this.deliverFrame(sub, frame);
     sub.lastSeq = entry.seq;
+  }
+
+  /** Delivery path — test-only fault injection applies here (ADR-0010 D5):
+   * drop/duplicate/reorder corrupt the SUBSCRIPTION delivery exactly like a
+   * misbehaving network would; journal/authorization are never affected. */
+  private deliverFrame(sub: Subscription, frame: EventEnvelope): void {
+    const faults = this.faults;
+    if (!faults) { sub.onFrame(frame); return; }
+    const key = `${sub.deviceId}:${sub.generation}`;
+    if (faults.dropEvery) {
+      const count = (this.faultCount.get(key) ?? 0) + 1;
+      this.faultCount.set(key, count);
+      if (count % faults.dropEvery === 0) return;
+    }
+    if (faults.reorderAfter) {
+      const buf = this.reorderBuffers.get(key) ?? [];
+      buf.push(frame);
+      if (buf.length < faults.reorderAfter) { this.reorderBuffers.set(key, buf); return; }
+      const out = [buf[0]!, ...buf.slice(1).reverse()];
+      this.reorderBuffers.delete(key);
+      for (const f of out) { sub.onFrame(f); if (faults.duplicate) sub.onFrame(f); }
+      return;
+    }
+    sub.onFrame(frame);
+    if (faults.duplicate) sub.onFrame(frame);
+  }
+
+  /** Flush any reorder-buffered frames (test hook: end-of-scenario drain).
+   *  Drained frames bypass the reorder buffer DIRECTLY — re-entering it would
+   *  ping-pong forever (buffer → flush → re-buffer). Drops/duplicates still
+   *  apply: they model the wire, not the ordering scramble itself. */
+  flushFaults(): void {
+    for (const [key, buf] of this.reorderBuffers) {
+      const [deviceId] = key.split(':');
+      for (const sub of this.subscriptions) {
+        if (sub.deviceId !== deviceId) continue;
+        for (const f of buf) { sub.onFrame(f); if (this.faults?.duplicate) sub.onFrame(f); }
+      }
+    }
+    this.reorderBuffers.clear();
   }
 
   /** Per-event authorization recheck: grant on the owning project AND the
@@ -589,21 +693,63 @@ export class LocalSyntheticGateway {
     return scope === undefined || device.grantedScopes.includes(scope);
   }
 
-  private emit(deviceId: string, event: EventEnvelope['event'], conversation: SandboxConversation, payload: Record<string, unknown>): void {
-    // Every authorized device's stream journals the event once; each live
-    // subscription materializes it under its own generation/cursor binding.
+  emit(deviceId: string, event: EventEnvelope['event'], conversation: SandboxConversation, payload: Record<string, unknown>): void {
+    // Shared per-device backlog of unsigned templates (reference semantics):
+    // the frame is journaled once per authorized device; each subscription
+    // materializes it under its OWN generation/cursor binding.
     for (const [otherDeviceId, stream] of this.streams) {
       const device = this.devices.get(otherDeviceId);
       if (!device || !this.eventAuthorized(device, conversation, event)) continue;
       stream.journalSeq += 1;
-      const entry: JournalEntry = { seq: stream.journalSeq, event, conversationId: conversation.conversationId, ownerRevision: conversation.ownerRevision, payload };
+      const probe = canonicalJson({ event, conversationId: conversation.conversationId, ownerRevision: conversation.ownerRevision, payload });
+      const entry: JournalEntry = {
+        seq: stream.journalSeq, event, conversationId: conversation.conversationId,
+        ownerRevision: conversation.ownerRevision, payload,
+        size: probe === null ? 0 : utf8Bytes(probe), at: Date.now(),
+      };
+      stream.bytes += entry.size;
       stream.journal.push(entry);
-      if (stream.journal.length > MAX_BACKLOG) stream.journal.shift();
+      this.trimBacklog(stream);
       for (const sub of this.subscriptions) {
-        if (sub.deviceId !== otherDeviceId || sub.generation !== stream.generation) continue;
+        if (sub.deviceId !== otherDeviceId) continue;
+        // Per-event revalidation immediately before delivering ANY frame
+        // (reference _mayDeliver): revocation mid-stream stops the leak and
+        // isolates the subscription with exactly one reset.
+        const deviceNow = this.devices.get(otherDeviceId);
+        if (!deviceNow || !this.eventAuthorized(deviceNow, conversation, event)) { this.resetOne(sub, 'authorization_changed'); continue; }
         this.deliver(sub, entry);
       }
     }
+  }
+
+  /** Exactly-one reset isolated to ONE subscription (reference _resetOne):
+   * mints a fresh generation for this subscription only and emits the reset
+   * through the shared journal — co-subscriptions are never perturbed. */
+  private resetOne(sub: Subscription, reason: string): void {
+    sub.generation = ++this.generationCounter;
+    const stream = this.streamFor(sub.deviceId);
+    stream.journalSeq += 1;
+    const entry: JournalEntry = {
+      seq: stream.journalSeq, event: 'reset', conversationId: 'stream-reset', ownerRevision: 0,
+      payload: { reason }, size: 64, at: Date.now(),
+    };
+    stream.bytes += entry.size;
+    stream.journal.push(entry);
+    this.trimBacklog(stream);
+    this.deliver(sub, entry);
+  }
+
+  /** runtime.snapshot watermark (contract watermark): the CURRENT device
+   * epoch and head sequence plus a resumable cursor — the client can always
+   * resume from exactly this point and expect the same generation to
+   * continue (ADR-0010 D1). */
+  watermark(deviceId: string): { cursor: string; generation: number; sequence: number } {
+    const stream = this.streamFor(deviceId);
+    return {
+      cursor: this.cursorFor(deviceId, stream.epoch, stream.journalSeq),
+      generation: stream.epoch,
+      sequence: stream.journalSeq + 1,
+    };
   }
 
   /** Device-level event subscription; mirrors events.subscribe admission.
@@ -618,42 +764,37 @@ export class LocalSyntheticGateway {
     if (this.subscriptions.filter(s => s.deviceId === device.deviceId).length >= MAX_STREAMS_PER_DEVICE
       || this.subscriptions.length >= MAX_STREAMS_TOTAL) return { ok: false, response: this.error('rate_limited', admission.requestId) };
     const cursor = request.query?.cursor;
-    let generation = stream.generation;
     if (cursor !== undefined) {
       const decoded = this.decodeCursor(device.deviceId, cursor);
       // Malformed cursor is a PRE-authentication failure → unauthorized.
       if (decoded === 'malformed') return { ok: false, response: this.error('unauthorized', admission.requestId) };
-      if (decoded === 'foreign' || decoded === 'stale') {
-        generation = ++this.generationCounter;
-        stream.generation = generation;
-        stream.journal = [];
-        const sub: Subscription = { deviceId: device.deviceId, generation, lastSeq: 0, onFrame };
-        stream.journalSeq += 1;
-        const resetEntry: JournalEntry = {
-          seq: stream.journalSeq, event: 'reset', conversationId: 'stream-reset', ownerRevision: 0,
-          // foreign is indistinguishable from wellformedStale (contract
-          // cursorTransitionTable) — never leak whether the deviceId exists.
-          payload: { reason: 'cursor_expired' },
-        };
-        stream.journal.push(resetEntry);
-        // Co-subscriptions on this device were bound to the now-defunct
-        // generation: rebind them and deliver the reset to every one —
-        // otherwise they silently orphan while occupying stream slots.
-        for (const other of this.subscriptions) {
-          if (other.deviceId === device.deviceId && other !== sub) {
-            other.generation = generation;
-            other.lastSeq = 0;
-            this.deliver(other, resetEntry);
-          }
-        }
-        this.subscriptions.push(sub);
-        this.deliver(sub, resetEntry);
-        return { ok: true, close: () => { this.subscriptions = this.subscriptions.filter(s => s !== sub); } };
+      if (decoded === 'foreign') {
+        // foreign/tampered is indistinguishable from wellformed-stale
+        // (contract cursorTransitionTable) — never leak device existence.
+        return this.resetSubscribe(device, stream, 'cursor_expired', onFrame, admission.requestId);
       }
-      // Valid cursor: same generation, replay backlog newer than it — with a
-      // per-event scope + grant recheck (mustRevalidateAuthorizationBeforeReplay).
-      const sub: Subscription = { deviceId: device.deviceId, generation, lastSeq: decoded.seq, onFrame };
+      // Valid tag: continue the SAME generation when the cursor position is
+      // continuous with the retained journal (contract runtime.snapshot.watermark:
+      // the client can ALWAYS resume from the watermark). The correct test is
+      // whether the first needed frame (cursor.seq+1) is still retained — a
+      // floor-based comparison would falsely expire watermark cursors taken
+      // before any frame existed (s0 with floor 1) even though nothing was
+      // ever lost. Eviction still expires correctly: the needed frame is gone.
+      const firstNeeded = decoded.seq + 1;
+      const retained = firstNeeded > stream.journalSeq
+        ? true // nothing new since the cursor — nothing to replay at all
+        : stream.journal.length > 0 && stream.journal[0]!.seq <= firstNeeded;
+      const validResume = decoded.generation >= stream.epoch
+        && decoded.seq <= stream.journalSeq
+        && retained;
+      if (!validResume) {
+        return this.resetSubscribe(device, stream, 'cursor_expired', onFrame, admission.requestId);
+      }
+      const sub: Subscription = { deviceId: device.deviceId, generation: decoded.generation, lastSeq: decoded.seq, onFrame };
       this.subscriptions.push(sub);
+      // Replay backlog newer than the cursor — with a per-event scope + grant
+      // recheck (mustRevalidateAuthorizationBeforeReplay). Frames materialize
+      // under the SUBSCRIBER's continuing generation (reference templates).
       for (const entry of stream.journal) {
         if (entry.seq <= decoded.seq) continue;
         const conv = this.domain.conversations.find(c => c.conversationId === entry.conversationId);
@@ -662,8 +803,29 @@ export class LocalSyntheticGateway {
       }
       return { ok: true, close: () => { this.subscriptions = this.subscriptions.filter(s => s !== sub); } };
     }
-    const sub: Subscription = { deviceId: device.deviceId, generation, lastSeq: stream.journalSeq, onFrame };
+    // No cursor: join at the current head, no reset — a fresh generation
+    // minted for this subscription only.
+    const sub: Subscription = { deviceId: device.deviceId, generation: ++this.generationCounter, lastSeq: stream.journalSeq, onFrame };
     this.subscriptions.push(sub);
+    return { ok: true, close: () => { this.subscriptions = this.subscriptions.filter(s => s !== sub); } };
+  }
+
+  /** Isolated stale-cursor subscribe: new generation + exactly one reset for
+   * this subscriber only — co-subscriptions are never perturbed (ADR-0010 D2).
+   * Note the M3 co-subscription-rebind behavior is intentionally REMOVED:
+   * the reference isolates every subscription's generation space. */
+  private resetSubscribe(device: DeviceRecord, stream: StreamState, reason: string, onFrame: (frame: EventEnvelope) => void, requestId: string): { ok: true; close(): void } {
+    const sub: Subscription = { deviceId: device.deviceId, generation: ++this.generationCounter, lastSeq: 0, onFrame };
+    stream.journalSeq += 1;
+    const entry: JournalEntry = {
+      seq: stream.journalSeq, event: 'reset', conversationId: 'stream-reset', ownerRevision: 0,
+      payload: { reason }, size: 64, at: Date.now(),
+    };
+    stream.bytes += entry.size;
+    stream.journal.push(entry);
+    this.trimBacklog(stream);
+    this.subscriptions.push(sub);
+    this.deliver(sub, entry);
     return { ok: true, close: () => { this.subscriptions = this.subscriptions.filter(s => s !== sub); } };
   }
 
