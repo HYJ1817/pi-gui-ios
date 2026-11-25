@@ -116,6 +116,8 @@ export class LocalSyntheticGateway {
   private mutations = new Map<string, MutationRecord>();
   private subscriptions: Subscription[] = [];
   private generationCounter = 0;
+  private cursorKey = '';
+  private incarnationSalt = '';
   private pairConsumed = false;
   private pairAttempts = 0;
   private readonly pairExpiresAtMs = Date.now() + 10 * 60_000;
@@ -123,6 +125,18 @@ export class LocalSyntheticGateway {
   constructor(domain: SandboxDomain, crypto: GatewayCrypto, serviceMaterial: { fingerprint: string; publicKey: string }) {
     this.domain = domain;
     this.crypto = crypto;
+    // Keyed cursor MAC (independent-review finding 4): the tag incorporates
+    // the service key material — an unkeyed digest over public inputs let any
+    // party mint valid cursors from scratch. The synthetic threat model uses
+    // the public key as key stand-in; the real desktop server must use a
+    // secret MAC key (documented in ADR-0010 D2).
+    this.cursorKey = serviceMaterial.publicKey;
+    // Per-incarnation salt (independent-review finding 2): generations and
+    // journal sequences restart at the same values in a fresh incarnation, so
+    // an unsalted tag would validate a pre-restart cursor against the new
+    // journal — resuming with silent loss and no reset. Binding the salt into
+    // the tag makes pre-restart cursors foreign → exactly-one-reset rebuild.
+    this.incarnationSalt = sha256hex(`incarnation:${serviceMaterial.fingerprint}:${Date.now()}:${Math.random()}`);
     this.serviceFingerprint = serviceMaterial.fingerprint;
     this.servicePublicKey = serviceMaterial.publicKey;
     this.serviceId = 'svc-' + serviceMaterial.fingerprint.slice(0, 16);
@@ -243,10 +257,17 @@ export class LocalSyntheticGateway {
   }
 
   /** Test hook (ADR-0010 D4): roll the owner epoch of a conversation — retries
-   * under the old epoch become fresh keys again (contract idempotency). */
+   * under the old epoch become fresh keys again (contract idempotency).
+   * Contract concurrency: owner revocation resets every subscription for that
+   * resource — subscriptions of devices granted the owning project reset. */
   rollOwnerEpoch(conversationId: string): void {
     const conv = this.domain.conversations.find(c => c.conversationId === conversationId);
-    if (conv) conv.ownerEpoch += 1;
+    if (!conv) return;
+    conv.ownerEpoch += 1;
+    for (const sub of this.subscriptions) {
+      const device = this.devices.get(sub.deviceId);
+      if (device && device.grants[conv.projectId] === true) this.resetOne(sub, 'authorization_changed');
+    }
   }
 
   /** Test hook (ADR-0010 D5): install/remove fault injection on delivery. */
@@ -258,6 +279,17 @@ export class LocalSyntheticGateway {
   grantProject(deviceId: string, projectId: string, granted: boolean): void {
     const device = this.devices.get(deviceId);
     if (device) { if (granted) device.grants[projectId] = true; else delete device.grants[projectId]; }
+    // Contract concurrency: "device/grant/owner revocation resets every
+    // subscription for that resource or device". A revoked grant means NO
+    // further frame will ever be emitted for this device (stream-level
+    // authorization), so without an explicit reset the subscription would
+    // starve silently (independent-review finding 3). Subscriptions are
+    // device-level; the reset is the contract's isolation mechanism.
+    if (!granted) {
+      for (const sub of this.subscriptions.filter(s => s.deviceId === deviceId)) {
+        this.resetOne(sub, 'authorization_changed');
+      }
+    }
   }
 
   // ---- signed request admission ---------------------------------------------------
@@ -591,7 +623,7 @@ export class LocalSyntheticGateway {
    * indistinguishable from wellformed-stale (contract cursorTransitionTable).
    * Synthetic crypto: keyed digest stands in for HMAC. */
   private cursorTag(deviceId: string, generation: number, seq: number): string {
-    return sha256hex(`remote-cursor:${deviceId}:${generation}.${seq}`).slice(0, 22).replace(/[+/=]/g, c => c === '+' ? '-' : c === '/' ? '_' : '');
+    return sha256hex(`remote-cursor:${this.cursorKey}:${this.incarnationSalt}:${deviceId}:${generation}.${seq}`).slice(0, 22).replace(/[+/=]/g, c => c === '+' ? '-' : c === '/' ? '_' : '');
   }
   private cursorFor(deviceId: string, generation: number, seq: number): string {
     return `g${generation}_s${seq}_${this.cursorTag(deviceId, generation, seq)}`;

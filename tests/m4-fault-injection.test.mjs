@@ -122,8 +122,7 @@ function rig(t, M, gateway, label = 'device') {
       return sub;
     },
   };
-  const serviceCrypto = { sign: m => gateway.serviceSign(m) };
-  return { M, gateway, client, events, store, stream, credentials, deviceCrypto, device, serviceCrypto };
+  return { M, gateway, client, events, store, stream, credentials, deviceCrypto, device };
 }
 
 /** Build a transpiled-module set + gateway over the domain with a REAL
@@ -187,9 +186,6 @@ test('fault 1 reorder: out-of-order delivery never applies out of order; recover
   assert.ok(!hasDuplicateIds(r), 'no duplicated bubbles');
 });
 
-function hasDuplicates(list) {
-  return new Set(list).size !== list.length;
-}
 /** Duplicate detection keyed on messageId — identical reply TEXTS across
  *  different messages are legitimate (scripted replies share content). */
 function hasDuplicateIds(r) {
@@ -388,8 +384,19 @@ test('fault 8 restart: gateway restart over the same domain — stale cursor res
       return sub;
     },
   };
+  // Stream-side invariant (independent-review nit 6 + finding 2): the
+  // pre-restart cursor MUST NOT validate against the fresh incarnation —
+  // exactly one reset must fire, even in the exact-head arithmetic case,
+  // because the incarnation salt makes the cursor foreign. Assert the reset
+  // itself, not just post-refresh convergence.
+  const resetsSeen = [];
+  const appliedEvents = [];
+  const origApply = r.store.apply.bind(r.store);
+  r.events.onEvent = a => { if (a.event === 'reset') resetsSeen.push(a); appliedEvents.push(a); origApply(a); };
   r.events.open(stream2, client2.buildEventsRequest(cursorBeforeRestart), cursorBeforeRestart);
   await new Promise(resolve => setTimeout(resolve, 80));
+  assert.equal(resetsSeen.length, 1, 'pre-restart cursor must produce exactly one reset — never silent loss');
+  assert.equal(resetsSeen[0].payload.reason, 'cursor_expired');
   await r.store.refresh(CONV);
   // store must converge to the restarted server's authoritative state.
   const serverTexts = shared.conversations.find(c => c.conversationId === CONV).messages.map(m => `${m.role}:${m.text}`);
@@ -571,4 +578,50 @@ test('regression rewind-with-divergent-payload: replayed sequence carrying diffe
   assert.equal(res.code, 'sequence_gap', 'the drop is the position-continuity drop');
   assert.deepEqual(appliedTexts(), before, 'silent rewind applies nothing — no divergent effects');
   assert.equal(r.events.streamError(), undefined, 'silent rewind must not kill the stream (rewind ≠ gap)');
+});
+
+test('regression cross-incarnation cursor: forged and pre-restart cursors are foreign, never silently accepted', async (t) => {
+  // Independent-review findings 2+4: cursors must be keyed AND
+  // incarnation-bound. A scratch-forged cursor built from public inputs must
+  // hit the reset path, and a cursor from the previous incarnation must never
+  // validate against the fresh journal — not even at exact head arithmetic.
+  const shared = domain();
+  const { M, gateway: gw1, service: service1 } = setup(t, shared);
+  const r = rig(t, M, gw1, 'cross');
+  await r.store.load();
+  r.events.open(r.stream, r.client.buildEventsRequest(), undefined);
+  await send(r, 'pre-incarnation');
+  const cursorOld = r.events.latestCursor();
+  r.events.close();
+  // Fresh incarnation over the same domain (same service key, new salt).
+  const gw2Crypto = {
+    sign: m => sign(null, Buffer.from(m, 'utf8'), service1.privateKey).toString('base64url'),
+    verify: (pub, sig, m) => verify(null, Buffer.from(m, 'utf8'), publicKeyOf(pub), Buffer.from(sig, 'base64url')),
+  };
+  const gw2 = new M.sandbox.LocalSyntheticGateway(shared, gw2Crypto, { fingerprint: sha256(service1.publicKeyRaw), publicKey: service1.publicKeyRaw });
+  const creds2 = gw2.registerDevice({
+    devicePublicKey: r.device.publicKeyRaw, grantedScopes: ALL_SCOPES, grants: [PROJECT],
+    expiresAt: new Date(Date.now() + 3600_000).toISOString(),
+  });
+  // Drive the fresh journal to EXACTLY the pre-restart head (worst case from
+  // the review: seq alignment would validate an unsalted cursor with zero
+  // replay and zero reset — silent loss).
+  const client2 = new M.client.TypedRemoteClient({ credentials: creds2, crypto: r.deviceCrypto, transport: { send: req => gw2.send(req) } });
+  const probe = gw2.streamFor(creds2.deviceId);
+  const targetHead = Number((/g[0-9]+_s([0-9]+)_/.exec(cursorOld) ?? [])[1] ?? 0);
+  while (probe.journalSeq < targetHead) {
+    const rev = (await client2.snapshot(CONV)).result.ownerRevision;
+    await client2.sendMessage(CONV, randomUUID(), `pad-${probe.journalSeq}`, rev);
+  }
+  // Resume with the OLD cursor at exact head arithmetic: must be foreign →
+  // exactly one reset, NEVER silent acceptance.
+  const got = [];
+  const sub = gw2.subscribe(creds2, client2.buildEventsRequest(cursorOld), f => got.push(f));
+  assert.equal(sub.ok, true);
+  const resets = got.filter(f => f.event === 'reset');
+  assert.equal(resets.length, 1, 'cross-incarnation cursor must reset — even at exact head');
+  assert.equal(resets[0].payload.reason, 'cursor_expired');
+  // And no ordinary frame must have been delivered before the reset.
+  assert.equal(got[0].event, 'reset', 'the reset is the first and only signal — never silent loss');
+  sub.close();
 });

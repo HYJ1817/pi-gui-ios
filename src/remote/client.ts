@@ -267,7 +267,9 @@ export class TypedRemoteClient implements RemoteClient {
       const r = v as Record<string, unknown>;
       if (!Number.isSafeInteger(r?.ownerRevision) || !STATUSES.includes(r.status as ConversationStatus) || !Array.isArray(r.messages)
         || typeof r.cursor !== 'string' || !/^[A-Za-z0-9_-]{1,128}$/.test(r.cursor)
-        || !Number.isSafeInteger(r.streamGeneration) || !Number.isSafeInteger(r.sequence)
+        // Contract runtime.snapshot watermark minimums: generation/sequence >= 1.
+        || !Number.isSafeInteger(r.streamGeneration) || (r.streamGeneration as number) < 1
+        || !Number.isSafeInteger(r.sequence) || (r.sequence as number) < 1
         || Object.keys(r).some(k => !['ownerRevision', 'status', 'messages', 'cursor', 'streamGeneration', 'sequence', 'snapshotTruncated'].includes(k))) return null;
       const messages: RemoteMessage[] = [];
       for (const m of r.messages as unknown[]) {
