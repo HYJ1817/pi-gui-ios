@@ -1,27 +1,67 @@
 {
   "schemaVersion": 2,
   "kind": "state",
-  "revision": 1032,
-  "updatedAt": "2026-11-25T05:54:07.994Z",
+  "revision": 1054,
+  "updatedAt": "2026-11-25T06:10:33.656Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "a024eeee2abdd7ef43003705468a5c61d4d44fd274a7a773f0d061aab20c8289",
+    "parentDigest": "988ea0a2621e8b1536b24d02d3878d0a7e42cbc05a1ce1297cd158335d440468",
     "phase": "M4",
     "currentTask": "M4-sync",
     "branch": "agent/m-1-bootstrap",
     "checkpoint": {
-      "id": "v2-2026-11-25T05-54-07-994Z-ec438c6b-2c34-4daf-a26b-5d19326adaae",
-      "path": ".agent/checkpoints/v2-2026-11-25T05-54-07-994Z-ec438c6b-2c34-4daf-a26b-5d19326adaae.json",
-      "sha256": "4a411fceb5fc003ff593742ad47a44833776145415424d89ec303cf2e472ba21",
-      "authorityDigest": "9bf1d091d664183222ec1863b75c6ab9feb9c75d48b523ff9c2f9af0a894fdf9",
-      "at": "2026-11-25T05:54:07.994Z",
+      "id": "v2-2026-11-25T06-09-50-825Z-183da331-bd43-430d-a1ae-f43ac5bb8d1b",
+      "path": ".agent/checkpoints/v2-2026-11-25T06-09-50-825Z-183da331-bd43-430d-a1ae-f43ac5bb8d1b.json",
+      "sha256": "4aaf219d2c680b514a7da13d22e2caac5abf68b34d056129798aa31095e40d83",
+      "authorityDigest": "52936a73d1cea061da3e008a3517e5190d7f2bf115f1798c023dba80002be2c6",
+      "at": "2026-11-25T06:09:50.825Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "35567b0da63bc1cc92a70fa73d0c881c165981cd",
-        "dirty": []
+        "commit": "51bc1b63914a7e9023a0276ed9e6e540d17768c5",
+        "dirty": [
+          "M .agent/HANDOFF.md",
+          " D .agent/checkpoints/v2-2026-11-25T04-56-49-524Z-5eacd6ba-9a02-4b9d-af9b-5d57ce2d27d4.json",
+          " D .agent/checkpoints/v2-2026-11-25T04-56-50-872Z-bcf9aac5-2967-4cfa-9caf-a257d8efdfbc.json",
+          " D .agent/checkpoints/v2-2026-11-25T04-57-17-890Z-81fcfa70-1f7e-4800-823c-112c37e50584.json",
+          " D .agent/checkpoints/v2-2026-11-25T04-57-19-211Z-3aea45b4-071b-4e04-9c7e-042ebb775258.json",
+          " D .agent/checkpoints/v2-2026-11-25T04-57-20-521Z-c8d54bc5-dc02-4ed0-846f-d354639d60b8.json",
+          " D .agent/checkpoints/v2-2026-11-25T04-57-21-851Z-798d8d7b-7bfa-4093-ab6a-0ae0ae6febee.json",
+          " D .agent/checkpoints/v2-2026-11-25T04-58-09-580Z-03d8c132-d9f2-4659-a764-1985bb64965f.json",
+          " D .agent/checkpoints/v2-2026-11-25T04-58-10-920Z-680502bd-7eee-4a6f-9baa-39c9ef82bd3b.json",
+          " D .agent/checkpoints/v2-2026-11-25T04-58-11-565Z-ec1cf91f-c980-4998-b1ac-ebb11e2e9ecf.json",
+          " D .agent/checkpoints/v2-2026-11-25T05-00-22-229Z-caf2dc7f-0037-496e-8251-40845dbeea32.json",
+          " D .agent/checkpoints/v2-2026-11-25T05-13-21-864Z-0ced9f3d-04ea-44d5-a021-cd73df19371c.json",
+          " M .agent/control.json",
+          " M .agent/state.json",
+          " M .agent/tasks.json",
+          " M PROGRESS.md",
+          " M docs/acceptance/local-fault-injection-output.txt",
+          " M docs/acceptance/local-fault-injection.json",
+          " M docs/acceptance/local-integration-M1-remote.json",
+          " M docs/acceptance/local-integration-M3-core.json",
+          " M docs/acceptance/local-integration-output.txt",
+          " M docs/acceptance/local-integration.json",
+          " M docs/acceptance/local-unit-M0-architecture.json",
+          " M docs/acceptance/local-unit-M1-remote.json",
+          " M docs/acceptance/local-unit-M2-shell.json",
+          " M docs/acceptance/local-unit-M3-core.json",
+          " M docs/acceptance/local-unit-output.txt",
+          " M docs/acceptance/local-unit.json",
+          "?? .agent/checkpoints/v2-2026-11-25T06-08-18-475Z-620c9959-1e77-4831-96d8-5b8894938f24.json",
+          "?? .agent/checkpoints/v2-2026-11-25T06-08-22-200Z-caad7f13-ed39-4ed9-99dd-3dbe26242247.json",
+          "?? .agent/checkpoints/v2-2026-11-25T06-09-37-295Z-8eca0a6d-4f45-489f-85e8-813d612be06c.json",
+          "?? .agent/checkpoints/v2-2026-11-25T06-09-39-067Z-704456a8-6c2b-4fec-83c2-60dafc3eb9dd.json",
+          "?? .agent/checkpoints/v2-2026-11-25T06-09-40-457Z-5948b075-ab2e-481b-b46f-59bcf1bcf916.json",
+          "?? .agent/checkpoints/v2-2026-11-25T06-09-41-875Z-2a066282-1c8e-4fae-9741-5523083f502d.json",
+          "?? .agent/checkpoints/v2-2026-11-25T06-09-43-447Z-f25d94ed-8b9e-41cb-803d-3936d75e7f38.json",
+          "?? .agent/checkpoints/v2-2026-11-25T06-09-45-042Z-2b4454cf-4101-4b4c-b99a-17762637afa7.json",
+          "?? .agent/checkpoints/v2-2026-11-25T06-09-46-620Z-f65948d9-21cb-4eb1-8e66-b09e358b34b3.json",
+          "?? .agent/checkpoints/v2-2026-11-25T06-09-48-092Z-7d24fa9c-294c-43a6-8306-5b61dcdf075b.json",
+          "?? .agent/checkpoints/v2-2026-11-25T06-09-49-483Z-2ba34c64-d4c6-4918-953e-6216bb745683.json"
+        ]
       },
-      "sourceFingerprint": "445b5fcd60a816ebba7c5fbed63dce874dad82270fe13877763131a3ebd38a68",
-      "note": "B1 fixed via reference-aligned model (static filter never consumes seq space; epoch invalidation on grant/owner transitions); 363/363 green; narrow verification delegate d1ddb8e8 running @15d29c5; CI rerun 45554217761 superseded — new CI needed for final commit"
+      "sourceFingerprint": "885e2fbf91da4375ffdd0d38544976c796ab119366369d4d4feb7a400b228a65",
+      "note": "agent-task evidence M3-core"
     },
     "blockers": [],
     "ci": [
@@ -597,11 +637,17 @@
         "role": "independent-review",
         "status": "working",
         "sourceCommit": "15d29c5114596f249959920eaf5864bd5271cf04"
+      },
+      {
+        "taskId": "node:delegated-task:command%3Amcp%3Acf1b54b6-aaf2-463c-b8fb-dd5a8d496ffe%3Adelegate-task%3Ac4b94bd8-002a-47a4-8141-6c6c2b3c0816",
+        "role": "independent-review",
+        "status": "working",
+        "sourceCommit": "51bc1b63914a7e9023a0276ed9e6e540d17768c5"
       }
     ]
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "1757b32793b276ed34c8cbcad53654a4c537c0a595f2597616d7d6e7f2c0334a"
+    "digest": "32e7722032ab1d9317619f53e94687b22a6e7b8766040c4c61880d45f26bc4a2"
   }
 }
