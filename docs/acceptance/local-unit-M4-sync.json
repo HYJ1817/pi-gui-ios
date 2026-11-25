@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 2,
+  "kind": "unit",
+  "taskId": "M4-sync",
+  "commit": "cfaa5f8dda1c81549f914be513ce7cdb29eb8646",
+  "sourceFingerprint": "5345c5e9745bd3ad726115334d7818d4d07ead6e38e3794f7ba5324a26d00d8f",
+  "scopes": [
+    "app",
+    "control",
+    "native-build",
+    "protocol",
+    "shared",
+    "tests"
+  ],
+  "scopeFingerprint": "8d1f4a8ae0c58dad18675258d2eb44d0bea827e4402896d3e867506a49a051e8",
+  "startedAt": "2026-11-25T09:18:06.453Z",
+  "finishedAt": "2026-11-25T09:19:08.836Z",
+  "passed": true,
+  "details": {
+    "command": "npm test",
+    "exitCode": 0,
+    "logPath": "docs/acceptance/local-unit-M4-sync-output.txt",
+    "logSha256": "efa59ed66b265f9fcfb32660b433fbb6df6c4f9181029745b855adcde2348efb"
+  }
+}

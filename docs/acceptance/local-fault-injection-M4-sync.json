@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 2,
+  "kind": "fault-injection",
+  "taskId": "M4-sync",
+  "commit": "cfaa5f8dda1c81549f914be513ce7cdb29eb8646",
+  "sourceFingerprint": "5345c5e9745bd3ad726115334d7818d4d07ead6e38e3794f7ba5324a26d00d8f",
+  "scopes": [
+    "app",
+    "protocol",
+    "shared",
+    "tests"
+  ],
+  "scopeFingerprint": "a204359d437f164a41d4bf9c6a857b0fa28347db17a8fa758fa09f981f5b5a44",
+  "startedAt": "2026-11-25T09:16:38.008Z",
+  "finishedAt": "2026-11-25T09:16:40.316Z",
+  "passed": true,
+  "details": {
+    "command": "node --test tests/m4-fault-injection.test.mjs",
+    "exitCode": 0,
+    "logPath": "docs/acceptance/local-fault-injection-M4-sync-output.txt",
+    "logSha256": "63f809fe5336b431ac34d2927340013f00a4193a144ba211b0571fbee6968bd2"
+  }
+}

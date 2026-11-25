@@ -1,22 +1,22 @@
 {
   "schemaVersion": 2,
   "kind": "integration",
-  "taskId": "M4-sync",
-  "commit": "51bc1b63914a7e9023a0276ed9e6e540d17768c5",
-  "sourceFingerprint": "885e2fbf91da4375ffdd0d38544976c796ab119366369d4d4feb7a400b228a65",
+  "taskId": "M5-tailscale",
+  "commit": "cfaa5f8dda1c81549f914be513ce7cdb29eb8646",
+  "sourceFingerprint": "5345c5e9745bd3ad726115334d7818d4d07ead6e38e3794f7ba5324a26d00d8f",
   "scopes": [
     "control",
     "protocol",
     "shared"
   ],
-  "scopeFingerprint": "80a9f1c8aa1bac93ea8f692bfeb4256dc0fa6a6ceed32fd2db1ad0a4c5482f1c",
-  "startedAt": "2026-11-25T06:08:19.104Z",
-  "finishedAt": "2026-11-25T06:08:21.974Z",
+  "scopeFingerprint": "fbc25e116f88770dcde11649aca862464ffb3e73a947179ceafc37905c18544c",
+  "startedAt": "2026-11-25T09:14:30.599Z",
+  "finishedAt": "2026-11-25T09:14:33.411Z",
   "passed": true,
   "details": {
     "command": "node scripts/desktop-remote-verify.mjs",
     "exitCode": 0,
     "logPath": "docs/acceptance/local-integration-output.txt",
-    "logSha256": "4300eef1bd258b01ae591ce0c00fea8adf5889c644846b2c526f264b101b530f"
+    "logSha256": "7b5530b51accc6632901f5af4f797d602a85ee1601e0202a47dd80f024ba7be4"
   }
 }

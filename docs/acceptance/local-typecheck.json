@@ -1,16 +1,16 @@
 {
   "schemaVersion": 2,
   "kind": "typecheck",
-  "taskId": "M3-core",
-  "commit": "4eaf1792ccae248af228d2c3985ebadcf7fdaa2f",
-  "sourceFingerprint": "c9c1fa88782b691ac4c53c6545bfba8839bec5730f31e1d9eb52b76242033325",
+  "taskId": "M5-tailscale",
+  "commit": "cfaa5f8dda1c81549f914be513ce7cdb29eb8646",
+  "sourceFingerprint": "5345c5e9745bd3ad726115334d7818d4d07ead6e38e3794f7ba5324a26d00d8f",
   "scopes": [
     "app",
     "shared"
   ],
-  "scopeFingerprint": "398b1c3e62f07aa83cadf15dce84693a5b9c9a2ef7a2436ea22eb45ab383841d",
-  "startedAt": "2026-11-25T02:41:04.046Z",
-  "finishedAt": "2026-11-25T02:41:11.887Z",
+  "scopeFingerprint": "85a9bb84e7f00a16dee594164475c899d9432c2fbfe8b185a7e964e3ac58621c",
+  "startedAt": "2026-11-25T09:14:34.219Z",
+  "finishedAt": "2026-11-25T09:14:37.619Z",
   "passed": true,
   "details": {
     "command": "npm run typecheck",

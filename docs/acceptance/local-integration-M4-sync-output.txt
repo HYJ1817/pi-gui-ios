@@ -1,0 +1,71 @@
+desktop repo      HYJ1817/pi-gui
+expected branch   feat/mobile-remote-protocol-v1
+expected commit   1d846458954dd944732309fac4cc6ed1a9d0711c
+protocolVersion   1
+worktree          C:\pi-GUI-remote-protocol
+worktree pinned + clean: OK
+
+== remote contract suite: node --test tests/remote-contract.test.mjs ==
+✔ remote v1 contract is frozen v1, HTTPS-only and disabled by default (1.5018ms)
+✔ operation ids, scopes and methods are unique and closed (0.2337ms)
+✔ pair exchange accepts only a short-lived-code payload shape (1.5996ms)
+✔ project and session reads accept only opaque ids and empty payloads (0.9145ms)
+✔ runtime creation requires a revision and does not allow classic cwd/path fields (0.49ms)
+✔ chat send is bounded, revision-bound and not a command proxy (2.2576ms)
+✔ exact signed body bytes and parsed request body must agree (0.2456ms)
+✔ stop uses a typed operation and requires current owner revision (0.3395ms)
+✔ approval response is bound to a real opaque request id and closed method/decision (0.4319ms)
+✔ signature canonicalization binds device, service, request identity, path/query, timestamp, nonce and body digest (0.3187ms)
+✔ Ed25519 request signature, device+service binding, skew and atomic replay gate are exercised with synthetic keys (6.6212ms)
+✔ pair proof binds code, displayed name, device key, nonce and service fingerprint (4.4554ms)
+✔ signed operation requests require all device-authentication header shapes (0.3148ms)
+✔ event stream accepts only a pattern-bound cursor and signed device headers (0.2747ms)
+✔ event frames carry generation/cursor/signature, per-event scopes and closed payloads (5.3969ms)
+✔ request envelope rejects unknown version, fields and duplicate transport paths (0.2826ms)
+✔ responses use operation-specific closed projections and never carry raw errors/secrets/paths (0.3718ms)
+✔ device grants and owner recheck gate admission (IDOR / stale owner / substitution) (2.9498ms)
+✔ approval payload enforces the per-method decision/value matrix (0.1024ms)
+✔ approval settlement resolves and consumes a live Pi dialog exactly once (2.8732ms)
+✔ pre-auth failures map to a closed wire code and internal codes never leak (0.1196ms)
+✔ UTF-8 byte limits and duplicate query params are enforced (0.4216ms)
+✔ raw transport adapter rejects duplicate names, bad encoding, BOM and reserved literals (0.4249ms)
+✔ admission token recheck binds owner, device epoch and project at commit (0.2534ms)
+✔ wire error stage-awareness and closed mapping with own-property lookup (0.051ms)
+✔ zero-UUID sentinel only on uncorrelated unauthorized error; arrays rejected (0.147ms)
+✔ forbidden values: embedded POSIX/drive paths, credentials; transcript only scans credentials (0.2185ms)
+✔ wireErrorCode pair-stage resolves the closed pairExchange map (0.1164ms)
+✔ forbidden-value boundary matrix: paths and env dumps after any delimiter (0.3262ms)
+✔ raw target charset gate: non-ASCII, DEL, and # rejected before routing (0.1028ms)
+✔ reset occupies its sequence; next frame is reset.sequence+1, no freshSubscribe bypass (0.8278ms)
+✔ out-of-scope and network-path vectors per valueScanOutOfScope (0.3926ms)
+✔ quoted-key credentials rejected in metadata AND transcript text (0.2384ms)
+ℹ tests 33
+ℹ suites 0
+ℹ pass 33
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 155.5429
+-- remote contract suite exit=0
+
+== remote gateway e2e: node tests/remote-gateway.cjs ==
+ok   TLS entry is HTTPS-only with a pinned self-signed cert
+ok   service fingerprint is stable across restarts (persisted cert+key)
+ok   grant removal resets the device event stream (authorization_changed)
+ok   unsigned non-pair routes and unknown targets are closed unauthorized
+ok   raw transport rejects duplicate query params and illegal targets before auth
+ok   pair exchange: happy path mints a device and returns a signed response
+ok   pair exchange negatives: bad proof/code/session/fingerprint/headers all fail closed
+ok   signed ops: projects.list/sessions.list filtered by grant; snapshot returns contract shape
+ok   replay: nonce reuse, old epoch, stale timestamp and bad signature all rejected
+ok   scope+grant IDOR: ungranted project/scope fail with closed codes
+ok   chat.send requires ownerRevision; stale revision rejected; idempotent retry
+ok   revocation: new requests unauthorized and live streams are closed
+ok   event stream emits signed contract frames; cursor transitions obey the table
+ok   valid cursor resume replays backlog in the SAME generation (no reset)
+ok   production pairing completes: pending -> approve -> same-request retry
+
+remote-gateway: 15/15 passed
+-- remote gateway e2e exit=0
+RESULT: PASS
