@@ -193,7 +193,9 @@ for content in (b'synthetic first resource',b'synthetic changed resource'):
  resource.write_bytes(content)
  shutil.rmtree(private/'candidate',ignore_errors=True)
  with contextlib.redirect_stdout(io.StringIO()) as messages: assert m.finish(root,private) == 78
- assert messages.getvalue().strip() == 'NATIVE_LOCK_BOOTSTRAP_REVIEW_REQUIRED'
+ lines=[line for line in messages.getvalue().splitlines() if line.strip()]
+ assert lines[-1] == 'NATIVE_LOCK_BOOTSTRAP_REVIEW_REQUIRED'
+ assert all(line.startswith(('NATIVE_INVENTORY_DIFF ','NATIVE_INVENTORY_LINK_DIFF ','NATIVE_INVENTORY_DIFF unavailable')) for line in lines[:-1]), lines
  assert {p.name for p in output.iterdir()} == {'Gemfile.lock','Podfile.lock','prebuilt-dependencies.json','review.json'}
  review=json.loads((output/'review.json').read_text()); manifest=json.loads((output/'prebuilt-dependencies.json').read_text())
  assert review['approved'] is False and review['prebuiltFileCount'] == len(manifest['files']) == 2
