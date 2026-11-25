@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 2,
+  "taskId": "M2-shell",
+  "kind": "independent-review",
+  "commit": "27f82202aab386390ce6f8bc2ed8a6d6bf5b4a68",
+  "sourceFingerprint": "e78af94c071aee6ee08b59c41df2ae4beea5dee2e6567ca11215854e33215907",
+  "scopes": [
+    "app",
+    "shared"
+  ],
+  "scopeFingerprint": "bb25dc49cc0322a3b9822a102b2a1e5a230204fb4db5d88035f53a40eaa23dec",
+  "startedAt": "2026-11-26T04:30:00.000Z",
+  "finishedAt": "2026-11-26T04:30:00.000Z",
+  "passed": true,
+  "details": {
+    "receiptPath": "docs/acceptance/review-round12b-receipt.json",
+    "receiptSha256": "6984bc17988c5810134a892d41dbd13b1807b7eb5f253d527a796b5c8650ce35",
+    "sameRunEvidence": "docs/acceptance/review-round12b-receipt.json",
+    "note": "Round-12b independent verification (delegate d9a6bbf5, xingchi sol-max thinking max): 15/15 acceptance closed over fresh TLS batteries, zero unresolved blockers/importants; whole-tree review certifies the current tree as a whole after rounds 7-11 remediation convergence (desktop 29a61794). Cloned verbatim \u2014 one independent run, not an independent per-task run."
+  }
+}

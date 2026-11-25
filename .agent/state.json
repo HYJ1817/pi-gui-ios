@@ -1,49 +1,60 @@
 {
   "schemaVersion": 2,
   "kind": "state",
-  "revision": 1525,
-  "updatedAt": "2026-11-25T19:52:41.817Z",
+  "revision": 1546,
+  "updatedAt": "2026-11-25T20:33:58.691Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "eb97b2a3e36670bef78eb160bfe2dfedf29687bf75cfbcab7a907bbb43e7102b",
+    "parentDigest": "25995e7afb69e54ab54923550f249a3d07148a4a2c85d75dd0ae4186f0f109a8",
     "phase": "M5",
     "currentTask": "M5-tailscale",
     "branch": "agent/m-1-bootstrap",
     "checkpoint": {
-      "id": "v2-2026-11-25T19-52-41-817Z-75dd185a-ed0e-4446-a423-09f98058c54e",
-      "path": ".agent/checkpoints/v2-2026-11-25T19-52-41-817Z-75dd185a-ed0e-4446-a423-09f98058c54e.json",
-      "sha256": "5c3fbcd23fd249a430827efabe3d1e9e504211de599ad8a30a5ee2eeffe567c7",
-      "authorityDigest": "7950a4ad23a78421197fce4209d2e3a80c67049a939b4e5d2aca815297b95172",
-      "at": "2026-11-25T19:52:41.817Z",
+      "id": "v2-2026-11-25T20-32-06-647Z-ac6ce249-d573-4511-ae6c-3628c3f7da20",
+      "path": ".agent/checkpoints/v2-2026-11-25T20-32-06-647Z-ac6ce249-d573-4511-ae6c-3628c3f7da20.json",
+      "sha256": "eabf1f2080f71b910282c8db6208c401271b5268a82e769cd6216457864d9b91",
+      "authorityDigest": "17dfcc81648f8a53784edcd7438dda50c2adf0bb744cfd378661d1bd92a93c66",
+      "at": "2026-11-25T20:32:06.647Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "921044e1f8cc99a46752f8cfeaecedc6dd24ebb5",
+        "commit": "06be276b565e2999041e70a028a3ac1646fd79c5",
         "dirty": [
           "M .agent/HANDOFF.md",
-          " D .agent/checkpoints/v2-2026-11-25T15-59-03-426Z-21158fe4-4a04-4dab-b529-0a7770eb3b88.json",
-          " D .agent/checkpoints/v2-2026-11-25T15-59-04-883Z-d859cb6a-f7ab-4fc8-980c-092f96783fc1.json",
-          " D .agent/checkpoints/v2-2026-11-25T15-59-06-214Z-27e6dd3c-0530-45c2-9745-2447d4de2f07.json",
-          " D .agent/checkpoints/v2-2026-11-25T15-59-07-569Z-cbbba2d5-3155-414b-a047-1e38e9d2b4c5.json",
-          " D .agent/checkpoints/v2-2026-11-25T15-59-30-337Z-0dcba5fa-503d-4ac3-bbfa-719d710ca9bd.json",
+          " D .agent/checkpoints/v2-2026-11-25T16-00-24-033Z-dcf942a8-fc5e-4e3e-aeed-d0606ef84ed5.json",
+          " D .agent/checkpoints/v2-2026-11-25T16-00-25-802Z-0416671c-b8cc-46f3-ac5d-f136e0f4dff9.json",
+          " D .agent/checkpoints/v2-2026-11-25T16-00-27-599Z-ed76d778-b2e0-4b8f-b0c2-cebbcf8c2d88.json",
+          " D .agent/checkpoints/v2-2026-11-25T16-00-29-313Z-dd5538be-6a1f-4a3d-8e67-631b1b49f80f.json",
+          " D .agent/checkpoints/v2-2026-11-25T16-00-31-077Z-17e2ad8c-86e9-4b5d-a0c4-53cebf5fcd5c.json",
+          " D .agent/checkpoints/v2-2026-11-25T16-00-32-762Z-32fd7a4e-6b17-4483-a2b0-bc711bf7bb2d.json",
+          " D .agent/checkpoints/v2-2026-11-25T16-00-34-359Z-adb524c8-7e50-4f61-9762-81d2d4dd74e0.json",
+          " D .agent/checkpoints/v2-2026-11-25T16-00-35-909Z-973664f5-4467-42c5-bbc8-d1f81363ba65.json",
+          " D .agent/checkpoints/v2-2026-11-25T16-00-37-505Z-3fa0a604-ada0-49ae-9f6e-57b4f7c6f0d4.json",
           " M .agent/control.json",
           " M .agent/state.json",
           " M .agent/tasks.json",
           " M PROGRESS.md",
-          " M docs/acceptance/local-integration-M1-remote.json",
-          " M docs/acceptance/local-integration-M3-core.json",
-          " M docs/acceptance/local-integration-M4-sync.json",
-          " M docs/acceptance/local-integration-M5-tailscale.json",
-          " M docs/acceptance/local-integration-output.txt",
-          " M docs/acceptance/local-integration.json",
-          "?? .agent/checkpoints/v2-2026-11-25T19-20-48-605Z-30270026-5ea8-4915-9c92-5a8369807e16.json",
-          "?? .agent/checkpoints/v2-2026-11-25T19-52-35-608Z-233f029e-7079-4ce0-8814-1725b62a87c1.json",
-          "?? .agent/checkpoints/v2-2026-11-25T19-52-37-203Z-b69475a7-c8a8-474a-b84b-4a9db1a8fa55.json",
-          "?? .agent/checkpoints/v2-2026-11-25T19-52-38-727Z-077048ac-b875-4319-bafb-fa38f5c9497f.json",
-          "?? .agent/checkpoints/v2-2026-11-25T19-52-40-239Z-feac05f2-9a8b-4f32-bbc4-4a9d1b80a6da.json"
+          "?? .agent/checkpoints/v2-2026-11-25T19-52-46-471Z-6ce9b53a-10c9-49a9-8122-33653a691d60.json",
+          "?? .agent/checkpoints/v2-2026-11-25T19-55-10-839Z-1517478a-4db2-43a3-ac42-9d455c424914.json",
+          "?? .agent/checkpoints/v2-2026-11-25T20-31-55-527Z-1a513661-2a29-4ede-abff-12c6218fec1b.json",
+          "?? .agent/checkpoints/v2-2026-11-25T20-31-57-053Z-bf7a33aa-9d77-4e79-8447-5aeb5d4f39a3.json",
+          "?? .agent/checkpoints/v2-2026-11-25T20-31-58-519Z-56a256ca-b065-4450-93c5-3e1fb7cd5fd3.json",
+          "?? .agent/checkpoints/v2-2026-11-25T20-32-00-013Z-3a310d3b-8beb-4fd2-a695-66b71260bc6c.json",
+          "?? .agent/checkpoints/v2-2026-11-25T20-32-01-683Z-9bd0b122-99e6-4d65-b435-57ca178295d3.json",
+          "?? .agent/checkpoints/v2-2026-11-25T20-32-03-296Z-54da72dd-145a-4fa5-a7dc-94289b467864.json",
+          "?? .agent/checkpoints/v2-2026-11-25T20-32-04-965Z-9d015ba8-6ceb-424e-84f6-aa8c47ef1080.json",
+          "?? docs/acceptance/review-round12b-M-1-infrastructure.json",
+          "?? docs/acceptance/review-round12b-M0-architecture.json",
+          "?? docs/acceptance/review-round12b-M1-remote.json",
+          "?? docs/acceptance/review-round12b-M2-shell.json",
+          "?? docs/acceptance/review-round12b-M3-core.json",
+          "?? docs/acceptance/review-round12b-M4-sync.json",
+          "?? docs/acceptance/review-round12b-M5-tailscale.json",
+          "?? docs/acceptance/review-round12b-M6-distribution.json",
+          "?? docs/acceptance/review-round12b-receipt.json"
         ]
       },
       "sourceFingerprint": "e78af94c071aee6ee08b59c41df2ae4beea5dee2e6567ca11215854e33215907",
-      "note": "agent-task evidence M4-sync"
+      "note": "agent-task evidence M6-distribution"
     },
     "blockers": [],
     "ci": [
@@ -839,6 +850,24 @@
       {
         "taskId": "node:delegated-task:command%3Amcp%3A8c4a0467-29da-4bc1-a115-fe86938e2a53%3Adelegate-task%3A3eecac61-7acb-44d8-a743-98b458da3dd4",
         "role": "independent-review",
+        "status": "cancelled",
+        "sourceCommit": "27f82202aab386390ce6f8bc2ed8a6d6bf5b4a68"
+      },
+      {
+        "taskId": "node:delegated-task:command%3Amcp%3A8c4a0467-29da-4bc1-a115-fe86938e2a53%3Adelegate-task%3Ad9a6bbf5-13cd-48fb-8a1a-9a0909f1c547",
+        "role": "independent-review",
+        "status": "completed",
+        "sourceCommit": "27f82202aab386390ce6f8bc2ed8a6d6bf5b4a68"
+      },
+      {
+        "taskId": "node:delegated-task:command%3Amcp%3A5bf3a482-d125-4b5b-ba2b-5e11e9108d5b%3Adelegate-task%3A52014294-7712-4a9e-9eff-20f951da67bb",
+        "role": "independent-security",
+        "status": "working",
+        "sourceCommit": "27f82202aab386390ce6f8bc2ed8a6d6bf5b4a68"
+      },
+      {
+        "taskId": "node:delegated-task:command%3Amcp%3A5bf3a482-d125-4b5b-ba2b-5e11e9108d5b%3Adelegate-task%3A7767eb73-0dae-4a67-98eb-4b4100a69b9d",
+        "role": "independent-handoff",
         "status": "working",
         "sourceCommit": "27f82202aab386390ce6f8bc2ed8a6d6bf5b4a68"
       }
@@ -846,6 +875,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "ba72cb0ad6b900e19830bf5ed283a268c702f85827f1f0ba515e9ffdc3a61d40"
+    "digest": "a520156c577dceb48c329a9e9ce6a72c0b77723679194164a4a627f8a0e1ad01"
   }
 }
