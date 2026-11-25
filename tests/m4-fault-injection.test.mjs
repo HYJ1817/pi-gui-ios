@@ -497,3 +497,78 @@ test('unit backlog eviction never produces a real gap: resumed clients always hi
   assert.equal(resetCount, 1, 'exactly one reset');
   sub.close();
 });
+
+// -------------------------------------------- regression: security review important finding
+test('regression co-subscription isolation: a reset for subscription A never perturbs subscription B', async (t) => {
+  // Independent-security important finding (2026-11-25): the shared journal
+  // sequence previously consumed a number for the reset frame that only the
+  // target subscription received — punching a hole into the co-subscription's
+  // sequence chain and killing it with sequence_gap, violating contract
+  // eventStream.concurrency ("A reset applies to its own subscription only").
+  const { M, gateway } = setup(t, domain());
+  const r = rig(t, M, gateway, 'cosub');
+  await r.store.load();
+  const aFrames = [];
+  const bFrames = [];
+  // Two co-subscriptions of the SAME device (cap is 2 per device).
+  const subA = r.stream.subscribe(r.client.buildEventsRequest(), f => aFrames.push(f), () => {});
+  const subB = r.stream.subscribe(r.client.buildEventsRequest(), f => bFrames.push(f), () => {});
+  // Live traffic establishes positions on both.
+  await send(r, 'seed-both');
+  assert.ok(aFrames.length > 0 && bFrames.length > 0, 'both subscriptions receive live frames');
+  // A resubscribes with a stale cursor → exactly one reset for A ONLY.
+  const snapCursor = (await r.client.snapshot(CONV)).result.cursor;
+  const stale = snapCursor.slice(0, -1) + (snapCursor.endsWith('a') ? 'b' : 'a');
+  const aResets = [];
+  subA.close();
+  const subA2 = r.stream.subscribe(r.client.buildEventsRequest(stale), f => { if (f.event === 'reset') aResets.push(f); }, () => {});
+  assert.equal(aResets.length, 1, 'A gets exactly one reset');
+  // Now ordinary emission: B must receive it with NO sequence hole — B stays alive.
+  const bSeqBefore = bFrames.at(-1).sequence;
+  await send(r, 'post-reset-live');
+  const bNew = bFrames.filter(f => f.payload && f.payload.text === 'post-reset-live');
+  assert.ok(bNew.length > 0, 'B receives the post-reset frame');
+  // Verify continuity: every B frame sequence is exactly predecessor+1 within a generation.
+  const byGen = new Map();
+  for (const f of bFrames) {
+    if (!byGen.has(f.streamGeneration)) byGen.set(f.streamGeneration, []);
+    byGen.get(f.streamGeneration).push(f.sequence);
+  }
+  for (const [gen, seqs] of byGen) {
+    for (let i = 1; i < seqs.length; i += 1) {
+      assert.equal(seqs[i], seqs[i - 1] + 1, `B generation ${gen} has a sequence hole at ${seqs[i - 1]}→${seqs[i]}`);
+    }
+  }
+  subA2.close(); subB.close();
+});
+
+test('regression rewind-with-divergent-payload: replayed sequence carrying different effects fails signature, never the silent-drop path', async (t) => {
+  // The silent rewind-drop assumes an exact replay is a no-op. A rewind frame
+  // whose payload DIFFERS from the original must fail signature verification
+  // BEFORE the position check — otherwise divergent effects could ride the
+  // silent-drop path (independent-security test-adequacy note).
+  const { M, gateway, service } = setup(t, domain());
+  const r = rig(t, M, gateway, 'rewind');
+  const svcSign = m => sign(null, Buffer.from(m, 'utf8'), service.privateKey).toString('base64url');
+  await r.store.load();
+  r.events.open(r.stream, r.client.buildEventsRequest(), undefined);
+  await send(r, 'rewind-target');
+  const appliedTexts = () => r.store.conversation(CONV).messages.map(m => m.text);
+  const before = appliedTexts();
+  // Capture the position then forge a rewind: sequence at-or-below position,
+  // correctly signed by the SERVICE key but carrying a different payload.
+  const pos = r.events.expectedPosition();
+  assert.ok(pos, 'position established');
+  const rewind = {
+    protocolVersion: 1, sequence: Math.max(1, pos.sequence), conversationId: CONV,
+    ownerRevision: 99, event: 'message.append',
+    payload: { messageId: 'msg_rewind_evil', role: 'assistant', text: 'REWIND-DIVERGENT' },
+    streamGeneration: pos.streamGeneration, cursor: 'g1_s1_aaaaaaaaaaaaaaaaaaaaaa', frameSignature: '',
+  };
+  rewind.frameSignature = svcSign(M.events.buildEventFrameMessage(rewind, r.credentials.deviceId, r.credentials.serviceId) ?? '');
+  const res = r.events.accept(rewind);
+  assert.equal(res.ok, false, 'honestly-signed rewind passes signature but is rejected by the position check');
+  assert.equal(res.code, 'sequence_gap', 'the drop is the position-continuity drop');
+  assert.deepEqual(appliedTexts(), before, 'silent rewind applies nothing — no divergent effects');
+  assert.equal(r.events.streamError(), undefined, 'silent rewind must not kill the stream (rewind ≠ gap)');
+});

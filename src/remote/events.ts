@@ -62,9 +62,13 @@ export interface EventClientOptions {
   onStreamError?: (code: string) => void;
 }
 
+const ENVELOPE_KEYS = new Set(['protocolVersion', 'sequence', 'conversationId', 'ownerRevision', 'event', 'payload', 'streamGeneration', 'cursor', 'frameSignature']);
 export function validateEventEnvelope(event: unknown): event is EventEnvelope {
   if (event === null || typeof event !== 'object' || Array.isArray(event)) return false;
   const e = event as Record<string, unknown>;
+  // Contract eventStream.eventEnvelope.additionalProperties: false — the
+  // shape is CLOSED. Unknown top-level keys are unsigned covert channel.
+  if (Object.keys(e).some(k => !ENVELOPE_KEYS.has(k))) return false;
   if (e.protocolVersion !== 1 || !Number.isSafeInteger(e.sequence) || (e.sequence as number) < 1) return false;
   if (!isOpaqueId(e.conversationId) || !Number.isSafeInteger(e.ownerRevision) || !EVENTS.includes(e.event as EventName)) return false;
   if (!Number.isSafeInteger(e.streamGeneration) || (e.streamGeneration as number) < 1) return false;

@@ -601,7 +601,14 @@ export class LocalSyntheticGateway {
     const m = CURSOR_RE.exec(cursor)!;
     const generation = Number(m[1]), seq = Number(m[2]);
     if (!Number.isSafeInteger(generation) || !Number.isSafeInteger(seq)) return 'malformed';
-    if (m[3] !== this.cursorTag(deviceId, generation, seq)) return 'foreign';
+    // Constant-time tag comparison (reference crypto.timingSafeEqual
+    // parity): CURSOR_RE already guarantees both sides are exactly 22 chars,
+    // so a fixed-count XOR fold leaks neither position nor length.
+    const expected = this.cursorTag(deviceId, generation, seq);
+    const got = m[3]!;
+    let diff = 0;
+    for (let i = 0; i < expected.length; i += 1) diff |= expected.charCodeAt(i) ^ got.charCodeAt(i);
+    if (diff !== 0) return 'foreign';
     return { generation, seq };
   }
 
@@ -726,16 +733,20 @@ export class LocalSyntheticGateway {
    * mints a fresh generation for this subscription only and emits the reset
    * through the shared journal — co-subscriptions are never perturbed. */
   private resetOne(sub: Subscription, reason: string): void {
+    // Contract eventStream.concurrency: a reset is isolated to ITS OWN
+    // subscription — it is an ephemeral per-subscription delivery, never a
+    // shared journal entry. Journaling it at the device-wide journalSeq would
+    // consume a sequence number the co-subscriptions never see, punching a
+    // hole into their sequence chains and killing them with sequence_gap
+    // (independent-security important finding, 2026-11-25). The reset's
+    // sequence is the CURRENT journal head: the next ordinary frame flows
+    // continuously at head+1 for every subscriber.
     sub.generation = ++this.generationCounter;
     const stream = this.streamFor(sub.deviceId);
-    stream.journalSeq += 1;
     const entry: JournalEntry = {
       seq: stream.journalSeq, event: 'reset', conversationId: 'stream-reset', ownerRevision: 0,
       payload: { reason }, size: 64, at: Date.now(),
     };
-    stream.bytes += entry.size;
-    stream.journal.push(entry);
-    this.trimBacklog(stream);
     this.deliver(sub, entry);
   }
 
@@ -815,15 +826,13 @@ export class LocalSyntheticGateway {
    * Note the M3 co-subscription-rebind behavior is intentionally REMOVED:
    * the reference isolates every subscription's generation space. */
   private resetSubscribe(device: DeviceRecord, stream: StreamState, reason: string, onFrame: (frame: EventEnvelope) => void, requestId: string): { ok: true; close(): void } {
+    // Ephemeral isolated reset — see resetOne: never journaled, sequenced at
+    // the current journal head so the generation continues without holes.
     const sub: Subscription = { deviceId: device.deviceId, generation: ++this.generationCounter, lastSeq: 0, onFrame };
-    stream.journalSeq += 1;
     const entry: JournalEntry = {
       seq: stream.journalSeq, event: 'reset', conversationId: 'stream-reset', ownerRevision: 0,
       payload: { reason }, size: 64, at: Date.now(),
     };
-    stream.bytes += entry.size;
-    stream.journal.push(entry);
-    this.trimBacklog(stream);
     this.subscriptions.push(sub);
     this.deliver(sub, entry);
     return { ok: true, close: () => { this.subscriptions = this.subscriptions.filter(s => s !== sub); } };
