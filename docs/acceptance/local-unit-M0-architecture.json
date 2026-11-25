@@ -2,8 +2,8 @@
   "schemaVersion": 2,
   "kind": "unit",
   "taskId": "M0-architecture",
-  "commit": "778b67eaf7f6cd87b6f6602e605ae979c533639d",
-  "sourceFingerprint": "6e7a6a919475365de47983f258f09a8177739a5380d629a6ca07e9eae7e6aa9f",
+  "commit": "4eaf1792ccae248af228d2c3985ebadcf7fdaa2f",
+  "sourceFingerprint": "c9c1fa88782b691ac4c53c6545bfba8839bec5730f31e1d9eb52b76242033325",
   "scopes": [
     "app",
     "control",
@@ -12,14 +12,14 @@
     "shared",
     "tests"
   ],
-  "scopeFingerprint": "e2066df800c86193c830cc1d3a9d55d1b6d6f16d939dbc5cd79f52bc450f1ccb",
-  "startedAt": "2026-11-24T19:46:43.731Z",
-  "finishedAt": "2026-11-24T19:47:49.176Z",
+  "scopeFingerprint": "8f182300133d6692bad2d0ebef9d4e86a05927c50b9baba191cbf49d4859d6bf",
+  "startedAt": "2026-11-25T02:40:43.628Z",
+  "finishedAt": "2026-11-25T02:41:50.523Z",
   "passed": true,
   "details": {
     "command": "npm test",
     "exitCode": 0,
     "logPath": "docs/acceptance/local-unit-M0-architecture-output.txt",
-    "logSha256": "d31d58468a4a14df7389f742f54cf6ae840afca74f8f082076928eccd31d36ad"
+    "logSha256": "7b1aab0a84dc26e3fce5afc78117ae70899e92495b332afd34e52c9e2c786550"
   }
 }
