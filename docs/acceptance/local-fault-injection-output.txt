@@ -1,0 +1,21 @@
+✔ fault 1 reorder: out-of-order delivery never applies out of order; recovery converges (711.637ms)
+✔ fault 2 duplicate: duplicated delivery is exactly-once in the store (5.6311ms)
+✔ fault 3 drop: dropped frames trip the death machine; watermark recovery restores everything (7.5231ms)
+✔ fault 4 forged: unsigned/tampered/replayed-forged frames never apply (4.523ms)
+✔ fault 5 reconnect: close+resume with cursor replays the gap exactly once (6.7334ms)
+✔ fault 6 slow client: backlog overflow expires the cursor; reset rebuild converges (138.9582ms)
+✔ fault 7 revoke: mid-stream revocation delivers one reset then stops all frames (5.539ms)
+✔ fault 8 restart: gateway restart over the same domain — stale cursor resets, rebuild converges (97.5933ms)
+✔ fault 9 dual device: concurrent mutations + independent reconnects converge identically (16.69ms)
+✔ unit chunk-append: progressive frames merge into one bubble ending in the full text (3.9912ms)
+✔ unit watermark atomicity: resuming from a snapshot watermark loses nothing and duplicates nothing (5.727ms)
+✔ unit owner-epoch idempotency: same-epoch retry hits; rolled epoch is a fresh key (2.2207ms)
+✔ unit backlog eviction never produces a real gap: resumed clients always hit reset-or-replay (43.684ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1158.9947
