@@ -233,7 +233,7 @@ export class LocalSyntheticGateway {
       expiresAt: input.expiresAt ?? new Date(Date.now() + 24 * 3600 * 1000).toISOString(),
     };
     this.devices.set(device.deviceId, device);
-    this.streams.set(device.deviceId, { epoch: ++this.generationCounter, journalSeq: 0, journal: [], bytes: 0 });
+    this.streams.set(device.deviceId, { epoch: ++this.generationCounter, journalSeq: 1, journal: [], bytes: 0 });
     return this.toCredentials(device);
   }
 
@@ -616,7 +616,7 @@ export class LocalSyntheticGateway {
   streamFor(deviceId: string): StreamState {
     let stream = this.streams.get(deviceId);
     if (!stream) {
-      stream = { epoch: ++this.generationCounter, journalSeq: 0, journal: [], bytes: 0 };
+      stream = { epoch: ++this.generationCounter, journalSeq: 1, journal: [], bytes: 0 };
       this.streams.set(deviceId, stream);
     }
     return stream;

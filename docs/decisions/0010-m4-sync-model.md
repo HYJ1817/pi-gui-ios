@@ -89,3 +89,7 @@ M3 安全审查 note F3：`lastError` 复用会掩盖 `stream_unavailable`。M4 
 ### 终审 findings 修复（2026-11-25 第三轮，同一日）
 
 grant 撤销→重新授权静默分歧**已修复**（不再 defer）：事件不按授权进 journal（投递/重放时过滤），撤销与重新授权都重置订阅强制基线重建；回归测试 regression grant revoke/re-grant 钉死。剩余 M5 defer 仅限：秘密 MAC key 与 crypto 随机盐（桌面端口）、首帧盲区（真实传输加固）、recoverStream live 标记装饰项、fault 6 路径覆盖增强。
+
+### IMPORTANT-1 修复（2026-11-25 终审功能审查）
+
+reset 序列规则"等于当前 journal head"在空 journal（head 0）下产生 contract-invalid 的 `sequence: 0`（契约 minimum 1），合规客户端正确丢弃——exactly-one-reset 保证在该窗口失效（该窗口无数据可丢失，首帧自愈，但规则本身不可满足且不能遗传给真实桌面实现）。修复：journalSeq 初始化为 1（journal 序号空间自 2 起，连续性不变量不变，head 0 永不出现）。另记录 informational：重放时授权跳帧可产生非连续交付序号（对 fresh-position 客户端按设计不可见），符合 resetScope 字面但值得注意。
