@@ -1,0 +1,1 @@
+{"architectures": ["arm64"], "bundleId": "io.github.hyj1817.piguimobile", "code": "IPA_VERIFIED", "executables": 9, "frameworks": 8, "kind": "unsigned-device-archive", "minimumOS": "16.4.0", "passed": true, "platform": "iOS", "schemaVersion": 2, "sha256": "969c7ba34de1522d5eec7dfb3debe2534cbebd8ca6a3b7466285d61c25d92586", "sideStoreInstallVerified": false}

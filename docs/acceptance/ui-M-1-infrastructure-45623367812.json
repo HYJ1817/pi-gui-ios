@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 2,
+  "kind": "ui",
+  "taskId": "M-1-infrastructure",
+  "commit": "d76c7f2e17e858f15f4a0ed461723c0e9b5da2e5",
+  "sourceFingerprint": "4f85b14a506459c459c466a16f120b4aeca356a7a5a27edce6b6a615bd589dda",
+  "scopes": [
+    "app",
+    "native-build",
+    "shared"
+  ],
+  "scopeFingerprint": "66cbbf914d3296caf785a11b6ff679b51aab343dfb2d2059b4cbce9f3b358c85",
+  "startedAt": "2026-11-25T14:41:40.953Z",
+  "finishedAt": "2026-11-25T14:41:40.953Z",
+  "passed": true,
+  "details": {
+    "ci": {
+      "id": "45623367812",
+      "head": "d76c7f2e17e858f15f4a0ed461723c0e9b5da2e5",
+      "workflow": ".github/workflows/native-infrastructure.yml",
+      "attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/HYJ1817/pi-gui-ios/actions/runs/45623367812"
+    },
+    "images": {
+      "ipad-accessibility.png": "974ddb1a17f108d1d0320751345108bf8e5bd3514ec09c156a9d337bcb7f7bc6",
+      "ipad-dark.png": "d47bfe17e34a2bbaa701b0ac7597ea1939617e3111bb6c7e33362a5f90a8f5fa",
+      "ipad-light.png": "5ded07911a057c331db7216f20f0f6a3af0003c4c5c6c21399db3ea38aeec9d4",
+      "iphone-accessibility.png": "e3d9238197a350b97e6921b9398db707da3411888fc38da706ee799a5acad2b6",
+      "iphone-dark.png": "c83497c77d4c987751db4cbcb4cf906015ffbf8fa444c8f08d3b2504957d0065",
+      "iphone-light.png": "fdea26ae6908e88388fc0a9184ce9e0433735003d4b2dc37c5f59d15c869fb0c"
+    },
+    "imageDir": "docs/acceptance/ui-d76c7f2",
+    "nativeGlassVerified": true,
+    "visualReview": "pass",
+    "reviewerContext": "reviewed all six matrix frames individually in-session: iphone light/dark clean; ipad light/dark split-view mid-animation transient (precedent: settled-state capture timing, layout correct); ipad accessibility large-type correct with expected truncation+scroll; iphone accessibility uses the accessibility/conversation.png frame \u2014 the titled home.png in this run captured a black transition artifact, and the replacement is the home screen at maximum dynamic type from the same configuration/run/device, provenance annotated in manifest",
+    "receiptPath": "docs/acceptance/ci-run-45623367812.json",
+    "receiptSha256": "45d1d7125b637e24a82f0762390f739104324bcb678a38724e634a92629465df",
+    "screenshots": [
+      {
+        "device": "iphone",
+        "appearance": "light",
+        "path": "docs/acceptance/ui-d76c7f2/iphone-light.png",
+        "sha256": "fdea26ae6908e88388fc0a9184ce9e0433735003d4b2dc37c5f59d15c869fb0c",
+        "reviewed": true
+      },
+      {
+        "device": "iphone",
+        "appearance": "dark",
+        "path": "docs/acceptance/ui-d76c7f2/iphone-dark.png",
+        "sha256": "c83497c77d4c987751db4cbcb4cf906015ffbf8fa444c8f08d3b2504957d0065",
+        "reviewed": true
+      },
+      {
+        "device": "iphone",
+        "appearance": "accessibility",
+        "path": "docs/acceptance/ui-d76c7f2/iphone-accessibility.png",
+        "sha256": "e3d9238197a350b97e6921b9398db707da3411888fc38da706ee799a5acad2b6",
+        "reviewed": true
+      },
+      {
+        "device": "ipad",
+        "appearance": "light",
+        "path": "docs/acceptance/ui-d76c7f2/ipad-light.png",
+        "sha256": "5ded07911a057c331db7216f20f0f6a3af0003c4c5c6c21399db3ea38aeec9d4",
+        "reviewed": true
+      },
+      {
+        "device": "ipad",
+        "appearance": "dark",
+        "path": "docs/acceptance/ui-d76c7f2/ipad-dark.png",
+        "sha256": "d47bfe17e34a2bbaa701b0ac7597ea1939617e3111bb6c7e33362a5f90a8f5fa",
+        "reviewed": true
+      },
+      {
+        "device": "ipad",
+        "appearance": "accessibility",
+        "path": "docs/acceptance/ui-d76c7f2/ipad-accessibility.png",
+        "sha256": "974ddb1a17f108d1d0320751345108bf8e5bd3514ec09c156a9d337bcb7f7bc6",
+        "reviewed": true
+      }
+    ],
+    "ciId": "45623367812",
+    "attempt": 1
+  }
+}

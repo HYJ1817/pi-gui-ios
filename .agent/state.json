@@ -1,46 +1,57 @@
 {
   "schemaVersion": 2,
   "kind": "state",
-  "revision": 1319,
-  "updatedAt": "2026-11-25T14:05:55.478Z",
+  "revision": 1335,
+  "updatedAt": "2026-11-25T14:44:17.557Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "18612b9fe4a11153fa44d5cc80960eb276a9bb316581b5e57359cbea1ba89bef",
+    "parentDigest": "506fdf41277c43a00b47154d1ce0def1b5fb5809d9d2faf212525fea7b2c0389",
     "phase": "M5",
     "currentTask": "M5-tailscale",
     "branch": "agent/m-1-bootstrap",
     "checkpoint": {
-      "id": "v2-2026-11-25T14-04-29-039Z-03fe5748-9dc8-432c-82f6-e1970b4cb3b6",
-      "path": ".agent/checkpoints/v2-2026-11-25T14-04-29-039Z-03fe5748-9dc8-432c-82f6-e1970b4cb3b6.json",
-      "sha256": "77de7734b9eaea61be17c2b251152f667975d3210f4dca072bc25382b314c85e",
-      "authorityDigest": "a2dc3efcd7360059d72a51b6ae2b336c275451d4af1a721027ac0e9525fd981b",
-      "at": "2026-11-25T14:04:29.039Z",
+      "id": "v2-2026-11-25T14-44-17-557Z-b1d0def1-9cc7-4bd2-a503-84be434ac0c4",
+      "path": ".agent/checkpoints/v2-2026-11-25T14-44-17-557Z-b1d0def1-9cc7-4bd2-a503-84be434ac0c4.json",
+      "sha256": "732e4671f86c2b0134fe17f7115302b5b54ec012341bb831dfabe137dce52808",
+      "authorityDigest": "8e0035458b619b4d037a119b3dad2f74f63f264032a113174df3106aeceecc4b",
+      "at": "2026-11-25T14:44:17.557Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "d76c7f2e17e858f15f4a0ed461723c0e9b5da2e5",
+        "commit": "f640261f588c44ea96465e8c97f5647a3b461fe4",
         "dirty": [
           "M .agent/HANDOFF.md",
-          " D .agent/checkpoints/v2-2026-11-25T10-54-57-663Z-412e144d-48e9-4d56-af36-7a6c044539cc.json",
-          " D .agent/checkpoints/v2-2026-11-25T10-57-59-927Z-6fba2a98-2369-4535-ada2-6545a0e33f9a.json",
-          " D .agent/checkpoints/v2-2026-11-25T10-58-35-352Z-87f0eabc-fb33-40f4-8d69-bd005899e5b5.json",
-          " D .agent/checkpoints/v2-2026-11-25T10-58-37-141Z-e5a0b16e-330e-4462-8054-ca463afd28cc.json",
+          " D .agent/checkpoints/v2-2026-11-25T10-59-41-875Z-2a973dde-9e8e-4d97-9ff5-e00604d95ff0.json",
+          " D .agent/checkpoints/v2-2026-11-25T11-10-30-253Z-5eb4d156-18aa-4ac5-b9af-748120a4feff.json",
+          " D .agent/checkpoints/v2-2026-11-25T11-23-25-649Z-06c27c12-6cea-4fb1-a1f6-f90190033313.json",
+          " D .agent/checkpoints/v2-2026-11-25T11-25-10-083Z-211b5485-b6d6-4cca-b7c4-93e1bcd31feb.json",
+          " D .agent/checkpoints/v2-2026-11-25T11-25-13-370Z-7a86c9cf-54a7-4075-a447-913b36772233.json",
+          " D .agent/checkpoints/v2-2026-11-25T11-25-15-113Z-7bcbc973-5424-483c-91af-443b29d1ae67.json",
+          " D .agent/checkpoints/v2-2026-11-25T11-25-16-777Z-9e218b2e-dfaf-410e-adc2-3d7d96cf43d0.json",
           " M .agent/control.json",
           " M .agent/state.json",
           " M .agent/tasks.json",
           " M PROGRESS.md",
-          " M docs/acceptance/local-integration-M1-remote.json",
-          " M docs/acceptance/local-integration-M3-core.json",
-          " M docs/acceptance/local-integration-M4-sync.json",
-          " M docs/acceptance/local-integration-output.txt",
-          " M docs/acceptance/local-integration.json",
-          "?? .agent/checkpoints/v2-2026-11-25T14-03-54-276Z-d9297191-87ba-4f3e-8d1f-73485c512a15.json",
-          "?? .agent/checkpoints/v2-2026-11-25T14-04-24-663Z-be5878f5-bbbe-4307-bae0-dc974b335f8f.json",
-          "?? .agent/checkpoints/v2-2026-11-25T14-04-26-160Z-bdde873e-f41e-4ba4-b6ed-e14e47c571ef.json",
-          "?? .agent/checkpoints/v2-2026-11-25T14-04-27-556Z-3b3eeb2a-5cc9-42a8-bb25-eb19516c6270.json"
+          "?? .agent/checkpoints/v2-2026-11-25T14-38-58-649Z-9796863f-5aef-471a-a69f-e4c6bfaea9f3.json",
+          "?? .agent/checkpoints/v2-2026-11-25T14-43-32-781Z-db2d57b1-ff37-45df-8e5e-40999b3eac92.json",
+          "?? .agent/checkpoints/v2-2026-11-25T14-43-35-747Z-8e7d67df-f3bc-490f-8043-c9913f1050fd.json",
+          "?? .agent/checkpoints/v2-2026-11-25T14-44-11-199Z-f83466cb-f57f-4056-ac65-d3b26f904d23.json",
+          "?? .agent/checkpoints/v2-2026-11-25T14-44-12-778Z-3ff3491f-3226-437f-9027-ab4aa494f525.json",
+          "?? .agent/checkpoints/v2-2026-11-25T14-44-14-426Z-7671c253-fbb6-44ab-8758-5d38ae223c58.json",
+          "?? .agent/checkpoints/v2-2026-11-25T14-44-16-021Z-588f80a5-05b7-434f-81c0-f9686513a36b.json",
+          "?? docs/acceptance/ci-M-1-infrastructure-45623367812.json",
+          "?? docs/acceptance/ci-M5-tailscale-45623367812.json",
+          "?? docs/acceptance/ci-run-45623367812.json",
+          "?? docs/acceptance/ipa-M-1-infrastructure-45623367812.json",
+          "?? docs/acceptance/ipa-M5-tailscale-45623367812.json",
+          "?? docs/acceptance/ipa-verification-45623367812.json",
+          "?? docs/acceptance/ui-M-1-infrastructure-45623367812.json",
+          "?? docs/acceptance/ui-M2-shell-45623367812.json",
+          "?? docs/acceptance/ui-M3-core-45623367812.json",
+          "?? docs/acceptance/ui-d76c7f2/"
         ]
       },
       "sourceFingerprint": "4f85b14a506459c459c466a16f120b4aeca356a7a5a27edce6b6a615bd589dda",
-      "note": "agent-task evidence M4-sync"
+      "note": "agent-task evidence M3-core"
     },
     "blockers": [],
     "ci": [
@@ -205,6 +216,15 @@
         "status": "completed",
         "conclusion": "success",
         "url": "https://github.com/HYJ1817/pi-gui-ios/actions/runs/45596517960"
+      },
+      {
+        "id": "45623367812",
+        "head": "d76c7f2e17e858f15f4a0ed461723c0e9b5da2e5",
+        "workflow": ".github/workflows/native-infrastructure.yml",
+        "attempt": 1,
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/HYJ1817/pi-gui-ios/actions/runs/45623367812"
       }
     ],
     "desktop": {
@@ -735,6 +755,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "0f4ebed950e0a0b76ae312e65127426d4f89ae10c6d53dd2c7630b00044a4dbf"
+    "digest": "9226357e7a41ba0d2c4264a254b80b8f5f08ae2fbadf231c3c408d5ff6a9ce42"
   }
 }
