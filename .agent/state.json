@@ -1,11 +1,11 @@
 {
   "schemaVersion": 2,
   "kind": "state",
-  "revision": 1221,
-  "updatedAt": "2026-11-25T11:00:04.420Z",
+  "revision": 1222,
+  "updatedAt": "2026-11-25T11:05:53.615Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "480cf10103643a370f4e54d168d875629da687f310459427f697bce7fd7202ea",
+    "parentDigest": "448236a753212e2648ecd38cbfa9005ce90e9caa24b00e1239c2801076a23a61",
     "phase": "M5",
     "currentTask": "M5-tailscale",
     "branch": "agent/m-1-bootstrap",
@@ -640,7 +640,7 @@
       {
         "taskId": "node:delegated-task:command%3Amcp%3A17846bd5-b663-43a8-b635-1fb1d105ec66%3Adelegate-task%3Af8583a8c-a3ee-469f-83f0-c76c2c66e097",
         "role": "independent-review",
-        "status": "working",
+        "status": "cancelled",
         "sourceCommit": "ee0778534e9d864de691ccb65fd6aa43cc5da219"
       },
       {
@@ -654,11 +654,17 @@
         "role": "independent-handoff",
         "status": "working",
         "sourceCommit": "768a8af2638bc7156ace8ea1b4e3b8a27f2a04dd"
+      },
+      {
+        "taskId": "node:delegated-task:command%3Amcp%3A17846bd5-b663-43a8-b635-1fb1d105ec66%3Adelegate-task%3A449a7a55-a57c-4248-9b95-7fe30dae9bb2",
+        "role": "independent-review",
+        "status": "working",
+        "sourceCommit": "fc9b7c747a337356d8afe9272464812ab79cfca0"
       }
     ]
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "a278bca1b991cce220efce683e675a601cb606632fab048a7fd6ca9aae376c3c"
+    "digest": "bb69664694819bb97ceb2aa47a75fd4bacc2a75565b32f2c50e96ef2ead7f78d"
   }
 }
