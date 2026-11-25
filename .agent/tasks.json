@@ -1,11 +1,11 @@
 {
   "schemaVersion": 2,
   "kind": "tasks",
-  "revision": 1381,
-  "updatedAt": "2026-11-25T14:57:00.751Z",
+  "revision": 1388,
+  "updatedAt": "2026-11-25T15:01:22.805Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "350046138ccb38178adb6099dcbafa9f81742722a5cce33a2ef1fec30d577197",
+    "parentDigest": "73e22af519444f3594bfe11a724a03a2a3a0463824c289f4de3b9455d208bec2",
     "tasks": [
       {
         "id": "M-1-infrastructure",
@@ -1623,6 +1623,19 @@
             "sourceFingerprint": "4f85b14a506459c459c466a16f120b4aeca356a7a5a27edce6b6a615bd589dda",
             "commit": "f640261f588c44ea96465e8c97f5647a3b461fe4",
             "at": "2026-11-25T14:56:56.037Z",
+            "scopes": [
+              "protocol",
+              "shared"
+            ],
+            "scopeFingerprint": "86501dc64e13d3d4d21e2197fa1471358c39272882229f40e0956ed0aaa1fb1e"
+          },
+          {
+            "kind": "protocol-contract",
+            "path": "docs/acceptance/local-protocol-contract-M0-architecture.json",
+            "sha256": "79fe6f439a73918314ca9507158d57697d467eef83e56dc7613b7347bcb82c68",
+            "sourceFingerprint": "4f85b14a506459c459c466a16f120b4aeca356a7a5a27edce6b6a615bd589dda",
+            "commit": "fc43288cbdfd04b2c076041b15a7721f9616f792",
+            "at": "2026-11-25T15:01:22.718Z",
             "scopes": [
               "protocol",
               "shared"
@@ -4114,6 +4127,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "449e65a24c5ec9c77a55d578e7c6a8e3915a6d8e861f03353d76db658081b0b9"
+    "digest": "d58dc7351fcc02ddadb48cdefe8f06ebb7be3ff6845be2dc5624593a464035ec"
   }
 }
