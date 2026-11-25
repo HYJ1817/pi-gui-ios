@@ -2,15 +2,15 @@
   "schemaVersion": 2,
   "kind": "doctor",
   "taskId": "M5-tailscale",
-  "commit": "20efb3bc35df42a8dbab725d76f7583fe89ae60f",
-  "sourceFingerprint": "4f85b14a506459c459c466a16f120b4aeca356a7a5a27edce6b6a615bd589dda",
+  "commit": "88b9d84afe96747d6f3b43404f4d354a68f1d563",
+  "sourceFingerprint": "e78af94c071aee6ee08b59c41df2ae4beea5dee2e6567ca11215854e33215907",
   "scopes": [
     "app",
     "shared"
   ],
-  "scopeFingerprint": "c4a8d18fb78f41661da16ff60b8131a6776edb4e41d5f36a55bf9fbf796c5a43",
-  "startedAt": "2026-11-25T14:52:53.429Z",
-  "finishedAt": "2026-11-25T14:52:58.605Z",
+  "scopeFingerprint": "bb25dc49cc0322a3b9822a102b2a1e5a230204fb4db5d88035f53a40eaa23dec",
+  "startedAt": "2026-11-25T15:54:04.984Z",
+  "finishedAt": "2026-11-25T15:54:09.124Z",
   "passed": true,
   "details": {
     "command": "node node_modules/expo-doctor/build/index.js",

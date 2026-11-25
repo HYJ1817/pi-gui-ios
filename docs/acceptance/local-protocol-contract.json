@@ -2,20 +2,20 @@
   "schemaVersion": 2,
   "kind": "protocol-contract",
   "taskId": "M5-tailscale",
-  "commit": "fc43288cbdfd04b2c076041b15a7721f9616f792",
-  "sourceFingerprint": "4f85b14a506459c459c466a16f120b4aeca356a7a5a27edce6b6a615bd589dda",
+  "commit": "88b9d84afe96747d6f3b43404f4d354a68f1d563",
+  "sourceFingerprint": "e78af94c071aee6ee08b59c41df2ae4beea5dee2e6567ca11215854e33215907",
   "scopes": [
     "protocol",
     "shared"
   ],
   "scopeFingerprint": "86501dc64e13d3d4d21e2197fa1471358c39272882229f40e0956ed0aaa1fb1e",
-  "startedAt": "2026-11-25T15:01:19.961Z",
-  "finishedAt": "2026-11-25T15:01:20.885Z",
+  "startedAt": "2026-11-25T15:54:09.954Z",
+  "finishedAt": "2026-11-25T15:54:10.748Z",
   "passed": true,
   "details": {
     "command": "node --test tests/remote-contract.test.mjs",
     "exitCode": 0,
     "logPath": "docs/acceptance/local-protocol-contract-output.txt",
-    "logSha256": "c120d117337dda12d2d705e16d73a840323ed6091d1416fa5357f980028249de"
+    "logSha256": "366be084cfdc57dff39302453aa0e46d1a7a8804ec7d4cbda348579aab41201f"
   }
 }
