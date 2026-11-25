@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 2,
+  "kind": "independent-security",
+  "taskId": "M1-remote",
+  "commit": "f640261f588c44ea96465e8c97f5647a3b461fe4",
+  "sourceFingerprint": "4f85b14a506459c459c466a16f120b4aeca356a7a5a27edce6b6a615bd589dda",
+  "scopes": [
+    "protocol",
+    "shared"
+  ],
+  "scopeFingerprint": "86501dc64e13d3d4d21e2197fa1471358c39272882229f40e0956ed0aaa1fb1e",
+  "startedAt": "2026-11-25T14:45:37.000Z",
+  "finishedAt": "2026-11-25T14:45:37.000Z",
+  "passed": true,
+  "details": {
+    "receiptPath": "docs/acceptance/receipt-sec-90ae5653.json",
+    "receiptSha256": "cc107c128794d58552add6e17f549076adc2d84283a21cadd42064e694714a17"
+  }
+}

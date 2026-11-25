@@ -2,8 +2,8 @@
   "schemaVersion": 2,
   "kind": "unit",
   "taskId": "M4-sync",
-  "commit": "3ce4f0c444b28df45a7784819944073684d4b473",
-  "sourceFingerprint": "eb74e94998c2fa9eab69c75defb524b044c92448e4db8a42f0fa28d0b9f92481",
+  "commit": "20efb3bc35df42a8dbab725d76f7583fe89ae60f",
+  "sourceFingerprint": "4f85b14a506459c459c466a16f120b4aeca356a7a5a27edce6b6a615bd589dda",
   "scopes": [
     "app",
     "control",
@@ -12,15 +12,14 @@
     "shared",
     "tests"
   ],
-  "scopeFingerprint": "e5898263b4aedb503c30508edf1e25379eaec4f15acc56ff3a4fa0a896806192",
-  "startedAt": "2026-11-25T12:10:13.498Z",
-  "finishedAt": "2026-11-25T12:11:17.296Z",
+  "scopeFingerprint": "495d8eb44d56694791d1a5dfec9a7015702b36074d965755bcb42d4528a2b9cc",
+  "startedAt": "2026-11-25T14:51:10.526Z",
+  "finishedAt": "2026-11-25T14:52:28.966Z",
   "passed": true,
   "details": {
     "command": "npm test",
     "exitCode": 0,
     "logPath": "docs/acceptance/local-unit-output.txt",
-    "logSha256": "13cdee6b4513b2a901c797259cd7a7e1bcde3002c3f197429d1d46ada08434b5",
-    "sameRunEvidence": "cloned same-run: identical npm test execution at this tree covers this task (unit scope spans app/tests/control/native-build/protocol shared surfaces)"
+    "logSha256": "c4f0ab72ea71484cac0a86689f1b1091123d1aa3e6ce191fa1d53f7e80c7c9dc"
   }
 }

@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 2,
+  "kind": "doctor",
+  "taskId": "M2-shell",
+  "commit": "20efb3bc35df42a8dbab725d76f7583fe89ae60f",
+  "sourceFingerprint": "4f85b14a506459c459c466a16f120b4aeca356a7a5a27edce6b6a615bd589dda",
+  "scopes": [
+    "app",
+    "shared"
+  ],
+  "scopeFingerprint": "c4a8d18fb78f41661da16ff60b8131a6776edb4e41d5f36a55bf9fbf796c5a43",
+  "startedAt": "2026-11-25T14:52:53.429Z",
+  "finishedAt": "2026-11-25T14:52:58.605Z",
+  "passed": true,
+  "details": {
+    "command": "node node_modules/expo-doctor/build/index.js",
+    "exitCode": 0,
+    "logPath": "docs/acceptance/local-doctor-output.txt",
+    "logSha256": "ab39d6a58873a0d1151d2a625641a5db22b312df3276b2c2ab3d03a3e9dbe4e1"
+  }
+}

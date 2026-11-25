@@ -2,21 +2,20 @@
   "schemaVersion": 2,
   "kind": "typecheck",
   "taskId": "M-1-infrastructure",
-  "commit": "e2e178256831a12dd2f5d89d056db57bb47ac8cb",
-  "sourceFingerprint": "30e1bc04eb93d6648f2f76617b93604af40d984fad1659f9c6911be0e85ef75d",
+  "commit": "20efb3bc35df42a8dbab725d76f7583fe89ae60f",
+  "sourceFingerprint": "4f85b14a506459c459c466a16f120b4aeca356a7a5a27edce6b6a615bd589dda",
   "scopes": [
     "app",
     "shared"
   ],
-  "scopeFingerprint": "c938c031249776827fa451e7744e77b439bc118e65bd9de76492e8073dd532be",
-  "startedAt": "2026-11-25T10:43:47.059Z",
-  "finishedAt": "2026-11-25T10:43:54.724Z",
+  "scopeFingerprint": "c4a8d18fb78f41661da16ff60b8131a6776edb4e41d5f36a55bf9fbf796c5a43",
+  "startedAt": "2026-11-25T14:52:30.337Z",
+  "finishedAt": "2026-11-25T14:52:34.259Z",
   "passed": true,
   "details": {
     "command": "npm run typecheck",
     "exitCode": 0,
     "logPath": "docs/acceptance/local-typecheck-output.txt",
-    "logSha256": "c3fefe23bd7768210a2aaef41e3a7a9441b1536192ed6a18df85563717628607",
-    "sameRunEvidence": "cloned from M5-tailscale: identical verification run covers this task because the evidence kind scope spans the union of both tasks; log at docs/acceptance/local-typecheck-output.txt is the original unaltered output"
+    "logSha256": "c3fefe23bd7768210a2aaef41e3a7a9441b1536192ed6a18df85563717628607"
   }
 }

@@ -1,11 +1,16 @@
 {
   "schemaVersion": 2,
   "kind": "doctor",
-  "taskId": "M-1-infrastructure",
-  "commit": "dfd0d17975debc5b0a2ae906e44ae019775cea71",
-  "sourceFingerprint": "656e09e95672d0f2934c932176d084f970cb52c08e197157a0ebc4aa8ac684d6",
-  "startedAt": "2026-11-21T12:50:12.049Z",
-  "finishedAt": "2026-11-21T12:50:15.636Z",
+  "taskId": "M5-tailscale",
+  "commit": "20efb3bc35df42a8dbab725d76f7583fe89ae60f",
+  "sourceFingerprint": "4f85b14a506459c459c466a16f120b4aeca356a7a5a27edce6b6a615bd589dda",
+  "scopes": [
+    "app",
+    "shared"
+  ],
+  "scopeFingerprint": "c4a8d18fb78f41661da16ff60b8131a6776edb4e41d5f36a55bf9fbf796c5a43",
+  "startedAt": "2026-11-25T14:52:53.429Z",
+  "finishedAt": "2026-11-25T14:52:58.605Z",
   "passed": true,
   "details": {
     "command": "node node_modules/expo-doctor/build/index.js",

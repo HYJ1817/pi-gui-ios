@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 2,
+  "kind": "bundle",
+  "taskId": "M3-core",
+  "commit": "20efb3bc35df42a8dbab725d76f7583fe89ae60f",
+  "sourceFingerprint": "4f85b14a506459c459c466a16f120b4aeca356a7a5a27edce6b6a615bd589dda",
+  "scopes": [
+    "app",
+    "shared"
+  ],
+  "scopeFingerprint": "c4a8d18fb78f41661da16ff60b8131a6776edb4e41d5f36a55bf9fbf796c5a43",
+  "startedAt": "2026-11-25T14:52:44.422Z",
+  "finishedAt": "2026-11-25T14:52:52.192Z",
+  "passed": true,
+  "details": {
+    "command": "npm run export:ios",
+    "exitCode": 0,
+    "logPath": "docs/acceptance/local-bundle-output.txt",
+    "logSha256": "12d89e9716ef454cb488f1d7a6c45de77b19e2a892256f4c2c01c808854580a1"
+  }
+}
