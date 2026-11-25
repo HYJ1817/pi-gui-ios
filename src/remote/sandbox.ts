@@ -221,6 +221,17 @@ export class LocalSyntheticGateway {
       existing.expiresAt = input.expiresAt ?? new Date(Date.now() + 24 * 3600 * 1000).toISOString();
       this.nonces.delete(deviceId);
       this.acceptedFloor.delete(deviceId);
+      // Re-pair IS an authorization transition (final independent review
+      // B-NEW-1): scopes may change and revocation/active state resets, so
+      // any cursor minted before this moment must never validate as a
+      // continuous resume — bump the stream epoch exactly like grant/owner
+      // transitions, and reset live subscriptions so they rebuild from a
+      // snapshot rather than silently diverge across the transition window.
+      const stream = this.streams.get(deviceId);
+      if (stream) stream.epoch = ++this.generationCounter;
+      for (const sub of this.subscriptions.filter(s => s.deviceId === deviceId)) {
+        this.resetOne(sub, 'authorization_changed');
+      }
       return this.toCredentials(existing);
     }
     const device: DeviceRecord = {
@@ -248,6 +259,13 @@ export class LocalSyntheticGateway {
   revokeDevice(deviceId: string): void {
     const device = this.devices.get(deviceId);
     if (device) { device.active = false; device.revoked = true; }
+    // Revocation is an authorization transition — bump the stream epoch so
+    // cursors minted before it can never validate as continuous resumes
+    // (defense-in-depth: an inactive device cannot even admit a signed
+    // subscribe, but a re-pair re-activates and bumps the epoch again, so
+    // pre-revocation cursors stay invalid across the whole lifecycle).
+    const stream = this.streams.get(deviceId);
+    if (stream) stream.epoch = ++this.generationCounter;
     // Contract deviceLifecycle.revocation: EVERY subscription of the device
     // receives exactly one reset (reason authorization_changed) before close.
     for (const sub of this.subscriptions.filter(s => s.deviceId === deviceId)) {

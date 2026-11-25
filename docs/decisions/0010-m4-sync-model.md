@@ -99,3 +99,7 @@ grant 撤销→重新授权静默分歧修复经历一次**错误方向后修正
 ### IMPORTANT-1 修复（2026-11-25 终审功能审查）
 
 reset 序列规则"等于当前 journal head"在空 journal（head 0）下产生 contract-invalid 的 `sequence: 0`（契约 minimum 1），合规客户端正确丢弃——exactly-one-reset 保证在该窗口失效（该窗口无数据可丢失，首帧自愈，但规则本身不可满足且不能遗传给真实桌面实现）。修复：journalSeq 初始化为 1（journal 序号空间自 2 起，连续性不变量不变，head 0 永不出现）。另记录 informational：重放时授权跳帧可产生非连续交付序号（对 fresh-position 客户端按设计不可见），符合 resetScope 字面但值得注意。
+
+### B-NEW-1 修复（2026-11-25 第五轮）
+
+re-pair 曾只 bump replayEpoch 不 bump stream epoch——绕过 epoch 失效不变量，pre-revocation/pre-re-pair cursor 可连续验证跨越 journal-less 窗口（永久静默分歧，零客户端信号）。修复：re-pair 与 revokeDevice 均为完整授权转换（bump epoch + reset 存活订阅）。回归测试：re-pair 转换（同 scope 也必 reset）+ revoke→re-pair 窗口内容经快照重建恢复（21/21 fault-injection）。**最终不变量**：任何授权转换（grant/owner/device revoke/re-pair）都使 cursor 空间失效——ADAPTER/桌面实现 M5 必须继承此不变量。

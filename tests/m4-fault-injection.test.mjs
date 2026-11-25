@@ -631,9 +631,10 @@ test('regression cross-incarnation cursor: forged and pre-restart cursors are fo
 test('regression grant revoke/re-grant: window mutations are recovered, never silently diverged', async (t) => {
   // Independent-security FINAL-review important finding: revoked-window
   // mutations must not permanently vanish from the client without a signal.
-  // Fixed semantics: events journal regardless of authorization (delivery/
-  // replay-time filtering only); both revoke and re-grant reset subscriptions
-  // forcing baseline rebuilds.
+  // Fixed semantics (final model after B1): events journal only for devices
+  // authorized at emission time; every authorization transition (grant/owner/
+  // device revoke/re-pair) bumps the stream epoch invalidating prior cursors
+  // and resets live subscriptions forcing baseline rebuilds.
   const { M, gateway } = setup(t, domain());
   const r = rig(t, M, gateway, 'regrant');
   await r.store.load();
@@ -748,4 +749,65 @@ test('regression multi-project filtering: never-granted project events never hol
   await new Promise(resolve => setTimeout(resolve, 60));
   assert.ok((store2.state.conversations['conv-other']?.messages?.length ?? 0) > 0, 'own-project traffic flows');
   assert.equal(events2.streamError(), undefined, 'no sequence_gap death from foreign-project events');
+});
+
+test('regression re-pair transition: cursors minted before re-pair never validate as continuous (B-NEW-1)', async (t) => {
+  // Final-review B-NEW-1: re-pair bumps only replayEpoch was a bypass of the
+  // epoch-invalidation invariant. Now re-pair is a full authorization
+  // transition: pre-transition cursors must hit exactly-one reset.
+  const { M, gateway, service } = setup(t, domain());
+  const r = rig(t, M, gateway, 'repair');
+  await r.store.load();
+  r.events.open(r.stream, r.client.buildEventsRequest(), undefined);
+  await send(r, 'before-repair');
+  const preCursor = r.events.latestCursor();
+  // Re-pair the same key (scopes unchanged!) — still a transition. Re-pair
+  // bumps replayEpoch, so the client must use the fresh registration for
+  // admission; the CURSOR under test is the pre-transition one.
+  const creds2 = gateway.registerDevice({
+    devicePublicKey: r.device.publicKeyRaw, grantedScopes: ALL_SCOPES, grants: [PROJECT],
+    expiresAt: new Date(Date.now() + 3600_000).toISOString(),
+  });
+  const client2 = new M.client.TypedRemoteClient({ credentials: creds2, crypto: r.deviceCrypto, transport: { send: req => gateway.send(req) } });
+  const resets = [];
+  r.events.close();
+  r.events.onEvent = a => { if (a.event === 'reset') resets.push(a); r.store.apply(a); };
+  r.events.open(r.stream, client2.buildEventsRequest(preCursor), preCursor);
+  await new Promise(resolve => setTimeout(resolve, 80));
+  assert.equal(resets.length, 1, 'pre-re-pair cursor must hit exactly-one reset even with identical scopes');
+  assert.equal(resets[0].payload.reason, 'cursor_expired');
+});
+
+test('regression revoke→re-pair: mutations in the revoked window resurface via snapshot rebuild, never silently lost (B-NEW-1)', async (t) => {
+  const { M, gateway, service } = setup(t, domain());
+  const r = rig(t, M, gateway, 'rev-repair');
+  await r.store.load();
+  r.events.open(r.stream, r.client.buildEventsRequest(), undefined);
+  await send(r, 'pre-revoke');
+  const preCursor = r.events.latestCursor();
+  // Disconnect, revoke, mutate in the window, then re-pair.
+  r.events.close();
+  gateway.revokeDevice(r.credentials.deviceId);
+  const conv = gateway.domain.conversations.find(c => c.conversationId === CONV);
+  conv.messages.push({ messageId: 'msg_window_rw', role: 'assistant', text: 'revoked-window-content' });
+  conv.ownerRevision += 1;
+  // Resume with the pre-revocation cursor: epoch invalidation → exactly-one
+  // reset → snapshot rebuild carries the window content. Re-pair rotates the
+  // credentials (replayEpoch bumps), so admission uses the fresh registration;
+  // the CURSOR under test is the pre-revocation one.
+  const resets = [];
+  r.events.onEvent = a => { if (a.event === 'reset') resets.push(a); r.store.apply(a); };
+  const creds2 = gateway.registerDevice({
+    devicePublicKey: r.device.publicKeyRaw, grantedScopes: ALL_SCOPES, grants: [PROJECT],
+    expiresAt: new Date(Date.now() + 3600_000).toISOString(),
+  });
+  const client2 = new M.client.TypedRemoteClient({ credentials: creds2, crypto: r.deviceCrypto, transport: { send: req => gateway.send(req) } });
+  // The store's original client is stale after re-pair (replayEpoch rotated)
+  // — rebind it to the fresh credentials exactly as a real client would.
+  r.store.client = client2;
+  r.events.open(r.stream, client2.buildEventsRequest(preCursor), preCursor);
+  await new Promise(resolve => setTimeout(resolve, 80));
+  assert.ok(resets.length >= 1, 'pre-revocation cursor must reset — never continuous-incomplete replay');
+  await r.store.refresh(CONV);
+  assert.ok(storeMessages(r).some(m => m.includes('revoked-window-content')), 'window content recovered via snapshot — zero silent divergence');
 });
