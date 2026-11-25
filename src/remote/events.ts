@@ -51,8 +51,10 @@ type FrameResult =
 export interface EventClientOptions {
   credentials: DeviceCredentials;
   crypto: CryptoProvider;
-  /** Re-validates that the frame's resource is still authorized for this device — mirrors frameAuthentication.resourceAuthorization. */
-  authorizeResource: (context: { conversationId: string; ownerRevision: number; event: EventName }) => boolean;
+  /** Re-validates that the frame's resource is still authorized for this device — mirrors frameAuthentication.resourceAuthorization.
+   *  Contract resourceAuthorization: the callback is MANDATORY for every ordinary frame and receives
+   *  {deviceId, serviceId, conversationId, ownerRevision, event} (round-6 S25). */
+  authorizeResource: (context: { deviceId: string; serviceId: string; conversationId: string; ownerRevision: number; event: EventName }) => boolean;
   onReset: (reason: string) => void;
   onEvent: (applied: AppliedEvent) => void;
   onDrop?: (code: string) => void;
@@ -237,9 +239,14 @@ export class EventStreamClient {
     }
     let granted = false;
     try {
-      granted = this.authorize({ conversationId: frame.conversationId, ownerRevision: frame.ownerRevision, event: frame.event }) === true;
+      granted = this.authorize({ deviceId: this.credentials.deviceId, serviceId: this.credentials.serviceId, conversationId: frame.conversationId, ownerRevision: frame.ownerRevision, event: frame.event }) === true;
     } catch { granted = false; }
-    if (!granted) return this.drop('unknown_resource');
+    // Contract acceptance (round-6 S22): a frame whose authorization fails is
+    // dropped AND the stream is reset — never a silent drop. Client-side the
+    // reset is a terminal death: recovery resubscribes through the snapshot
+    // watermark path. A silent drop would let the same frame apply later if
+    // authorization flipped back, corrupting ordering.
+    if (!granted) return this.fatal('unknown_resource');
     this.position = { streamGeneration: frame.streamGeneration, sequence: frame.sequence };
     this.cursor = frame.cursor;
     const applied = this.toApplied(frame);
