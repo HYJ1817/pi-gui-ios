@@ -2,21 +2,21 @@
   "schemaVersion": 2,
   "kind": "integration",
   "taskId": "M3-core",
-  "commit": "831730612d39150fb2629c150a34ad9394eecfef",
-  "sourceFingerprint": "ebe2962d99416ef07e45b9553347ea38529218bd74a19ca7742b20a282e67053",
+  "commit": "1e85410de3d3ae443e0954e09c426ebe66e11ae5",
+  "sourceFingerprint": "061c5d90b1977471c91f7e6a91ea600df44e17478019716d5bf2e4669a3552c8",
   "scopes": [
     "control",
     "protocol",
     "shared"
   ],
   "scopeFingerprint": "eb231849b82cc34b6be2f6a05810bda9fb4ebd4ef4b77cc8dac7dafed388b67e",
-  "startedAt": "2026-11-25T01:59:47.563Z",
-  "finishedAt": "2026-11-25T01:59:50.250Z",
+  "startedAt": "2026-11-25T02:19:42.291Z",
+  "finishedAt": "2026-11-25T02:19:44.937Z",
   "passed": true,
   "details": {
     "command": "node scripts/desktop-remote-verify.mjs",
     "exitCode": 0,
     "logPath": "docs/acceptance/local-integration-output.txt",
-    "logSha256": "7bf3b26dcb90980bfb72dfd2ec4a34c01d0f52a259b75937ecb1f5d5a7592861"
+    "logSha256": "be5bf8b05948bb13d92dfdeaba98124dddbb701bf3c21cf2a1bbe674fc72b931"
   }
 }

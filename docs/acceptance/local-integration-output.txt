@@ -6,39 +6,39 @@ worktree          C:\pi-GUI-remote-protocol
 worktree pinned + clean: OK
 
 == remote contract suite: node --test tests/remote-contract.test.mjs ==
-✔ remote v1 contract is frozen v1, HTTPS-only and disabled by default (1.4024ms)
-✔ operation ids, scopes and methods are unique and closed (0.2668ms)
-✔ pair exchange accepts only a short-lived-code payload shape (1.6746ms)
-✔ project and session reads accept only opaque ids and empty payloads (0.9904ms)
-✔ runtime creation requires a revision and does not allow classic cwd/path fields (0.5504ms)
-✔ chat send is bounded, revision-bound and not a command proxy (2.5091ms)
-✔ exact signed body bytes and parsed request body must agree (0.3093ms)
-✔ stop uses a typed operation and requires current owner revision (0.2619ms)
-✔ approval response is bound to a real opaque request id and closed method/decision (0.4795ms)
-✔ signature canonicalization binds device, service, request identity, path/query, timestamp, nonce and body digest (0.336ms)
-✔ Ed25519 request signature, device+service binding, skew and atomic replay gate are exercised with synthetic keys (6.5768ms)
-✔ pair proof binds code, displayed name, device key, nonce and service fingerprint (4.4008ms)
-✔ signed operation requests require all device-authentication header shapes (0.2797ms)
-✔ event stream accepts only a pattern-bound cursor and signed device headers (0.295ms)
-✔ event frames carry generation/cursor/signature, per-event scopes and closed payloads (5.2596ms)
-✔ request envelope rejects unknown version, fields and duplicate transport paths (0.6106ms)
-✔ responses use operation-specific closed projections and never carry raw errors/secrets/paths (0.4818ms)
-✔ device grants and owner recheck gate admission (IDOR / stale owner / substitution) (2.7169ms)
-✔ approval payload enforces the per-method decision/value matrix (0.1085ms)
-✔ approval settlement resolves and consumes a live Pi dialog exactly once (3.1377ms)
-✔ pre-auth failures map to a closed wire code and internal codes never leak (0.1387ms)
-✔ UTF-8 byte limits and duplicate query params are enforced (0.4476ms)
-✔ raw transport adapter rejects duplicate names, bad encoding, BOM and reserved literals (0.4389ms)
-✔ admission token recheck binds owner, device epoch and project at commit (0.2601ms)
-✔ wire error stage-awareness and closed mapping with own-property lookup (0.0724ms)
-✔ zero-UUID sentinel only on uncorrelated unauthorized error; arrays rejected (0.168ms)
-✔ forbidden values: embedded POSIX/drive paths, credentials; transcript only scans credentials (0.2264ms)
-✔ wireErrorCode pair-stage resolves the closed pairExchange map (0.1041ms)
-✔ forbidden-value boundary matrix: paths and env dumps after any delimiter (0.3295ms)
-✔ raw target charset gate: non-ASCII, DEL, and # rejected before routing (0.1052ms)
-✔ reset occupies its sequence; next frame is reset.sequence+1, no freshSubscribe bypass (0.8956ms)
-✔ out-of-scope and network-path vectors per valueScanOutOfScope (0.9426ms)
-✔ quoted-key credentials rejected in metadata AND transcript text (0.3447ms)
+✔ remote v1 contract is frozen v1, HTTPS-only and disabled by default (1.2408ms)
+✔ operation ids, scopes and methods are unique and closed (0.1978ms)
+✔ pair exchange accepts only a short-lived-code payload shape (1.4498ms)
+✔ project and session reads accept only opaque ids and empty payloads (0.8779ms)
+✔ runtime creation requires a revision and does not allow classic cwd/path fields (0.4989ms)
+✔ chat send is bounded, revision-bound and not a command proxy (2.217ms)
+✔ exact signed body bytes and parsed request body must agree (0.2599ms)
+✔ stop uses a typed operation and requires current owner revision (0.2235ms)
+✔ approval response is bound to a real opaque request id and closed method/decision (0.4595ms)
+✔ signature canonicalization binds device, service, request identity, path/query, timestamp, nonce and body digest (0.3067ms)
+✔ Ed25519 request signature, device+service binding, skew and atomic replay gate are exercised with synthetic keys (6.391ms)
+✔ pair proof binds code, displayed name, device key, nonce and service fingerprint (4.5182ms)
+✔ signed operation requests require all device-authentication header shapes (0.2604ms)
+✔ event stream accepts only a pattern-bound cursor and signed device headers (0.2744ms)
+✔ event frames carry generation/cursor/signature, per-event scopes and closed payloads (5.7335ms)
+✔ request envelope rejects unknown version, fields and duplicate transport paths (0.3345ms)
+✔ responses use operation-specific closed projections and never carry raw errors/secrets/paths (0.3779ms)
+✔ device grants and owner recheck gate admission (IDOR / stale owner / substitution) (2.9102ms)
+✔ approval payload enforces the per-method decision/value matrix (0.1045ms)
+✔ approval settlement resolves and consumes a live Pi dialog exactly once (2.9541ms)
+✔ pre-auth failures map to a closed wire code and internal codes never leak (0.125ms)
+✔ UTF-8 byte limits and duplicate query params are enforced (0.4308ms)
+✔ raw transport adapter rejects duplicate names, bad encoding, BOM and reserved literals (0.4179ms)
+✔ admission token recheck binds owner, device epoch and project at commit (0.2679ms)
+✔ wire error stage-awareness and closed mapping with own-property lookup (0.0516ms)
+✔ zero-UUID sentinel only on uncorrelated unauthorized error; arrays rejected (0.1509ms)
+✔ forbidden values: embedded POSIX/drive paths, credentials; transcript only scans credentials (0.2172ms)
+✔ wireErrorCode pair-stage resolves the closed pairExchange map (0.1043ms)
+✔ forbidden-value boundary matrix: paths and env dumps after any delimiter (0.3282ms)
+✔ raw target charset gate: non-ASCII, DEL, and # rejected before routing (0.1007ms)
+✔ reset occupies its sequence; next frame is reset.sequence+1, no freshSubscribe bypass (1.0621ms)
+✔ out-of-scope and network-path vectors per valueScanOutOfScope (0.4333ms)
+✔ quoted-key credentials rejected in metadata AND transcript text (0.2547ms)
 ℹ tests 33
 ℹ suites 0
 ℹ pass 33
@@ -46,7 +46,7 @@ worktree pinned + clean: OK
 ℹ cancelled 0
 ℹ skipped 0
 ℹ todo 0
-ℹ duration_ms 160.6496
+ℹ duration_ms 160.4668
 -- remote contract suite exit=0
 
 == remote gateway e2e: node tests/remote-gateway.cjs ==
