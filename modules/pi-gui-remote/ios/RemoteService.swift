@@ -17,18 +17,20 @@ final class RemoteService: @unchecked Sendable {
     let profile: String
     let stream: Bool
     let connection: PinnedConnection
+    let activation: UUID?
+    let token: UUID
     var pendingFrames: [Int] = []
   }
   private let lock = NSRecursiveLock()
   private let vault: RemoteVault
   private var drafts: [String: Draft] = [:]
-  private var enabled = Set<String>()
+  private var enabled: [String: UUID] = [:]
   private var live: [String: Live] = [:]
   var event: (String, [String: String]) -> Void = { _, _ in }
   init(vault: RemoteVault = RemoteKeychainVault()) { self.vault = vault }
   private func synced<T>(_ work: () throws -> T) rethrows -> T { lock.lock(); defer { lock.unlock() }; return try work() }
   private func profile(_ handle: String) throws -> RemoteProfile {
-    try requireRemote(enabled.contains(handle), .disabled)
+    try requireRemote(enabled[handle] != nil, .disabled)
     return try RemoteProfile(data: vault.get(handle))
   }
   func prepare(_ raw: String, name: String, scopesJSON: String) throws -> String {
@@ -101,36 +103,40 @@ final class RemoteService: @unchecked Sendable {
   func activate(_ handle: String) throws -> String {
     try synced {
       let p = try RemoteProfile(data: vault.get(handle))
-      enabled.insert(handle)
+      // A new activation must not inherit work admitted by an earlier one.
+      invalidate(handle)
+      enabled[handle] = UUID()
       return try canonical(p.credentials)
     }
   }
-  func deactivate(_ handle: String) {
-    let connections: [PinnedConnection] = synced {
-      enabled.remove(handle)
-      return live.values.filter { $0.profile == handle }.map { $0.connection }
+  private func invalidate(_ handle: String) {
+    enabled.removeValue(forKey: handle)
+    let ids = live.keys.filter { live[$0]?.profile == handle }
+    for id in ids {
+      guard let entry = live.removeValue(forKey: id) else { continue }
+      entry.connection.cancel()
+      if entry.stream { event("remoteClosed", ["subscriptionId": id, "code": "stream_closed"]) }
     }
-    for c in connections { c.cancel() }
   }
+  func deactivate(_ handle: String) { synced { invalidate(handle) } }
   func forget(_ handle: String) throws {
     try synced {
-      enabled.remove(handle); drafts.removeValue(forKey: handle)
-      for c in live.values where c.profile == handle { c.connection.cancel() }
+      invalidate(handle); drafts.removeValue(forKey: handle)
       try vault.remove(handle)
     }
   }
   func stop() {
-    let connections = synced { () -> [PinnedConnection] in
+    synced {
       enabled.removeAll(); drafts.removeAll()
-      return live.values.map { $0.connection }
+      let connections = live.values.map { $0.connection }; live.removeAll()
+      for connection in connections { connection.cancel() }
     }
-    for connection in connections { connection.cancel() }
   }
   func sign(_ handle: String, message: String) throws -> String {
     try synced {
       let p = try profile(handle)
       let parts = message.components(separatedBy: "\n")
-      try requireRemote(message.utf8.count <= 8192 && parts.count == 11 && parts[0] == "1" && parts[1] == p.deviceId
+      try requireRemote(message.utf8.count <= 8192 && parts.count == 10 && parts[0] == "1" && parts[1] == p.deviceId
         && parts[2] == p.serviceId && parts[3] == String(integer(p.credentials["replayEpoch"])!))
       return b64url(try p.key.signature(for: Data(message.utf8)))
     }
@@ -147,25 +153,30 @@ final class RemoteService: @unchecked Sendable {
     if stream { try requireRemote(live.values.filter { $0.profile == handle && $0.stream }.count < 2, .capacity_exceeded) }
   }
   func send(_ handle: String, raw: String) async throws -> String {
-    let (p, r) = try synced { () -> (RemoteProfile, RemoteRequest) in
+    let (p, r, activation) = try synced { () -> (RemoteProfile, RemoteRequest, UUID) in
       let p = try profile(handle); let r = try RemoteRequest(raw, stream: false)
-      try validate(r, profile: p); try reserve(handle, stream: false); return (p, r)
+      try validate(r, profile: p); try reserve(handle, stream: false); return (p, r, enabled[handle]!)
     }
-    let out = try await request(handle: handle, endpoint: p.endpoint, pin: p.fingerprint, request: r)
-    _ = try synced { try profile(handle) } // A concurrent local disable cannot return a successful result.
+    let out = try await request(handle: handle, endpoint: p.endpoint, pin: p.fingerprint, request: r, activation: activation)
+    try synced {
+      try requireRemote(enabled[handle] == activation, .disabled)
+      _ = try profile(handle)
+    }
     return try canonical(["status": out.status, "body": out.body])
   }
-  private func request(handle: String, endpoint: RemoteEndpoint, pin: String, request: RemoteRequest) async throws -> RemoteWireResponse {
+  private func request(handle: String, endpoint: RemoteEndpoint, pin: String, request: RemoteRequest, activation: UUID? = nil) async throws -> RemoteWireResponse {
     try await withCheckedThrowingContinuation { continuation in
       let id = UUID().uuidString
-      let c = PinnedConnection(endpoint: endpoint, pin: pin, request: request, stream: false) { [weak self] result in
-        self?.synced { self?.live.removeValue(forKey: id) }
+      let token = UUID()
+      let c = PinnedConnection(endpoint: endpoint, pin: pin, request: request, stream: false,
+        admit: { [weak self] effect in self?.admit(id, token: token, effect: effect) ?? false }) { [weak self] result in
+        self?.synced { if self?.live[id]?.token == token { self?.live.removeValue(forKey: id) } }
         continuation.resume(with: result.mapError { $0 as Error })
       }
       let accepted = synced { () -> Bool in
         guard live.count < 16, live.values.filter({ $0.profile == handle }).count < 4,
-              enabled.contains(handle) || drafts[handle]?.inFlight == true else { return false }
-        live[id] = Live(profile: handle, stream: false, connection: c); return true
+              activation != nil ? enabled[handle] == activation : drafts[handle]?.inFlight == true else { return false }
+        live[id] = Live(profile: handle, stream: false, connection: c, activation: activation, token: token); return true
       }
       if accepted { c.start() } else { continuation.resume(throwing: RemoteFault.disabled) }
     }
@@ -176,26 +187,47 @@ final class RemoteService: @unchecked Sendable {
       try requireRemote(live[id] == nil)
       let p = try profile(handle); let r = try RemoteRequest(raw, stream: true)
       try validate(r, profile: p); try reserve(handle, stream: true)
+      let token = UUID()
       let c = PinnedConnection(endpoint: p.endpoint, pin: p.fingerprint, request: r, stream: true,
-        onOpen: { [weak self] in self?.emitIfActive(id, event: "remoteOpened") },
-        onFrame: { [weak self] frame in self?.deliver(id, frame: frame) },
+        onOpen: { [weak self] in self?.emitIfActive(id, token: token, event: "remoteOpened") },
+        onFrame: { [weak self] frame in self?.deliver(id, token: token, frame: frame) },
+        admit: { [weak self] effect in self?.admit(id, token: token, effect: effect) ?? false },
         complete: { [weak self] _ in
           guard let self else { return }
-          let existed = self.synced { self.live.removeValue(forKey: id) != nil }
+          let existed = self.synced { () -> Bool in
+            guard self.live[id]?.token == token else { return false }
+            self.live.removeValue(forKey: id); return true
+          }
           if existed { self.event("remoteClosed", ["subscriptionId": id, "code": "stream_closed"]) }
         })
-      live[id] = Live(profile: handle, stream: true, connection: c); c.start()
+      live[id] = Live(profile: handle, stream: true, connection: c, activation: enabled[handle], token: token); c.start()
     }
   }
-  private func emitIfActive(_ id: String, event name: String) {
+  private func admit(_ id: String, token: UUID, effect: () -> Void) -> Bool {
     synced {
-      guard let entry = live[id], enabled.contains(entry.profile), (try? profile(entry.profile)) != nil else { live[id]?.connection.cancel(); return }
+      guard let entry = live[id], entry.token == token else { return false }
+      if let activation = entry.activation {
+        guard enabled[entry.profile] == activation, (try? profile(entry.profile)) != nil else { return false }
+      } else {
+        guard let draft = drafts[entry.profile], draft.inFlight, draft.bootstrap.expires > Date() else { return false }
+      }
+      // Enqueue the HTTP bytes under the same lock as disable/forget/stop.
+      effect(); return true
+    }
+  }
+  private func emitIfActive(_ id: String, token: UUID, event name: String) {
+    synced {
+      guard let entry = live[id], entry.token == token else { return }
+      guard let activation = entry.activation, enabled[entry.profile] == activation,
+            (try? profile(entry.profile)) != nil else { entry.connection.cancel(); return }
       event(name, ["subscriptionId": id])
     }
   }
-  private func deliver(_ id: String, frame: String) {
+  private func deliver(_ id: String, token: UUID, frame: String) {
     synced {
-      guard var entry = live[id], enabled.contains(entry.profile), (try? profile(entry.profile)) != nil else { live[id]?.connection.cancel(); return }
+      guard var entry = live[id], entry.token == token else { return }
+      guard let activation = entry.activation, enabled[entry.profile] == activation,
+            (try? profile(entry.profile)) != nil else { entry.connection.cancel(); return }
       let bytes = frame.utf8.count
       guard entry.pendingFrames.count < 32, entry.pendingFrames.reduce(0, +) + bytes <= 1_048_576 else { entry.connection.cancel(); return }
       entry.pendingFrames.append(bytes); live[id] = entry

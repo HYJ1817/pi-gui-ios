@@ -95,7 +95,7 @@ final class RemoteHTTPDecoder {
     // Bound every line and whole SSE event, including comments/unknown fields.
     for byte in data {
       lineBuffer.append(byte)
-      try requireRemote(lineBuffer.count <= 65536, .capacity_exceeded)
+      try requireRemote(lineBuffer.count <= 65536 + 8, .capacity_exceeded)
       if byte != 10 { continue }
       var line = lineBuffer; lineBuffer.removeAll(keepingCapacity: true)
       line.removeLast(); if line.last == 13 { line.removeLast() }
@@ -103,14 +103,15 @@ final class RemoteHTTPDecoder {
       if text.hasPrefix(":") { try requireRemote(line.count <= 1024, .capacity_exceeded); continue }
       if text.isEmpty {
         if let data = eventData {
-          guard let raw = data.data(using: .utf8), let value = try JSONSerialization.jsonObject(with: raw) as? [String: Any],
+          guard let raw = data.data(using: .utf8), raw.count <= 65536,
+                let value = try JSONSerialization.jsonObject(with: raw) as? [String: Any],
                 let event = value["event"] as? String, eventName == nil || eventName == event else { throw RemoteFault.frame_invalid }
           frame(data)
         } else { try requireRemote(eventName == nil, .frame_invalid) }
         eventName = nil; eventData = nil; frameBytes = 0
       } else {
         frameBytes += line.count + 1
-        try requireRemote(frameBytes <= 65536, .capacity_exceeded)
+        try requireRemote(frameBytes <= 65536 + 128, .capacity_exceeded)
         if text.hasPrefix("event: ") {
           try requireRemote(eventName == nil, .frame_invalid)
           let event = String(text.dropFirst(7))
@@ -143,13 +144,15 @@ final class PinnedConnection: @unchecked Sendable {
   private let requestBytes: Data
   private let stream: Bool
   private let complete: (Result<RemoteWireResponse, RemoteFault>) -> Void
+  private let admit: (@escaping () -> Void) -> Bool
   private var ended = false
   private var timer: DispatchWorkItem?
 
   init(endpoint: RemoteEndpoint, pin: String, request: RemoteRequest, stream: Bool,
        onOpen: @escaping () -> Void = {}, onFrame: @escaping (String) -> Void = { _ in },
+       admit: @escaping (@escaping () -> Void) -> Bool = { effect in effect(); return true },
        complete: @escaping (Result<RemoteWireResponse, RemoteFault>) -> Void) {
-    self.stream = stream; self.complete = complete; requestBytes = request.bytes(endpoint: endpoint)
+    self.stream = stream; self.complete = complete; self.admit = admit; requestBytes = request.bytes(endpoint: endpoint)
     decoder = RemoteHTTPDecoder(stream: stream)
     let tls = NWProtocolTLS.Options()
     sec_protocol_options_set_min_tls_protocol_version(tls.securityProtocolOptions, .TLSv12)
@@ -177,16 +180,20 @@ final class PinnedConnection: @unchecked Sendable {
   }
   func start() {
     queue.async {
+      guard !self.ended else { return }
       self.armTimer()
       self.connection.stateUpdateHandler = { [weak self] state in
         guard let self, !self.ended else { return }
         switch state {
         case .ready:
-          self.connection.send(content: self.requestBytes, completion: .contentProcessed { [weak self] error in
-            guard let self, !self.ended else { return }
-            if error != nil { self.finish(.failure(.transport_unavailable)); return }
-            self.receive()
-          })
+          let admitted = self.admit {
+            self.connection.send(content: self.requestBytes, completion: .contentProcessed { [weak self] error in
+              guard let self, !self.ended else { return }
+              if error != nil { self.finish(.failure(.transport_unavailable)); return }
+              self.receive()
+            })
+          }
+          if !admitted { self.finish(.failure(.disabled)) }
         case .failed, .cancelled: self.finish(.failure(.transport_unavailable))
         default: break
         }

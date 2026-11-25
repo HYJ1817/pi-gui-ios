@@ -98,16 +98,19 @@ export class ConversationStore {
   }
   streamErrorActive(): boolean { return this.state.stream.state !== 'live'; }
 
-  /** ADR-0010 D1: the freshest snapshot watermark across all loaded
-   *  conversations — the atomic cursor the stream should resume from after a
-   *  reload. Returns undefined when nothing has been snapshotted yet. */
+  /** All snapshots must be covered by the resume point. Starting from the
+   *  oldest baseline replays mutations that happened while later snapshots
+   *  were being fetched. Per-conversation watermarks below suppress effects
+   *  already included in a newer baseline. */
   latestWatermarkCursor(): string | undefined { return this.latestWatermark()?.cursor; }
   latestWatermark(): { cursor: string; sequence: number; generation: number } | undefined {
-    let best: { cursor: string; sequence: number; generation: number } | null = null;
+    let oldest: { cursor: string; sequence: number; generation: number } | null = null;
     for (const conv of Object.values(this.state.conversations)) {
-      if (conv.watermark && (best === null || conv.watermark.sequence > best.sequence || conv.watermark.generation > best.generation)) best = conv.watermark;
+      const watermark = conv.watermark;
+      if (watermark && (oldest === null || watermark.generation < oldest.generation
+        || (watermark.generation === oldest.generation && watermark.sequence < oldest.sequence))) oldest = watermark;
     }
-    return best ? { ...best } : undefined;
+    return oldest ? { ...oldest } : undefined;
   }
 
   /** Bootstrap: projects + sessions + all known snapshots. */
@@ -117,17 +120,26 @@ export class ConversationStore {
     let sessions: RemoteSession[] = [];
     for (const project of projects.result.projects) {
       const out = await this.client.listSessions(project.projectId);
-      if (out.ok) sessions = sessions.concat(out.result.sessions);
+      if (!out.ok) { this.setState({ lastError: out.code }); return; }
+      sessions = sessions.concat(out.result.sessions);
     }
-    this.setState({ projects: projects.result.projects, sessions: sessions.slice(0, MAX_SESSIONS), registryRevision: projects.result.registryRevision, lastError: null });
-    for (const session of sessions) {
-      for (const active of session.activeConversations) await this.refresh(active.conversationId);
+    sessions = sessions.slice(0, MAX_SESSIONS);
+    const activeIds = new Set(sessions.flatMap(session => session.activeConversations.map(active => active.conversationId)));
+    const conversations = Object.fromEntries(Object.entries(this.state.conversations).filter(([id]) => activeIds.has(id)));
+    this.setState({ projects: projects.result.projects, sessions, conversations, registryRevision: projects.result.registryRevision, lastError: null });
+    // Authorization can rotate while the individual baselines are fetched.
+    // Never resume a set of snapshots from incompatible cursor spaces.
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+      for (const id of activeIds) if (!await this.refresh(id)) return;
+      const generations = new Set([...activeIds].map(id => this.conversation(id).watermark?.generation));
+      if (generations.size <= 1) return;
     }
+    this.setState({ lastError: 'sequence_gap', stream: { state: 'dead' } });
   }
 
-  async refresh(conversationId: string): Promise<void> {
+  async refresh(conversationId: string): Promise<boolean> {
     const snap = await this.client.snapshot(conversationId);
-    if (!snap.ok) { this.setState({ lastError: snap.code }); return; }
+    if (!snap.ok) { this.setState({ lastError: snap.code }); return false; }
     // Live frames may have advanced the tracked revision past the snapshot
     // (e.g. a reset-triggered refresh racing an in-flight mutation). Never
     // downgrade messages/status with a stale baseline — approvals still
@@ -139,7 +151,11 @@ export class ConversationStore {
       generation: snap.result.streamGeneration,
       sequence: snap.result.sequence,
     };
-    if (snap.result.ownerRevision < this.conversation(conversationId).ownerRevision) {
+    const current = this.conversation(conversationId);
+    if (current.watermark && watermark.generation < current.watermark.generation) {
+      this.setState({ lastError: 'sequence_gap' }); return false;
+    }
+    if (snap.result.ownerRevision < current.ownerRevision && (!current.watermark || watermark.generation === current.watermark.generation)) {
       this.setConversation(conversationId, { loaded: true, watermark });
     } else {
       this.setConversation(conversationId, {
@@ -151,8 +167,14 @@ export class ConversationStore {
         watermark,
       });
     }
-    const approvals = await this.client.listApprovals(conversationId);
-    if (approvals.ok) this.setConversation(conversationId, { approvals: approvals.result.approvals.slice(0, MAX_APPROVALS) });
+    if (this.client.credentials().grantedScopes.includes('approvals.read')) {
+      const approvals = await this.client.listApprovals(conversationId);
+      if (!approvals.ok) { this.setState({ lastError: approvals.code }); return false; }
+      this.setConversation(conversationId, { approvals: approvals.result.approvals.slice(0, MAX_APPROVALS) });
+    } else {
+      this.setConversation(conversationId, { approvals: [] });
+    }
+    return true;
   }
 
   /** Apply one validated stream event — the ONLY mutation path for live data. */
@@ -164,6 +186,13 @@ export class ConversationStore {
       void Promise.all(ids.map(id => this.refresh(id)));
       return;
     }
+    // EventStreamClient still consumes every position. The store ignores
+    // effects strictly before this conversation's atomic snapshot watermark,
+    // so replaying from another conversation's older baseline cannot restore
+    // stale chunks, statuses or already-settled approvals.
+    const baseline = this.conversation(conversationId).watermark;
+    if (baseline && (applied.streamGeneration < baseline.generation
+      || (applied.streamGeneration === baseline.generation && applied.sequence < baseline.sequence))) return;
     if (event === 'snapshot') {
       this.setConversation(conversationId, {
         status: (payload.status as ConversationStatus) ?? 'unknown',

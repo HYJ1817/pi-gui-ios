@@ -811,3 +811,83 @@ test('regression revoke→re-pair: mutations in the revoked window resurface via
   await r.store.refresh(CONV);
   assert.ok(storeMessages(r).some(m => m.includes('revoked-window-content')), 'window content recovered via snapshot — zero silent divergence');
 });
+
+test('regression multi-conversation recovery replays from the oldest baseline without regressing newer snapshots', async t => {
+  const data = domain();
+  const otherId = 'conversation-f002';
+  data.sessions[0].activeConversations.push({ conversationId: otherId });
+  data.conversations.push({ ...data.conversations[0], conversationId: otherId, messages: [], approvals: [], script: {} });
+  const { M, gateway } = setup(t, data);
+  const r = rig(t, M, gateway, 'multi-baseline');
+  const snapshot = r.client.snapshot.bind(r.client);
+  let injected = false;
+  r.client.snapshot = async id => {
+    const result = await snapshot(id);
+    if (id === CONV && !injected) {
+      injected = true;
+      const first = gateway.domain.conversations.find(c => c.conversationId === CONV);
+      const second = gateway.domain.conversations.find(c => c.conversationId === otherId);
+      const missed = { messageId: 'message-between', role: 'assistant', text: 'arrived between snapshots' };
+      first.messages.push(missed); first.ownerRevision += 1;
+      gateway.emit(r.credentials.deviceId, 'message.append', first, missed);
+      for (const text of ['part', 'complete newer snapshot']) {
+        const message = { messageId: 'message-progress', role: 'assistant', text };
+        second.messages = [message]; second.ownerRevision += 1;
+        gateway.emit(r.credentials.deviceId, 'message.append', second, message);
+      }
+    }
+    return result;
+  };
+  await r.store.load();
+  assert.equal(r.store.conversation(otherId).messages[0].text, 'complete newer snapshot');
+  const seen = [];
+  const stop = r.store.subscribe(() => seen.push(r.store.conversation(otherId).messages[0]?.text));
+  const watermark = r.store.latestWatermark();
+  r.events.open(r.stream, r.client.buildEventsRequest(watermark.cursor), watermark.cursor, watermark);
+  stop();
+  assertConverged(r, gateway, 'multiple snapshot recovery');
+  assert.ok(seen.every(text => text === 'complete newer snapshot'), 'replayed chunks covered by the later snapshot never regress its state');
+  assert.equal(r.events.streamError(), undefined);
+});
+
+test('regression session-list and approval failures prevent successful baseline recovery', async t => {
+  const { M, gateway } = setup(t, domain());
+  const r = rig(t, M, gateway, 'failed-baseline');
+  const list = r.client.listSessions.bind(r.client);
+  r.client.listSessions = async () => ({ ok: false, code: 'unavailable', retryable: true });
+  await r.store.load();
+  assert.equal(r.store.snapshot().lastError, 'unavailable', 'a failed collection fetch must not be reported as successful recovery');
+  r.client.listSessions = list;
+  r.client.listApprovals = async () => ({ ok: false, code: 'unauthorized', retryable: false });
+  await r.store.load();
+  assert.equal(r.store.snapshot().lastError, 'unauthorized', 'a failed approval baseline must not be silently retained');
+});
+
+test('regression recovery recollects mixed generations and stops after bounded authorization churn', async t => {
+  const data = domain(), otherId = 'conversation-f002';
+  data.sessions[0].activeConversations.push({ conversationId: otherId });
+  data.conversations.push({ ...data.conversations[0], conversationId: otherId, messages: [], approvals: [], script: {} });
+  const { M, gateway } = setup(t, data);
+  const r = rig(t, M, gateway, 'generation-baselines');
+  const snapshot = r.client.snapshot.bind(r.client);
+  let calls = 0, rotateOnce = true;
+  r.client.snapshot = async id => {
+    const result = await snapshot(id); calls += 1;
+    if (rotateOnce) { rotateOnce = false; gateway.rollOwnerEpoch(CONV); }
+    return result;
+  };
+  await r.store.load();
+  assert.equal(calls, 4, 'mixed generations trigger a full recollection');
+  assert.equal(r.store.conversation(CONV).watermark.generation, r.store.conversation(otherId).watermark.generation);
+  assert.equal(r.store.snapshot().lastError, null);
+  calls = 0;
+  r.client.snapshot = async id => {
+    const result = await snapshot(id); calls += 1;
+    gateway.rollOwnerEpoch(CONV);
+    return result;
+  };
+  await r.store.load();
+  assert.equal(calls, 6, 'three collection attempts are bounded');
+  assert.equal(r.store.snapshot().lastError, 'sequence_gap');
+  assert.equal(r.store.snapshot().stream.state, 'dead');
+});

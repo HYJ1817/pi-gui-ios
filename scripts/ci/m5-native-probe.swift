@@ -38,6 +38,21 @@ final class MemoryRemoteVault: RemoteVault {
       try rejects { _ = try service.activate(UUID().uuidString) }; count += 1
       try rejects { _ = try service.sign(UUID().uuidString, message: "secret") }; count += 1
       try check(try vault.count() == 0); count += 1
+      let handle = UUID().uuidString.lowercased()
+      let fingerprint = sha256(Data("synthetic native service".utf8))
+      let credentials: [String: Any] = ["deviceId": "device-native-probe", "devicePublicKey": b64url(key.publicKey.rawRepresentation),
+        "grantedScopes": ["projects.read", "sessions.read"], "replayEpoch": 1, "expiresAt": "2099-01-01T00:00:00Z",
+        "serviceFingerprint": fingerprint, "serviceId": "svc-" + fingerprint.prefix(16), "servicePublicKey": b64url(key.publicKey.rawRepresentation)]
+      let profile = try RemoteProfile(key: key, endpoint: RemoteEndpoint("https://desktop.tail-example.ts.net"), credentials: credentials)
+      try vault.put(handle, data: profile.data()); _ = try service.activate(handle)
+      let signingMessage = ["1", "device-native-probe", "svc-" + fingerprint.prefix(16), "1", UUID().uuidString.lowercased(), "GET",
+        "/remote/v1/projects", "1800000000000", b64url(try secureBytes(32)), sha256(Data())].joined(separator: "\n")
+      try check(verifyEd25519(b64url(key.publicKey.rawRepresentation), signature: service.sign(handle, message: signingMessage), message: signingMessage)); count += 1
+      try rejects { _ = try service.sign(handle, message: signingMessage + "\nextra") }; count += 1
+      service.deactivate(handle)
+      try rejects { _ = try service.sign(handle, message: signingMessage) }; count += 1
+      _ = try service.activate(handle); service.stop()
+      try rejects { _ = try service.sign(handle, message: signingMessage) }; count += 1
       // Every possible one-byte split, including UTF-8 multibyte and chunk framing.
       let frame = "{\"event\":\"message.append\",\"payload\":{\"text\":\"你好😀\"}}"
       let payload = Data(("event: message.append\ndata: " + frame + "\n\n:keepalive\n\n").utf8)
@@ -47,6 +62,24 @@ final class MemoryRemoteVault: RemoteVault {
       decoder.opened = { opened += 1 }; decoder.frame = { frames.append($0) }
       for byte in wire { try decoder.feed(Data([byte])) }
       try check(opened == 1 && frames == [frame]); count += 1
+      // The frozen frame budget applies to JSON bytes, with bounded SSE
+      // framing overhead allowed separately (including CRLF).
+      func boundaryFrame(_ size: Int) throws -> String {
+        let base: [String: Any] = ["event": "snapshot", "padding": ""]
+        let empty = try canonical(base)
+        return try canonical(["event": "snapshot", "padding": String(repeating: "x", count: size - empty.utf8.count)])
+      }
+      for size in [65535, 65536, 65537] {
+        let raw = try boundaryFrame(size)
+        let payload = Data(("event: snapshot\r\ndata: " + raw + "\r\n\r\n").utf8)
+        var data = Data("HTTP/1.1 200 OK\r\nContent-Type: text/event-stream; charset=utf-8\r\nTransfer-Encoding: chunked\r\n\r\n".utf8)
+        data.append(Data((String(payload.count, radix: 16) + "\r\n").utf8)); data.append(payload); data.append(Data("\r\n".utf8))
+        let decoder = RemoteHTTPDecoder(stream: true); var received: [String] = []
+        decoder.frame = { received.append($0) }
+        if size <= 65536 { try decoder.feed(data); try check(received == [raw]) }
+        else { try rejects { try decoder.feed(data) }; try check(received.isEmpty) }
+        count += 1
+      }
       let json = RemoteHTTPDecoder(stream: false); var response: RemoteWireResponse?
       json.response = { response = $0 }
       for byte in Data("HTTP/1.1 200 OK\r\nContent-Type: application/json; charset=utf-8\r\nContent-Length: 2\r\n\r\n{}".utf8) { try json.feed(Data([byte])) }
@@ -58,7 +91,7 @@ final class MemoryRemoteVault: RemoteVault {
         "HTTP/1.1 200 OK\r\nContent-Type: application/json; charset=utf-8\r\nContent-Length: 1048577\r\n\r\n",
         "HTTP/1.1 200 OK\r\nContent-Type: application/json; charset=utf-8\r\nTransfer-Encoding: chunked\r\n\r\n2;foo=bar\r\n{}\r\n0\r\n\r\n"
       ] { try rejects { try RemoteHTTPDecoder(stream: false).feed(Data(text.utf8)) }; count += 1 }
-      for payload in [Data("data: {}\ndata: {}\n\n".utf8), Data([100,97,116,97,58,32,255,10]), Data(("data: " + String(repeating: "a", count: 65536)).utf8)] {
+      for payload in [Data("data: {}\ndata: {}\n\n".utf8), Data([100,97,116,97,58,32,255,10]), Data(("data: " + String(repeating: "a", count: 65539)).utf8)] {
         var data = Data("HTTP/1.1 200 OK\r\nContent-Type: text/event-stream; charset=utf-8\r\nTransfer-Encoding: chunked\r\n\r\n".utf8)
         data.append(Data((String(payload.count, radix: 16) + "\r\n").utf8)); data.append(payload); data.append(Data("\r\n".utf8))
         try rejects { try RemoteHTTPDecoder(stream: true).feed(data) }; count += 1
