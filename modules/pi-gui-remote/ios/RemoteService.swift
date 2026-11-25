@@ -72,7 +72,12 @@ final class RemoteService: @unchecked Sendable {
           if let raw = response.body.data(using: .utf8), let wire = try? JSONSerialization.jsonObject(with: raw) as? [String: Any],
              let error = wire["error"] as? [String: Any], error["code"] as? String == "pairing_rejected" { retryable = true }
           drafts[handle]?.inFlight = false
-          return try canonical(["ok": false, "code": response.status == 429 ? "rate_limited" : "pairing_rejected", "retryable": retryable])
+          let wireCode = (response.body.data(using: .utf8).flatMap { try? JSONSerialization.jsonObject(with: $0) } as? [String: Any])
+            .flatMap { $0["error"] as? [String: Any] }.flatMap { $0["code"] as? String }
+          // Preserve the closed wire semantics: an expired session is NOT a
+          // rejection and never retryable against the dead session.
+          let code = response.status == 429 ? "rate_limited" : (wireCode == "pairing_expired" ? "pairing_expired" : "pairing_rejected")
+          return try canonical(["ok": false, "code": code, "retryable": retryable && code == "pairing_rejected"])
         }
         guard let bytes = response.body.data(using: .utf8), let result = try JSONSerialization.jsonObject(with: bytes) as? [String: Any],
               exact(result, ["deviceId", "serverNonce", "grantedScopes", "expiresAt", "serverSignature", "replayEpoch"]),

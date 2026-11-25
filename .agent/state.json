@@ -1,29 +1,37 @@
 {
   "schemaVersion": 2,
   "kind": "state",
-  "revision": 1163,
-  "updatedAt": "2026-11-25T09:39:09.667Z",
+  "revision": 1165,
+  "updatedAt": "2026-11-25T10:34:03.061Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "1a04958df0933b485522e903096d0b737feff42ef3188db4b6c7270bb9bec063",
+    "parentDigest": "8b9e7f3c8d17bc82875e25a2999616e7ccaf928ccf83b078cbc4dbdee4b2b8c5",
     "phase": "M5",
     "currentTask": "M5-tailscale",
     "branch": "agent/m-1-bootstrap",
     "checkpoint": {
-      "id": "v2-2026-11-25T09-39-09-667Z-4b406d3c-210c-441b-b3c9-b13af382fff2",
-      "path": ".agent/checkpoints/v2-2026-11-25T09-39-09-667Z-4b406d3c-210c-441b-b3c9-b13af382fff2.json",
-      "sha256": "04a39ea8d223e5e15ef78e8b80342c244e0a390e858f81c83024e135618eb10b",
-      "authorityDigest": "bbc4612ce2dd267484eec1b88d6e63eb7f5905c1edb0f6c5b496854173641660",
-      "at": "2026-11-25T09:39:09.667Z",
+      "id": "v2-2026-11-25T10-34-03-061Z-5bfe4bf9-d040-476e-bae2-92e7bdb55839",
+      "path": ".agent/checkpoints/v2-2026-11-25T10-34-03-061Z-5bfe4bf9-d040-476e-bae2-92e7bdb55839.json",
+      "sha256": "417896bbe24fe137a383fcb0480be3141e7e3c32ba62f14eb8bf57ca159b3046",
+      "authorityDigest": "984736fb97abc4f0e1e6594a9d2a6285fbd9d5daef4a0e365bb96361c0885297",
+      "at": "2026-11-25T10:34:03.061Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "e15bbf93858145ed3656b92995421e91a2d57c78",
+        "commit": "2c86073ba62f80f24e3a3d07389aad24936fcf9f",
         "dirty": [
-          "?? docs/acceptance/device-network-deferral.md"
+          "M .agent/HANDOFF.md",
+          " M .agent/control.json",
+          " M .agent/state.json",
+          " M .agent/tasks.json",
+          " M PROGRESS.md",
+          " M docs/acceptance/local-integration-output.txt",
+          " M docs/acceptance/local-integration.json",
+          " M modules/pi-gui-remote/ios/RemoteService.swift",
+          " M scripts/lib/remote-protocol-contract.mjs"
         ]
       },
-      "sourceFingerprint": "b4be1ee2f82b3b72ceec22cc8121781eb114f290982bb3dbc7e5a9cb07162eda",
-      "note": "Manifest adopted eafcb5c after independent review 93101333; bootstrap stdout regression fixed e15bbf9; CI validating full chain"
+      "sourceFingerprint": "30e1bc04eb93d6648f2f76617b93604af40d984fad1659f9c6911be0e85ef75d",
+      "note": "实际运行 node scripts/desktop-remote-verify.mjs，exit=0"
     },
     "blockers": [],
     "ci": [
@@ -184,7 +192,7 @@
     "desktop": {
       "repo": "HYJ1817/pi-gui",
       "branch": "feat/mobile-remote-protocol-v1",
-      "commit": "1d846458954dd944732309fac4cc6ed1a9d0711c",
+      "commit": "b67adb4d09f2eb176fe2ed19ffa0b7959aa3f732",
       "protocolVersion": 1
     },
     "protocolVersion": 1,
@@ -643,6 +651,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "85ca45ee9f980ea4288fb6e7cc5e3f90486ff531afb558f26a22331dd22723de"
+    "digest": "c8596efd767ba074e0e1e59a145172a8cedf601cb2e3733e31339896b2d36dfc"
   }
 }
