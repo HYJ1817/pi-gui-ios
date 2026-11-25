@@ -2,18 +2,18 @@
   "schemaVersion": 2,
   "taskId": "M2-shell",
   "kind": "independent-review",
-  "commit": "778b67eaf7f6cd87b6f6602e605ae979c533639d",
-  "sourceFingerprint": "6e7a6a919475365de47983f258f09a8177739a5380d629a6ca07e9eae7e6aa9f",
+  "commit": "1e85410de3d3ae443e0954e09c426ebe66e11ae5",
+  "sourceFingerprint": "061c5d90b1977471c91f7e6a91ea600df44e17478019716d5bf2e4669a3552c8",
   "scopes": [
     "app",
     "shared"
   ],
-  "scopeFingerprint": "67b538b2f2ecf589384a761daf11ed797b07e947ecb56177f89a2179b3b885e6",
-  "startedAt": "2026-11-24T21:47:32.695Z",
-  "finishedAt": "2026-11-24T21:47:32.695Z",
+  "scopeFingerprint": "398b1c3e62f07aa83cadf15dce84693a5b9c9a2ef7a2436ea22eb45ab383841d",
+  "startedAt": "2026-11-25T02:45:50.447Z",
+  "finishedAt": "2026-11-25T02:45:50.447Z",
   "passed": true,
   "details": {
-    "receiptPath": "docs/acceptance/independent-review-778b67e-M2-shell-receipt.json",
-    "receiptSha256": "6de952d79190ff3d07b7d6941a3311794c04d3c129d3c4f3e10a3af1270b1271"
+    "receiptPath": "docs/acceptance/independent-review-1e85410-M2-shell-receipt.json",
+    "receiptSha256": "a350c1c55f4506afa6668a719452681027a0a53c612c80e759dd0e732fe50279"
   }
 }

@@ -1,11 +1,11 @@
 {
   "schemaVersion": 2,
   "kind": "tasks",
-  "revision": 911,
-  "updatedAt": "2026-11-25T02:44:25.757Z",
+  "revision": 918,
+  "updatedAt": "2026-11-25T02:47:35.696Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "d011ed4b04309aaea86ff2a6d77c64c2ec1943bcbefb02e67e4071b08e845201",
+    "parentDigest": "c9287d22ee8e8943bc8c9b460f57ae48842faf7d92fe850f0f0758233d7a8c66",
     "tasks": [
       {
         "id": "M-1-infrastructure",
@@ -685,6 +685,19 @@
               "all"
             ],
             "scopeFingerprint": "6e7a6a919475365de47983f258f09a8177739a5380d629a6ca07e9eae7e6aa9f"
+          },
+          {
+            "kind": "typecheck",
+            "path": "docs/acceptance/local-typecheck-M-1-infrastructure.json",
+            "sha256": "807e2da3678e6b35ca5693938138208c46683a3231a569f4e8dc16edeb38d503",
+            "sourceFingerprint": "c9c1fa88782b691ac4c53c6545bfba8839bec5730f31e1d9eb52b76242033325",
+            "commit": "963058c4f9130e9bd30e093d060ec029cdf333b7",
+            "at": "2026-11-25T02:45:32.573Z",
+            "scopes": [
+              "app",
+              "shared"
+            ],
+            "scopeFingerprint": "398b1c3e62f07aa83cadf15dce84693a5b9c9a2ef7a2436ea22eb45ab383841d"
           }
         ],
         "updatedAt": "2026-11-24T21:54:57.771Z"
@@ -1654,6 +1667,19 @@
               "tests"
             ],
             "scopeFingerprint": "8f182300133d6692bad2d0ebef9d4e86a05927c50b9baba191cbf49d4859d6bf"
+          },
+          {
+            "kind": "independent-review",
+            "path": "docs/acceptance/local-independent-review-M2-shell.json",
+            "sha256": "dd763d502e3b05651c2a2209c8f666d6109848c79c1b1f0f9f993868e2a24a0d",
+            "sourceFingerprint": "061c5d90b1977471c91f7e6a91ea600df44e17478019716d5bf2e4669a3552c8",
+            "commit": "1e85410de3d3ae443e0954e09c426ebe66e11ae5",
+            "at": "2026-11-25T02:45:51.524Z",
+            "scopes": [
+              "app",
+              "shared"
+            ],
+            "scopeFingerprint": "398b1c3e62f07aa83cadf15dce84693a5b9c9a2ef7a2436ea22eb45ab383841d"
           }
         ],
         "updatedAt": "2026-11-24T15:16:17.188Z",
@@ -1868,6 +1894,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "f5a31a2a7fa5679786d7c7616becc7455a4f455dafa4a1a31cf0a3074d6a9e9e"
+    "digest": "14eb28d2a9c18f4af060db29c997aefce7c6f559f02165c2ab8b31c1a0ffd1ba"
   }
 }

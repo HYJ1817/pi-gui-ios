@@ -2,15 +2,15 @@
   "schemaVersion": 2,
   "kind": "typecheck",
   "taskId": "M-1-infrastructure",
-  "commit": "2a364a7ede0ae5a664e38e6d111dffc456e95d78",
-  "sourceFingerprint": "6e7a6a919475365de47983f258f09a8177739a5380d629a6ca07e9eae7e6aa9f",
+  "commit": "963058c4f9130e9bd30e093d060ec029cdf333b7",
+  "sourceFingerprint": "c9c1fa88782b691ac4c53c6545bfba8839bec5730f31e1d9eb52b76242033325",
   "scopes": [
     "app",
     "shared"
   ],
-  "scopeFingerprint": "67b538b2f2ecf589384a761daf11ed797b07e947ecb56177f89a2179b3b885e6",
-  "startedAt": "2026-11-24T18:50:34.271Z",
-  "finishedAt": "2026-11-24T18:50:37.019Z",
+  "scopeFingerprint": "398b1c3e62f07aa83cadf15dce84693a5b9c9a2ef7a2436ea22eb45ab383841d",
+  "startedAt": "2026-11-25T02:45:27.127Z",
+  "finishedAt": "2026-11-25T02:45:30.987Z",
   "passed": true,
   "details": {
     "command": "npm run typecheck",
