@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 2,
+  "taskId": "M3-core",
+  "kind": "independent-security",
+  "commit": "1e85410de3d3ae443e0954e09c426ebe66e11ae5",
+  "sourceFingerprint": "061c5d90b1977471c91f7e6a91ea600df44e17478019716d5bf2e4669a3552c8",
+  "scopes": [
+    "app",
+    "control",
+    "native-build",
+    "protocol",
+    "shared",
+    "tests"
+  ],
+  "scopeFingerprint": "8f182300133d6692bad2d0ebef9d4e86a05927c50b9baba191cbf49d4859d6bf",
+  "startedAt": "2026-11-25T02:25:58.365Z",
+  "finishedAt": "2026-11-25T02:25:58.365Z",
+  "passed": true,
+  "details": {
+    "receiptPath": "docs/acceptance/independent-security-1e85410-M3-core-receipt.json",
+    "receiptSha256": "a47c41356a72d8ae93317a2e52825337d508748601436769c596f8a1ab0b5955"
+  }
+}
