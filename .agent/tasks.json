@@ -1,11 +1,11 @@
 {
   "schemaVersion": 2,
   "kind": "tasks",
-  "revision": 1210,
-  "updatedAt": "2026-11-25T10:54:57.663Z",
+  "revision": 1219,
+  "updatedAt": "2026-11-25T10:58:39.021Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "76d208a2e4dbc856ae5c6d36358434e6272c026980c8dce4e26739f63bb0f73d",
+    "parentDigest": "3b8fb6ef7c9a13742288108e38a308a37c52712fa427a4b7026731eed3341647",
     "tasks": [
       {
         "id": "M-1-infrastructure",
@@ -1355,6 +1355,14 @@
               "tests"
             ],
             "scopeFingerprint": "94d3bb3899beceedfd2d3d9e67906f97f832502c76c1243aab19927918de4b78"
+          },
+          {
+            "kind": "independent-security",
+            "path": "docs/acceptance/independent-security-ee07785-M0-architecture.json",
+            "sha256": "7a84824c74eb7c3b02af7ef83b6c1ff4627851016710a3c2530e952eef802fb8",
+            "sourceFingerprint": "30e1bc04eb93d6648f2f76617b93604af40d984fad1659f9c6911be0e85ef75d",
+            "commit": "ee0778534e9d864de691ccb65fd6aa43cc5da219",
+            "at": "2026-11-25T10:58:37.059Z"
           }
         ],
         "updatedAt": "2026-11-25T08:07:58.250Z",
@@ -1810,6 +1818,14 @@
               "shared"
             ],
             "scopeFingerprint": "3762279d6954b85fbdec114fa81aee10ce0ed1e5057209cda4cbb6db309ae87a"
+          },
+          {
+            "kind": "independent-security",
+            "path": "docs/acceptance/independent-security-ee07785-M1-remote.json",
+            "sha256": "334deebbcdcc94fcc3b8c894a0bb3c69b8972ae4de89846412b1b949af801b6f",
+            "sourceFingerprint": "30e1bc04eb93d6648f2f76617b93604af40d984fad1659f9c6911be0e85ef75d",
+            "commit": "ee0778534e9d864de691ccb65fd6aa43cc5da219",
+            "at": "2026-11-25T10:58:35.275Z"
           }
         ],
         "updatedAt": "2026-11-25T08:07:57.510Z",
@@ -2622,6 +2638,14 @@
               "shared"
             ],
             "scopeFingerprint": "3762279d6954b85fbdec114fa81aee10ce0ed1e5057209cda4cbb6db309ae87a"
+          },
+          {
+            "kind": "independent-security",
+            "path": "docs/acceptance/independent-security-ee07785-M3-core.json",
+            "sha256": "c3c8beed5ba7e7d3f9fd24a3a196686ed3ec9239e7bf7be7162ed33bf41ce2f5",
+            "sourceFingerprint": "30e1bc04eb93d6648f2f76617b93604af40d984fad1659f9c6911be0e85ef75d",
+            "commit": "ee0778534e9d864de691ccb65fd6aa43cc5da219",
+            "at": "2026-11-25T10:58:38.931Z"
           }
         ],
         "updatedAt": "2026-11-25T08:07:56.005Z"
@@ -3175,6 +3199,14 @@
               "shared"
             ],
             "scopeFingerprint": "3762279d6954b85fbdec114fa81aee10ce0ed1e5057209cda4cbb6db309ae87a"
+          },
+          {
+            "kind": "independent-security",
+            "path": "docs/acceptance/independent-security-ee07785-M5-tailscale.json",
+            "sha256": "848924cdd3ebd66ee8e2393cdefc4c4d6ab8bc09e5f3db7c36d03b4aee472bb3",
+            "sourceFingerprint": "30e1bc04eb93d6648f2f76617b93604af40d984fad1659f9c6911be0e85ef75d",
+            "commit": "ee0778534e9d864de691ccb65fd6aa43cc5da219",
+            "at": "2026-11-25T10:57:59.843Z"
           }
         ],
         "updatedAt": "2026-11-25T07:17:37.479Z"
@@ -3200,6 +3232,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "92b3dfb500a79b43a5317072c7e79dadfb40b9894fd9ad68b6e7109d58ec246b"
+    "digest": "c2269c5c2284445ac6fb12c73161d06a053281426bef957134f49bbebffcfd55"
   }
 }

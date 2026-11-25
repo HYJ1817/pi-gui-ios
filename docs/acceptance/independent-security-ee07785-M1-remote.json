@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 2,
+  "kind": "independent-security",
+  "taskId": "M1-remote",
+  "commit": "ee0778534e9d864de691ccb65fd6aa43cc5da219",
+  "sourceFingerprint": "30e1bc04eb93d6648f2f76617b93604af40d984fad1659f9c6911be0e85ef75d",
+  "passed": true,
+  "startedAt": "2026-11-25T10:55:00.000Z",
+  "finishedAt": "2026-11-25T11:30:00.000Z",
+  "details": {
+    "receiptPath": "docs/acceptance/independent-security-ee07785-M5-tailscale-receipt.json",
+    "receiptSha256": "d3b023dd89b44a7307d49e4beb0ca7102b9151a14b4358d8388c3baa139d7afa",
+    "sameRunEvidence": "cloned from M5-tailscale independent-security round-3 review; coverage: full: the review scope IS the remote transport security surface this task ships"
+  }
+}
