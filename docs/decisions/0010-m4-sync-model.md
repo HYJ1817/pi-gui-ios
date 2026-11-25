@@ -78,3 +78,10 @@ M3 安全审查 note F3：`lastError` 复用会掩盖 `stream_unavailable`。M4 
 - 首帧盲区（审查 nit 5）：`open()` 重置 position 后传输若恰好丢弃重放的第一帧则不可检测。合成传输有序故不可达；真实网络的缓解是 recoverStream 先经请求面刷新基线。契约 acceptance 未要求。
 - recoverStream 在 open() 后立即标记 live（nit 8）：若重订阅被 admission 拒绝（如限流），store 误读 live。装饰级——传输 onClose/onDrop 通道仍在。
 - fault 6 绕过 events.open 路径（nit 6）：reset 断言成立但生产 wiring 连续性未被同路径行使。由 regression co-subscription/cross-incarnation 测试补足覆盖。
+
+### 终审补遗（2026-11-25 第二轮）
+
+独立安全终审确认全部第一轮修复有效（16/16 故障注入复跑 + 两个新对抗探针）。新增一条 **M5 defer（审查者明确分类 non-blocking）**：
+
+- **grant 撤销→重新授权窗口的静默分歧**：`grantProject(device, project, false)` 正确投递一次 reset，但订阅存活；撤销窗口内 `emit()` 在 journaling 阶段即按授权过滤（不进 journal），重新授权无 reset——窗口内的变更永久缺席客户端 store 而无任何信号。合成范围不可利用（钩子是测试专用服务端 API，签名操作不可达，demo 从不撤销，真实桌面撤销即需重新配对=全新无 cursor 订阅故无此洞）。**M5 桌面接入前必须修复或规范**：参考对齐的正确修法是事件**不**按授权进 journal、仅在投递/重放时过滤（这也吻合契约 mustRevalidateAuthorizationBeforeReplay 的措辞），或在重新授权时重置订阅。
+- 旁注（终审 nit，M5 一并处理）：emit 订阅循环内 resetOne 同步语义下不可达（防御纵深保留）；watermark 的 epoch 与订阅 generation 共享计数器但语义空间不同（脆性不变量，值得注释）；sub.lastSeq 死簿记；re-pair 不重置流状态（同族生命周期问题）。
