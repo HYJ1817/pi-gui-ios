@@ -14,7 +14,7 @@ function fixture(t) {
   const root = realpathSync(mkdtempSync(join(tmpdir(), 'native-alias-synthetic-')));
   t.after(() => rmSync(root, { recursive: true, force: true }));
   for (const dir of ['scripts/ci', 'ios/Pods', 'node_modules', 'private', 'native']) mkdirSync(join(root, dir), { recursive: true });
-  for (const file of ['native-dependencies.py', 'verify-ipa.py', 'verify-template.py', 'validate-locks.rb']) cpSync(join(ROOT, 'scripts/ci', file), join(root, 'scripts/ci', file));
+  for (const file of ['native-dependencies.py', 'verify-ipa.py', 'verify-template.py', 'validate-locks.rb', 'safe-diagnostics.py']) cpSync(join(ROOT, 'scripts/ci', file), join(root, 'scripts/ci', file));
   for (const file of ['Gemfile', 'ios/Podfile', 'private/Gemfile.lock', 'private/Podfile.lock']) writeFileSync(join(root, file), 'synthetic fixture only');
   writeFileSync(join(root, 'package-lock.json'), JSON.stringify({ lockfileVersion: 3, packages: {} }));
   return root;
@@ -171,6 +171,9 @@ RUBY VERSION
 
 BUNDLED WITH
    2.6.9
+
+CHECKSUMS
+  cocoapods (1.16.2) sha256=1111111111111111111111111111111111111111111111111111111111111111
 ''')
 (root/'ios/Podfile.lock').write_text('''PODS:
   - Synthetic (1.0.0)

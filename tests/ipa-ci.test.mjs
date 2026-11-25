@@ -113,7 +113,7 @@ test('locked Manifest.lock stamp requires semantic equality with the reviewed Po
   // reviewed lock must abort the pipeline BEFORE the copy can paper it over.
   const f = fixture(t); const bin = join(f.root, 'bin'); mkdirSync(bin);
   writeFileSync(join(f.root, 'native/dependency-policy.json'), JSON.stringify({ ...policy, mode: 'locked' }));
-  const gem = 'GEM\n  remote: https://rubygems.org/\n  specs:\n    cocoapods (1.16.2)\n\nPLATFORMS\n  arm64-darwin-25\n\nDEPENDENCIES\n  bundler (= 2.6.9)\n  cocoapods (= 1.16.2)\n\nRUBY VERSION\n   ruby 3.3.8p144\n\nBUNDLED WITH\n   2.6.9\n';
+  const gem = 'GEM\n  remote: https://rubygems.org/\n  specs:\n    cocoapods (1.16.2)\n\nPLATFORMS\n  arm64-darwin-25\n\nDEPENDENCIES\n  bundler (= 2.6.9)\n  cocoapods (= 1.16.2)\n\nRUBY VERSION\n   ruby 3.3.8p144\n\nBUNDLED WITH\n   2.6.9\n\nCHECKSUMS\n  cocoapods (1.16.2) sha256=1111111111111111111111111111111111111111111111111111111111111111\n';
   const pod = 'PODS:\n  - Synthetic (1.0.0)\n\nDEPENDENCIES:\n  - Synthetic (from `../node_modules/synthetic`)\n\nEXTERNAL SOURCES:\n  Synthetic:\n    :path: "../node_modules/synthetic"\n\nSPEC CHECKSUMS:\n  Synthetic: ' + 'a'.repeat(40) + '\n\nPODFILE CHECKSUM: ' + 'b'.repeat(40) + '\n\nCOCOAPODS: 1.16.2\n';
   // The validator serializes Podfile.lock to canonical YAML.dump bytes; the
   // reviewed lock must already be canonical or its digest would shift.

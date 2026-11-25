@@ -1,6 +1,6 @@
 # Agent 交接（生成文件）
 
-revision 1259；权威摘要 7b66a10194f842c75f9745cd93dffd6b02f4997e738c71e9b07c497340789898
+revision 1264；权威摘要 1e14a60a9df4fec737399a38572406a15c789acf93378ec3b62afd1c602c0234
 
 先读 AGENTS.md / REVIEW.md，执行 node scripts/agent-resume.mjs --remote。
 
@@ -10,27 +10,29 @@ revision 1259；权威摘要 7b66a10194f842c75f9745cd93dffd6b02f4997e738c71e9b07
 
 阻塞：无已记录阻塞
 
-检查点 .agent/checkpoints/v2-2026-11-25T11-43-57-086Z-b191e499-bf31-4091-8e64-d43c4e7d4890.json；HEAD 51869eeb420d99c6e614c7de781c6d1b8069b85a。dirty（保存时）：
+检查点 .agent/checkpoints/v2-2026-11-25T12-08-54-665Z-b43e0e12-853c-4a43-a8d4-3b7474d2654f.json；HEAD 8afae6d0a51d925d83aa3255a5daecef02ec2dee。dirty（保存时）：
 - M .agent/HANDOFF.md
--  D .agent/checkpoints/v2-2026-11-25T09-22-36-772Z-68bf7221-127c-494b-a974-4a6460e33784.json
--  D .agent/checkpoints/v2-2026-11-25T09-22-40-131Z-ca3e91df-54eb-414c-96a5-db8f29f46567.json
--  D .agent/checkpoints/v2-2026-11-25T09-22-43-474Z-522fdbde-42ea-4de0-955c-ec0b5de92c8d.json
--  D .agent/checkpoints/v2-2026-11-25T09-23-42-548Z-00eec4d4-9922-4787-b2f2-c0a360321ee2.json
--  D .agent/checkpoints/v2-2026-11-25T09-25-35-499Z-d447be09-4f41-4d2a-81b9-7d630e3386d4.json
+-  D .agent/checkpoints/v2-2026-11-25T10-34-03-061Z-5bfe4bf9-d040-476e-bae2-92e7bdb55839.json
+-  D .agent/checkpoints/v2-2026-11-25T10-43-32-013Z-432f72d3-97fe-4a47-9a4e-aac10ea6e961.json
+-  D .agent/checkpoints/v2-2026-11-25T10-43-56-409Z-343a5019-89c0-4565-86ad-5e92ecb74213.json
+-  D .agent/checkpoints/v2-2026-11-25T10-44-16-120Z-983a3ad9-e12a-4787-8e9b-0732413b5873.json
 -  M .agent/control.json
 -  M .agent/state.json
 -  M .agent/tasks.json
+-  M .gitignore
 -  M PROGRESS.md
--  M docs/acceptance/local-integration-M1-remote.json
--  M docs/acceptance/local-integration-M3-core.json
--  M docs/acceptance/local-integration-M4-sync.json
+-  M docs/acceptance/local-fault-injection-output.txt
+-  M docs/acceptance/local-fault-injection.json
 -  M docs/acceptance/local-integration-output.txt
 -  M docs/acceptance/local-integration.json
-- ?? .agent/checkpoints/v2-2026-11-25T11-29-05-151Z-5dd75924-abd7-4a59-a4e1-28fe55f1bbba.json
-- ?? .agent/checkpoints/v2-2026-11-25T11-43-42-196Z-c48669b2-bb46-423d-a662-f4902b0d75af.json
-- ?? .agent/checkpoints/v2-2026-11-25T11-43-52-895Z-cd83d4f6-e29d-4ccf-9d4e-20e4f97d1283.json
-- ?? .agent/checkpoints/v2-2026-11-25T11-43-54-297Z-4a98373c-a190-4df9-aa5b-baeaf0c22c89.json
-- ?? .agent/checkpoints/v2-2026-11-25T11-43-55-709Z-100f817e-83a6-41f6-a49c-81b6c8c4c332.json
+-  M docs/acceptance/local-unit-M-1-infrastructure-output.txt
+-  M docs/acceptance/local-unit-M-1-infrastructure.json
+-  M tests/ipa-ci.test.mjs
+-  M tests/native-links.test.mjs
+- ?? .agent/checkpoints/v2-2026-11-25T12-01-09-395Z-bdbd6201-c4cf-4c4c-b50e-67768f53015d.json
+- ?? .agent/checkpoints/v2-2026-11-25T12-01-13-048Z-9a200567-8800-4fac-9a3d-17f86c7f57d0.json
+- ?? .agent/checkpoints/v2-2026-11-25T12-08-47-776Z-ccce7532-dffe-4282-8194-26cd7fd6b61f.json
+- ?? .agent/checkpoints/v2-2026-11-25T12-08-51-455Z-dccdee7a-3914-476c-8e08-cce7a441eba3.json
 
 CI：[{"id":"44783585115","head":"58ec99506e00a35121866580ffb28d09d5078b17","workflow":".github/workflows/native-infrastructure.yml","attempt":1,"status":"completed","conclusion":"cancelled","url":"https://github.com/HYJ1817/pi-gui-ios/actions/runs/44783585115"},{"id":"44864063976","head":"d46d6a5f84ad569f42a727fe29b0e2ed7b6f4afd","workflow":".github/workflows/native-infrastructure.yml","attempt":1,"status":"completed","conclusion":"failure","url":"https://github.com/HYJ1817/pi-gui-ios/actions/runs/44864063976"},{"id":"44868846710","head":"86822196c84ee01baf5b8dec41256abdfd04ddeb","workflow":".github/workflows/native-infrastructure.yml","attempt":1,"status":"completed","conclusion":"failure","url":"https://github.com/HYJ1817/pi-gui-ios/actions/runs/44868846710"},{"id":"44872870220","head":"0148a3fc0058e6db17a803e1946c2a88a3aab85a","workflow":".github/workflows/native-infrastructure.yml","attempt":1,"status":"completed","conclusion":"failure","url":"https://github.com/HYJ1817/pi-gui-ios/actions/runs/44872870220"},{"id":"44874304419","head":"2b16a1ae71f67d953fd7f1956b163843d9a4385f","workflow":".github/workflows/native-infrastructure.yml","attempt":1,"status":"completed","conclusion":"failure","url":"https://github.com/HYJ1817/pi-gui-ios/actions/runs/44874304419"},{"id":"44877767639","head":"86cadda377fc1fdf3c483478b03215a3d6b96c32","workflow":".github/workflows/native-infrastructure.yml","attempt":1,"status":"completed","conclusion":"failure","url":"https://github.com/HYJ1817/pi-gui-ios/actions/runs/44877767639"},{"id":"44891582412","head":"a3420973d4dff86b7def48c26eddad0c0501692b","workflow":".github/workflows/native-infrastructure.yml","attempt":1,"status":"completed","conclusion":"failure","url":"https://github.com/HYJ1817/pi-gui-ios/actions/runs/44891582412"},{"id":"44894722354","head":"b6d52004cd4fb95f9a96c1cc39ed83570d0ed322","workflow":".github/workflows/native-infrastructure.yml","attempt":1,"status":"completed","conclusion":"failure","url":"https://github.com/HYJ1817/pi-gui-ios/actions/runs/44894722354"},{"id":"44901616612","head":"9503ae3932fa707e00f509a8bb6d884745283feb","workflow":".github/workflows/native-infrastructure.yml","attempt":1,"status":"completed","conclusion":"failure","url":"https://github.com/HYJ1817/pi-gui-ios/actions/runs/44901616612"},{"id":"44906133898","head":"0e62f613cc69d41d6064c26a251e355c2a299efd","workflow":".github/workflows/native-infrastructure.yml","attempt":1,"status":"completed","conclusion":"failure","url":"https://github.com/HYJ1817/pi-gui-ios/actions/runs/44906133898"},{"id":"44911181329","head":"0b3745e4d71da50bbbf1bcf9b58bccdf450c54ce","workflow":".github/workflows/native-infrastructure.yml","attempt":1,"status":"completed","conclusion":"cancelled","url":"https://github.com/HYJ1817/pi-gui-ios/actions/runs/44911181329"},{"id":"45403679142","head":"7df0cad92379bfad14f65a83a52a38d88e79aa79","workflow":".github/workflows/native-infrastructure.yml","attempt":1,"status":"completed","conclusion":"success","url":"https://github.com/HYJ1817/pi-gui-ios/actions/runs/45403679142"},{"id":"45413372694","head":"f9043a88a26f6ba268eaa73b0bf1a9bd7b348a4c","workflow":".github/workflows/native-infrastructure.yml","attempt":1,"status":"completed","conclusion":"success","url":"https://github.com/HYJ1817/pi-gui-ios/actions/runs/45413372694"},{"id":"45463943882","head":"cbaba6871587a6bce9902088c5fc2bbcf67c80fa","workflow":".github/workflows/native-infrastructure.yml","attempt":1,"status":"completed","conclusion":"success","url":"https://github.com/HYJ1817/pi-gui-ios/actions/runs/45463943882"},{"id":"45473673853","head":"778b67eaf7f6cd87b6f6602e605ae979c533639d","workflow":".github/workflows/native-infrastructure.yml","attempt":4,"status":"completed","conclusion":"success","url":"https://github.com/HYJ1817/pi-gui-ios/actions/runs/45473673853"},{"id":"45531958974","head":"1e85410de3d3ae443e0954e09c426ebe66e11ae5","workflow":".github/workflows/native-infrastructure.yml","attempt":2,"status":"completed","conclusion":"success","url":"https://github.com/HYJ1817/pi-gui-ios/actions/runs/45531958974"},{"id":"45558360431","head":"51bc1b63914a7e9023a0276ed9e6e540d17768c5","workflow":".github/workflows/native-infrastructure.yml","attempt":2,"status":"completed","conclusion":"success","url":"https://github.com/HYJ1817/pi-gui-ios/actions/runs/45558360431"},{"id":"45596517960","head":"ee0778534e9d864de691ccb65fd6aa43cc5da219","workflow":".github/workflows/native-infrastructure.yml","attempt":1,"status":"completed","conclusion":"success","url":"https://github.com/HYJ1817/pi-gui-ios/actions/runs/45596517960"}]
 

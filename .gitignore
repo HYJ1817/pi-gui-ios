@@ -21,3 +21,5 @@ __pycache__/
 build/
 .agent/evidence/*.log
 .DS_Store
+# Windows reserved device name: git-bash 2>nul redirections create a real file
+nul

@@ -1,8 +1,8 @@
 {
   "schemaVersion": 2,
   "kind": "control",
-  "revision": 1259,
-  "updatedAt": "2026-11-25T11:44:25.596Z",
+  "revision": 1264,
+  "updatedAt": "2026-11-25T12:08:54.665Z",
   "data": {
     "phase": "M5",
     "currentTask": "M5-tailscale",
@@ -3584,39 +3584,41 @@
       }
     ],
     "checkpoint": {
-      "id": "v2-2026-11-25T11-43-57-086Z-b191e499-bf31-4091-8e64-d43c4e7d4890",
-      "path": ".agent/checkpoints/v2-2026-11-25T11-43-57-086Z-b191e499-bf31-4091-8e64-d43c4e7d4890.json",
-      "sha256": "3ac8ded8d51ae1553bc8c9f408adc5c214dd4b761e69d9d554f8ff7d66b4b412",
-      "authorityDigest": "6daca3ebc635d67dc6ed287906bd0353217b49478a7a6a96694f8fbaeea3b3b0",
-      "at": "2026-11-25T11:43:57.086Z",
+      "id": "v2-2026-11-25T12-08-54-665Z-b43e0e12-853c-4a43-a8d4-3b7474d2654f",
+      "path": ".agent/checkpoints/v2-2026-11-25T12-08-54-665Z-b43e0e12-853c-4a43-a8d4-3b7474d2654f.json",
+      "sha256": "0221a16ed3c4832c4a4ed16e6e8d23a9f408a8af78e9fa8a293c83501da7a531",
+      "authorityDigest": "bf85063e10e460f5f7785e836a01e4883a6fc14ae78431e973ce31f91aa4864c",
+      "at": "2026-11-25T12:08:54.665Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "51869eeb420d99c6e614c7de781c6d1b8069b85a",
+        "commit": "8afae6d0a51d925d83aa3255a5daecef02ec2dee",
         "dirty": [
           "M .agent/HANDOFF.md",
-          " D .agent/checkpoints/v2-2026-11-25T09-22-36-772Z-68bf7221-127c-494b-a974-4a6460e33784.json",
-          " D .agent/checkpoints/v2-2026-11-25T09-22-40-131Z-ca3e91df-54eb-414c-96a5-db8f29f46567.json",
-          " D .agent/checkpoints/v2-2026-11-25T09-22-43-474Z-522fdbde-42ea-4de0-955c-ec0b5de92c8d.json",
-          " D .agent/checkpoints/v2-2026-11-25T09-23-42-548Z-00eec4d4-9922-4787-b2f2-c0a360321ee2.json",
-          " D .agent/checkpoints/v2-2026-11-25T09-25-35-499Z-d447be09-4f41-4d2a-81b9-7d630e3386d4.json",
+          " D .agent/checkpoints/v2-2026-11-25T10-34-03-061Z-5bfe4bf9-d040-476e-bae2-92e7bdb55839.json",
+          " D .agent/checkpoints/v2-2026-11-25T10-43-32-013Z-432f72d3-97fe-4a47-9a4e-aac10ea6e961.json",
+          " D .agent/checkpoints/v2-2026-11-25T10-43-56-409Z-343a5019-89c0-4565-86ad-5e92ecb74213.json",
+          " D .agent/checkpoints/v2-2026-11-25T10-44-16-120Z-983a3ad9-e12a-4787-8e9b-0732413b5873.json",
           " M .agent/control.json",
           " M .agent/state.json",
           " M .agent/tasks.json",
+          " M .gitignore",
           " M PROGRESS.md",
-          " M docs/acceptance/local-integration-M1-remote.json",
-          " M docs/acceptance/local-integration-M3-core.json",
-          " M docs/acceptance/local-integration-M4-sync.json",
+          " M docs/acceptance/local-fault-injection-output.txt",
+          " M docs/acceptance/local-fault-injection.json",
           " M docs/acceptance/local-integration-output.txt",
           " M docs/acceptance/local-integration.json",
-          "?? .agent/checkpoints/v2-2026-11-25T11-29-05-151Z-5dd75924-abd7-4a59-a4e1-28fe55f1bbba.json",
-          "?? .agent/checkpoints/v2-2026-11-25T11-43-42-196Z-c48669b2-bb46-423d-a662-f4902b0d75af.json",
-          "?? .agent/checkpoints/v2-2026-11-25T11-43-52-895Z-cd83d4f6-e29d-4ccf-9d4e-20e4f97d1283.json",
-          "?? .agent/checkpoints/v2-2026-11-25T11-43-54-297Z-4a98373c-a190-4df9-aa5b-baeaf0c22c89.json",
-          "?? .agent/checkpoints/v2-2026-11-25T11-43-55-709Z-100f817e-83a6-41f6-a49c-81b6c8c4c332.json"
+          " M docs/acceptance/local-unit-M-1-infrastructure-output.txt",
+          " M docs/acceptance/local-unit-M-1-infrastructure.json",
+          " M tests/ipa-ci.test.mjs",
+          " M tests/native-links.test.mjs",
+          "?? .agent/checkpoints/v2-2026-11-25T12-01-09-395Z-bdbd6201-c4cf-4c4c-b50e-67768f53015d.json",
+          "?? .agent/checkpoints/v2-2026-11-25T12-01-13-048Z-9a200567-8800-4fac-9a3d-17f86c7f57d0.json",
+          "?? .agent/checkpoints/v2-2026-11-25T12-08-47-776Z-ccce7532-dffe-4282-8194-26cd7fd6b61f.json",
+          "?? .agent/checkpoints/v2-2026-11-25T12-08-51-455Z-dccdee7a-3914-476c-8e08-cce7a441eba3.json"
         ]
       },
-      "sourceFingerprint": "66da978e67eb1ec04c62ab5f5d59051130635b1e2f400910d25d505cdfa82405",
-      "note": "agent-task evidence M4-sync"
+      "sourceFingerprint": "eb74e94998c2fa9eab69c75defb524b044c92448e4db8a42f0fa28d0b9f92481",
+      "note": "实际运行 node --test tests/m4-fault-injection.test.mjs，exit=0"
     },
     "nextAction": "M5: round-4 验证 54b67f85 + 原生安全 c54796d5 回包→independent-review/security 证据链→validate→transitions。generation/epoch 修复已钉于 c29b7c2a。",
     "delegates": [
@@ -4110,6 +4112,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "7b66a10194f842c75f9745cd93dffd6b02f4997e738c71e9b07c497340789898"
+    "digest": "1e14a60a9df4fec737399a38572406a15c789acf93378ec3b62afd1c602c0234"
   }
 }
