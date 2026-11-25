@@ -264,6 +264,13 @@ export class LocalSyntheticGateway {
     const conv = this.domain.conversations.find(c => c.conversationId === conversationId);
     if (!conv) return;
     conv.ownerEpoch += 1;
+    // Owner transitions invalidate the cursor space exactly like grant
+    // transitions: epoch bump so pre-transition cursors can never resume
+    // continuously across the ownership change.
+    for (const [deviceId, stream] of this.streams) {
+      const device = this.devices.get(deviceId);
+      if (device && device.grants[conv.projectId] === true) stream.epoch = ++this.generationCounter;
+    }
     for (const sub of this.subscriptions) {
       const device = this.devices.get(sub.deviceId);
       if (device && device.grants[conv.projectId] === true) this.resetOne(sub, 'authorization_changed');
@@ -285,12 +292,18 @@ export class LocalSyntheticGateway {
     // authorization), so without an explicit reset the subscription would
     // starve silently (independent-review finding 3). Subscriptions are
     // device-level; the reset is the contract's isolation mechanism.
-    // Revocation AND re-grant both reset subscriptions (ADR-0010 final-review
-    // addendum): revocation because delivery must stop NOW; re-grant because
-    // frames mutated during the revoked window were journaled but never
-    // delivered live — without a forced baseline rebuild the client would
-    // diverge silently. The journaled-regardless timeline makes any later
-    // cursor resume replay the window frames with continuous sequences.
+    // Authorization transitions INVALIDATE the cursor space (reference
+    // device-epoch semantics, extended to re-grant): the stream epoch bumps
+    // so any cursor minted before this transition can never validate as a
+    // continuous resume — a disconnected client resuming across a
+    // revoke→re-grant window hits exactly-one reset and rebuilds from a
+    // snapshot (which carries the window content), instead of silently
+    // diverging on a continuous-but-incomplete journal. Live subscriptions
+    // are reset immediately for the same reason: revocation stops delivery
+    // NOW; re-grant must force a baseline rebuild because frames mutated
+    // during the revoked window were never journaled for this device.
+    const stream = this.streams.get(deviceId);
+    if (stream) stream.epoch = ++this.generationCounter;
     for (const sub of this.subscriptions.filter(s => s.deviceId === deviceId)) {
       this.resetOne(sub, 'authorization_changed');
     }
@@ -737,15 +750,19 @@ export class LocalSyntheticGateway {
   }
 
   emit(deviceId: string, event: EventEnvelope['event'], conversation: SandboxConversation, payload: Record<string, unknown>): void {
-    // Shared per-device backlog of unsigned templates. ADR-0010 final-review
-    // addendum: events are journaled for every registered device REGARDLESS
-    // of grant/active state — authorization is enforced exclusively at
-    // DELIVERY and REPLAY time (contract mustRevalidateAuthorizationBeforeReplay).
-    // Journaling-time filtering punched invisible holes into the timeline:
-    // a revoke→re-grant cycle left mutations permanently absent from the
-    // client with no signal (independent-security final-review important).
+    // Shared per-device backlog of unsigned templates (reference event-stream
+    // semantics, corrected after independent-review B1): events are journaled
+    // ONLY for devices authorized at emission time. Static filtering (missing
+    // scope / never-granted project) therefore NEVER consumes sequence space —
+    // authorized delivery is gapless by construction. The revocation-window
+    // silent-divergence problem is NOT solved by unconditional journaling
+    // (that was the B1 regression: filtering then punched fatal holes into
+    // live delivery); it is solved by epoch invalidation — every grant/owner
+    // transition bumps the stream epoch, so any cursor minted before the
+    // transition can never validate as a continuous resume (see grantProject).
     for (const [otherDeviceId, stream] of this.streams) {
-      if (!this.devices.has(otherDeviceId)) continue;
+      const device = this.devices.get(otherDeviceId);
+      if (!device || !this.eventAuthorized(device, conversation, event)) continue;
       stream.journalSeq += 1;
       const probe = canonicalJson({ event, conversationId: conversation.conversationId, ownerRevision: conversation.ownerRevision, payload });
       const entry: JournalEntry = {
@@ -759,12 +776,15 @@ export class LocalSyntheticGateway {
       for (const sub of this.subscriptions) {
         if (sub.deviceId !== otherDeviceId) continue;
         // Per-event revalidation immediately before delivering ANY frame
-        // (reference _mayDeliver): revocation mid-stream stops the leak and
-        // isolates the subscription with exactly one reset. Delivery-time
-        // filtering — the frame IS in the journal, so a re-grant can replay
-        // it with continuous sequence numbers.
+        // (reference _mayDeliver, exact semantics): a failed recheck does NOT
+        // skip the frame — skipping would hole the subscription's sequence
+        // space. Instead the subscription is reset with exactly one
+        // authorization_changed frame. In practice unreachable (journaled
+        // frames were authorized milliseconds earlier in this same
+        // synchronous emit), but it is the correct fail-closed fallback for
+        // any transitional interleaving.
         const deviceNow = this.devices.get(otherDeviceId);
-        if (!deviceNow || !this.eventAuthorized(deviceNow, conversation, event)) continue;
+        if (!deviceNow || !this.eventAuthorized(deviceNow, conversation, event)) { this.resetOne(sub, 'authorization_changed'); continue; }
         this.deliver(sub, entry);
       }
     }
@@ -849,8 +869,17 @@ export class LocalSyntheticGateway {
       // under the SUBSCRIBER's continuing generation (reference templates).
       for (const entry of stream.journal) {
         if (entry.seq <= decoded.seq) continue;
-        const conv = this.domain.conversations.find(c => c.conversationId === entry.conversationId);
-        if (conv && !this.eventAuthorized(device, conv, entry.event)) continue;
+        // Replay NEVER skips and NEVER recheck-filters: the journal is the
+        // certified complete timeline for this device — a cursor validated as
+        // continuous means no authorization transition happened since it was
+        // minted (every grant/owner/device transition bumps the stream epoch,
+        // invalidating the cursor before replay begins), so every retained
+        // entry is deliverable by construction. Skipping here would hole the
+        // subscription sequence space (independent-review B1); a spurious
+        // recheck failure would equally violate continuity. Contract
+        // mustRevalidateAuthorizationBeforeReplay is satisfied by the epoch
+        // mechanism — revocation is what the revalidation protects against,
+        // and epoch invalidation catches it categorically, fail-closed.
         this.deliver(sub, entry);
       }
       return { ok: true, close: () => { this.subscriptions = this.subscriptions.filter(s => s !== sub); } };

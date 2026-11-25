@@ -86,9 +86,15 @@ M3 安全审查 note F3：`lastError` 复用会掩盖 `stream_unavailable`。M4 
 - **grant 撤销→重新授权窗口的静默分歧**：`grantProject(device, project, false)` 正确投递一次 reset，但订阅存活；撤销窗口内 `emit()` 在 journaling 阶段即按授权过滤（不进 journal），重新授权无 reset——窗口内的变更永久缺席客户端 store 而无任何信号。合成范围不可利用（钩子是测试专用服务端 API，签名操作不可达，demo 从不撤销，真实桌面撤销即需重新配对=全新无 cursor 订阅故无此洞）。**M5 桌面接入前必须修复或规范**：参考对齐的正确修法是事件**不**按授权进 journal、仅在投递/重放时过滤（这也吻合契约 mustRevalidateAuthorizationBeforeReplay 的措辞），或在重新授权时重置订阅。
 - 旁注（终审 nit，M5 一并处理）：emit 订阅循环内 resetOne 同步语义下不可达（防御纵深保留）；watermark 的 epoch 与订阅 generation 共享计数器但语义空间不同（脆性不变量，值得注释）；sub.lastSeq 死簿记；re-pair 不重置流状态（同族生命周期问题）。
 
-### 终审 findings 修复（2026-11-25 第三轮，同一日）
+### 终审 findings 修复与修正（2026-11-25 第三/四轮，同一日）
 
-grant 撤销→重新授权静默分歧**已修复**（不再 defer）：事件不按授权进 journal（投递/重放时过滤），撤销与重新授权都重置订阅强制基线重建；回归测试 regression grant revoke/re-grant 钉死。剩余 M5 defer 仅限：秘密 MAC key 与 crypto 随机盐（桌面端口）、首帧盲区（真实传输加固）、recoverStream live 标记装饰项、fault 6 路径覆盖增强。
+grant 撤销→重新授权静默分歧修复经历一次**错误方向后修正**——诚实记录决策演化：
+
+1. 第三轮曾实现"journaling 不按授权过滤"——独立窄验证立即抓获其为 **blocking 回归（B1）**：静态过滤设备（缺 scope/未授权项目）的流被序号空洞判死，死亡循环。
+2. **最终正确模型（参考 event-stream.mjs 对齐，B1 修复后）**：事件仅在 emission 时刻为**授权设备**进 journal——静态过滤从不消费序号空间（gapless by construction）；撤销/重新授权/owner 转移** bump 流 epoch**（cursor 空间失效）+ 立即 reset 存活订阅。断开重连跨越任何授权转换的续传永远命中 exactly-one reset → 快照重建（携带窗口内容）——静默分歧结构性不可能。投递/重放永不跳过帧（跳过即打洞）；recheck 失败按参考精确语义 reset 订阅。
+3. B1 盲区归因：所有 fixture 注册 ALL_SCOPES 单项目——补两个回归测试：静态 scope 过滤连续性 + 多项目隔离连续性（19/19 fault-injection 钉死）。
+
+剩余 M5 defer：秘密 MAC key 与 crypto 随机盐（桌面端口）、首帧盲区（真实传输加固）、recoverStream live 标记装饰项。重放不重校验的 fail-open 备注由 epoch 机制消解（授权转换使 cursor 失效先于重放发生——重放不重校验是构造正确的）。
 
 ### IMPORTANT-1 修复（2026-11-25 终审功能审查）
 

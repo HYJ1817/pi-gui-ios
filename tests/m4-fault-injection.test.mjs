@@ -332,17 +332,16 @@ test('fault 7 revoke: mid-stream revocation delivers one reset then stops all fr
   gateway.revokeDevice(r.credentials.deviceId);
   assert.equal(resetsBefore.length, 1, 'revocation must emit exactly one reset');
   assert.equal(resetsBefore[0].payload.reason, 'authorization_changed');
-  // No further frames are DELIVERED to the revoked device (ADR-0010 final:
-  // frames are journaled regardless of authorization — delivery/replay-time
-  // filtering — so the timeline has no holes for a future re-grant/re-pair;
-  // the delivery guarantee is what matters).
+  // No further frames are journaled for the revoked device — authorization
+  // filtering at journal time keeps the authorized timeline gapless
+  // (independent-review B1: static filtering must never consume sequence
+  // space); revoked devices receive nothing at all.
   const conv = gateway.domain.conversations.find(c => c.conversationId === CONV);
-  conv.messages.push({ messageId: 'msg_post_revoke', role: 'assistant', text: 'post-revoke' });
   const stream = gateway.streamFor(r.credentials.deviceId);
   const journalBefore = stream.journalSeq;
+  conv.messages.push({ messageId: 'msg_post_revoke', role: 'assistant', text: 'post-revoke' });
   gateway.emit(r.credentials.deviceId, 'message.append', conv, { messageId: 'msg_post_revoke', role: 'assistant', text: 'post-revoke' });
-  assert.ok(stream.journalSeq > journalBefore, 'frame IS journaled — timeline continuity for future resume');
-  // and the subscription was already removed by revokeDevice — zero delivery.
+  assert.equal(stream.journalSeq, journalBefore, 'revoked device journals nothing — but no authorized subscription ever holes either');
   sub.close();
 });
 
@@ -640,6 +639,9 @@ test('regression grant revoke/re-grant: window mutations are recovered, never si
   await r.store.load();
   r.events.open(r.stream, r.client.buildEventsRequest(), undefined);
   await send(r, 'before-revoke');
+  // Capture the pre-revocation cursor — this is what a disconnected client
+  // would hold when resuming across the transition window.
+  const preRevokeCursor = r.events.latestCursor();
   // Revoke the grant mid-stream.
   const resetCount = [];
   r.events.onEvent = a => { if (a.event === 'reset') resetCount.push(a); r.store.apply(a); };
@@ -661,9 +663,89 @@ test('regression grant revoke/re-grant: window mutations are recovered, never si
   // Live traffic after re-grant flows with continuous sequences.
   await send(r, 'post-regrant');
   assertConverged(r, gateway, 'revoke/re-grant');
-  // Cursor resume across the re-grant boundary replays window frames exactly once.
-  const cursorNow = r.events.latestCursor();
+  // Disconnected-resume across the grant transition can NEVER validate as a
+  // continuous replay: the epoch invalidation on every transition means any
+  // cursor minted before the re-grant is foreign-generation → exactly one
+  // reset → snapshot rebuild (which carries the window content). Silent
+  // divergence is structurally impossible.
   r.events.close();
-  r.events.open(r.stream, r.client.buildEventsRequest(cursorNow), cursorNow);
+  const resetsAcrossBoundary = [];
+  r.events.onEvent = a => { if (a.event === 'reset') resetsAcrossBoundary.push(a); r.store.apply(a); };
+  r.events.open(r.stream, r.client.buildEventsRequest(preRevokeCursor), preRevokeCursor);
+  await new Promise(resolve => setTimeout(resolve, 80));
+  assert.equal(resetsAcrossBoundary.length, 1, 'pre-transition cursor must hit exactly-one reset — never a continuous-but-incomplete replay');
   assert.ok(!hasDuplicateIds(r), 'no duplicate replay across the boundary');
+});
+test('regression static scope filtering: device without approvals.read never holes its stream (B1)', async (t) => {
+  // Independent-review B1: a legitimately scope-limited device must enjoy
+  // gapless continuous delivery even while out-of-scope events flow on the
+  // server — statically filtered events must never consume sequence space.
+  const { M, gateway, service } = setup(t, domain());
+  const r = rig(t, M, gateway, 'scope-limited');
+  // Downgrade the device: remove approvals.read AFTER registration (the hook
+  // registerDevice grants a fixed set; mutate the record directly).
+  const deviceRecord = gateway.devices.get(r.credentials.deviceId);
+  assert.ok(deviceRecord, 'device record accessible');
+  deviceRecord.grantedScopes = deviceRecord.grantedScopes.filter(sc => sc !== 'approvals.read');
+  await r.store.load();
+  r.events.open(r.stream, r.client.buildEventsRequest(), undefined);
+  await send(r, 'pre-approval');
+  // Out-of-scope event sandwiched between in-scope conversation events.
+  const conv = gateway.domain.conversations.find(c => c.conversationId === CONV);
+  conv.messages.push({ messageId: 'msg_scope_out', role: 'assistant', text: 'out-of-scope-content' });
+  conv.ownerRevision += 1;
+  gateway.emit(conv.owner, 'approval.pending', conv, { requestId: 'req-scoped-out', method: 'exec', title: 'x', message: 'out-of-scope-content' });
+  await send(r, 'post-approval');
+  assert.ok(storeMessages(r).some(m => m.includes('post-approval')), 'in-scope traffic flows continuously');
+  assert.ok(!storeMessages(r).some(m => m.includes('out-of-scope-content')), 'out-of-scope content never delivered');
+  assert.equal(r.events.streamError(), undefined, 'no sequence_gap death — statically filtered events never hole the stream');
+  assert.ok(!hasDuplicateIds(r), 'no duplicates');
+});
+
+test('regression multi-project filtering: never-granted project events never hole the stream (B1)', async (t) => {
+  const shared = domain();
+  shared.projects.push({ projectId: 'project-f0002', displayName: 'Other Lab', description: 'x' });
+  shared.conversations.push({
+    conversationId: 'conv-other', sessionId: 'session-f0001', projectId: 'project-f0002', title: 'Other',
+    status: 'live', ownerRevision: 0, ownerEpoch: 0, createdAt: '2026-11-22T09:00:00Z', updatedAt: '2026-11-22T09:00:00Z',
+    active: true, owner: 'owner-a', messages: [], pendingMutations: [], approvals: [],
+  });
+  const { M, gateway, service } = setup(t, shared);
+  // A device granted ONLY project-f0002 — never PROJECT.
+  const device2 = edKeypair();
+  const deviceCrypto2 = nodeCrypto(device2);
+  const credentials2 = gateway.registerDevice({
+    devicePublicKey: device2.publicKeyRaw, grantedScopes: ALL_SCOPES, grants: ['project-f0002'],
+    expiresAt: new Date(Date.now() + 3600_000).toISOString(),
+  });
+  const client2 = new M.client.TypedRemoteClient({ credentials: credentials2, crypto: deviceCrypto2, transport: { send: req => gateway.send(req) } });
+  const store2 = new M.store.ConversationStore(client2, null);
+  const events2 = new M.events.EventStreamClient({
+    credentials: credentials2, crypto: deviceCrypto2,
+    authorizeResource: () => true,
+    onReset: () => {},
+    onEvent: a => store2.apply(a),
+    onStreamError: () => store2.markStreamError(),
+  });
+  const stream2 = {
+    subscribe: (request, onFrame, onClose) => {
+      const sub = gateway.subscribe(credentials2, request, onFrame);
+      if (!sub.ok) { onClose(String(sub.response.status)); return { close: () => {} }; }
+      return sub;
+    },
+  };
+  events2.open(stream2, client2.buildEventsRequest(), undefined);
+  // Events on the never-granted PROJECT must not hole device2's stream.
+  const conv = gateway.domain.conversations.find(c => c.conversationId === CONV);
+  conv.messages.push({ messageId: 'msg_foreign_proj', role: 'assistant', text: 'foreign-project' });
+  conv.ownerRevision += 1;
+  gateway.emit(conv.owner, 'message.append', conv, { messageId: 'msg_foreign_proj', role: 'assistant', text: 'foreign-project' });
+  // Device2 traffic on its own project must flow continuously afterwards.
+  const conv2 = gateway.domain.conversations.find(c => c.conversationId === 'conv-other');
+  conv2.messages.push({ messageId: 'msg_own_proj', role: 'assistant', text: 'own-project' });
+  conv2.ownerRevision += 1;
+  gateway.emit(conv2.owner, 'message.append', conv2, { messageId: 'msg_own_proj', role: 'assistant', text: 'own-project' });
+  await new Promise(resolve => setTimeout(resolve, 60));
+  assert.ok((store2.state.conversations['conv-other']?.messages?.length ?? 0) > 0, 'own-project traffic flows');
+  assert.equal(events2.streamError(), undefined, 'no sequence_gap death from foreign-project events');
 });

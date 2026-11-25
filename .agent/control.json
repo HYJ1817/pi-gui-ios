@@ -1,8 +1,8 @@
 {
   "schemaVersion": 2,
   "kind": "control",
-  "revision": 1008,
-  "updatedAt": "2026-11-25T05:34:16.974Z",
+  "revision": 1009,
+  "updatedAt": "2026-11-25T05:34:32.902Z",
   "data": {
     "phase": "M4",
     "currentTask": "M4-sync",
@@ -2503,18 +2503,18 @@
       }
     ],
     "checkpoint": {
-      "id": "v2-2026-11-25T05-34-09-469Z-ca39db7a-c493-4b5f-8082-d759b12ada1c",
-      "path": ".agent/checkpoints/v2-2026-11-25T05-34-09-469Z-ca39db7a-c493-4b5f-8082-d759b12ada1c.json",
-      "sha256": "0d395a6219025b69e72b029d6e97a108a93c86a76f912fd6d3e87c559bd39e73",
-      "authorityDigest": "94ae36c794dacbbcdce07ec029d6ef2a41d5e58aeec0055f860ee7a3735ec3e5",
-      "at": "2026-11-25T05:34:09.469Z",
+      "id": "v2-2026-11-25T05-34-32-902Z-dc0b3d5f-fd1c-4810-90dd-c79de9a936aa",
+      "path": ".agent/checkpoints/v2-2026-11-25T05-34-32-902Z-dc0b3d5f-fd1c-4810-90dd-c79de9a936aa.json",
+      "sha256": "4ad3138ada81c6b9456826f6601b317d43ff78737d441425a58ed5c5cb485b2b",
+      "authorityDigest": "794087bbfe9226937c3b8a9d55998b7a60feaef1f1caf48416cf2697aee1d66c",
+      "at": "2026-11-25T05:34:32.902Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "166ef9375d45691cf3822926368bd25333599f9d",
+        "commit": "ff1e982a09ff01905f31c7d85ff0c14814ec989a",
         "dirty": []
       },
       "sourceFingerprint": "91a7f583762ea22c6abc02cd05d1f9d8470c16d93129baffcb44ec1558ff5475",
-      "note": "M4 narrow verification round: delegate 9fd07c58 verifying fixes A(revoke-regrant)+B(journalSeq-1) @1a6cbda; all prior important findings fixed; unit/integration/fault-injection re-baselined"
+      "note": "M4 narrow verification pending: delegate 9fd07c58 @1a6cbda; CI 45554217761 in_progress for ui re-baseline; all important findings fixed (361/361 green); evidence chain: unit/integration/fault-injection imported @1a6cbda fp91a7f583"
     },
     "nextAction": "M3-core: resume testing evidence chain (unit+integration imported; CI 45473673853 green for ui import; delegates review+security pending). M-1-infrastructure completed via closeout PR #1.",
     "delegates": [
@@ -2936,6 +2936,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "794087bbfe9226937c3b8a9d55998b7a60feaef1f1caf48416cf2697aee1d66c"
+    "digest": "04d39eaad067dc72451c8ed3405ef097af49ac48604a2dd8984c7b20ef44c8ed"
   }
 }
