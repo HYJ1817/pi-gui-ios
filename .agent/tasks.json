@@ -1,11 +1,11 @@
 {
   "schemaVersion": 2,
   "kind": "tasks",
-  "revision": 1335,
-  "updatedAt": "2026-11-25T14:44:17.557Z",
+  "revision": 1339,
+  "updatedAt": "2026-11-25T14:45:55.357Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "506fdf41277c43a00b47154d1ce0def1b5fb5809d9d2faf212525fea7b2c0389",
+    "parentDigest": "276ed5f1c35e90ffa9ab2ebc3fd86a9f2f94b853093e1a92ee6a7be79670847c",
     "tasks": [
       {
         "id": "M-1-infrastructure",
@@ -869,6 +869,23 @@
               "shared"
             ],
             "scopeFingerprint": "66cbbf914d3296caf785a11b6ff679b51aab343dfb2d2059b4cbce9f3b358c85"
+          },
+          {
+            "kind": "independent-security",
+            "path": "docs/acceptance/independent-security-M-1-infrastructure-round3.json",
+            "sha256": "00ea204d94781dbd37c81059d3d5589f44a5c14d3064d4106cfb35dda4a918e3",
+            "sourceFingerprint": "4f85b14a506459c459c466a16f120b4aeca356a7a5a27edce6b6a615bd589dda",
+            "commit": "f640261f588c44ea96465e8c97f5647a3b461fe4",
+            "at": "2026-11-25T14:45:55.250Z",
+            "scopes": [
+              "app",
+              "control",
+              "native-build",
+              "protocol",
+              "shared",
+              "tests"
+            ],
+            "scopeFingerprint": "495d8eb44d56694791d1a5dfec9a7015702b36074d965755bcb42d4528a2b9cc"
           }
         ],
         "updatedAt": "2026-11-25T07:17:28.394Z"
@@ -3819,6 +3836,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "7f004b004dfee3dc1ba25b690589ac707ee3b88ab03a4590b8ee647bc0317d4c"
+    "digest": "02c51c13f75a231862c6cae09ece434ba1b5c761533973aa656a99a292120ee7"
   }
 }

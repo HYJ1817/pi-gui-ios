@@ -1,0 +1,6 @@
+{
+  "taskId": "node:delegated-task:command%3Amcp%3A17846bd5-b663-43a8-b635-1fb1d105ec66%3Adelegate-task%3A90ae5653-1f6e-4d86-9e36-c8af8d7b5670",
+  "latestTerminalStatus": "completed",
+  "executedModel": "magpie/xingchiapi/gpt-6.1-sol",
+  "summary": "{\"schemaVersion\": 1, \"kind\": \"independent-security\", \"decision\": \"pass\", \"reviewedCommit\": \"f640261f588c44ea96465e8c97f5647a3b461fe4\", \"sourceFingerprint\": \"4f85b14a506459c459c466a16f120b4aeca356a7a5a27edce6b6a615bd589dda\", \"unresolvedBlockers\": 0, \"unresolvedImportant\": 0, \"findings\": [{\"id\": \"NI-01\", \"severity\": \"important\", \"status\": \"closed\", \"note\": \"substituted gem payload rejected by bundler checksum mismatch (exit 37) before extconf/pre-install execution\"}, {\"id\": \"NI-RV-01\", \"severity\": \"important\", \"status\": \"closed\", \"note\": \"committed gemLockSha256 binds the checksum-bearing canonical lock; all six locally computable production hash inputs match exactly\"}, {\"id\": \"chain-verification\", \"severity\": \"info\", \"status\": \"pass\", \"note\": \"validator roundtrip byte-identical twice, LF-only, 56 checksums; native-locks 70/70, ipa-ci 20/20, native-links 27/27, npm test 387/387; CI 45623367812 all-green at d76c7f2 (same fingerprint as reviewed commit)\"}]}"
+}
