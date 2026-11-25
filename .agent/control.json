@@ -1,8 +1,8 @@
 {
   "schemaVersion": 2,
   "kind": "control",
-  "revision": 958,
-  "updatedAt": "2026-11-25T04:58:11.565Z",
+  "revision": 960,
+  "updatedAt": "2026-11-25T05:00:18.588Z",
   "data": {
     "phase": "M4",
     "currentTask": "M4-sync",
@@ -2662,11 +2662,23 @@
         "role": "independent-review",
         "status": "completed",
         "sourceCommit": "1e85410de3d3ae443e0954e09c426ebe66e11ae5"
+      },
+      {
+        "taskId": "node:delegated-task:command%3Amcp%3Acf1b54b6-aaf2-463c-b8fb-dd5a8d496ffe%3Adelegate-task%3A051ab929-3108-444a-ab5c-533539a8fe61",
+        "role": "independent-review",
+        "status": "working",
+        "sourceCommit": "aae3a7884f61d6855afcfa173e78a5047b73b28b"
+      },
+      {
+        "taskId": "node:delegated-task:command%3Amcp%3Acf1b54b6-aaf2-463c-b8fb-dd5a8d496ffe%3Adelegate-task%3A0c5ab0cf-50d1-4a55-ab5e-cd388ec61e2c",
+        "role": "independent-security",
+        "status": "working",
+        "sourceCommit": "aae3a7884f61d6855afcfa173e78a5047b73b28b"
       }
     ]
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "1bea417473dd56238f4a7a92ed2f4b1a897d40fccabc638f185609bb6fb5e881"
+    "digest": "ec27588fb0a515f4d8adc3581b5ee0e5b3adcd011222d18cef30c06dd845bdf8"
   }
 }

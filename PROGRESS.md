@@ -1,6 +1,6 @@
 # 项目进度（生成文件）
 
-权威：.agent/control.json；schema v2；revision 958；2026-11-25T04:58:11.565Z
+权威：.agent/control.json；schema v2；revision 960；2026-11-25T05:00:18.588Z
 
 阶段：M4；当前：M4-sync；分支：agent/m-1-bootstrap
 
