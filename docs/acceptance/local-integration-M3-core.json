@@ -2,22 +2,22 @@
   "schemaVersion": 2,
   "kind": "integration",
   "taskId": "M3-core",
-  "commit": "44f04dca223ca367b6caa8fc7ef8d34069331dd3",
-  "sourceFingerprint": "eb74e94998c2fa9eab69c75defb524b044c92448e4db8a42f0fa28d0b9f92481",
+  "commit": "d76c7f2e17e858f15f4a0ed461723c0e9b5da2e5",
+  "sourceFingerprint": "4f85b14a506459c459c466a16f120b4aeca356a7a5a27edce6b6a615bd589dda",
   "scopes": [
     "control",
     "protocol",
     "shared"
   ],
   "scopeFingerprint": "98041aea2d9b10702cf2558cf9278dabe2743b974208d7d676b31453cafcad8b",
-  "startedAt": "2026-11-25T13:18:58.994Z",
-  "finishedAt": "2026-11-25T13:19:02.127Z",
+  "startedAt": "2026-11-25T14:03:05.606Z",
+  "finishedAt": "2026-11-25T14:03:54.073Z",
   "passed": true,
   "details": {
     "command": "node scripts/desktop-remote-verify.mjs",
     "exitCode": 0,
     "logPath": "docs/acceptance/local-integration-output.txt",
-    "logSha256": "4f08828d63b996899e4a0459812f8e7ba84bf244215fde6508602d050c7b62cf",
-    "sameRunEvidence": "cloned same-run: identical integration execution at desktop pin cff10262 covers this task (integration scope is the shared protocol/control surface)"
+    "logSha256": "07e2d739417435b8ead0a40d65417e506b5f9af2865e7eded2b4eb3191cbbed8",
+    "sameRunEvidence": "cloned same-run: identical integration execution at desktop pin 4a61f6d2 covers this task (integration scope is the shared protocol/control surface)"
   }
 }
