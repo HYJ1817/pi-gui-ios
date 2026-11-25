@@ -1,8 +1,8 @@
 {
   "schemaVersion": 2,
   "kind": "control",
-  "revision": 1317,
-  "updatedAt": "2026-11-25T14:04:29.039Z",
+  "revision": 1318,
+  "updatedAt": "2026-11-25T14:05:20.479Z",
   "data": {
     "phase": "M5",
     "currentTask": "M5-tailscale",
@@ -3918,7 +3918,7 @@
       "sourceFingerprint": "4f85b14a506459c459c466a16f120b4aeca356a7a5a27edce6b6a615bd589dda",
       "note": "agent-task evidence M4-sync"
     },
-    "nextAction": "M5: round-5 b3add3f4 + NI-01 reverify e858c4c9 回包→independent 证据链→CI 45611695800 rerun 全绿→ci/ipa/ui 证据→validate→transitions",
+    "nextAction": "M5: round-6 87f0b1f0 + native-security round-2 回包→independent 证据链→CI 45623367812(d76c7f2)/新run 全绿→ci/ipa/ui→validate→transitions",
     "delegates": [
       {
         "taskId": "node:delegated-task:command%3Amcp%3Ac31b83bb-4e95-4301-8a91-f13f8295d85a%3Adelegate-task%3A4b75cf04-9360-469c-87e1-321a7e4b3149",
@@ -4415,11 +4415,17 @@
       {
         "taskId": "node:delegated-task:command%3Amcp%3A17846bd5-b663-43a8-b635-1fb1d105ec66%3Adelegate-task%3Ae858c4c9-ace5-41b2-ac00-387840142d4e",
         "role": "independent-security",
-        "status": "working",
+        "status": "completed",
         "sourceCommit": "8afae6d0a51d925d83aa3255a5daecef02ec2dee"
       },
       {
         "taskId": "node:delegated-task:command%3Amcp%3A17846bd5-b663-43a8-b635-1fb1d105ec66%3Adelegate-task%3Ab3add3f4-78bf-426d-8043-11e3fe125159",
+        "role": "independent-review",
+        "status": "completed",
+        "sourceCommit": "ee0778534e9d864de691ccb65fd6aa43cc5da219"
+      },
+      {
+        "taskId": "node:delegated-task:command%3Amcp%3A17846bd5-b663-43a8-b635-1fb1d105ec66%3Adelegate-task%3A87f0b1f0-00fb-4e70-ba3c-2109d115d379",
         "role": "independent-review",
         "status": "working",
         "sourceCommit": "ee0778534e9d864de691ccb65fd6aa43cc5da219"
@@ -4428,6 +4434,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "16e0df4c8bef0fe21b51e393e65ae6b6a5f7c1f5d64c687c304281d4a6e0f283"
+    "digest": "f2271dbb1c99dd69066552a177046333555ff9d36af6cb018623673db2ca4fff"
   }
 }
