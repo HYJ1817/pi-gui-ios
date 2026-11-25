@@ -1,8 +1,8 @@
 {
   "schemaVersion": 2,
   "kind": "control",
-  "revision": 1165,
-  "updatedAt": "2026-11-25T10:34:03.061Z",
+  "revision": 1166,
+  "updatedAt": "2026-11-25T10:38:14.481Z",
   "data": {
     "phase": "M5",
     "currentTask": "M5-tailscale",
@@ -3237,13 +3237,13 @@
       {
         "taskId": "node:delegated-task:command%3Amcp%3A02869bb3-50d6-471c-b7e4-0c9110dc070f%3Adelegate-task%3A1092080a-b73d-4fe6-9235-fd58ffce6b53",
         "role": "m0-r3-functional-review",
-        "status": "working",
+        "status": "cancelled",
         "sourceCommit": "eaae1f83a7c565dffc664e2fdc792d3badf3805b"
       },
       {
         "taskId": "node:delegated-task:command%3Amcp%3A02869bb3-50d6-471c-b7e4-0c9110dc070f%3Adelegate-task%3A2c4ae904-7312-44c2-9487-72b501a6a2fd",
         "role": "m0-r3-security-review",
-        "status": "working",
+        "status": "cancelled",
         "sourceCommit": "eaae1f83a7c565dffc664e2fdc792d3badf3805b"
       },
       {
@@ -3333,13 +3333,13 @@
       {
         "taskId": "node:delegated-task:command%3Amcp%3A0de40706-e69b-4b20-bdea-19836641e491%3Adelegate-task%3Afab32c09-5ef8-414e-af49-c42f6839f9cf",
         "role": "m1-remote-final-confirmation-review",
-        "status": "working",
+        "status": "cancelled",
         "sourceCommit": "ceec7e888ed8b637f20b351c8ec81a0d890bca18"
       },
       {
         "taskId": "node:delegated-task:command%3Amcp%3A192f0d0c-3998-422d-9b85-6f47c284ec5e%3Adelegate-task%3A2f042cbb-5ba8-4766-bdf6-e6ea512a9986",
         "role": "native-lock-candidates-review",
-        "status": "working",
+        "status": "cancelled",
         "sourceCommit": "a27a9a253e12a148de6f92f033ba4342faa1ed02"
       },
       {
@@ -3519,37 +3519,37 @@
       {
         "taskId": "node:delegated-task:command%3Amcp%3Acf1b54b6-aaf2-463c-b8fb-dd5a8d496ffe%3Adelegate-task%3A051ab929-3108-444a-ab5c-533539a8fe61",
         "role": "independent-review",
-        "status": "working",
+        "status": "cancelled",
         "sourceCommit": "aae3a7884f61d6855afcfa173e78a5047b73b28b"
       },
       {
         "taskId": "node:delegated-task:command%3Amcp%3Acf1b54b6-aaf2-463c-b8fb-dd5a8d496ffe%3Adelegate-task%3A0c5ab0cf-50d1-4a55-ab5e-cd388ec61e2c",
         "role": "independent-security",
-        "status": "working",
+        "status": "cancelled",
         "sourceCommit": "aae3a7884f61d6855afcfa173e78a5047b73b28b"
       },
       {
         "taskId": "node:delegated-task:command%3Amcp%3Acf1b54b6-aaf2-463c-b8fb-dd5a8d496ffe%3Adelegate-task%3Abdd3d148-c009-46d6-9b16-c15eea3f9eb5",
         "role": "independent-review",
-        "status": "working",
+        "status": "cancelled",
         "sourceCommit": "2dc408a919c73db11824f6574b940aaf3f161040"
       },
       {
         "taskId": "node:delegated-task:command%3Amcp%3Acf1b54b6-aaf2-463c-b8fb-dd5a8d496ffe%3Adelegate-task%3A45c83e98-70a6-43c2-8ce9-c27d46270561",
         "role": "independent-security",
-        "status": "working",
+        "status": "cancelled",
         "sourceCommit": "2dc408a919c73db11824f6574b940aaf3f161040"
       },
       {
         "taskId": "node:delegated-task:command%3Amcp%3Acf1b54b6-aaf2-463c-b8fb-dd5a8d496ffe%3Adelegate-task%3A9fd07c58-723a-4f09-9772-49acddbe9820",
         "role": "independent-review",
-        "status": "working",
+        "status": "cancelled",
         "sourceCommit": "1a6cbda396fbc749b9863a67a64460e207a0b333"
       },
       {
         "taskId": "node:delegated-task:command%3Amcp%3Acf1b54b6-aaf2-463c-b8fb-dd5a8d496ffe%3Adelegate-task%3Ad1ddb8e8-23bd-40f0-b692-22126faea13c",
         "role": "independent-review",
-        "status": "working",
+        "status": "cancelled",
         "sourceCommit": "15d29c5114596f249959920eaf5864bd5271cf04"
       },
       {
@@ -3561,31 +3561,43 @@
       {
         "taskId": "node:delegated-task:command%3Amcp%3A1b5b7a18-0731-48b6-9ea4-222644e8742e%3Adelegate-task%3Abd965ffc-96bf-40f4-9c12-6566cece3c66",
         "role": "independent-security",
-        "status": "working",
+        "status": "cancelled",
         "sourceCommit": "6e4d63933d7c056c81e093fa1c2e5d3ab1aaa583"
       },
       {
         "taskId": "node:delegated-task:command%3Amcp%3A17846bd5-b663-43a8-b635-1fb1d105ec66%3Adelegate-task%3A8cc452c0-6982-4744-b511-087df03af507",
         "role": "independent-security",
-        "status": "working",
+        "status": "cancelled",
         "sourceCommit": "6e4d63933d7c056c81e093fa1c2e5d3ab1aaa583"
       },
       {
         "taskId": "node:delegated-task:command%3Amcp%3A17846bd5-b663-43a8-b635-1fb1d105ec66%3Adelegate-task%3A1110c7b0-3db4-4955-a9cb-6a04896aa343",
         "role": "independent-review",
-        "status": "working",
+        "status": "cancelled",
         "sourceCommit": "cfaa5f8dda1c81549f914be513ce7cdb29eb8646"
       },
       {
         "taskId": "node:delegated-task:command%3Amcp%3A17846bd5-b663-43a8-b635-1fb1d105ec66%3Adelegate-task%3Ab2a70b45-3d24-43f8-aa4c-c771bae9e6d1",
         "role": "independent-security",
-        "status": "working",
+        "status": "cancelled",
         "sourceCommit": "cfaa5f8dda1c81549f914be513ce7cdb29eb8646"
+      },
+      {
+        "taskId": "node:delegated-task:command%3Amcp%3A17846bd5-b663-43a8-b635-1fb1d105ec66%3Adelegate-task%3Af8583a8c-a3ee-469f-83f0-c76c2c66e097",
+        "role": "independent-review",
+        "status": "working",
+        "sourceCommit": "ee0778534e9d864de691ccb65fd6aa43cc5da219"
+      },
+      {
+        "taskId": "node:delegated-task:command%3Amcp%3A17846bd5-b663-43a8-b635-1fb1d105ec66%3Adelegate-task%3Aa11fc088-d2c4-4b50-8cec-b4f2622c94dc",
+        "role": "independent-security",
+        "status": "working",
+        "sourceCommit": "ee0778534e9d864de691ccb65fd6aa43cc5da219"
       }
     ]
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "8b9e7f3c8d17bc82875e25a2999616e7ccaf928ccf83b078cbc4dbdee4b2b8c5"
+    "digest": "ad647e69356146fcef33e1e7d50870ee2008c9d72307c1cbbfd66eb7675551fd"
   }
 }
