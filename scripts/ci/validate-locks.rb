@@ -41,7 +41,7 @@ begin
   raise unless gem_text.ascii_only? && gem_text.bytesize < 2_000_000
   # A parsed lock alone can ignore trailing comments: reject non-lock syntax and
   # reconstruct only parsed fields below, rather than copying the input verbatim.
-  raise unless gem_text.lines.all? { |line| line.match?(/\A(?:\n|GEM\n|PLATFORMS\n|DEPENDENCIES\n|RUBY VERSION\n|BUNDLED WITH\n|  remote: https:\/\/rubygems\.org\/\n|  specs:\n| {2,6}[A-Za-z0-9_.+*!=<>()~ ,\-]+\n)\z/) }
+  raise unless gem_text.lines.all? { |line| line.match?(/\A(?:\n|GEM\n|PLATFORMS\n|DEPENDENCIES\n|RUBY VERSION\n|BUNDLED WITH\n|CHECKSUMS\n|  remote: https:\/\/rubygems\.org\/\n|  specs:\n| {2,6}[A-Za-z0-9_.+*!=<>()~ ,\-]+\n)\z/) }
   phase = 'GEM_PARSE'
   gems = Bundler::LockfileParser.new(gem_text)
   phase = 'GEM_CONSTRAINTS'
@@ -53,6 +53,26 @@ begin
   raise unless gems.ruby_version.match?(/\Aruby 3\.3\.8p[0-9]+\z/)
   raise unless gems.specs.all? { |s| s.name.match?(/\A[A-Za-z0-9_.\-]+\z/) }
   raise unless gems.platforms.all? { |p| p.to_s.match?(/\A[A-Za-z0-9_.\-]+\z/) }
+  phase = 'GEM_CHECKSUMS'
+  # Every resolved gem spec MUST carry exactly one sha256 checksum bound in the
+  # lock — gem bytes are executed before final verification, so the reviewed
+  # lock hash must commit to gem content, not just names/versions. A lock with
+  # a missing section, unpaired entries, malformed digests or duplicate names
+  # fails closed here, before any installation.
+  store = gems.sources.first.checksum_store.instance_variable_get(:@store)
+  raise unless store.is_a?(Hash) && !store.empty?
+  checksum_lines = gem_text.scan(/^  ([A-Za-z0-9_.\-]+) \(([^)]+)\) sha256=([0-9a-f]{64})$/).map { |n, v, d| [n, v, d] }
+  raise unless checksum_lines.length == store.size
+  # Keys are name (version[-platform]) exactly as the CHECKSUMS section spells
+  # them — platform-specific variants are distinct artifact bindings.
+  spec_keys = gems.specs.map { |spec| "#{spec.name} (#{spec.full_name.sub(/\A#{Regexp.escape(spec.name)}-/, '')})" }
+  raise unless checksum_lines.map { |n, v, _| "#{n} (#{v})" }.sort == spec_keys.sort
+  checksum_lines.each do |n, v, d|
+    key = "#{n} (#{v})"
+    entry = store[key]
+    raise unless entry.is_a?(Hash) && entry['sha256']
+    raise unless entry['sha256'].to_lock == "sha256=#{d}"
+  end
   phase = 'GEM_ROUNDTRIP'
   safe_gems = gems.sources.first.to_lock
   gems.specs.sort_by(&:full_name).each { |s| safe_gems << s.to_lock }
@@ -61,8 +81,12 @@ begin
   safe_gems << "\nDEPENDENCIES\n"
   gems.dependencies.sort.each { |_, dep| safe_gems << "#{dep.to_lock}\n" }
   safe_gems << "\nRUBY VERSION\n   #{gems.ruby_version}\n\nBUNDLED WITH\n   2.6.9\n"
+  safe_gems << "\nCHECKSUMS\n"
+  checksum_lines.sort.each { |n, v, d| safe_gems << "  #{n} (#{v}) sha256=#{d}\n" }
   reparsed = Bundler::LockfileParser.new(safe_gems)
   raise unless reparsed.specs.map(&:full_name) == gems.specs.map(&:full_name) && reparsed.dependencies.keys.sort == gems.dependencies.keys.sort
+  reparsed_store = reparsed.sources.first.checksum_store.instance_variable_get(:@store)
+  raise unless reparsed_store.keys.sort == store.keys.sort
   phase = 'POD_FORMAT'
   pod_text = File.read(File.join(root, 'Podfile.lock'))
   raise unless pod_text.ascii_only? && !pod_text.include?("\0") && pod_text.bytesize < 2_000_000

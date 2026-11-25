@@ -88,6 +88,8 @@ CI44868846710（8682219）已实际通过固定模板及发布策略配置，随
 
 保留严格安全加载，仅允许 Symbol 类及八个已知 source option 符号（path、podspec、git、http、commit、tag、branch、sha256），随后逐字段检查其所在位置、字符串值、来源和路径；保留 Symbol 键而不转成字符串，以维持 `pod install --deployment` 的 external_source 比较语义。重建后的 YAML 使用同一严格解析器回读并比较，未知符号/Ruby对象/别名仍拒绝，未解析注释不发布。新增明确 `POD_PARSE` 阶段，不回显异常值。检查源名称和 checksum 名称时显式要求 String，避免 Ruby 的 Symbol#match? 接受错误类型。
 
+**Gem 校验和强制（round-4 原生安全审查 NI-01）**：Gemfile.lock 必须携带 Bundler CHECKSUMS 段；validate-locks.rb 在 GEM_CHECKSUMS 阶段强制每个已解析 spec（含平台变体）与一个 sha256 校验和精确配对，重建时规范化重新输出该段。缺失、未配对、格式错误或尾随内容的校验和行均 fail closed。依据：`bundle install` 对携带校验和的冻结锁校验 gem 字节（失配拒绝安装），因此审查绑定的锁哈希自此承诺 gem 内容而非仅名称/版本——gem 在安装/执行前先被字节级验证。
+
 新增 `tests/native-locks.test.mjs` 使用真实 Ruby3.3.8/Bundler2.6.9 直接执行生产校验器，覆盖合法符号/往返幂等、generated/local路径、来源、对象/符号/别名及失败不改写/不泄漏。Windows checks 同样安装固定 Ruby/Bundler，canonical `npm test` 不再以未运行的 Ruby 校验器当作覆盖；便携工具只在本机忽略目录，不加入项目依赖或上传。此兼容修复不批准任何锁集，仍须真实 macOS bootstrap、独立候选审查和 locked 重跑。
 
 CI44872870220 随后推进到 `POD_STRUCTURE` 后失败。原单一阶段还包含依赖条目及 spec repository 检查，公开代码不能判定具体失败谓词。下一轮仅细分固定阶段码：根类型、顶层键、版本、依赖数组/条目键/引用格式/本地路径/值类型和仓库白名单；不回显任何字段内容，不改允许列表，不把本次失败写成通过。

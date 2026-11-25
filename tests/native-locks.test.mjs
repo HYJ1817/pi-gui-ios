@@ -44,6 +44,9 @@ RUBY VERSION
 
 BUNDLED WITH
    2.6.9
+
+CHECKSUMS
+  cocoapods (1.16.2) sha256=1111111111111111111111111111111111111111111111111111111111111111
 `;
 const POD = `PODS:
   - Synthetic (1.0.0)
@@ -184,6 +187,13 @@ for (const [name, gem, phase] of [
   ['different CocoaPods version', GEM.replaceAll('1.16.2', '1.16.1'), 'GEM_CONSTRAINTS'],
   ['different Bundler version', GEM.replaceAll('2.6.9', '2.6.8'), 'GEM_CONSTRAINTS'],
 ]) test(`reject ${name}`, t => reject(t, POD, phase, gem));
+
+for (const [name, mutation, phase] of [
+  ['missing CHECKSUMS section', g => g.replace(/\nCHECKSUMS\n  cocoapods[^\n]+\n/, '\n'), 'GEM_CHECKSUMS'],
+  ['checksum not paired to a spec', g => g.replace('cocoapods (1.16.2) sha256=1111', 'cocoapods-core (1.16.2) sha256=1111'), 'GEM_CHECKSUMS'],
+  ['truncated digest', g => g.replace(/sha256=1{64}/, 'sha256=1111'), 'GEM_PARSE'],
+  ['trailing content on checksum line', g => g.replace(/sha256=1{64}/, 'sha256=1111111111111111111111111111111111111111111111111111111111111111 # trailing'), 'GEM_FORMAT'],
+]) test(`gem checksum enforcement: reject ${name}`, t => reject(t, POD, phase, mutation(GEM)));
 
 // Pods Manifest.lock stamping: install-pods.sh may copy the reviewed Podfile.lock
 // onto Pods/Manifest.lock only to defeat byte-level serialization drift. The
