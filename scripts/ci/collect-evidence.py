@@ -20,8 +20,9 @@ _spec.loader.exec_module(diagnostics)
 STEPS = ('environment', 'npm', 'prebuild', 'pods', 'simulator-build',
          'iphone', 'ipad', 'device-build', 'ipa')
 SHOTS = ('00-shell-home.png', '01-native-glass.png', '02-interactions.png', '03-navigation.png', '04-keyboard-visible.png', '05-native-motion.png',
-         '07-shell-sessions.png', '08-shell-conversation.png',
-         'dark/home.png', 'dark/appearance.png', 'accessibility/home.png', 'accessibility/reduce-transparency.png',
+         '07-shell-sessions.png', '08-shell-conversation.png', '09-approvals.png', '10-approval-detail.png',
+         'dark/home.png', 'dark/conversation.png', 'dark/appearance.png',
+         'accessibility/home.png', 'accessibility/conversation.png', 'accessibility/reduce-transparency.png',
          'accessibility/dynamic-type.png', 'final.png', 'failure.png')
 PHASES = ('native', 'dark', 'accessibility')
 

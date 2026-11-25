@@ -47,6 +47,7 @@ export interface SandboxDomain {
 }
 
 interface MutationRecord { payloadSha256: string; outcome: Record<string, unknown>; ownerEpoch: number }
+const MAX_MUTATIONS = 4096;
 interface DeviceRecord {
   deviceId: string; devicePublicKey: string; grantedScopes: Scope[]; grants: Record<string, true>;
   active: boolean; revoked: boolean; replayEpoch: number; expiresAt: string;
@@ -99,6 +100,8 @@ export class LocalSyntheticGateway {
   private subscriptions: Subscription[] = [];
   private generationCounter = 0;
   private pairConsumed = false;
+  private pairAttempts = 0;
+  private readonly pairExpiresAtMs = Date.now() + 10 * 60_000;
 
   constructor(domain: SandboxDomain, crypto: GatewayCrypto, serviceMaterial: { fingerprint: string; publicKey: string }) {
     this.domain = domain;
@@ -113,6 +116,17 @@ export class LocalSyntheticGateway {
   pairingCode(): string { return '042817'; }
   pairingSessionId(): string { return 'pairing-demo0000000000'; }
 
+  private recordMutation(key: string, record: MutationRecord): void {
+    // FIFO-bound the idempotency ledger: a live outcome is never evicted while
+    // retained, and growth past the cap fails closed via capacity (oldest-first).
+    this.mutations.set(key, record);
+    while (this.mutations.size > MAX_MUTATIONS) {
+      const oldest = this.mutations.keys().next().value;
+      if (oldest === undefined) break;
+      this.mutations.delete(oldest);
+    }
+  }
+
   /**
    * Synthetic pair.exchange — mirrors the contract: shape check, short-lived
    * single-use code, service fingerprint match, atomic registration with a
@@ -125,7 +139,11 @@ export class LocalSyntheticGateway {
     if (!body || typeof body !== 'object' || Array.isArray(body) || hasForbiddenKey(body)) return fail('payload_invalid');
     const required = ['pairingSessionId', 'pairCode', 'deviceName', 'devicePublicKey', 'clientNonce', 'serviceFingerprint', 'proofSignature', 'requestedScopes'];
     if (!required.every(k => k in body) || Object.keys(body).some(k => !required.includes(k))) return fail('payload_invalid');
-    if (typeof body.pairingSessionId !== 'string' || body.pairingSessionId !== this.pairingSessionId()) return fail('pairing_expired');
+    if (typeof body.pairingSessionId !== 'string' || body.pairingSessionId !== this.pairingSessionId() || Date.now() > this.pairExpiresAtMs) return fail('pairing_expired');
+    // Per-session attempt budget: exhausted attempts reject even a correct
+    // code (guessing consumes the session budget).
+    this.pairAttempts += 1;
+    if (this.pairAttempts > 8) return fail('pairing_rejected');
     if (typeof body.pairCode !== 'string' || !/^[0-9]{6}$/.test(body.pairCode)) return fail('payload_invalid');
     if (typeof body.deviceName !== 'string' || !body.deviceName.length || body.deviceName.length > 48) return fail('payload_invalid');
     if (typeof body.devicePublicKey !== 'string' || !/^[A-Za-z0-9_-]{43}$/.test(body.devicePublicKey)) return fail('payload_invalid');
@@ -279,6 +297,7 @@ export class LocalSyntheticGateway {
     const query = request.query ?? {};
     if (hasForbiddenKey(query)) return unauthorized();
     if (route.op.id === 'events.subscribe') {
+      if (headers.accept !== 'text/event-stream') return unauthorized();
       if (Object.keys(query).some(k => k !== 'cursor')) return unauthorized();
       if (query.cursor !== undefined && !/^[A-Za-z0-9_-]{1,128}$/.test(query.cursor)) return unauthorized();
     } else if (Object.keys(query).length) return unauthorized();
@@ -417,7 +436,7 @@ export class LocalSyntheticGateway {
         this.domain.conversations.push(conversation);
         this.domain.sessions.push({ sessionId, displayName: 'Synthetic conversation', updatedAt: new Date().toISOString(), projectId: params.projectId!, activeConversations: [{ conversationId }] });
         const outcome = { conversationId, ownerRevision: 1 };
-        this.mutations.set(key, { payloadSha256: digest, outcome, ownerEpoch: 1 });
+        this.recordMutation(key, { payloadSha256: digest, outcome, ownerEpoch: 1 });
         return respond(outcome);
       }
       case 'runtime.snapshot': {
@@ -450,7 +469,7 @@ export class LocalSyntheticGateway {
         this.emit(device.deviceId, 'message.append', conv, { messageId: message.messageId, role: 'user', text });
         this.emit(device.deviceId, 'conversation.status', conv, { status: 'running' });
         const outcome = { clientMessageId: String(payload.clientMessageId), accepted: true, ownerRevision: conv.ownerRevision };
-        this.mutations.set(key, { payloadSha256: digest, outcome, ownerEpoch: conv.ownerEpoch });
+        this.recordMutation(key, { payloadSha256: digest, outcome, ownerEpoch: conv.ownerEpoch });
         const script = conv.script.afterSend;
         if (script) {
           const reply: RemoteMessage = { messageId: 'msg_' + sha256hex(`reply:${message.messageId}`).slice(0, 14), role: 'assistant', text: script.text };

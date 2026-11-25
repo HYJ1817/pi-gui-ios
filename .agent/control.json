@@ -1,8 +1,8 @@
 {
   "schemaVersion": 2,
   "kind": "control",
-  "revision": 808,
-  "updatedAt": "2026-11-24T16:53:31.328Z",
+  "revision": 811,
+  "updatedAt": "2026-11-25T01:47:58.555Z",
   "data": {
     "phase": "M3",
     "currentTask": "M3-core",
@@ -131,6 +131,15 @@
         "status": "completed",
         "conclusion": "success",
         "url": "https://github.com/HYJ1817/pi-gui-ios/actions/runs/45413372694"
+      },
+      {
+        "id": "45448754841",
+        "head": "7f8b0d6c396ecd24d35baa0fd4b83e4018b5d664",
+        "workflow": ".github/workflows/native-infrastructure.yml",
+        "attempt": 1,
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/HYJ1817/pi-gui-ios/actions/runs/45448754841"
       }
     ],
     "blockers": [],
@@ -1556,18 +1565,27 @@
       }
     ],
     "checkpoint": {
-      "id": "v2-2026-11-24T16-53-31-328Z-4648920b-2987-4bb0-a3c3-8b3b598c925b",
-      "path": ".agent/checkpoints/v2-2026-11-24T16-53-31-328Z-4648920b-2987-4bb0-a3c3-8b3b598c925b.json",
-      "sha256": "f82df90b86c571ea8b4c5a0af16910d6cec9f6f107632f19b8f007c0bb364e86",
-      "authorityDigest": "f51a927edf75af001563005f75eb4abbf6b69ee39091d30af8e4f529c837bd7e",
-      "at": "2026-11-24T16:53:31.328Z",
+      "id": "v2-2026-11-25T01-47-58-555Z-e96f5586-ebfe-4ecd-bb3c-e270ca685c08",
+      "path": ".agent/checkpoints/v2-2026-11-25T01-47-58-555Z-e96f5586-ebfe-4ecd-bb3c-e270ca685c08.json",
+      "sha256": "2a364beb765554bc153762ce2bbd2f27c48094909b6cc183692f1faa95396518",
+      "authorityDigest": "0965c759daa6f166b73bee56c3720c2e9c26bbedb02c7d864426faa687c8ffbb",
+      "at": "2026-11-25T01:47:58.555Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "72c81ab8b5ae68b9e5b9b4ca09b9a422dd7d2462",
-        "dirty": []
+        "commit": "7f8b0d6c396ecd24d35baa0fd4b83e4018b5d664",
+        "dirty": [
+          "M .agent/HANDOFF.md",
+          " D .agent/checkpoints/v2-2026-11-24T12-53-26-824Z-b1d5c6ec-b152-432a-9694-6f5705e2a91e.json",
+          " M .agent/control.json",
+          " M .agent/state.json",
+          " M .agent/tasks.json",
+          " M PROGRESS.md",
+          "?? .agent/checkpoints/v2-2026-11-24T17-27-21-004Z-76a43211-5f6d-4872-a07a-bc34591df3a9.json",
+          "?? docs/acceptance/ci-45448754841.json"
+        ]
       },
-      "sourceFingerprint": "7e0f730b3f7d751c531d9e7f709cb23ae90b77d919be83c72672e05a44a68fd1",
-      "note": "M3-core testing: unit+integration imported; delegates f26d985f/45e33ede running; CI 45442024534 pending"
+      "sourceFingerprint": "da8b664802aba8a84b33b8395d6ae3399b67f99d3f6e972361a8e7c769ae39c4",
+      "note": "agent-task ci current"
     },
     "nextAction": "M0/M1/M2 已完成（scoped evidence + 独立审查 + CI 绿 45413372694）。下一可执行任务：M-1-infrastructure 解除 blocked 并生成剩余证据（unit/typecheck/bundle/doctor/ui/ipa/independent-review/independent-security/independent-handoff）；M3-core 待 M-1-infra。真机 SideStore 仍留用户最终清单。",
     "delegates": [
@@ -1863,6 +1881,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "9da28adc3a8026ffe894815326a3ccf0122e46528d27004282336b84e72a7964"
+    "digest": "5198ad29093a111b17437b938146e5338f5d5c6ebef9dfde6922a92849223984"
   }
 }
