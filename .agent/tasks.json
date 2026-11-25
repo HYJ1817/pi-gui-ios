@@ -1,11 +1,11 @@
 {
   "schemaVersion": 2,
   "kind": "tasks",
-  "revision": 1493,
-  "updatedAt": "2026-11-25T17:53:45.494Z",
+  "revision": 1503,
+  "updatedAt": "2026-11-25T18:32:11.828Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "df7fcc38bb711e07bb274dfb1ae71f828d0c5c1f7dbef5a6d6a7029740bc58c5",
+    "parentDigest": "58c7bbd1f349136f09647eb48674b92a305143f1fe3b267892a0f0511a3d83d8",
     "tasks": [
       {
         "id": "M-1-infrastructure",
@@ -2411,6 +2411,20 @@
               "shared"
             ],
             "scopeFingerprint": "98041aea2d9b10702cf2558cf9278dabe2743b974208d7d676b31453cafcad8b"
+          },
+          {
+            "kind": "integration",
+            "path": "docs/acceptance/local-integration-M1-remote.json",
+            "sha256": "aed6087ab2e034686d6d74a432bb59f68605d33be7e8b7dffed7e6d2ce4a0d94",
+            "sourceFingerprint": "e78af94c071aee6ee08b59c41df2ae4beea5dee2e6567ca11215854e33215907",
+            "commit": "f3c21d3a0903ff896861f86c4c5e9f86521f310a",
+            "at": "2026-11-25T18:32:08.679Z",
+            "scopes": [
+              "control",
+              "protocol",
+              "shared"
+            ],
+            "scopeFingerprint": "98041aea2d9b10702cf2558cf9278dabe2743b974208d7d676b31453cafcad8b"
           }
         ],
         "updatedAt": "2026-11-25T08:07:57.510Z",
@@ -3546,6 +3560,20 @@
               "shared"
             ],
             "scopeFingerprint": "98041aea2d9b10702cf2558cf9278dabe2743b974208d7d676b31453cafcad8b"
+          },
+          {
+            "kind": "integration",
+            "path": "docs/acceptance/local-integration-M3-core.json",
+            "sha256": "125ba76a6c57637621e0f0aaf0bb3c78366c65612e6e0eed59fc8cb4abf6d253",
+            "sourceFingerprint": "e78af94c071aee6ee08b59c41df2ae4beea5dee2e6567ca11215854e33215907",
+            "commit": "f3c21d3a0903ff896861f86c4c5e9f86521f310a",
+            "at": "2026-11-25T18:32:10.225Z",
+            "scopes": [
+              "control",
+              "protocol",
+              "shared"
+            ],
+            "scopeFingerprint": "98041aea2d9b10702cf2558cf9278dabe2743b974208d7d676b31453cafcad8b"
           }
         ],
         "updatedAt": "2026-11-25T08:07:56.005Z"
@@ -4097,6 +4125,20 @@
               "shared"
             ],
             "scopeFingerprint": "98041aea2d9b10702cf2558cf9278dabe2743b974208d7d676b31453cafcad8b"
+          },
+          {
+            "kind": "integration",
+            "path": "docs/acceptance/local-integration-M4-sync.json",
+            "sha256": "c65432e3b8ace4f4283fd05e0e324d0f77247d586cc897760ceadb2d9865bcbb",
+            "sourceFingerprint": "e78af94c071aee6ee08b59c41df2ae4beea5dee2e6567ca11215854e33215907",
+            "commit": "f3c21d3a0903ff896861f86c4c5e9f86521f310a",
+            "at": "2026-11-25T18:32:11.738Z",
+            "scopes": [
+              "control",
+              "protocol",
+              "shared"
+            ],
+            "scopeFingerprint": "98041aea2d9b10702cf2558cf9278dabe2743b974208d7d676b31453cafcad8b"
           }
         ],
         "updatedAt": "2026-11-25T08:07:55.269Z"
@@ -4642,6 +4684,20 @@
               "shared"
             ],
             "scopeFingerprint": "98041aea2d9b10702cf2558cf9278dabe2743b974208d7d676b31453cafcad8b"
+          },
+          {
+            "kind": "integration",
+            "path": "docs/acceptance/local-integration-M5-tailscale.json",
+            "sha256": "e7198a1611fe86ffc0176cb0033e5280eadfa443bcf8a517e03bc89fee35d25b",
+            "sourceFingerprint": "e78af94c071aee6ee08b59c41df2ae4beea5dee2e6567ca11215854e33215907",
+            "commit": "f3c21d3a0903ff896861f86c4c5e9f86521f310a",
+            "at": "2026-11-25T18:32:07.148Z",
+            "scopes": [
+              "control",
+              "protocol",
+              "shared"
+            ],
+            "scopeFingerprint": "98041aea2d9b10702cf2558cf9278dabe2743b974208d7d676b31453cafcad8b"
           }
         ],
         "updatedAt": "2026-11-25T07:17:37.479Z"
@@ -4667,6 +4723,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "dc7f168a13b5c1e0adaece199c0cf07759f811ae8c669908c447fb0eb736f522"
+    "digest": "0b0edf68e6cc248a27fe880bc7e3ef6bec96cb06f97f46aba1bf839f52492f89"
   }
 }
