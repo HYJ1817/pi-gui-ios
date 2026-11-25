@@ -105216,6 +105216,16 @@
       "size": 104
     },
     {
+      "path": "pods/Target Support Files/PiGuiRemote/PiGuiRemote-umbrella.h",
+      "sha256": "58bfed427862850bbd9aad92f3955069d50b72c212522d3f0b93536014cfafa5",
+      "size": 314
+    },
+    {
+      "path": "pods/Target Support Files/PiGuiRemote/PiGuiRemote.modulemap",
+      "sha256": "49be790d98d2c3f83456d481e870907fe165a12874e837bf23f7d36dfae978db",
+      "size": 102
+    },
+    {
       "path": "pods/Target Support Files/RNReanimated/RNReanimated-umbrella.h",
       "sha256": "30dc650003144570b47227de5b5b06523c7e479917fc8d9d4283dcecddd8ea1b",
       "size": 10195
@@ -129682,6 +129692,18 @@
       "path": "pods/Headers/Public/ExpoSystemUI/ExpoSystemUI.modulemap",
       "physical": "pods/Target Support Files/ExpoSystemUI/ExpoSystemUI.modulemap",
       "target": "../../../Target Support Files/ExpoSystemUI/ExpoSystemUI.modulemap"
+    },
+    {
+      "kind": "cocoapods-header",
+      "path": "pods/Headers/Public/PiGuiRemote/PiGuiRemote-umbrella.h",
+      "physical": "pods/Target Support Files/PiGuiRemote/PiGuiRemote-umbrella.h",
+      "target": "../../../Target Support Files/PiGuiRemote/PiGuiRemote-umbrella.h"
+    },
+    {
+      "kind": "cocoapods-header",
+      "path": "pods/Headers/Public/PiGuiRemote/PiGuiRemote.modulemap",
+      "physical": "pods/Target Support Files/PiGuiRemote/PiGuiRemote.modulemap",
+      "target": "../../../Target Support Files/PiGuiRemote/PiGuiRemote.modulemap"
     },
     {
       "kind": "cocoapods-header",
