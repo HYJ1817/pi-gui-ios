@@ -1,8 +1,8 @@
 {
   "schemaVersion": 2,
   "kind": "control",
-  "revision": 1219,
-  "updatedAt": "2026-11-25T10:58:39.021Z",
+  "revision": 1221,
+  "updatedAt": "2026-11-25T11:00:04.420Z",
   "data": {
     "phase": "M5",
     "currentTask": "M5-tailscale",
@@ -3394,36 +3394,18 @@
       }
     ],
     "checkpoint": {
-      "id": "v2-2026-11-25T10-58-39-021Z-dd702684-c581-493e-a543-aaa479e0278f",
-      "path": ".agent/checkpoints/v2-2026-11-25T10-58-39-021Z-dd702684-c581-493e-a543-aaa479e0278f.json",
-      "sha256": "187b33991111a73cc6c0929d2af719ea8b94d56062da6018f0576ca0b57a10a7",
-      "authorityDigest": "66228a47427f48aab84d4c97da7e4519d01ce76285e70e9f8f2bcdd68275662a",
-      "at": "2026-11-25T10:58:39.021Z",
+      "id": "v2-2026-11-25T10-59-41-875Z-2a973dde-9e8e-4d97-9ff5-e00604d95ff0",
+      "path": ".agent/checkpoints/v2-2026-11-25T10-59-41-875Z-2a973dde-9e8e-4d97-9ff5-e00604d95ff0.json",
+      "sha256": "953d4caca347bc2eacba226ff61fef034b22406bfec10f53aac1c9d5cc278075",
+      "authorityDigest": "3b8fb6ef7c9a13742288108e38a308a37c52712fa427a4b7026731eed3341647",
+      "at": "2026-11-25T10:59:41.875Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "f57788f35a60a6caff1787abd0c476d1c6601b04",
-        "dirty": [
-          "M .agent/HANDOFF.md",
-          " D .agent/checkpoints/v2-2026-11-25T09-14-29-965Z-5a5d9d03-0e6e-4ee8-a4a3-ec8ffcf037eb.json",
-          " D .agent/checkpoints/v2-2026-11-25T09-14-33-644Z-f1a564c4-778d-44f9-be79-c6162a0306b1.json",
-          " D .agent/checkpoints/v2-2026-11-25T09-14-37-815Z-4b9ada1a-1275-4990-8d33-54e086d4fb36.json",
-          " M .agent/control.json",
-          " M .agent/state.json",
-          " M .agent/tasks.json",
-          " M PROGRESS.md",
-          "?? .agent/checkpoints/v2-2026-11-25T10-57-59-927Z-6fba2a98-2369-4535-ada2-6545a0e33f9a.json",
-          "?? .agent/checkpoints/v2-2026-11-25T10-58-35-352Z-87f0eabc-fb33-40f4-8d69-bd005899e5b5.json",
-          "?? .agent/checkpoints/v2-2026-11-25T10-58-37-141Z-e5a0b16e-330e-4462-8054-ca463afd28cc.json",
-          "?? docs/acceptance/independent-security-ee07785-M0-architecture.json",
-          "?? docs/acceptance/independent-security-ee07785-M1-remote.json",
-          "?? docs/acceptance/independent-security-ee07785-M3-core.json",
-          "?? docs/acceptance/independent-security-ee07785-M4-sync.json",
-          "?? docs/acceptance/independent-security-ee07785-M5-tailscale-receipt.json",
-          "?? docs/acceptance/independent-security-ee07785-M5-tailscale.json"
-        ]
+        "commit": "768a8af2638bc7156ace8ea1b4e3b8a27f2a04dd",
+        "dirty": []
       },
       "sourceFingerprint": "66da978e67eb1ec04c62ab5f5d59051130635b1e2f400910d25d505cdfa82405",
-      "note": "agent-task evidence M3-core"
+      "note": "round-3 安全验证 PASS 已导入；等功能 delegate + CI 45596517960；D5 背压 nit 延期记录"
     },
     "nextAction": "Resume M5 isolated default-off work. Resolve source-pod lock from actual CI 45571632914; failed native 45571632902 preserved. Address pending native review, then desktop cursor/auth in C:/pi-GUI-remote-protocol. Upstream stale evidence moved to testing; all require current-source revalidation.",
     "delegates": [
@@ -3888,11 +3870,17 @@
         "role": "independent-security",
         "status": "completed",
         "sourceCommit": "ee0778534e9d864de691ccb65fd6aa43cc5da219"
+      },
+      {
+        "taskId": "node:delegated-task:command%3Amcp%3A17846bd5-b663-43a8-b635-1fb1d105ec66%3Adelegate-task%3A9eb649c5-577c-4ae1-ab86-7a4f28781364",
+        "role": "independent-handoff",
+        "status": "working",
+        "sourceCommit": "768a8af2638bc7156ace8ea1b4e3b8a27f2a04dd"
       }
     ]
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "3b8fb6ef7c9a13742288108e38a308a37c52712fa427a4b7026731eed3341647"
+    "digest": "480cf10103643a370f4e54d168d875629da687f310459427f697bce7fd7202ea"
   }
 }
