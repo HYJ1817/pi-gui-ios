@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 2,
+  "taskId": "M3-core",
+  "kind": "independent-review",
+  "commit": "1e85410de3d3ae443e0954e09c426ebe66e11ae5",
+  "sourceFingerprint": "061c5d90b1977471c91f7e6a91ea600df44e17478019716d5bf2e4669a3552c8",
+  "scopes": [
+    "app",
+    "control",
+    "native-build",
+    "protocol",
+    "shared",
+    "tests"
+  ],
+  "scopeFingerprint": "8f182300133d6692bad2d0ebef9d4e86a05927c50b9baba191cbf49d4859d6bf",
+  "startedAt": "2026-11-25T02:24:54.084Z",
+  "finishedAt": "2026-11-25T02:24:54.084Z",
+  "passed": true,
+  "details": {
+    "receiptPath": "docs/acceptance/independent-review-1e85410-M3-core-receipt.json",
+    "receiptSha256": "01422c1eabe1d5a376d1008a684b357d531391f19b1d1edba625628ff9ddd6a7"
+  }
+}
