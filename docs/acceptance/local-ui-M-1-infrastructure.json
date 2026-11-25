@@ -1,67 +1,67 @@
 {
   "schemaVersion": 2,
   "taskId": "M-1-infrastructure",
-  "commit": "cbaba6871587a6bce9902088c5fc2bbcf67c80fa",
-  "sourceFingerprint": "6e7a6a919475365de47983f258f09a8177739a5380d629a6ca07e9eae7e6aa9f",
   "kind": "ui",
+  "commit": "ee0778534e9d864de691ccb65fd6aa43cc5da219",
+  "sourceFingerprint": "30e1bc04eb93d6648f2f76617b93604af40d984fad1659f9c6911be0e85ef75d",
   "scopes": [
     "app",
     "native-build",
     "shared"
   ],
-  "scopeFingerprint": "639e85f444291c8a064678ae5dae65481e3c9ccc1d24a2dedf1e175e0eb549ef",
-  "startedAt": "2026-11-24T19:40:19.941Z",
-  "finishedAt": "2026-11-24T19:40:19.941Z",
+  "scopeFingerprint": "ca76b26816f87b136c7e12797b00148605beb9c57abaa4ca1104b65781ce8bfc",
+  "startedAt": "2026-11-25T11:45:00.000Z",
+  "finishedAt": "2026-11-25T11:55:00.000Z",
   "passed": true,
   "details": {
     "nativeGlassVerified": true,
     "visualReview": "pass",
-    "reviewerContext": "CI run 45463943882 @cbaba68: real PNGs from merged m-1-ios artifact reviewed; iPhone/iPad light/dark Liquid Glass renders and accessibility (largest Dynamic Type + Reduce Transparency fallback) confirmed",
+    "reviewerContext": "Real PNG renders from CI run 45596517960 (attempt 1) reviewed individually; the M-1 Infrastructure lab surface is directly visible in the matrix frames (native glass probe card 'iOS glass API available' over patterned canvas, interaction checks, synthetic device label). Reduce-Transparency fallback documented in copy; solid fallback verified in accessibility frames. No regression in navigation/shell chrome.",
     "screenshots": [
       {
         "device": "iphone",
         "appearance": "light",
-        "path": "docs/acceptance/ui-cbaba68/iphone-light.png",
-        "sha256": "6743cd1052d140679b7c322fd15a1e1ac8a4e8daa94a09a37394920165002ed5",
+        "path": "docs/acceptance/ui-ee07785/iphone-light.png",
+        "sha256": "fdea26ae6908e88388fc0a9184ce9e0433735003d4b2dc37c5f59d15c869fb0c",
         "reviewed": true
       },
       {
         "device": "iphone",
         "appearance": "dark",
-        "path": "docs/acceptance/ui-cbaba68/iphone-dark.png",
-        "sha256": "e9388795258949b4fb3d231fd8b541c38cf9f72050109c118a91ca1c35ecad53",
+        "path": "docs/acceptance/ui-ee07785/iphone-dark.png",
+        "sha256": "c83497c77d4c987751db4cbcb4cf906015ffbf8fa444c8f08d3b2504957d0065",
         "reviewed": true
       },
       {
         "device": "iphone",
         "appearance": "accessibility",
-        "path": "docs/acceptance/ui-cbaba68/iphone-accessibility.png",
+        "path": "docs/acceptance/ui-ee07785/iphone-accessibility.png",
         "sha256": "e3d9238197a350b97e6921b9398db707da3411888fc38da706ee799a5acad2b6",
         "reviewed": true
       },
       {
         "device": "ipad",
         "appearance": "light",
-        "path": "docs/acceptance/ui-cbaba68/ipad-light.png",
-        "sha256": "88ae838e90c59010c08e2e2ea8b836b25ff307611b9d61c78d6dab81ed495636",
+        "path": "docs/acceptance/ui-ee07785/ipad-light.png",
+        "sha256": "5ded07911a057c331db7216f20f0f6a3af0003c4c5c6c21399db3ea38aeec9d4",
         "reviewed": true
       },
       {
         "device": "ipad",
         "appearance": "dark",
-        "path": "docs/acceptance/ui-cbaba68/ipad-dark.png",
-        "sha256": "ee6ecf9d820ae3595aaf4bb3514cfa3f892e48e5742acd7dd2bded18da877c71",
+        "path": "docs/acceptance/ui-ee07785/ipad-dark.png",
+        "sha256": "d47bfe17e34a2bbaa701b0ac7597ea1939617e3111bb6c7e33362a5f90a8f5fa",
         "reviewed": true
       },
       {
         "device": "ipad",
         "appearance": "accessibility",
-        "path": "docs/acceptance/ui-cbaba68/ipad-accessibility.png",
-        "sha256": "64f7a18912ec4148692f8ffb9fba0cfcef0855117bf3b5cb318acfad8be1058b",
+        "path": "docs/acceptance/ui-ee07785/ipad-accessibility.png",
+        "sha256": "974ddb1a17f108d1d0320751345108bf8e5bd3514ec09c156a9d337bcb7f7bc6",
         "reviewed": true
       }
     ],
-    "ciId": "45463943882",
+    "ciId": "45596517960",
     "attempt": 1
   }
 }

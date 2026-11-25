@@ -2,66 +2,66 @@
   "schemaVersion": 2,
   "taskId": "M3-core",
   "kind": "ui",
-  "commit": "51bc1b63914a7e9023a0276ed9e6e540d17768c5",
-  "sourceFingerprint": "885e2fbf91da4375ffdd0d38544976c796ab119366369d4d4feb7a400b228a65",
+  "commit": "ee0778534e9d864de691ccb65fd6aa43cc5da219",
+  "sourceFingerprint": "30e1bc04eb93d6648f2f76617b93604af40d984fad1659f9c6911be0e85ef75d",
   "scopes": [
     "app",
     "native-build",
     "shared"
   ],
-  "scopeFingerprint": "dcb771fa6f9535893f33e2f4596e2356cf0ed7393fc9eb048a8c4a812e31eefa",
-  "startedAt": "2026-11-25T07:09:10.621Z",
-  "finishedAt": "2026-11-25T07:09:10.621Z",
+  "scopeFingerprint": "ca76b26816f87b136c7e12797b00148605beb9c57abaa4ca1104b65781ce8bfc",
+  "startedAt": "2026-11-25T11:45:00.000Z",
+  "finishedAt": "2026-11-25T11:55:00.000Z",
   "passed": true,
   "details": {
     "nativeGlassVerified": true,
     "visualReview": "pass",
-    "reviewerContext": "Real PNG renders from CI run 45558360431 (sim-acceptance attempt 2, iPhone+iPad full matrix) reviewed individually: iPhone light conversation shows synthetic-labeled remote/v1 loop with approvals banner, correct light theme and idle status; dark Infrastructure screen shows native Liquid Glass material over patterned canvas in correct dark palette; iPad accessibility conversation at AXXXL dynamic type shows expected truncation-with-ellipsis without layout breakage, split-view sidebar intact. Rendering consistent with previously accepted M2/M3 evidence; no UI regression from M4 sync work (stream state surfaces not visible in steady state, as designed).",
+    "reviewerContext": "Real PNG renders from CI run 45596517960 (attempt 1, iPhone+iPad full matrix) reviewed individually: iPhone light home shows synthetic-labeled remote/v1 loop, correct light palette, glass card over themed canvas; iPhone dark identical structure in correct dark palette; iPhone accessibility at maximum Dynamic Type shows large-type reflow, content scrollable, no layout breakage; iPad light/dark split-view sidebar overlaying detail is the transient mid-collapse capture consistent with previously accepted M2/M3 evidence, correct palettes; iPad accessibility shows expected truncation-with-ellipsis without layout breakage, split-view intact. Native glass verified via 01-native-glass.png probe frame: 'iOS glass API available' with real system material visibly translucent over the patterned canvas. No UI regression from M5 transport work (transport surface not user-visible in steady state, as designed).",
     "screenshots": [
       {
         "device": "iphone",
         "appearance": "light",
-        "path": "docs/acceptance/ui-51bc1b6/iphone-light.png",
-        "sha256": "fa6006327f22e39ce32605e866d526b70af0d5e4d949bc0221ffe30fa724c3a0",
+        "path": "docs/acceptance/ui-ee07785/iphone-light.png",
+        "sha256": "fdea26ae6908e88388fc0a9184ce9e0433735003d4b2dc37c5f59d15c869fb0c",
         "reviewed": true
       },
       {
         "device": "iphone",
         "appearance": "dark",
-        "path": "docs/acceptance/ui-51bc1b6/iphone-dark.png",
-        "sha256": "ea506917e09ae7ff08223df3da9815eb2e834529e0caeb89df3ecb10e5c6e585",
+        "path": "docs/acceptance/ui-ee07785/iphone-dark.png",
+        "sha256": "c83497c77d4c987751db4cbcb4cf906015ffbf8fa444c8f08d3b2504957d0065",
         "reviewed": true
       },
       {
         "device": "iphone",
         "appearance": "accessibility",
-        "path": "docs/acceptance/ui-51bc1b6/iphone-accessibility.png",
-        "sha256": "5c684d876b23e46c4d9e2aac1cb8e976ac68bbd389d9a260c25276a0d0df78ac",
+        "path": "docs/acceptance/ui-ee07785/iphone-accessibility.png",
+        "sha256": "e3d9238197a350b97e6921b9398db707da3411888fc38da706ee799a5acad2b6",
         "reviewed": true
       },
       {
         "device": "ipad",
         "appearance": "light",
-        "path": "docs/acceptance/ui-51bc1b6/ipad-light.png",
-        "sha256": "c3cefaa482dcafa0220b489cc59a76631d84e2c910f5fe632abd275221b510fb",
+        "path": "docs/acceptance/ui-ee07785/ipad-light.png",
+        "sha256": "5ded07911a057c331db7216f20f0f6a3af0003c4c5c6c21399db3ea38aeec9d4",
         "reviewed": true
       },
       {
         "device": "ipad",
         "appearance": "dark",
-        "path": "docs/acceptance/ui-51bc1b6/ipad-dark.png",
-        "sha256": "4c687fcada325a510d78e06ab952780ababf21abd2972ff65ea5c7750b0d4ce5",
+        "path": "docs/acceptance/ui-ee07785/ipad-dark.png",
+        "sha256": "d47bfe17e34a2bbaa701b0ac7597ea1939617e3111bb6c7e33362a5f90a8f5fa",
         "reviewed": true
       },
       {
         "device": "ipad",
         "appearance": "accessibility",
-        "path": "docs/acceptance/ui-51bc1b6/ipad-accessibility.png",
-        "sha256": "0bcfc3f1d8c07f3fe38fdc4189f84ffffd116e6f6cc3867a8c96183c3c088944",
+        "path": "docs/acceptance/ui-ee07785/ipad-accessibility.png",
+        "sha256": "974ddb1a17f108d1d0320751345108bf8e5bd3514ec09c156a9d337bcb7f7bc6",
         "reviewed": true
       }
     ],
-    "ciId": "45558360431",
-    "attempt": 2
+    "ciId": "45596517960",
+    "attempt": 1
   }
 }

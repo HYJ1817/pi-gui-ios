@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 2,
+  "taskId": "M-1-infrastructure",
+  "kind": "ci",
+  "commit": "ee0778534e9d864de691ccb65fd6aa43cc5da219",
+  "sourceFingerprint": "30e1bc04eb93d6648f2f76617b93604af40d984fad1659f9c6911be0e85ef75d",
+  "scopes": [
+    "app",
+    "control",
+    "native-build",
+    "protocol",
+    "shared",
+    "tests"
+  ],
+  "scopeFingerprint": "94d3bb3899beceedfd2d3d9e67906f97f832502c76c1243aab19927918de4b78",
+  "startedAt": "2026-11-25T11:45:00.000Z",
+  "finishedAt": "2026-11-25T11:55:00.000Z",
+  "passed": true,
+  "details": {
+    "ci": {
+      "id": "45596517960",
+      "head": "ee0778534e9d864de691ccb65fd6aa43cc5da219",
+      "workflow": ".github/workflows/native-infrastructure.yml",
+      "attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/HYJ1817/pi-gui-ios/actions/runs/45596517960"
+    },
+    "receiptPath": "docs/acceptance/ci-run-45596517960.json",
+    "receiptSha256": "7771d90cbff82740c7015ebcb976b42797ca802d3bc838e22d588efb06e1ef2e",
+    "sameRunEvidence": "same green run covers M-1: the native-infrastructure workflow IS the M-1 acceptance pipeline"
+  }
+}

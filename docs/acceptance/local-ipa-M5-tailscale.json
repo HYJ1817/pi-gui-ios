@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 2,
+  "taskId": "M5-tailscale",
+  "kind": "ipa",
+  "commit": "ee0778534e9d864de691ccb65fd6aa43cc5da219",
+  "sourceFingerprint": "30e1bc04eb93d6648f2f76617b93604af40d984fad1659f9c6911be0e85ef75d",
+  "scopes": [
+    "app",
+    "native-build",
+    "shared"
+  ],
+  "scopeFingerprint": "ca76b26816f87b136c7e12797b00148605beb9c57abaa4ca1104b65781ce8bfc",
+  "startedAt": "2026-11-25T11:45:00.000Z",
+  "finishedAt": "2026-11-25T11:55:00.000Z",
+  "passed": true,
+  "details": {
+    "ciId": "45596517960",
+    "attempt": 1,
+    "archiveSha256": "34ed93b0162977461f1d896cb15f9d8456c0ddaf3de0cfe8aa0471c09c9f1d6d",
+    "verificationPath": "docs/acceptance/ipa-verification-45596517960.json",
+    "verificationSha256": "dbb0765be8fab0a2e49f9fe5bdb11ebba56fa454c43965d338739cf2569b7bff"
+  }
+}

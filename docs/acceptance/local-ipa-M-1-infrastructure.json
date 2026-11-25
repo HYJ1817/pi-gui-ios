@@ -1,23 +1,24 @@
 {
   "schemaVersion": 2,
   "taskId": "M-1-infrastructure",
-  "commit": "cbaba6871587a6bce9902088c5fc2bbcf67c80fa",
-  "sourceFingerprint": "6e7a6a919475365de47983f258f09a8177739a5380d629a6ca07e9eae7e6aa9f",
   "kind": "ipa",
+  "commit": "ee0778534e9d864de691ccb65fd6aa43cc5da219",
+  "sourceFingerprint": "30e1bc04eb93d6648f2f76617b93604af40d984fad1659f9c6911be0e85ef75d",
   "scopes": [
     "app",
     "native-build",
     "shared"
   ],
-  "scopeFingerprint": "639e85f444291c8a064678ae5dae65481e3c9ccc1d24a2dedf1e175e0eb549ef",
-  "startedAt": "2026-11-24T19:40:19.941Z",
-  "finishedAt": "2026-11-24T19:40:19.941Z",
+  "scopeFingerprint": "ca76b26816f87b136c7e12797b00148605beb9c57abaa4ca1104b65781ce8bfc",
+  "startedAt": "2026-11-25T11:45:00.000Z",
+  "finishedAt": "2026-11-25T11:55:00.000Z",
   "passed": true,
   "details": {
-    "ciId": "45463943882",
+    "ciId": "45596517960",
     "attempt": 1,
-    "archiveSha256": "6d38c86749741391624737a90c46ce2242b5c0da7940cf034cf177ad4ff514f2",
-    "verificationPath": "docs/acceptance/ipa-verification-45463943882.json",
-    "verificationSha256": "96bfea8f987f7bb339ee8f5bc9c892946fb051c5355fb1e69a9b7a049407e3dc"
+    "archiveSha256": "34ed93b0162977461f1d896cb15f9d8456c0ddaf3de0cfe8aa0471c09c9f1d6d",
+    "verificationPath": "docs/acceptance/ipa-verification-45596517960.json",
+    "verificationSha256": "dbb0765be8fab0a2e49f9fe5bdb11ebba56fa454c43965d338739cf2569b7bff",
+    "sameRunEvidence": "same unsigned device IPA artifact serves M-1 infrastructure acceptance: the archive IS the M-1 build product"
   }
 }
