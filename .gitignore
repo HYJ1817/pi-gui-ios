@@ -1,6 +1,7 @@
 node_modules/
 .expo/
 ios/
+!modules/pi-gui-remote/ios/
 android/
 dist/
 artifacts/
