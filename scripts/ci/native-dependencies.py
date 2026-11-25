@@ -383,6 +383,21 @@ def finish(root, private):
     check(result.returncode == 0)
     manifest = inventory(root)
     (candidate / 'prebuilt-dependencies.json').write_text(json.dumps(manifest, sort_keys=True, indent=2) + '\n', encoding='utf-8')
+    try:
+        committed_manifest = load(root / 'native/prebuilt-dependencies.json')
+        of = {row['path']: row for row in committed_manifest.get('files', [])}
+        nf = {row['path']: row for row in manifest.get('files', [])}
+        added = sorted(set(nf) - set(of)); removed = sorted(set(of) - set(nf))
+        changed = sorted(key for key in set(of) & set(nf) if of[key] != nf[key])
+        # Fixed structural counts only — never paths, names or digests.
+        print('NATIVE_INVENTORY_DIFF added=%d removed=%d changed=%d' % (len(added), len(removed), len(changed)))
+        ol = {row['path']: row for row in committed_manifest.get('links', [])}
+        nl = {row['path']: row for row in manifest.get('links', [])}
+        print('NATIVE_INVENTORY_LINK_DIFF added=%d removed=%d changed=%d' % (
+            len(set(nl) - set(ol)), len(set(ol) - set(nl)),
+            len([k for k in set(ol) & set(nl) if ol[k] != nl[k]])))
+    except (OSError, ValueError, KeyError):
+        print('NATIVE_INVENTORY_DIFF unavailable')
     expected = hashes(root, candidate)
     if mode == 'locked':
         verify_locked(root, candidate, manifest)
