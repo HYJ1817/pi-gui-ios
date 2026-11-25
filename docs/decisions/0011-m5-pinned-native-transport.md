@@ -34,3 +34,18 @@
 真实 tailnet 登录/异地连通、真机网络切换/性能与 SideStore 刷新/覆盖升级均保持 pending/unverified；真机只在 M6 软件与安全审查完成后的最终一次清单执行。本 ADR、合成测试或 Simulator 不能代替设备结果。M5 不因软件准备完成而自动 accepted/completed。
 
 回滚：删除未启用的生产 profile/禁用连接入口，回退各仓库对应原子提交；不更改已配对设备的 pin，不恢复已撤销凭据，不修改桌面本地 HTTP token 与主 listener。
+
+## 第二轮审查补救（2026-11-25，桌面 b67adb4d / 移动 ee07785）
+
+第二轮独立审查（功能+安全）确认第一轮全部修复为 CONFIRMED-FIXED，并发现新一轮缺陷。补救（每案均由审查实证驱动）：
+
+1. **撤销复位帧缺失（重要）**：`dropDevice` 此前裸关闭订阅，契约 deviceLifecycle.revocation 要求的 `reset(authorization_changed)` 从未上链路。修复：每个订阅在关闭前恰好收到一帧复位（bypass 写入——这是唯一一帧因授权死亡而必须送达的帧）。回归钉死于 remote-gateway。
+2. **重放连续性（重要）**：`authorizeResource` 的 owner-revision 精确相等复检误杀契约重放快路径——revision 在帧入日志后合法前进，而一切授权承载转换已按代际全域失效游标。移除精确相等复检；epoch-invalidation 仍是唯一授权语义。回归钉死：revision 前进后重放不复位、授权转换仍复位。
+3. **游标表分歧**：桌面实现外来游标走复位路径（与网关测试一致），移动沙盒拒绝 malformed。严格语法拒绝实验曾造成网关套件挂起，已回退并记录分歧——这是审查流程真实抓获"修复引入回归"的第二例。
+4. **device_inactive 词表泄漏**：listener 映射经 wireErrorCode（unauthorized）。
+5. **owner epoch 持久化**：RegistryClock epochs 落盘，重启不再回归 1（重放保护下限）；4096 上限驱逐窗口已在安全审查中评估。
+6. **不可物化重放**：日志中超大/不可签名帧重放时先 reset(sequence_gap) 再关闭——裸关闭曾让客户端无限盲重连。
+7. **移动端配对语义**：pairing_expired 不再塌陷为可重试 pairing_rejected。
+
+**延期（诚实记录于 docs/acceptance/m5-deferred-items.md）**：生产发布管线空壳（IMPORTANT-2，组成根未接线 stream.publish、domain 消息列表硬编码空）、合同副本字节漂移风险、证书轮换、配对预算顺序（评估后接受为设计）。
+

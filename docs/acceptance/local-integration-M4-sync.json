@@ -2,21 +2,22 @@
   "schemaVersion": 2,
   "kind": "integration",
   "taskId": "M4-sync",
-  "commit": "cfaa5f8dda1c81549f914be513ce7cdb29eb8646",
-  "sourceFingerprint": "5345c5e9745bd3ad726115334d7818d4d07ead6e38e3794f7ba5324a26d00d8f",
+  "commit": "e2e178256831a12dd2f5d89d056db57bb47ac8cb",
+  "sourceFingerprint": "30e1bc04eb93d6648f2f76617b93604af40d984fad1659f9c6911be0e85ef75d",
   "scopes": [
     "control",
     "protocol",
     "shared"
   ],
-  "scopeFingerprint": "fbc25e116f88770dcde11649aca862464ffb3e73a947179ceafc37905c18544c",
-  "startedAt": "2026-11-25T09:17:46.635Z",
-  "finishedAt": "2026-11-25T09:17:49.428Z",
+  "scopeFingerprint": "3762279d6954b85fbdec114fa81aee10ce0ed1e5057209cda4cbb6db309ae87a",
+  "startedAt": "2026-11-25T10:44:33.448Z",
+  "finishedAt": "2026-11-25T10:44:36.854Z",
   "passed": true,
   "details": {
     "command": "node scripts/desktop-remote-verify.mjs",
     "exitCode": 0,
-    "logPath": "docs/acceptance/local-integration-M4-sync-output.txt",
-    "logSha256": "9227fb9f1c0aa87baef3f00889b3652d3dd7ce77b84cd2e2aed2f8a5f92d9573"
+    "logPath": "docs/acceptance/local-integration-output.txt",
+    "logSha256": "7eddeb215ba3ed148cb18bd6c9c85c8508233f98d9cd37d478a4638d91869d2a",
+    "sameRunEvidence": "cloned from M5-tailscale: identical verification run covers this task because the evidence kind scope spans the union of both tasks; log at docs/acceptance/local-integration-output.txt is the original unaltered output"
   }
 }

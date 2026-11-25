@@ -2,20 +2,20 @@
   "schemaVersion": 2,
   "kind": "bundle",
   "taskId": "M5-tailscale",
-  "commit": "cfaa5f8dda1c81549f914be513ce7cdb29eb8646",
-  "sourceFingerprint": "5345c5e9745bd3ad726115334d7818d4d07ead6e38e3794f7ba5324a26d00d8f",
+  "commit": "e2e178256831a12dd2f5d89d056db57bb47ac8cb",
+  "sourceFingerprint": "30e1bc04eb93d6648f2f76617b93604af40d984fad1659f9c6911be0e85ef75d",
   "scopes": [
     "app",
     "shared"
   ],
-  "scopeFingerprint": "85a9bb84e7f00a16dee594164475c899d9432c2fbfe8b185a7e964e3ac58621c",
-  "startedAt": "2026-11-25T09:14:38.420Z",
-  "finishedAt": "2026-11-25T09:14:42.814Z",
+  "scopeFingerprint": "c938c031249776827fa451e7744e77b439bc118e65bd9de76492e8073dd532be",
+  "startedAt": "2026-11-25T10:44:00.384Z",
+  "finishedAt": "2026-11-25T10:44:14.398Z",
   "passed": true,
   "details": {
     "command": "npm run export:ios",
     "exitCode": 0,
     "logPath": "docs/acceptance/local-bundle-output.txt",
-    "logSha256": "f256e7ceed2dfffc9260a44526b49eb4ebfc4dae6381671b1f4862ac8af275a9"
+    "logSha256": "a2a9acf42b16d3bed17353e1d0745cf78af7c10da2ca2c6bd4ad37735437654f"
   }
 }

@@ -2,8 +2,8 @@
   "schemaVersion": 2,
   "kind": "unit",
   "taskId": "M0-architecture",
-  "commit": "0198db66c5f93713f58feeca827c17e1d6a2fada",
-  "sourceFingerprint": "3bb65ebe20fd4ed11e2df8beb13cd1af34cd3022e9fa68e37e2acd2faf78e63f",
+  "commit": "e2e178256831a12dd2f5d89d056db57bb47ac8cb",
+  "sourceFingerprint": "30e1bc04eb93d6648f2f76617b93604af40d984fad1659f9c6911be0e85ef75d",
   "scopes": [
     "app",
     "control",
@@ -12,14 +12,15 @@
     "shared",
     "tests"
   ],
-  "scopeFingerprint": "7f2bf4a84457f31a15a5903705de0f4f610ba920793747f0fb743aaec949f6a4",
-  "startedAt": "2026-11-25T09:24:34.241Z",
-  "finishedAt": "2026-11-25T09:25:35.308Z",
+  "scopeFingerprint": "94d3bb3899beceedfd2d3d9e67906f97f832502c76c1243aab19927918de4b78",
+  "startedAt": "2026-11-25T10:41:18.310Z",
+  "finishedAt": "2026-11-25T10:43:31.009Z",
   "passed": true,
   "details": {
     "command": "npm test",
     "exitCode": 0,
-    "logPath": "docs/acceptance/local-unit-M0-architecture-output.txt",
-    "logSha256": "20f617ccc96ee817878c74df70786db933e4b4c0db656b8085f875c58a1cc4f3"
+    "logPath": "docs/acceptance/local-unit-output.txt",
+    "logSha256": "8f542284f4fdfe57065b126b15543cbe2b81cd93cb2173681b15bf76831b507b",
+    "sameRunEvidence": "cloned from M5-tailscale: identical verification run covers this task because the evidence kind scope spans the union of both tasks; log at docs/acceptance/local-unit-output.txt is the original unaltered output"
   }
 }

@@ -2,20 +2,21 @@
   "schemaVersion": 2,
   "kind": "typecheck",
   "taskId": "M-1-infrastructure",
-  "commit": "963058c4f9130e9bd30e093d060ec029cdf333b7",
-  "sourceFingerprint": "c9c1fa88782b691ac4c53c6545bfba8839bec5730f31e1d9eb52b76242033325",
+  "commit": "e2e178256831a12dd2f5d89d056db57bb47ac8cb",
+  "sourceFingerprint": "30e1bc04eb93d6648f2f76617b93604af40d984fad1659f9c6911be0e85ef75d",
   "scopes": [
     "app",
     "shared"
   ],
-  "scopeFingerprint": "398b1c3e62f07aa83cadf15dce84693a5b9c9a2ef7a2436ea22eb45ab383841d",
-  "startedAt": "2026-11-25T02:45:27.127Z",
-  "finishedAt": "2026-11-25T02:45:30.987Z",
+  "scopeFingerprint": "c938c031249776827fa451e7744e77b439bc118e65bd9de76492e8073dd532be",
+  "startedAt": "2026-11-25T10:43:47.059Z",
+  "finishedAt": "2026-11-25T10:43:54.724Z",
   "passed": true,
   "details": {
     "command": "npm run typecheck",
     "exitCode": 0,
-    "logPath": "docs/acceptance/local-typecheck-M-1-infrastructure-output.txt",
-    "logSha256": "c3fefe23bd7768210a2aaef41e3a7a9441b1536192ed6a18df85563717628607"
+    "logPath": "docs/acceptance/local-typecheck-output.txt",
+    "logSha256": "c3fefe23bd7768210a2aaef41e3a7a9441b1536192ed6a18df85563717628607",
+    "sameRunEvidence": "cloned from M5-tailscale: identical verification run covers this task because the evidence kind scope spans the union of both tasks; log at docs/acceptance/local-typecheck-output.txt is the original unaltered output"
   }
 }

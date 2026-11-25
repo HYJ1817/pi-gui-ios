@@ -2,20 +2,21 @@
   "schemaVersion": 2,
   "kind": "bundle",
   "taskId": "M-1-infrastructure",
-  "commit": "2a364a7ede0ae5a664e38e6d111dffc456e95d78",
-  "sourceFingerprint": "6e7a6a919475365de47983f258f09a8177739a5380d629a6ca07e9eae7e6aa9f",
+  "commit": "e2e178256831a12dd2f5d89d056db57bb47ac8cb",
+  "sourceFingerprint": "30e1bc04eb93d6648f2f76617b93604af40d984fad1659f9c6911be0e85ef75d",
   "scopes": [
     "app",
     "shared"
   ],
-  "scopeFingerprint": "67b538b2f2ecf589384a761daf11ed797b07e947ecb56177f89a2179b3b885e6",
-  "startedAt": "2026-11-24T18:50:37.795Z",
-  "finishedAt": "2026-11-24T18:50:42.180Z",
+  "scopeFingerprint": "c938c031249776827fa451e7744e77b439bc118e65bd9de76492e8073dd532be",
+  "startedAt": "2026-11-25T10:44:00.384Z",
+  "finishedAt": "2026-11-25T10:44:14.398Z",
   "passed": true,
   "details": {
     "command": "npm run export:ios",
     "exitCode": 0,
-    "logPath": "docs/acceptance/local-bundle-M-1-infrastructure-output.txt",
-    "logSha256": "80717215d8e5c7fb56b0020da392a2ed482fd8458ee1496b602c58608760a41b"
+    "logPath": "docs/acceptance/local-bundle-output.txt",
+    "logSha256": "a2a9acf42b16d3bed17353e1d0745cf78af7c10da2ca2c6bd4ad37735437654f",
+    "sameRunEvidence": "cloned from M5-tailscale: identical verification run covers this task because the evidence kind scope spans the union of both tasks; log at docs/acceptance/local-bundle-output.txt is the original unaltered output"
   }
 }

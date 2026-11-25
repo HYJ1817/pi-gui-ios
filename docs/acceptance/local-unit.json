@@ -2,8 +2,8 @@
   "schemaVersion": 2,
   "kind": "unit",
   "taskId": "M5-tailscale",
-  "commit": "cfaa5f8dda1c81549f914be513ce7cdb29eb8646",
-  "sourceFingerprint": "5345c5e9745bd3ad726115334d7818d4d07ead6e38e3794f7ba5324a26d00d8f",
+  "commit": "e2e178256831a12dd2f5d89d056db57bb47ac8cb",
+  "sourceFingerprint": "30e1bc04eb93d6648f2f76617b93604af40d984fad1659f9c6911be0e85ef75d",
   "scopes": [
     "app",
     "control",
@@ -12,14 +12,14 @@
     "shared",
     "tests"
   ],
-  "scopeFingerprint": "8d1f4a8ae0c58dad18675258d2eb44d0bea827e4402896d3e867506a49a051e8",
-  "startedAt": "2026-11-25T09:13:28.610Z",
-  "finishedAt": "2026-11-25T09:14:26.601Z",
+  "scopeFingerprint": "94d3bb3899beceedfd2d3d9e67906f97f832502c76c1243aab19927918de4b78",
+  "startedAt": "2026-11-25T10:41:18.310Z",
+  "finishedAt": "2026-11-25T10:43:31.009Z",
   "passed": true,
   "details": {
     "command": "npm test",
     "exitCode": 0,
     "logPath": "docs/acceptance/local-unit-output.txt",
-    "logSha256": "8eb175571cddc5f4df18a95b4548201b16a45223eb8d2d00a9cbd79047a2ac70"
+    "logSha256": "8f542284f4fdfe57065b126b15543cbe2b81cd93cb2173681b15bf76831b507b"
   }
 }
