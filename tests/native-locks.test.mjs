@@ -133,6 +133,18 @@ test('reviewed core subspec uses the same root facade path', t => {
     .replace('  - React-Core (from ', '  - React-Core/RCTWebSocket (from ');
   const f = fixture(t, pod); const result = validate(f); assert.equal(result.status, 0, result.stdout + result.stderr);
 });
+test('M5 first-party source pod is accepted only at its reviewed exact directory', t => {
+  const pod = POD.replaceAll('Synthetic', 'PiGuiRemote').replaceAll('../node_modules/synthetic', '../modules/pi-gui-remote/ios');
+  const f = fixture(t, pod); const result = validate(f);
+  assert.equal(result.status, 0, result.stderr);
+});
+for (const [name, pod] of [
+  ['wrong pod identity', POD.replaceAll('../node_modules/synthetic', '../modules/pi-gui-remote/ios')],
+  ['module source child', POD.replaceAll('Synthetic', 'PiGuiRemote').replaceAll('../node_modules/synthetic', '../modules/pi-gui-remote/ios/child')],
+  ['another local module', POD.replaceAll('Synthetic', 'PiGuiRemote').replaceAll('../node_modules/synthetic', '../modules/another/ios')],
+  ['local module traversal', POD.replaceAll('Synthetic', 'PiGuiRemote').replaceAll('../node_modules/synthetic', '../modules/pi-gui-remote/ios/../ios')],
+]) test(`first-party local pod rejects ${name}`, t => reject(t, pod, 'POD_ENTRY_LOCAL_PATH'));
+
 test('finite Symbol vocabulary supports HTTPS checkout options without converting keys', t => {
   const source = `:git: https://github.com/synthetic/native.git\n    :commit: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa`;
   const pod = POD.replace(':path: "../node_modules/synthetic"', source) + `\nCHECKOUT OPTIONS:\n  Synthetic:\n    ${source}\n`;

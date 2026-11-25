@@ -1,0 +1,7 @@
+{
+  "name": "pi-gui-remote",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Private native remote-v1 transport and Keychain identity",
+  "license": "UNLICENSED"
+}

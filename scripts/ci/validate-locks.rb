@@ -95,10 +95,14 @@ begin
     facade_paths[name] = "build/rndeps-facades/#{name}"
   end
   facade_paths.freeze
+  # First-party M5 source module, not a general ../modules allowance. Bind the
+  # exact pod identity and directory; traversal/children/other modules reject.
+  first_party_paths = { 'PiGuiRemote' => '../modules/pi-gui-remote/ios' }.freeze
   local_path = lambda do |value, pod_name = nil|
     next false if value.delete_prefix('../').split('/').include?('..')
     value.match?(%r{\A(?:\.\./node_modules/[A-Za-z0-9_@./+\-]+|build/generated/ios(?:/[A-Za-z0-9_./+\-]+)?)\z}) ||
-      (pod_name.is_a?(String) && facade_paths[pod_name.split('/').first] == value)
+      (pod_name.is_a?(String) && (facade_paths[pod_name.split('/').first] == value ||
+        first_party_paths[pod_name.split('/').first] == value))
   end
   visit = lambda do |value|
     case value

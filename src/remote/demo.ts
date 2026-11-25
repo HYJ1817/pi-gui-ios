@@ -183,15 +183,17 @@ export function demoRuntime(): DemoRuntime {
     onReset: () => { /* reset applied event already rebuilt baselines via store.apply */ },
     onEvent: applied => { storeRef?.apply(applied); },
     onStreamError: () => { storeRef?.markStreamError(); },
+    onConnected: () => { storeRef?.markStreamLive(); },
   });
 
   const store = new ConversationStore(client, events);
   storeRef = store;
 
   const streamTransport: StreamTransport = {
-    subscribe: (request: SignedRequest, onFrame: (frame: unknown) => void, onClose: (reason: string) => void) => {
+    subscribe: (request: SignedRequest, onFrame: (frame: unknown) => void, onClose: (reason: string) => void, onOpen?: () => void) => {
       const sub = gateway.subscribe(credentials, request, onFrame as (f: EventEnvelope) => void);
       if (!sub.ok) { onClose(`status-${sub.response.status}`); return { close: () => {} }; }
+      onOpen?.();
       return sub;
     },
   };
@@ -215,9 +217,10 @@ export function demoRuntime(): DemoRuntime {
       events.close();
       store.markStreamRecovering();
       await store.load();
-      const cursor = store.latestWatermarkCursor();
-      events.open(streamTransport, client.buildEventsRequest(cursor), cursor);
-      store.markStreamLive();
+      if (store.snapshot().lastError) { store.markStreamError(); return; }
+      const watermark = store.latestWatermark();
+      const cursor = watermark?.cursor;
+      events.open(streamTransport, client.buildEventsRequest(cursor), cursor, watermark);
     },
     closeStream: () => events.close(),
   };

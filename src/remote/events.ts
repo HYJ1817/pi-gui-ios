@@ -28,7 +28,7 @@ const MAX_FRAME_BYTES = 65536;
 
 export interface StreamTransport {
   /** Open the device-level stream; the transport calls onFrame in emission order. */
-  subscribe(request: SignedRequest, onFrame: (frame: unknown) => void, onClose: (reason: string) => void): { close(): void };
+  subscribe(request: SignedRequest, onFrame: (frame: unknown) => void, onClose: (reason: string) => void, onOpen?: () => void): { close(): void };
 }
 
 export interface Position { streamGeneration: number; sequence: number }
@@ -60,6 +60,8 @@ export interface EventClientOptions {
    *  surfaces this and the only recovery is a close+reopen that resubscribes
    *  — a stale/foreign cursor then forces a reset-rebuild of the baseline. */
   onStreamError?: (code: string) => void;
+  /** Transport reports a successful pinned HTTP/SSE admission, never task creation. */
+  onConnected?: () => void;
 }
 
 const ENVELOPE_KEYS = new Set(['protocolVersion', 'sequence', 'conversationId', 'ownerRevision', 'event', 'payload', 'streamGeneration', 'cursor', 'frameSignature']);
@@ -139,6 +141,8 @@ export class EventStreamClient {
   private readonly onEvent: EventClientOptions['onEvent'];
   private readonly onDrop: EventClientOptions['onDrop'];
   private readonly onStreamError: EventClientOptions['onStreamError'];
+  private readonly onConnected: EventClientOptions['onConnected'];
+  private subscriptionSerial = 0;
   private position: Position | undefined;
   private cursor: string | undefined;
   private handle: { close(): void } | null = null;
@@ -151,29 +155,40 @@ export class EventStreamClient {
     this.onEvent = options.onEvent;
     this.onDrop = options.onDrop ?? (() => {});
     this.onStreamError = options.onStreamError ?? (() => {});
+    this.onConnected = options.onConnected ?? (() => {});
   }
 
   latestCursor(): string | undefined { return this.cursor; }
   expectedPosition(): Position | undefined { return this.position; }
 
-  /** Open a stream; `cursor` resumes a prior position when well-formed.
-   *  Every (re)subscribe starts WITHOUT a position: with no cursor the first
-   *  frame establishes the live head; with a cursor the backlog replay
-   *  establishes it. Carrying a stale position across resubscribe would drop
-   *  every replayed frame as a sequence gap (the journal continues the same
-   *  generation) and would wedge the stream permanently. */
-  open(stream: StreamTransport, request: SignedRequest, cursor?: string): void {
+  /** A snapshot's sequence is the NEXT expected frame. Passing its atomic
+   *  watermark detects loss of the first replayed frame as well as later gaps.
+   *  Callers without a trusted watermark retain the frozen fresh-subscribe
+   *  behavior; opaque cursors are never parsed to invent a position. */
+  open(stream: StreamTransport, request: SignedRequest, cursor?: string, watermark?: { generation: number; sequence: number }): void {
     this.close();
+    const serial = this.subscriptionSerial;
+    if (watermark && (!cursor || !Number.isSafeInteger(watermark.generation) || watermark.generation < 1
+      || !Number.isSafeInteger(watermark.sequence) || watermark.sequence < 1)) throw new Error('invalid_watermark');
     this.cursor = cursor;
-    this.position = undefined;
+    this.position = watermark ? { streamGeneration: watermark.generation, sequence: watermark.sequence - 1 } : undefined;
     this.dead = null;
-    this.handle = stream.subscribe(request, frame => this.accept(frame), reason => this.onDrop?.(`closed:${reason}`));
+    this.handle = stream.subscribe(request,
+      frame => { if (serial === this.subscriptionSerial) this.accept(frame); },
+      () => {
+        if (serial !== this.subscriptionSerial || this.dead) return;
+        this.dead = 'stream_closed';
+        this.onStreamError?.('stream_closed');
+        this.onDrop?.('closed:stream_closed');
+      },
+      () => { if (serial === this.subscriptionSerial && !this.dead) this.onConnected?.(); });
   }
 
   /** Irrecoverable stream death (sequence gap). UI-facing, drives the reload affordance. */
   streamError(): string | undefined { return this.dead ?? undefined; }
 
   close(): void {
+    this.subscriptionSerial += 1;
     this.handle?.close();
     this.handle = null;
   }

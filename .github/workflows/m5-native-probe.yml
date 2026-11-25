@@ -1,0 +1,87 @@
+name: M5 native preparation
+on:
+  push:
+    branches: ['agent/**']
+    paths: ['modules/pi-gui-remote/**', 'scripts/ci/m5-*', '.github/workflows/m5-native-probe.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: m5-native-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  core:
+    runs-on: macos-26
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          persist-credentials: false
+      - name: Compile and run actual Apple networking, crypto and parser core
+        shell: bash
+        run: |
+          set -euo pipefail
+          swiftc -swift-version 5 -D REMOTE_TRANSPORT_TESTS \
+            modules/pi-gui-remote/ios/RemotePolicy.swift \
+            modules/pi-gui-remote/ios/RemoteVault.swift \
+            modules/pi-gui-remote/ios/PinnedConnection.swift \
+            modules/pi-gui-remote/ios/RemoteService.swift \
+            scripts/ci/m5-native-probe.swift -o "$RUNNER_TEMP/m5-native-probe"
+          "$RUNNER_TEMP/m5-native-probe"
+
+  local-pod-lock-candidate:
+    runs-on: macos-26
+    timeout-minutes: 30
+    env:
+      EXPO_NO_TELEMETRY: '1'
+      COCOAPODS_DISABLE_STATS: 'true'
+      BUNDLE_FROZEN: 'true'
+      RNS_GAMMA_ENABLED: '1'
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          persist-credentials: false
+      - name: Identify whether a source-pod candidate is still needed
+        id: needed
+        shell: bash
+        run: |
+          node -e 'const fs=require("fs");fs.appendFileSync(process.env.GITHUB_OUTPUT,"needed="+(!fs.readFileSync("native/Podfile.lock","utf8").includes("PiGuiRemote (0.0.1)"))+"\n")'
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        if: steps.needed.outputs.needed == 'true'
+        with:
+          node-version: '24.22.1'
+          cache: npm
+      - uses: ruby/setup-ruby@be3c7df29b3349ec6bcfc6b4792f1cf9f5237d18
+        if: steps.needed.outputs.needed == 'true'
+        with:
+          ruby-version: '3.3.8'
+          bundler: '2.6.9'
+          bundler-cache: false
+      - name: Resolve the first-party source-pod candidate in an ephemeral runner only
+        if: steps.needed.outputs.needed == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          export BUNDLE_PATH="$RUNNER_TEMP/m5-gems"
+          npm ci --no-audit --no-fund
+          mkdir -p "$RUNNER_TEMP/m5-template"
+          npm pack expo-template-bare-minimum@58.0.35 --ignore-scripts --silent --pack-destination "$RUNNER_TEMP/m5-template"
+          python3 scripts/ci/verify-template.py "$RUNNER_TEMP/m5-template/expo-template-bare-minimum-58.0.35.tgz"
+          npx expo prebuild --platform ios --no-install --template "$RUNNER_TEMP/m5-template/expo-template-bare-minimum-58.0.35.tgz"
+          cp native/Podfile.lock ios/Podfile.lock
+          bundle _2.6.9_ install
+          # Candidate generation only: production native-build still requires
+          # the exact reviewed lock with --deployment and its full inventory.
+          (cd ios && bundle _2.6.9_ exec pod install)
+          mkdir -p "$RUNNER_TEMP/m5-lock-safe"
+          cp Gemfile Gemfile.lock "$RUNNER_TEMP/m5-lock-safe/"
+          cp ios/Podfile.lock "$RUNNER_TEMP/m5-lock-safe/Podfile.lock"
+          ruby scripts/ci/validate-locks.rb "$RUNNER_TEMP/m5-lock-safe"
+      - name: Upload only parser-validated candidate lock bytes
+        if: success() && steps.needed.outputs.needed == 'true'
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4
+        with:
+          name: m5-source-pod-lock-${{ github.run_id }}
+          path: ${{ runner.temp }}/m5-lock-safe/Podfile.lock
+          if-no-files-found: error
+          retention-days: 7

@@ -101,12 +101,13 @@ export class ConversationStore {
   /** ADR-0010 D1: the freshest snapshot watermark across all loaded
    *  conversations — the atomic cursor the stream should resume from after a
    *  reload. Returns undefined when nothing has been snapshotted yet. */
-  latestWatermarkCursor(): string | undefined {
+  latestWatermarkCursor(): string | undefined { return this.latestWatermark()?.cursor; }
+  latestWatermark(): { cursor: string; sequence: number; generation: number } | undefined {
     let best: { cursor: string; sequence: number; generation: number } | null = null;
     for (const conv of Object.values(this.state.conversations)) {
       if (conv.watermark && (best === null || conv.watermark.sequence > best.sequence || conv.watermark.generation > best.generation)) best = conv.watermark;
     }
-    return best?.cursor;
+    return best ? { ...best } : undefined;
   }
 
   /** Bootstrap: projects + sessions + all known snapshots. */
