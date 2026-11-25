@@ -2,8 +2,8 @@
   "schemaVersion": 2,
   "kind": "unit",
   "taskId": "M1-remote",
-  "commit": "f9043a88a26f6ba268eaa73b0bf1a9bd7b348a4c",
-  "sourceFingerprint": "b85b928b93f11cb14c66275b33e51b40eb347edfaa222e0d9ffb118d31431118",
+  "commit": "778b67eaf7f6cd87b6f6602e605ae979c533639d",
+  "sourceFingerprint": "6e7a6a919475365de47983f258f09a8177739a5380d629a6ca07e9eae7e6aa9f",
   "scopes": [
     "app",
     "control",
@@ -12,14 +12,14 @@
     "shared",
     "tests"
   ],
-  "scopeFingerprint": "3cc063264891b33782f0f885eb9e598b62f05bebbf6bbac5ec51718958872434",
-  "startedAt": "2026-11-24T14:26:37.288Z",
-  "finishedAt": "2026-11-24T14:27:25.770Z",
+  "scopeFingerprint": "e2066df800c86193c830cc1d3a9d55d1b6d6f16d939dbc5cd79f52bc450f1ccb",
+  "startedAt": "2026-11-24T19:47:49.991Z",
+  "finishedAt": "2026-11-24T19:48:53.450Z",
   "passed": true,
   "details": {
     "command": "npm test",
     "exitCode": 0,
     "logPath": "docs/acceptance/local-unit-M1-remote-output.txt",
-    "logSha256": "fc7b4ebc83c9f8a8f0893fb39cf0ce21892bba4645fa724d01507e0262d48613"
+    "logSha256": "cc656eb949b4780e04fcbf0af9fd844c73e00a14c1b171fcc1302f954afd7345"
   }
 }

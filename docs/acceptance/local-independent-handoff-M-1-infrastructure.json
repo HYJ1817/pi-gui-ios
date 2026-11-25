@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 2,
+  "taskId": "M-1-infrastructure",
+  "kind": "independent-handoff",
+  "commit": "778b67eaf7f6cd87b6f6602e605ae979c533639d",
+  "sourceFingerprint": "6e7a6a919475365de47983f258f09a8177739a5380d629a6ca07e9eae7e6aa9f",
+  "scopes": [
+    "all"
+  ],
+  "scopeFingerprint": "6e7a6a919475365de47983f258f09a8177739a5380d629a6ca07e9eae7e6aa9f",
+  "startedAt": "2026-11-24T21:54:29.575Z",
+  "finishedAt": "2026-11-24T21:54:29.575Z",
+  "passed": true,
+  "details": {
+    "receiptPath": "docs/acceptance/independent-handoff-778b67e-M-1-infrastructure-receipt.json",
+    "receiptSha256": "b2a6abf77a59f1547f9648e74f024e6fff240dab407f51cba905e6302fc912c1"
+  }
+}

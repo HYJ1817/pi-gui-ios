@@ -1,6 +1,7 @@
 {
   "schemaVersion": 2,
   "kind": "checkpoint",
+<<<<<<<< HEAD:.agent/checkpoints/v2-2026-11-25T01-47-58-555Z-e96f5586-ebfe-4ecd-bb3c-e270ca685c08.json
   "revision": 810,
   "updatedAt": "2026-11-25T01:47:58.555Z",
   "data": {
@@ -11,6 +12,18 @@
       "kind": "control",
       "revision": 810,
       "updatedAt": "2026-11-25T01:47:58.480Z",
+========
+  "revision": 812,
+  "updatedAt": "2026-11-24T19:39:31.568Z",
+  "data": {
+    "id": "v2-2026-11-24T19-39-31-568Z-4baeaa4f-e5a7-4ea5-913c-339be5351f46",
+    "note": "agent-task evidence M-1-infrastructure",
+    "control": {
+      "schemaVersion": 2,
+      "kind": "control",
+      "revision": 812,
+      "updatedAt": "2026-11-24T19:39:31.507Z",
+>>>>>>>> origin/agent/m-1-bootstrap:.agent/checkpoints/v2-2026-11-24T19-39-31-568Z-4baeaa4f-e5a7-4ea5-913c-339be5351f46.json
       "data": {
         "phase": "M3",
         "currentTask": "M3-core",
@@ -141,13 +154,22 @@
             "url": "https://github.com/HYJ1817/pi-gui-ios/actions/runs/45413372694"
           },
           {
+<<<<<<<< HEAD:.agent/checkpoints/v2-2026-11-25T01-47-58-555Z-e96f5586-ebfe-4ecd-bb3c-e270ca685c08.json
             "id": "45448754841",
             "head": "7f8b0d6c396ecd24d35baa0fd4b83e4018b5d664",
+========
+            "id": "45463943882",
+            "head": "cbaba6871587a6bce9902088c5fc2bbcf67c80fa",
+>>>>>>>> origin/agent/m-1-bootstrap:.agent/checkpoints/v2-2026-11-24T19-39-31-568Z-4baeaa4f-e5a7-4ea5-913c-339be5351f46.json
             "workflow": ".github/workflows/native-infrastructure.yml",
             "attempt": 1,
             "status": "completed",
             "conclusion": "success",
+<<<<<<<< HEAD:.agent/checkpoints/v2-2026-11-25T01-47-58-555Z-e96f5586-ebfe-4ecd-bb3c-e270ca685c08.json
             "url": "https://github.com/HYJ1817/pi-gui-ios/actions/runs/45448754841"
+========
+            "url": "https://github.com/HYJ1817/pi-gui-ios/actions/runs/45463943882"
+>>>>>>>> origin/agent/m-1-bootstrap:.agent/checkpoints/v2-2026-11-24T19-39-31-568Z-4baeaa4f-e5a7-4ea5-913c-339be5351f46.json
           }
         ],
         "blockers": [],
@@ -683,6 +705,23 @@
                 "sourceFingerprint": "656e09e95672d0f2934c932176d084f970cb52c08e197157a0ebc4aa8ac684d6",
                 "commit": "dfd0d17975debc5b0a2ae906e44ae019775cea71",
                 "at": "2026-11-21T12:50:35.459Z"
+              },
+              {
+                "kind": "unit",
+                "path": "docs/acceptance/local-unit-M-1-infrastructure.json",
+                "sha256": "1e3c486695ba00d149f5698296656a0d9ec1b938c7a0099dd808f01bf6158d1d",
+                "sourceFingerprint": "6e7a6a919475365de47983f258f09a8177739a5380d629a6ca07e9eae7e6aa9f",
+                "commit": "2a364a7ede0ae5a664e38e6d111dffc456e95d78",
+                "at": "2026-11-24T19:39:31.503Z",
+                "scopes": [
+                  "app",
+                  "control",
+                  "native-build",
+                  "protocol",
+                  "shared",
+                  "tests"
+                ],
+                "scopeFingerprint": "e2066df800c86193c830cc1d3a9d55d1b6d6f16d939dbc5cd79f52bc450f1ccb"
               }
             ],
             "updatedAt": "2026-11-21T13:07:50.951Z"
@@ -1573,6 +1612,7 @@
           }
         ],
         "checkpoint": {
+<<<<<<<< HEAD:.agent/checkpoints/v2-2026-11-25T01-47-58-555Z-e96f5586-ebfe-4ecd-bb3c-e270ca685c08.json
           "id": "v2-2026-11-24T17-27-21-004Z-76a43211-5f6d-4872-a07a-bc34591df3a9",
           "path": ".agent/checkpoints/v2-2026-11-24T17-27-21-004Z-76a43211-5f6d-4872-a07a-bc34591df3a9.json",
           "sha256": "94874378351829b7fe2e9e7266f81af67a30c2c6f45c161b7b81281d478e9c07",
@@ -1585,6 +1625,27 @@
           },
           "sourceFingerprint": "da8b664802aba8a84b33b8395d6ae3399b67f99d3f6e972361a8e7c769ae39c4",
           "note": "M3-core review-round fixes committed 7f8b0d6; awaiting security delegate + fresh reviews"
+========
+          "id": "v2-2026-11-24T19-37-40-779Z-7408c4f3-ed71-43d7-82b3-378829eaf272",
+          "path": ".agent/checkpoints/v2-2026-11-24T19-37-40-779Z-7408c4f3-ed71-43d7-82b3-378829eaf272.json",
+          "sha256": "b9022dcecf6f1435f253d12e836b64662956adc5424c4cfb6745b9bdf095d211",
+          "authorityDigest": "4b1a2b715b71474a57b87e92ebdd742a40482cb9f6aad3c9fe5bf4c45fe9e997",
+          "at": "2026-11-24T19:37:40.779Z",
+          "git": {
+            "branch": "agent/m-1-infra-closeout",
+            "commit": "cbaba6871587a6bce9902088c5fc2bbcf67c80fa",
+            "dirty": [
+              "M .agent/HANDOFF.md",
+              " M .agent/control.json",
+              " M .agent/state.json",
+              " M .agent/tasks.json",
+              " M PROGRESS.md",
+              "?? .ci-run-45463943882.json"
+            ]
+          },
+          "sourceFingerprint": "c66d34e1b98141b969214380e19eb5624b2ab7edc58ae231bcd5750b3e461b2c",
+          "note": "agent-task ci current"
+>>>>>>>> origin/agent/m-1-bootstrap:.agent/checkpoints/v2-2026-11-24T19-39-31-568Z-4baeaa4f-e5a7-4ea5-913c-339be5351f46.json
         },
         "nextAction": "M0/M1/M2 已完成（scoped evidence + 独立审查 + CI 绿 45413372694）。下一可执行任务：M-1-infrastructure 解除 blocked 并生成剩余证据（unit/typecheck/bundle/doctor/ui/ipa/independent-review/independent-security/independent-handoff）；M3-core 待 M-1-infra。真机 SideStore 仍留用户最终清单。",
         "delegates": [
@@ -1875,17 +1936,47 @@
             "role": "independent-security",
             "status": "working",
             "sourceCommit": "54798600e68b0438f8cde1018afa685462c46d71"
+<<<<<<<< HEAD:.agent/checkpoints/v2-2026-11-25T01-47-58-555Z-e96f5586-ebfe-4ecd-bb3c-e270ca685c08.json
+========
+          },
+          {
+            "taskId": "node:delegated-task:command%3Amcp%3A172f68fd-c749-4413-85d8-6ca556e69f55%3Adelegate-task%3Acce79fec-e89b-4a97-8c36-2a3f62177b7d",
+            "role": "independent-review",
+            "status": "completed",
+            "sourceCommit": "cbaba6871587a6bce9902088c5fc2bbcf67c80fa"
+          },
+          {
+            "taskId": "node:delegated-task:command%3Amcp%3A172f68fd-c749-4413-85d8-6ca556e69f55%3Adelegate-task%3A45e15e77-efed-48f5-9493-670333efa738",
+            "role": "independent-security",
+            "status": "completed",
+            "sourceCommit": "cbaba6871587a6bce9902088c5fc2bbcf67c80fa"
+          },
+          {
+            "taskId": "node:delegated-task:command%3Amcp%3A172f68fd-c749-4413-85d8-6ca556e69f55%3Adelegate-task%3Ac20de9ac-eb28-40c1-8bab-f0c3199d32b9",
+            "role": "independent-handoff",
+            "status": "completed",
+            "sourceCommit": "cbaba6871587a6bce9902088c5fc2bbcf67c80fa"
+>>>>>>>> origin/agent/m-1-bootstrap:.agent/checkpoints/v2-2026-11-24T19-39-31-568Z-4baeaa4f-e5a7-4ea5-913c-339be5351f46.json
           }
         ]
       },
       "integrity": {
         "algorithm": "sha256",
+<<<<<<<< HEAD:.agent/checkpoints/v2-2026-11-25T01-47-58-555Z-e96f5586-ebfe-4ecd-bb3c-e270ca685c08.json
         "digest": "0965c759daa6f166b73bee56c3720c2e9c26bbedb02c7d864426faa687c8ffbb"
       }
     },
     "git": {
       "branch": "agent/m-1-bootstrap",
       "commit": "7f8b0d6c396ecd24d35baa0fd4b83e4018b5d664",
+========
+        "digest": "a2f8244fe3fae1a3e76156eced4123fb525544f1d31be5021e0f55276c113664"
+      }
+    },
+    "git": {
+      "branch": "agent/m-1-infra-closeout",
+      "commit": "cbaba6871587a6bce9902088c5fc2bbcf67c80fa",
+>>>>>>>> origin/agent/m-1-bootstrap:.agent/checkpoints/v2-2026-11-24T19-39-31-568Z-4baeaa4f-e5a7-4ea5-913c-339be5351f46.json
       "dirty": [
         "M .agent/HANDOFF.md",
         " D .agent/checkpoints/v2-2026-11-24T12-53-26-824Z-b1d5c6ec-b152-432a-9694-6f5705e2a91e.json",
@@ -1893,6 +1984,7 @@
         " M .agent/state.json",
         " M .agent/tasks.json",
         " M PROGRESS.md",
+<<<<<<<< HEAD:.agent/checkpoints/v2-2026-11-25T01-47-58-555Z-e96f5586-ebfe-4ecd-bb3c-e270ca685c08.json
         "?? .agent/checkpoints/v2-2026-11-24T17-27-21-004Z-76a43211-5f6d-4872-a07a-bc34591df3a9.json",
         "?? docs/acceptance/ci-45448754841.json"
       ]
@@ -1902,5 +1994,27 @@
   "integrity": {
     "algorithm": "sha256",
     "digest": "fa24af8094a7754438a511760c031a2aebb818ad948bd6e39f94d73c13dc2a85"
+========
+        "?? .agent/checkpoints/v2-2026-11-24T19-37-40-779Z-7408c4f3-ed71-43d7-82b3-378829eaf272.json",
+        "?? docs/acceptance/ci-report-45463943882.json",
+        "?? docs/acceptance/ci-run-45463943882.json",
+        "?? docs/acceptance/independent-handoff-cbaba68-receipt.json",
+        "?? docs/acceptance/independent-review-cbaba68-receipt.json",
+        "?? docs/acceptance/independent-security-cbaba68-receipt.json",
+        "?? docs/acceptance/ipa-verification-45463943882.json",
+        "?? docs/acceptance/local-independent-handoff-M-1-infrastructure.json",
+        "?? docs/acceptance/local-independent-review-M-1-infrastructure.json",
+        "?? docs/acceptance/local-independent-security-M-1-infrastructure.json",
+        "?? docs/acceptance/local-ipa-M-1-infrastructure.json",
+        "?? docs/acceptance/local-ui-M-1-infrastructure.json",
+        "?? docs/acceptance/ui-cbaba68/"
+      ]
+    },
+    "sourceFingerprint": "6e7a6a919475365de47983f258f09a8177739a5380d629a6ca07e9eae7e6aa9f"
+  },
+  "integrity": {
+    "algorithm": "sha256",
+    "digest": "b5a3331da3a2df7bc168201bf48ed2c1b337d276553b458fed25cea94e388cb4"
+>>>>>>>> origin/agent/m-1-bootstrap:.agent/checkpoints/v2-2026-11-24T19-39-31-568Z-4baeaa4f-e5a7-4ea5-913c-339be5351f46.json
   }
 }

@@ -35,8 +35,6 @@ CATEGORIES = {
     'COMPILER_TOOL_LD': r'\bLd /|\bLd [^ ]',
     'COMPILER_TOOL_SCRIPT': r'\bPhaseScriptExecution\b',
     'COMPILER_TOOL_CODESIGN': r'\bCodeSign\b',
-    'MAESTRO_ASSERTION_FAILED': r'Assertion is false|Assertion failed|element .* not found',
-    'MAESTRO_FLOW_FAILED': r'Maestro|flow.*(failed|error)|timed out.*waiting',
     'SIMCTL_BOOT_FAILED': r'simctl.*(boot|bootstatus).*(failed|timeout|error)',
     'SIMCTL_INSTALL_FAILED': r'simctl install.*(failed|error)|install.*failed',
     'APP_CRASH': r'\bSIG\w+\b|crashed|terminated.*signal',
@@ -52,8 +50,8 @@ def git_source(path):
 def safe_codes():
     codes = set(CATEGORIES) | {'NATIVE_FAILURE_DETAILS_WITHHELD', 'NATIVE_LOCK_VALIDATOR_FAILED',
             'NODE_BINARY_MISSING', 'PHASE_SCRIPT_FAILED', 'NATIVE_LAUNCH_FAIL', 'NATIVE_LAUNCH_EXITED',
-            'MAESTRO_DEBUG_DIR_MISSING', 'MAESTRO_DEBUG_NO_COMMANDS',
-            'NATIVE_LOCKS_SAFE', 'NATIVE_LOCKS_REJECTED', 'NATIVE_DEPENDENCIES_LOCKED',
+            'NATIVE_LOCKS_SAFE', 'NATIVE_LOCKS_REJECTED', 'POD_MANIFEST_MATCH', 'POD_MANIFEST_DRIFT',
+            'NATIVE_DEPENDENCIES_LOCKED',
             'NATIVE_DEPENDENCIES_BOOTSTRAP_REQUIRED', 'NATIVE_DEPENDENCIES_VERIFIED',
             'NATIVE_LOCK_BOOTSTRAP_REVIEW_REQUIRED'}
     for filename in ('verify-ipa.py', 'native-dependencies.py', 'configure-native.py', 'verify-template.py'):
@@ -122,8 +120,6 @@ def scan(step, paths):
                 codes.update(token for token in re.findall(r'\b[A-Z][A-Z0-9_]{2,120}\b', line)
                              if token in allowed or token.startswith(('PLIST_SENSITIVE_KEY_', 'BUNDLE_PLATFORM_SUPPORTED_',
                                                     'BUNDLE_PLATFORM_NAME_', 'BUNDLE_PLATFORM_SDK_')))
-                codes.update(token for token in re.findall(r'\bMAESTRO_STEP_\d+_[A-Z0-9]{1,40}\b', line))
-                codes.update(token for token in re.findall(r'\bMAESTRO_CONSOLE_[A-Z0-9]{2,64}\b', line))
                 for code, pattern in CATEGORIES.items():
                     if re.search(pattern, line, re.IGNORECASE):
                         codes.add(code)

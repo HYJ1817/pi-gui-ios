@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
-"""Publish a fixed set of synthetic images and reconstructed, content-free JUnit.
+"""Publish a fixed set of synthetic screenshots and sanitized step/diagnostic reports.
 
 No raw logs, test names, error strings, simulator inventory, PNG text or paths pass
 through. Inputs originate only in this job's isolated synthetic simulator run.
+The retired Maestro channel (ui/*.xml JUnit + *-debug.json) is gone: simctl-driven
+screenshots are the only UI evidence, so retired inputs are ignored, never published.
 """
 import json
 import importlib.util
@@ -10,7 +12,6 @@ import os
 import pathlib
 import struct
 import sys
-import xml.etree.ElementTree as ET
 import zlib
 
 _spec = importlib.util.spec_from_file_location('native_safe_diagnostics', pathlib.Path(__file__).with_name('safe-diagnostics.py'))
@@ -21,10 +22,8 @@ STEPS = ('environment', 'npm', 'prebuild', 'pods', 'simulator-build',
          'iphone', 'ipad', 'device-build', 'ipa')
 SHOTS = ('00-shell-home.png', '01-native-glass.png', '02-interactions.png', '03-navigation.png', '04-keyboard-visible.png', '05-native-motion.png',
          '07-shell-sessions.png', '08-shell-conversation.png', '09-approvals.png', '10-approval-detail.png',
-         'dark/home.png', 'dark/conversation.png', 'dark/appearance.png',
-         'accessibility/home.png', 'accessibility/conversation.png', 'accessibility/reduce-transparency.png',
+         'dark/home.png', 'dark/appearance.png', 'dark/conversation.png', 'accessibility/home.png', 'accessibility/conversation.png', 'accessibility/reduce-transparency.png',
          'accessibility/dynamic-type.png', 'final.png', 'failure.png')
-PHASES = ('native', 'dark', 'accessibility')
 
 
 def read(path, limit):
@@ -78,37 +77,6 @@ def png(data):
     return bytes(output)
 
 
-def junit(data, device, phase):
-    if b'<!' in data:
-        raise ValueError()
-    source = ET.fromstring(data)
-    cases = list(source.iter('testcase'))
-    if not cases or len(cases) > 10000:
-        raise ValueError()
-    suite = ET.Element('testsuite', name=device + '-' + phase, tests=str(len(cases)))
-    failed, skipped = 0, 0
-    for index, original in enumerate(cases, 1):
-        case = ET.SubElement(suite, 'testcase', name='synthetic-assertion-' + str(index), classname=phase)
-        if original.find('failure') is not None or original.find('error') is not None:
-            ET.SubElement(case, 'failure', message='MAESTRO_ASSERTION_FAILED')
-            failed += 1
-        elif original.find('skipped') is not None:
-            ET.SubElement(case, 'skipped', message='MAESTRO_ASSERTION_SKIPPED')
-            skipped += 1
-    # Never lose a suite-level error or a missing testcase while reconstructing.
-    leaves = [node for node in source.iter('testsuite') if node.find('testsuite') is None]
-    declared = sum(int(node.get(key, '0')) for node in leaves for key in ('failures', 'errors'))
-    declared = max(declared, max((sum(int(node.get(key, '0')) for key in ('failures', 'errors'))
-                                  for node in source.iter() if node.tag in ('testsuite', 'testsuites')), default=0))
-    if declared > failed or any('tests' in node.attrib and int(node.get('tests')) !=
-                                len(list(node.iter('testcase'))) for node in leaves):
-        raise ValueError()
-    suite.set('failures', str(failed))
-    suite.set('errors', '0')
-    suite.set('skipped', str(skipped))
-    return ET.tostring(suite, encoding='utf-8', xml_declaration=True)
-
-
 def collect(private, output):
     reports = output / 'reports'
     reports.mkdir(parents=True, exist_ok=True)
@@ -143,44 +111,6 @@ def collect(private, output):
     (reports / 'diagnostics.json').write_text(json.dumps({'schemaVersion': 1, 'diagnostics': failures}, sort_keys=True) + '\n', encoding='utf-8')
     (reports / 'environment.json').write_text(json.dumps(diagnostics.environment(private / 'logs/environment.log'), sort_keys=True) + '\n', encoding='utf-8')
     for device in ('iphone', 'ipad'):
-        for phase in PHASES:
-            source = private / 'ui' / device / (phase + '.xml')
-            target = reports / (device + '-' + phase + '.xml')
-            target.unlink(missing_ok=True)
-            if source.exists():
-                target.write_bytes(junit(read(source, 2 * 1024 * 1024), device, phase))
-        for phase in PHASES:
-            source = private / 'ui' / device / (phase + '-debug.json')
-            target = reports / (device + '-' + phase + '-debug.json')
-            target.unlink(missing_ok=True)
-            if source.exists():
-                parsed = json.loads(read(source, 256 * 1024))
-                if isinstance(parsed, dict) and parsed.get('kind') == 'maestro-debug' and isinstance(parsed.get('commands'), list):
-                    verbs = [c for c in parsed['commands'] if isinstance(c, dict)
-                             and all(k in ('index', 'verb', 'status') for k in c)]
-                    out = {'schemaVersion': 1, 'kind': 'maestro-debug', 'commands': verbs}
-                    if isinstance(parsed.get('files'), list) and all(isinstance(f, str) and len(f) <= 80 for f in parsed['files']):
-                        out['files'] = parsed['files'][:32]
-                    if isinstance(parsed.get('errors'), list) and all(isinstance(e, dict) and len(e) == 1 and next(iter(e.values())) and isinstance(next(iter(e.values())), str) and len(next(iter(e.values()))) <= 120 and next(iter(e.keys())) in ('exception', 'signal') for e in parsed['errors']):
-                        out['errors'] = parsed['errors'][:16]
-                    if isinstance(parsed.get('debugDir'), str) and parsed['debugDir'] == 'missing':
-                        out['debugDir'] = 'missing'
-                    vocab = parsed.get('vocab')
-                    if (isinstance(vocab, list) and len(vocab) <= 24
-                            and all(isinstance(w, str) and len(w) <= 64 and w.isidentifier() for w in vocab)):
-                        out['vocab'] = vocab
-                    logs = parsed.get('logs')
-                    if (isinstance(logs, dict) and len(logs) <= 8
-                            and all(isinstance(v, dict) for v in logs.values())
-                            and all(k in ('console.log', 'maestro.log', 'device-xctest.log') for k in logs)):
-                        ok = all(
-                            (isinstance(v.get('bytes'), int) and isinstance(v.get('lines'), int))
-                            or v.get('unreadable') is True
-                            for v in logs.values())
-                        if ok:
-                            out['logs'] = logs
-                    if len(verbs) == len(parsed['commands']):
-                        target.write_text(json.dumps(out, sort_keys=True) + '\n', encoding='utf-8')
         for shot in SHOTS:
             source = private / 'screenshots' / device / shot
             target = output / 'screenshots' / device / shot

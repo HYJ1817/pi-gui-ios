@@ -1,6 +1,7 @@
 {
   "schemaVersion": 2,
   "kind": "checkpoint",
+<<<<<<<< HEAD:.agent/checkpoints/v2-2026-11-24T17-27-21-004Z-76a43211-5f6d-4872-a07a-bc34591df3a9.json
   "revision": 808,
   "updatedAt": "2026-11-24T17:27:21.004Z",
   "data": {
@@ -11,6 +12,18 @@
       "kind": "control",
       "revision": 808,
       "updatedAt": "2026-11-24T16:53:31.328Z",
+========
+  "revision": 809,
+  "updatedAt": "2026-11-24T19:37:40.779Z",
+  "data": {
+    "id": "v2-2026-11-24T19-37-40-779Z-7408c4f3-ed71-43d7-82b3-378829eaf272",
+    "note": "agent-task ci current",
+    "control": {
+      "schemaVersion": 2,
+      "kind": "control",
+      "revision": 809,
+      "updatedAt": "2026-11-24T19:37:40.724Z",
+>>>>>>>> origin/agent/m-1-bootstrap:.agent/checkpoints/v2-2026-11-24T19-37-40-779Z-7408c4f3-ed71-43d7-82b3-378829eaf272.json
       "data": {
         "phase": "M3",
         "currentTask": "M3-core",
@@ -139,6 +152,18 @@
             "status": "completed",
             "conclusion": "success",
             "url": "https://github.com/HYJ1817/pi-gui-ios/actions/runs/45413372694"
+<<<<<<<< HEAD:.agent/checkpoints/v2-2026-11-24T17-27-21-004Z-76a43211-5f6d-4872-a07a-bc34591df3a9.json
+========
+          },
+          {
+            "id": "45463943882",
+            "head": "cbaba6871587a6bce9902088c5fc2bbcf67c80fa",
+            "workflow": ".github/workflows/native-infrastructure.yml",
+            "attempt": 1,
+            "status": "completed",
+            "conclusion": "success",
+            "url": "https://github.com/HYJ1817/pi-gui-ios/actions/runs/45463943882"
+>>>>>>>> origin/agent/m-1-bootstrap:.agent/checkpoints/v2-2026-11-24T19-37-40-779Z-7408c4f3-ed71-43d7-82b3-378829eaf272.json
           }
         ],
         "blockers": [],
@@ -1871,6 +1896,7 @@
       },
       "integrity": {
         "algorithm": "sha256",
+<<<<<<<< HEAD:.agent/checkpoints/v2-2026-11-24T17-27-21-004Z-76a43211-5f6d-4872-a07a-bc34591df3a9.json
         "digest": "9da28adc3a8026ffe894815326a3ccf0122e46528d27004282336b84e72a7964"
       }
     },
@@ -1884,5 +1910,27 @@
   "integrity": {
     "algorithm": "sha256",
     "digest": "57065d472926ecffd6eaf90a02552bf8c327b00281f0d0eab02b06dd6b724d30"
+========
+        "digest": "4b1a2b715b71474a57b87e92ebdd742a40482cb9f6aad3c9fe5bf4c45fe9e997"
+      }
+    },
+    "git": {
+      "branch": "agent/m-1-infra-closeout",
+      "commit": "cbaba6871587a6bce9902088c5fc2bbcf67c80fa",
+      "dirty": [
+        "M .agent/HANDOFF.md",
+        " M .agent/control.json",
+        " M .agent/state.json",
+        " M .agent/tasks.json",
+        " M PROGRESS.md",
+        "?? .ci-run-45463943882.json"
+      ]
+    },
+    "sourceFingerprint": "c66d34e1b98141b969214380e19eb5624b2ab7edc58ae231bcd5750b3e461b2c"
+  },
+  "integrity": {
+    "algorithm": "sha256",
+    "digest": "bb427db434f9d4bb82bb43df8993f04d84256895949bcb76401948152f961862"
+>>>>>>>> origin/agent/m-1-bootstrap:.agent/checkpoints/v2-2026-11-24T19-37-40-779Z-7408c4f3-ed71-43d7-82b3-378829eaf272.json
   }
 }

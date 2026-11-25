@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 2,
+  "taskId": "M2-shell",
+  "kind": "independent-review",
+  "commit": "778b67eaf7f6cd87b6f6602e605ae979c533639d",
+  "sourceFingerprint": "6e7a6a919475365de47983f258f09a8177739a5380d629a6ca07e9eae7e6aa9f",
+  "scopes": [
+    "app",
+    "shared"
+  ],
+  "scopeFingerprint": "67b538b2f2ecf589384a761daf11ed797b07e947ecb56177f89a2179b3b885e6",
+  "startedAt": "2026-11-24T21:47:32.695Z",
+  "finishedAt": "2026-11-24T21:47:32.695Z",
+  "passed": true,
+  "details": {
+    "receiptPath": "docs/acceptance/independent-review-778b67e-M2-shell-receipt.json",
+    "receiptSha256": "6de952d79190ff3d07b7d6941a3311794c04d3c129d3c4f3e10a3af1270b1271"
+  }
+}

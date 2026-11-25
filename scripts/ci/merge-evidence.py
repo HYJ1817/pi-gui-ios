@@ -14,7 +14,10 @@ import sys
 STEPS = ('environment', 'npm', 'prebuild', 'pods', 'simulator-build',
          'iphone', 'ipad', 'device-build', 'ipa')
 STEP_RE = re.compile(r'^NATIVE_STEP_[A-Z_]+_(PASSED|FAILED|NOT_RUN|INTERRUPTED|BOOTSTRAP_REQUIRED)$')
-REPORTS = re.compile(r'^(iphone|ipad)-(native|dark|accessibility)(-debug)?\.(xml|json)$|^steps\.json$|^diagnostics\.json$|^environment\.json$')
+# Only the live sanitized reports merge in. The retired Maestro channel
+# (per-device JUnit *.xml and *-debug.json) is intentionally NOT whitelisted:
+# simctl screenshots + steps/diagnostics/environment are the whole public tree.
+REPORTS = re.compile(r'^steps\.json$|^diagnostics\.json$|^environment\.json$')
 SHOT = re.compile(r'^(00-shell-home|01-native-glass|02-interactions|03-navigation|04-keyboard-visible|05-native-motion|07-shell-sessions|08-shell-conversation|09-approvals|10-approval-detail|final|failure)\.png$')
 PNG_MAGIC = b'\x89PNG\r\n\x1a\n'
 
@@ -115,8 +118,6 @@ def main():
                     target = reports / path.name
                     if REPORTS.match(path.name) and path.name not in ('steps.json', 'diagnostics.json', 'environment.json') \
                             and not target.exists():
-                        if path.suffix == '.xml' or path.suffix == '.json':
-                            read(path, 4 * 1024 * 1024)
                         shutil.copyfile(path, target)
             shots = directory / 'screenshots'
             if shots.is_dir():

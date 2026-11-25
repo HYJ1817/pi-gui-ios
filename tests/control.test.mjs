@@ -4,7 +4,7 @@ import { mkdtempSync, writeFileSync, readFileSync, existsSync, rmSync, mkdirSync
 import { tmpdir } from 'node:os';
 import { resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
-import { ROOT, envelope, decode, digest, writeEnvelope, loadControl, mutate, snapshot, sourceFingerprint, committedFingerprint, gate, transition, renderProjections, repairProjections, git, evidencePath, validateReport, normalizeCi, createCheckpoint, validateCheckpoint, restoreCheckpoint, atomicWrite, resolveScopes, coverageCheck, pruneCheckpoints, CHECKPOINT_KEEP } from '../scripts/lib/control.mjs';
+import { ROOT, envelope, decode, digest, writeEnvelope, loadControl, mutate, snapshot, sourceFingerprint, committedFingerprint, gate, transition, renderProjections, repairProjections, git, evidencePath, validateReport, normalizeCi, createCheckpoint, validateCheckpoint, restoreCheckpoint, atomicWrite, resolveScopes, validateEvidenceScopes, coverageCheck, pruneCheckpoints, CHECKPOINT_KEEP } from '../scripts/lib/control.mjs';
 import { inspectRecovery, listCheckpoints } from '../scripts/lib/recovery.mjs';
 
 function fixture(t, committed = true) {
@@ -273,6 +273,56 @@ test('scoped reports bind their declared scope set and reject scope tampering', 
   assert.throws(() => validateReport(d, d.tasks[0], scoped, root), /stale|committed/);
 });
 
+test('evidenceScopes narrowing floor: only independent kinds, subset of bound, product set retained', t => {
+  const { root, d } = fixture(t);
+  // Protocol-bound phase may legitimately bind reviews to 'protocol'.
+  d.tasks[0].requiredEvidence = ['unit', 'protocol-contract', 'independent-review', 'independent-security'];
+  d.tasks[0].evidenceScopes = { 'independent-review': ['protocol'], 'independent-security': ['protocol', 'native-build'] };
+  assert.equal(validateEvidenceScopes(d), undefined);
+  // Narrowing must not drop a bound product scope entirely: meta/control/tests-only is rejected.
+  for (const bad of [['meta'], ['control'], ['tests'], ['meta', 'control']]) {
+    d.tasks[0].evidenceScopes = { 'independent-review': bad };
+    assert.throws(() => validateEvidenceScopes(d), /Illegal narrowing|inside the default bound/, JSON.stringify(bad));
+  }
+  // Narrowing may never widen beyond the kind's default bound.
+  d.tasks[0].requiredEvidence = ['protocol-contract', 'independent-review'];
+  d.tasks[0].evidenceScopes = { 'independent-review': ['protocol', 'app'] };
+  assert.throws(() => validateEvidenceScopes(d), /inside the default bound/);
+  d.tasks[0].requiredEvidence = ['unit', 'protocol-contract', 'independent-review', 'independent-security'];
+  // Unknown set names and meta-quantifiers are configuration errors.
+  d.tasks[0].evidenceScopes = { 'independent-review': ['nope'] };
+  assert.throws(() => validateEvidenceScopes(d), /Unknown evidence scope/);
+  d.tasks[0].evidenceScopes = { 'independent-review': ['union'] };
+  assert.throws(() => validateEvidenceScopes(d), /Unknown evidence scope/);
+  d.tasks[0].evidenceScopes = { 'independent-review': ['all'] };
+  assert.throws(() => validateEvidenceScopes(d), /Unknown evidence scope|inside the default bound/);
+  // Non-independent kinds cannot be rebound at all.
+  d.tasks[0].evidenceScopes = { unit: ['app'] };
+  assert.throws(() => validateEvidenceScopes(d), /only narrow independent/);
+  // independent-handoff is always 'all' and cannot be shrunk.
+  d.tasks[0].requiredEvidence = ['independent-handoff'];
+  d.tasks[0].evidenceScopes = { 'independent-handoff': ['app'] };
+  assert.throws(() => validateEvidenceScopes(d), /always-all/);
+});
+test('security and review narrowing honor declared product boundaries inside the bound', t => {
+  const { root, d } = fixture(t);
+  d.tasks[0].requiredEvidence = ['unit', 'ui', 'independent-security'];
+  // Default union includes native-build via ui; declared narrowing inside the
+  // bound that keeps a product set is a legitimate reviewer boundary (ADR-0007).
+  for (const declared of [['app', 'native-build'], ['app'], ['native-build']]) {
+    d.tasks[0].evidenceScopes = { 'independent-security': declared };
+    assert.equal(validateEvidenceScopes(d), undefined, JSON.stringify(declared));
+    assert.deepEqual(resolveScopes(d.tasks[0], 'independent-security'), [...declared, 'shared'].sort());
+  }
+  // But a narrowing that retains no product set at all is rejected.
+  d.tasks[0].evidenceScopes = { 'independent-security': ['tests'] };
+  assert.throws(() => validateEvidenceScopes(d), /no product scope set/);
+});
+test('validateControl rejects illegal evidenceScopes before any report is read', t => {
+  const { root } = fixture(t);
+  assert.throws(() => mutate(root, d => { d.tasks[0].evidenceScopes = { 'independent-review': ['meta'] }; }), /Illegal narrowing|inside the default bound/);
+  assert.equal(loadControl(root).revision, 1, 'rejected mutation must not advance the authority');
+});
 test('checkpoint pruning keeps newest N and never unlinks the referenced checkpoint', t => {
   const { root } = fixture(t);
   let last;

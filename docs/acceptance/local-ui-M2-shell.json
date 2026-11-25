@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 2,
+  "taskId": "M2-shell",
+  "kind": "ui",
+  "commit": "778b67eaf7f6cd87b6f6602e605ae979c533639d",
+  "sourceFingerprint": "6e7a6a919475365de47983f258f09a8177739a5380d629a6ca07e9eae7e6aa9f",
+  "scopes": [
+    "app",
+    "native-build",
+    "shared"
+  ],
+  "scopeFingerprint": "639e85f444291c8a064678ae5dae65481e3c9ccc1d24a2dedf1e175e0eb549ef",
+  "startedAt": "2026-11-24T21:45:06.404Z",
+  "finishedAt": "2026-11-24T21:45:06.404Z",
+  "passed": true,
+  "details": {
+    "nativeGlassVerified": true,
+    "visualReview": "pass",
+    "reviewerContext": "CI run 45473673853 attempt 4 @c0b42bc: real PNGs from merged m-1-ios artifact reviewed; iPhone/iPad light/dark Liquid Glass renders and accessibility (largest Dynamic Type + Reduce Transparency fallback) confirmed; 9/9 native steps passed",
+    "screenshots": [
+      {
+        "device": "iphone",
+        "appearance": "light",
+        "path": "docs/acceptance/ui-c0b42bc-m2/iphone-light.png",
+        "sha256": "6743cd1052d140679b7c322fd15a1e1ac8a4e8daa94a09a37394920165002ed5",
+        "reviewed": true
+      },
+      {
+        "device": "iphone",
+        "appearance": "dark",
+        "path": "docs/acceptance/ui-c0b42bc-m2/iphone-dark.png",
+        "sha256": "e9388795258949b4fb3d231fd8b541c38cf9f72050109c118a91ca1c35ecad53",
+        "reviewed": true
+      },
+      {
+        "device": "iphone",
+        "appearance": "accessibility",
+        "path": "docs/acceptance/ui-c0b42bc-m2/iphone-accessibility.png",
+        "sha256": "e3d9238197a350b97e6921b9398db707da3411888fc38da706ee799a5acad2b6",
+        "reviewed": true
+      },
+      {
+        "device": "ipad",
+        "appearance": "light",
+        "path": "docs/acceptance/ui-c0b42bc-m2/ipad-light.png",
+        "sha256": "88ae838e90c59010c08e2e2ea8b836b25ff307611b9d61c78d6dab81ed495636",
+        "reviewed": true
+      },
+      {
+        "device": "ipad",
+        "appearance": "dark",
+        "path": "docs/acceptance/ui-c0b42bc-m2/ipad-dark.png",
+        "sha256": "ee6ecf9d820ae3595aaf4bb3514cfa3f892e48e5742acd7dd2bded18da877c71",
+        "reviewed": true
+      },
+      {
+        "device": "ipad",
+        "appearance": "accessibility",
+        "path": "docs/acceptance/ui-c0b42bc-m2/ipad-accessibility.png",
+        "sha256": "7f444238a6cab5c816d92333f2a423b4109d6a7c884a4640e70df3289191ebc3",
+        "reviewed": true
+      }
+    ],
+    "ciId": "45473673853",
+    "attempt": 4
+  }
+}
