@@ -332,14 +332,17 @@ test('fault 7 revoke: mid-stream revocation delivers one reset then stops all fr
   gateway.revokeDevice(r.credentials.deviceId);
   assert.equal(resetsBefore.length, 1, 'revocation must emit exactly one reset');
   assert.equal(resetsBefore[0].payload.reason, 'authorization_changed');
-  // No further frames are emitted to the revoked device.
-  const rev = serverMessages(gateway).length;
+  // No further frames are DELIVERED to the revoked device (ADR-0010 final:
+  // frames are journaled regardless of authorization — delivery/replay-time
+  // filtering — so the timeline has no holes for a future re-grant/re-pair;
+  // the delivery guarantee is what matters).
   const conv = gateway.domain.conversations.find(c => c.conversationId === CONV);
+  conv.messages.push({ messageId: 'msg_post_revoke', role: 'assistant', text: 'post-revoke' });
   const stream = gateway.streamFor(r.credentials.deviceId);
   const journalBefore = stream.journalSeq;
-  conv.messages.push({ messageId: 'msg_post_revoke', role: 'assistant', text: 'post-revoke' });
   gateway.emit(r.credentials.deviceId, 'message.append', conv, { messageId: 'msg_post_revoke', role: 'assistant', text: 'post-revoke' });
-  assert.equal(gateway.streamFor(r.credentials.deviceId).journalSeq, journalBefore, 'revoked device journals nothing');
+  assert.ok(stream.journalSeq > journalBefore, 'frame IS journaled — timeline continuity for future resume');
+  // and the subscription was already removed by revokeDevice — zero delivery.
   sub.close();
 });
 
@@ -624,4 +627,43 @@ test('regression cross-incarnation cursor: forged and pre-restart cursors are fo
   // And no ordinary frame must have been delivered before the reset.
   assert.equal(got[0].event, 'reset', 'the reset is the first and only signal — never silent loss');
   sub.close();
+});
+
+test('regression grant revoke/re-grant: window mutations are recovered, never silently diverged', async (t) => {
+  // Independent-security FINAL-review important finding: revoked-window
+  // mutations must not permanently vanish from the client without a signal.
+  // Fixed semantics: events journal regardless of authorization (delivery/
+  // replay-time filtering only); both revoke and re-grant reset subscriptions
+  // forcing baseline rebuilds.
+  const { M, gateway } = setup(t, domain());
+  const r = rig(t, M, gateway, 'regrant');
+  await r.store.load();
+  r.events.open(r.stream, r.client.buildEventsRequest(), undefined);
+  await send(r, 'before-revoke');
+  // Revoke the grant mid-stream.
+  const resetCount = [];
+  r.events.onEvent = a => { if (a.event === 'reset') resetCount.push(a); r.store.apply(a); };
+  gateway.grantProject(r.credentials.deviceId, PROJECT, false);
+  assert.equal(resetCount.length, 1, 'revoke delivers exactly one reset');
+  // Mutate during the revoked window (server-side truth advances).
+  const conv = gateway.domain.conversations.find(c => c.conversationId === CONV);
+  conv.messages.push({ messageId: 'msg_window01', role: 'assistant', text: 'window-content' });
+  conv.ownerRevision += 1;
+  gateway.emit(r.credentials.deviceId, 'message.append', conv, { messageId: 'msg_window01', role: 'assistant', text: 'window-content' });
+  assert.ok(!storeMessages(r).some(m => m.includes('window-content')), 'window frame not delivered live while revoked');
+  // Re-grant: exactly one more reset → baseline rebuild surfaces the window content.
+  const resetsBefore = resetCount.length;
+  gateway.grantProject(r.credentials.deviceId, PROJECT, true);
+  assert.equal(resetCount.length, resetsBefore + 1, 're-grant delivers exactly one reset');
+  await new Promise(resolve => setTimeout(resolve, 60));
+  await r.store.refresh(CONV);
+  assert.ok(storeMessages(r).some(m => m.includes('window-content')), 'window mutation recovered after re-grant — no silent divergence');
+  // Live traffic after re-grant flows with continuous sequences.
+  await send(r, 'post-regrant');
+  assertConverged(r, gateway, 'revoke/re-grant');
+  // Cursor resume across the re-grant boundary replays window frames exactly once.
+  const cursorNow = r.events.latestCursor();
+  r.events.close();
+  r.events.open(r.stream, r.client.buildEventsRequest(cursorNow), cursorNow);
+  assert.ok(!hasDuplicateIds(r), 'no duplicate replay across the boundary');
 });

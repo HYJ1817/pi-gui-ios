@@ -1,8 +1,8 @@
 {
   "schemaVersion": 2,
   "kind": "control",
-  "revision": 983,
-  "updatedAt": "2026-11-25T05:15:41.496Z",
+  "revision": 984,
+  "updatedAt": "2026-11-25T05:15:45.374Z",
   "data": {
     "phase": "M4",
     "currentTask": "M4-sync",
@@ -2361,58 +2361,18 @@
       }
     ],
     "checkpoint": {
-      "id": "v2-2026-11-25T05-14-57-235Z-443aedb2-3df6-4a38-95b5-0d1e7d9042ec",
-      "path": ".agent/checkpoints/v2-2026-11-25T05-14-57-235Z-443aedb2-3df6-4a38-95b5-0d1e7d9042ec.json",
-      "sha256": "79f4035150ddee19fd2ed77d478e5782f9310358cf41efeb26f8230941365810",
-      "authorityDigest": "7558dc3f9661a532c0225dec745140159e990f3ecbc6642e0cbfc252914e4f6c",
-      "at": "2026-11-25T05:14:57.235Z",
+      "id": "v2-2026-11-25T05-15-45-374Z-276f0246-8439-4fc2-8b4f-f01272142718",
+      "path": ".agent/checkpoints/v2-2026-11-25T05-15-45-374Z-276f0246-8439-4fc2-8b4f-f01272142718.json",
+      "sha256": "33b95d37e48454b58e2173a8abc817f05c007c33534452441b98c0e4af916cb4",
+      "authorityDigest": "2c8e3cf064ad3d6b8516c340fc6643f1551c8d8d38e6fbaadffe2fb15406f863",
+      "at": "2026-11-25T05:15:45.374Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "2dc408a919c73db11824f6574b940aaf3f161040",
-        "dirty": [
-          "M .agent/HANDOFF.md",
-          " D .agent/checkpoints/v2-2026-11-25T02-01-47-677Z-7d2c1bc6-9f7e-4fa7-ab5c-65a529d0dbaa.json",
-          " D .agent/checkpoints/v2-2026-11-25T02-01-53-851Z-001d9a59-7909-4929-bb4f-8957015942c9.json",
-          " D .agent/checkpoints/v2-2026-11-25T02-19-34-952Z-76990ae2-26fc-490b-be8d-b529b4418837.json",
-          " D .agent/checkpoints/v2-2026-11-25T02-19-41-713Z-b0b9c2c6-0e2a-4c51-946c-9b0444ef3a98.json",
-          " D .agent/checkpoints/v2-2026-11-25T02-19-45-127Z-ab94da9f-aa1b-4046-a11e-e0a3d0dd7040.json",
-          " D .agent/checkpoints/v2-2026-11-25T02-19-46-438Z-1b186903-4cfa-4d87-8b93-aad7ea3fec66.json",
-          " D .agent/checkpoints/v2-2026-11-25T02-19-57-144Z-bbba405f-2efd-4805-ac23-df9eb3299843.json",
-          " D .agent/checkpoints/v2-2026-11-25T02-19-57-864Z-544c1417-4edc-450d-b7d5-fff9144f753b.json",
-          " D .agent/checkpoints/v2-2026-11-25T02-25-17-127Z-628df648-cd49-493c-8c54-dfb59816b7c0.json",
-          " D .agent/checkpoints/v2-2026-11-25T02-25-22-746Z-7235e765-5bd7-42c6-ab70-23779623efad.json",
-          " D .agent/checkpoints/v2-2026-11-25T02-25-59-596Z-d3f20ba9-9a14-438d-b205-307d8654befe.json",
-          " M .agent/control.json",
-          " M .agent/state.json",
-          " M .agent/tasks.json",
-          " M PROGRESS.md",
-          " M docs/acceptance/local-fault-injection-output.txt",
-          " M docs/acceptance/local-fault-injection.json",
-          " M docs/acceptance/local-integration-M1-remote.json",
-          " M docs/acceptance/local-integration-M3-core.json",
-          " M docs/acceptance/local-integration-output.txt",
-          " M docs/acceptance/local-integration.json",
-          " M docs/acceptance/local-unit-M0-architecture.json",
-          " M docs/acceptance/local-unit-M1-remote.json",
-          " M docs/acceptance/local-unit-M2-shell.json",
-          " M docs/acceptance/local-unit-M3-core.json",
-          " M docs/acceptance/local-unit-output.txt",
-          " M docs/acceptance/local-unit.json",
-          "?? .agent/checkpoints/v2-2026-11-25T05-13-21-864Z-0ced9f3d-04ea-44d5-a021-cd73df19371c.json",
-          "?? .agent/checkpoints/v2-2026-11-25T05-13-25-336Z-7a5ef9b8-4b7e-4069-8260-4e404050d47e.json",
-          "?? .agent/checkpoints/v2-2026-11-25T05-14-37-231Z-c7d36930-336d-485d-bb65-ca4597f86e02.json",
-          "?? .agent/checkpoints/v2-2026-11-25T05-14-38-778Z-e3085b22-0586-4411-8ed3-f37d588e6a88.json",
-          "?? .agent/checkpoints/v2-2026-11-25T05-14-40-136Z-4bfdc16b-1c35-441e-89d5-ba68b33110fd.json",
-          "?? .agent/checkpoints/v2-2026-11-25T05-14-41-531Z-edf1de51-60f9-457f-a6c6-5ede3301547d.json",
-          "?? .agent/checkpoints/v2-2026-11-25T05-14-48-993Z-fb8f1899-4b2d-46de-bf56-0fb023d9c96b.json",
-          "?? .agent/checkpoints/v2-2026-11-25T05-14-51-101Z-174328a0-f76f-4250-bf07-798a695984f5.json",
-          "?? .agent/checkpoints/v2-2026-11-25T05-14-53-049Z-36d73562-7536-41d7-8c5e-e37d3de68426.json",
-          "?? .agent/checkpoints/v2-2026-11-25T05-14-54-548Z-4f7946f9-2ea7-47bc-896d-8278724447b0.json",
-          "?? .agent/checkpoints/v2-2026-11-25T05-14-55-889Z-b6bfa372-2ad7-4144-83e4-911ccb061a34.json"
-        ]
+        "commit": "b6b48167f29e8a8b731e151294b1028fb287e28e",
+        "dirty": []
       },
       "sourceFingerprint": "2bc33ab56a32f09598bcc4630f20523f590cc5b25c4966b10ba4efe19bd2f8b1",
-      "note": "agent-task evidence M3-core"
+      "note": "M4 final review round: delegates bdd3d148+45c83e98 on 2dc408a after fixing 4 important+2 nit findings; 360/360 tests green; CI pending for ui re-baseline"
     },
     "nextAction": "M3-core: resume testing evidence chain (unit+integration imported; CI 45473673853 green for ui import; delegates review+security pending). M-1-infrastructure completed via closeout PR #1.",
     "delegates": [
@@ -2828,6 +2788,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "2c8e3cf064ad3d6b8516c340fc6643f1551c8d8d38e6fbaadffe2fb15406f863"
+    "digest": "b637b1dbc202cce9090fa58d04ecacced25ab56d46c549dcf4e6a3757e999af0"
   }
 }

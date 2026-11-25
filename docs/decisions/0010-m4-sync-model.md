@@ -85,3 +85,7 @@ M3 安全审查 note F3：`lastError` 复用会掩盖 `stream_unavailable`。M4 
 
 - **grant 撤销→重新授权窗口的静默分歧**：`grantProject(device, project, false)` 正确投递一次 reset，但订阅存活；撤销窗口内 `emit()` 在 journaling 阶段即按授权过滤（不进 journal），重新授权无 reset——窗口内的变更永久缺席客户端 store 而无任何信号。合成范围不可利用（钩子是测试专用服务端 API，签名操作不可达，demo 从不撤销，真实桌面撤销即需重新配对=全新无 cursor 订阅故无此洞）。**M5 桌面接入前必须修复或规范**：参考对齐的正确修法是事件**不**按授权进 journal、仅在投递/重放时过滤（这也吻合契约 mustRevalidateAuthorizationBeforeReplay 的措辞），或在重新授权时重置订阅。
 - 旁注（终审 nit，M5 一并处理）：emit 订阅循环内 resetOne 同步语义下不可达（防御纵深保留）；watermark 的 epoch 与订阅 generation 共享计数器但语义空间不同（脆性不变量，值得注释）；sub.lastSeq 死簿记；re-pair 不重置流状态（同族生命周期问题）。
+
+### 终审 findings 修复（2026-11-25 第三轮，同一日）
+
+grant 撤销→重新授权静默分歧**已修复**（不再 defer）：事件不按授权进 journal（投递/重放时过滤），撤销与重新授权都重置订阅强制基线重建；回归测试 regression grant revoke/re-grant 钉死。剩余 M5 defer 仅限：秘密 MAC key 与 crypto 随机盐（桌面端口）、首帧盲区（真实传输加固）、recoverStream live 标记装饰项、fault 6 路径覆盖增强。

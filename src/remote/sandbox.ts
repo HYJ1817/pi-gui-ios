@@ -285,10 +285,14 @@ export class LocalSyntheticGateway {
     // authorization), so without an explicit reset the subscription would
     // starve silently (independent-review finding 3). Subscriptions are
     // device-level; the reset is the contract's isolation mechanism.
-    if (!granted) {
-      for (const sub of this.subscriptions.filter(s => s.deviceId === deviceId)) {
-        this.resetOne(sub, 'authorization_changed');
-      }
+    // Revocation AND re-grant both reset subscriptions (ADR-0010 final-review
+    // addendum): revocation because delivery must stop NOW; re-grant because
+    // frames mutated during the revoked window were journaled but never
+    // delivered live — without a forced baseline rebuild the client would
+    // diverge silently. The journaled-regardless timeline makes any later
+    // cursor resume replay the window frames with continuous sequences.
+    for (const sub of this.subscriptions.filter(s => s.deviceId === deviceId)) {
+      this.resetOne(sub, 'authorization_changed');
     }
   }
 
@@ -733,12 +737,15 @@ export class LocalSyntheticGateway {
   }
 
   emit(deviceId: string, event: EventEnvelope['event'], conversation: SandboxConversation, payload: Record<string, unknown>): void {
-    // Shared per-device backlog of unsigned templates (reference semantics):
-    // the frame is journaled once per authorized device; each subscription
-    // materializes it under its OWN generation/cursor binding.
+    // Shared per-device backlog of unsigned templates. ADR-0010 final-review
+    // addendum: events are journaled for every registered device REGARDLESS
+    // of grant/active state — authorization is enforced exclusively at
+    // DELIVERY and REPLAY time (contract mustRevalidateAuthorizationBeforeReplay).
+    // Journaling-time filtering punched invisible holes into the timeline:
+    // a revoke→re-grant cycle left mutations permanently absent from the
+    // client with no signal (independent-security final-review important).
     for (const [otherDeviceId, stream] of this.streams) {
-      const device = this.devices.get(otherDeviceId);
-      if (!device || !this.eventAuthorized(device, conversation, event)) continue;
+      if (!this.devices.has(otherDeviceId)) continue;
       stream.journalSeq += 1;
       const probe = canonicalJson({ event, conversationId: conversation.conversationId, ownerRevision: conversation.ownerRevision, payload });
       const entry: JournalEntry = {
@@ -753,9 +760,11 @@ export class LocalSyntheticGateway {
         if (sub.deviceId !== otherDeviceId) continue;
         // Per-event revalidation immediately before delivering ANY frame
         // (reference _mayDeliver): revocation mid-stream stops the leak and
-        // isolates the subscription with exactly one reset.
+        // isolates the subscription with exactly one reset. Delivery-time
+        // filtering — the frame IS in the journal, so a re-grant can replay
+        // it with continuous sequence numbers.
         const deviceNow = this.devices.get(otherDeviceId);
-        if (!deviceNow || !this.eventAuthorized(deviceNow, conversation, event)) { this.resetOne(sub, 'authorization_changed'); continue; }
+        if (!deviceNow || !this.eventAuthorized(deviceNow, conversation, event)) continue;
         this.deliver(sub, entry);
       }
     }
