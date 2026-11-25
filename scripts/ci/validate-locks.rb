@@ -193,8 +193,10 @@ begin
   phase = 'SERIALIZE'
   safe_pods = YAML.dump(pods)
   raise unless parse_pods.call(safe_pods) == pods
-  File.write(File.join(root, 'Podfile.lock'), safe_pods)
-  File.write(File.join(root, 'Gemfile.lock'), safe_gems)
+  # Binary mode: canonical bytes must be platform-independent — Windows text
+  # mode would emit CRLF, macOS LF, and the reviewed hash binds exact bytes.
+  File.binwrite(File.join(root, 'Podfile.lock'), safe_pods)
+  File.binwrite(File.join(root, 'Gemfile.lock'), safe_gems)
   puts 'NATIVE_LOCKS_SAFE'
 rescue Exception
   warn "NATIVE_LOCKS_REJECTED_#{phase}"

@@ -1,6 +1,6 @@
 # 项目进度（生成文件）
 
-权威：.agent/control.json；schema v2；revision 1306；2026-11-25T13:19:15.573Z
+权威：.agent/control.json；schema v2；revision 1307；2026-11-25T13:19:49.889Z
 
 阶段：M5；当前：M5-tailscale；分支：agent/m-1-bootstrap
 
@@ -22,6 +22,6 @@
 
 CI：44783585115/1 completed/cancelled @ 58ec99506e00a35121866580ffb28d09d5078b17；44864063976/1 completed/failure @ d46d6a5f84ad569f42a727fe29b0e2ed7b6f4afd；44868846710/1 completed/failure @ 86822196c84ee01baf5b8dec41256abdfd04ddeb；44872870220/1 completed/failure @ 0148a3fc0058e6db17a803e1946c2a88a3aab85a；44874304419/1 completed/failure @ 2b16a1ae71f67d953fd7f1956b163843d9a4385f；44877767639/1 completed/failure @ 86cadda377fc1fdf3c483478b03215a3d6b96c32；44891582412/1 completed/failure @ a3420973d4dff86b7def48c26eddad0c0501692b；44894722354/1 completed/failure @ b6d52004cd4fb95f9a96c1cc39ed83570d0ed322；44901616612/1 completed/failure @ 9503ae3932fa707e00f509a8bb6d884745283feb；44906133898/1 completed/failure @ 0e62f613cc69d41d6064c26a251e355c2a299efd；44911181329/1 completed/cancelled @ 0b3745e4d71da50bbbf1bcf9b58bccdf450c54ce；45403679142/1 completed/success @ 7df0cad92379bfad14f65a83a52a38d88e79aa79；45413372694/1 completed/success @ f9043a88a26f6ba268eaa73b0bf1a9bd7b348a4c；45463943882/1 completed/success @ cbaba6871587a6bce9902088c5fc2bbcf67c80fa；45473673853/4 completed/success @ 778b67eaf7f6cd87b6f6602e605ae979c533639d；45531958974/2 completed/success @ 1e85410de3d3ae443e0954e09c426ebe66e11ae5；45558360431/2 completed/success @ 51bc1b63914a7e9023a0276ed9e6e540d17768c5；45596517960/1 completed/success @ ee0778534e9d864de691ccb65fd6aa43cc5da219
 
-下一步：M5: round-4 b034b60a + NI-01 reverify e858c4c9 回包→independent-review/security 证据链→CI 45611695800 全绿→ci/ipa/ui 证据→validate→transitions
+下一步：M5: round-5 b3add3f4 + NI-01 reverify e858c4c9 回包→independent 证据链→CI 45611695800 rerun 全绿→ci/ipa/ui 证据→validate→transitions
 
 证据必须由 agent-validate 解析实际结果、核对提交/源码摘要与依赖后才有效。

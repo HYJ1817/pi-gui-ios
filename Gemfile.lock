@@ -133,6 +133,12 @@ DEPENDENCIES
   bundler (= 2.6.9)
   cocoapods (= 1.16.2)
 
+RUBY VERSION
+   ruby 3.3.8p144
+
+BUNDLED WITH
+   2.6.9
+
 CHECKSUMS
   CFPropertyList (3.0.8) sha256=2c99d0d980536d3d7ab252f7bd59ac8be50fbdd1ff487c98c949bb66bb114261
   activesupport (7.2.4) sha256=b97027b31e111675dba67b86edcd589acc25a0dddf8eecacca18d33a703a0788
@@ -190,9 +196,3 @@ CHECKSUMS
   typhoeus (1.8.0) sha256=c196d607908bc3350a191af673c24cf3ce6052c5ab0f6d485e55b3b36a28b421
   tzinfo (2.0.6) sha256=8daf828cc77bcf7d63b0e3bdb6caa47e2272dcfaf4fbfe46f8c3a9df087a829b
   xcodeproj (1.28.1) sha256=6f12670f00739d9817ca27ac89d6ef01cc86050e22a0bc08a3131487e5b5cddc
-
-RUBY VERSION
-   ruby 3.3.8p144
-
-BUNDLED WITH
-   2.6.9
