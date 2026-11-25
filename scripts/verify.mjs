@@ -12,8 +12,12 @@ const commands = {
   // M1-remote integration: runs the desktop worktree's canonical remote/v1
   // suites (contract 33 + gateway e2e 11) pinned to authority desktop.commit.
   integration: { program: process.execPath, args: ['scripts/desktop-remote-verify.mjs'], label: 'node scripts/desktop-remote-verify.mjs' },
+  // M4-sync: the adversarial transport/clock/multi-device suite — reorder,
+  // duplicate, drop, forged, reconnect, slow-client, revoke, restart,
+  // dual-device plus chunk/watermark/epoch invariants.
+  'fault-injection': { program: process.execPath, args: ['--test', 'tests/m4-fault-injection.test.mjs'], label: 'node --test tests/m4-fault-injection.test.mjs' },
 };
-const command = commands[kind]; if (!command) throw new Error('Use unit, typecheck, bundle, doctor, protocol-contract, integration');
+const command = commands[kind]; if (!command) throw new Error('Use unit, typecheck, bundle, doctor, protocol-contract, integration, fault-injection');
 const startedAt = new Date().toISOString(), fingerprint = sourceFingerprint(), commit = snapshot().commit;
 const targetTaskId = process.argv[3] || loadControl().data.currentTask;
 const task = loadControl().data.tasks.find(t => t.id === targetTaskId);

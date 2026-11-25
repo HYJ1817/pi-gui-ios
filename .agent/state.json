@@ -1,35 +1,27 @@
 {
   "schemaVersion": 2,
   "kind": "state",
-  "revision": 934,
-  "updatedAt": "2026-11-25T03:58:34.385Z",
+  "revision": 935,
+  "updatedAt": "2026-11-25T04:53:43.727Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "212282453d609a17e9b8c69f86ee97e87483001283fcccc2ee6c9df964d8574d",
+    "parentDigest": "10b799ef3c6f22babcff7a85a80c140e8253bc7f0e5e90bb1b1a3b23c0ebe406",
     "phase": "M4",
     "currentTask": "M4-sync",
     "branch": "agent/m-1-bootstrap",
     "checkpoint": {
-      "id": "v2-2026-11-25T03-58-34-385Z-b96735f3-154f-443d-8808-d1908062e40e",
-      "path": ".agent/checkpoints/v2-2026-11-25T03-58-34-385Z-b96735f3-154f-443d-8808-d1908062e40e.json",
-      "sha256": "698b033f715ae725a26ec08c5c0b7757d1e7ccf61f9623394a002cc76070c830",
-      "authorityDigest": "b7d2777aba76f761977ac62a28e8823c5a85a2daa67c27d1b654e0d592e91e53",
-      "at": "2026-11-25T03:58:34.385Z",
+      "id": "v2-2026-11-25T04-53-43-727Z-0058885d-f46b-4b13-98ea-365857368f9f",
+      "path": ".agent/checkpoints/v2-2026-11-25T04-53-43-727Z-0058885d-f46b-4b13-98ea-365857368f9f.json",
+      "sha256": "d68eff3aeffb90bc932e054d02f5f5efedb14c034763acfff0ae0a6509d7fbf5",
+      "authorityDigest": "212282453d609a17e9b8c69f86ee97e87483001283fcccc2ee6c9df964d8574d",
+      "at": "2026-11-25T04:53:43.727Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "406ce6152c28a38bdc7767a59ba013f28b650942",
-        "dirty": [
-          "M .agent/HANDOFF.md",
-          " D .agent/checkpoints/v2-2026-11-24T21-47-39-010Z-914cc07c-4302-4d6b-a190-febb136a7959.json",
-          " M .agent/control.json",
-          " M .agent/state.json",
-          " M .agent/tasks.json",
-          " M PROGRESS.md",
-          "?? .agent/checkpoints/v2-2026-11-25T03-58-33-169Z-719c40e8-685a-4fed-84d7-9766fb1ee28b.json"
-        ]
+        "commit": "55567424f267d7d678d146f6fc2c7c5e5a30a607",
+        "dirty": []
       },
-      "sourceFingerprint": "c9c1fa88782b691ac4c53c6545bfba8839bec5730f31e1d9eb52b76242033325",
-      "note": "M4-sync in_progress: dependency chain M-1/M0/M1/M2/M3 all completed with valid evidence"
+      "sourceFingerprint": "b3eba6d8dbc78b3a43c5cddf40b626ac12f2c68251ccabbe13dd0bfd8210a3b5",
+      "note": "M4 core implementation complete: 357/357 tests green incl 13 fault-injection; ADR-0010 proposed"
     },
     "blockers": [],
     "ci": [
@@ -574,6 +566,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "d652cd86f760c528d50db8a465d2f3e3d03bedd65de1ed952fbfd1d9f61e5332"
+    "digest": "0ef57f31debde9ad0ce6ae78323956c56ec6f43c57d51e251080d459f9b7c225"
   }
 }
