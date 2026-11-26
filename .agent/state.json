@@ -1,11 +1,11 @@
 {
   "schemaVersion": 2,
   "kind": "state",
-  "revision": 2229,
-  "updatedAt": "2026-11-26T16:01:01.272Z",
+  "revision": 2230,
+  "updatedAt": "2026-11-26T16:09:43.991Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "94f5c3ff1b1858c6d314e287735f8f0341fd46030b75994f985390c919f0f4fb",
+    "parentDigest": "acc1a8ce366e6de436fb9cedcb2ab01460ca27f745b8e4770f1fa18f46c5d1dd",
     "phase": "M4",
     "currentTask": "M4-sync",
     "branch": "agent/m-1-bootstrap",
@@ -1083,19 +1083,19 @@
       {
         "taskId": "node:delegated-task:command%3Amcp%3Acd5f8275-b346-4980-941e-ddfe9f4ea675%3Adelegate-task%3A5bb7109e-a427-4df2-9931-6357d831a97f",
         "role": "independent-handoff",
-        "status": "working",
+        "status": "failed",
         "sourceCommit": "5e38181faf169b96ad48b8638b3c06d3a95d8e98"
       },
       {
         "taskId": "node:delegated-task:command%3Amcp%3Acd5f8275-b346-4980-941e-ddfe9f4ea675%3Adelegate-task%3Ae36f01ce-1776-43ae-9c90-43c588d4f8d9",
         "role": "independent-handoff",
-        "status": "working",
+        "status": "completed",
         "sourceCommit": "5e38181faf169b96ad48b8638b3c06d3a95d8e98"
       }
     ]
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "69de6389297eb21b420490a00a632cdfb12c4a6aaf33b007f57a1fbb4ad4d9da"
+    "digest": "39c33aa73e872da63d974456737f6ceee179d8d582160c227283e979ad075d30"
   }
 }
