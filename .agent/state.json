@@ -1,31 +1,30 @@
 {
   "schemaVersion": 2,
   "kind": "state",
-  "revision": 2173,
-  "updatedAt": "2026-11-26T14:06:50.526Z",
+  "revision": 2185,
+  "updatedAt": "2026-11-26T14:32:35.895Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "04b259ca4021b016b00eabef5a8d060735b56847c7b64dde8ef2fb3e0c20e703",
+    "parentDigest": "dc178a4f77fffb4664a74f71945922bb57416fa34c6cac043da7bb4c9d925d2e",
     "phase": "M4",
     "currentTask": "M4-sync",
     "branch": "agent/m-1-bootstrap",
     "checkpoint": {
-      "id": "v2-2026-11-26T14-06-13-126Z-bb992024-7585-4007-940a-05d8de751767",
-      "path": ".agent/checkpoints/v2-2026-11-26T14-06-13-126Z-bb992024-7585-4007-940a-05d8de751767.json",
-      "sha256": "84a10f4fcff5bfc1ff4c8ee52b21df5ddb17f071e7b331d95766e258a24f84ac",
-      "authorityDigest": "a96a792c6a274b37b357c066fbcd665c86eb9c20eac1334bb1932dfe9f1a5a28",
-      "at": "2026-11-26T14:06:13.126Z",
+      "id": "v2-2026-11-26T14-31-48-492Z-0c89ab09-473d-47ef-bdee-b562710ddf72",
+      "path": ".agent/checkpoints/v2-2026-11-26T14-31-48-492Z-0c89ab09-473d-47ef-bdee-b562710ddf72.json",
+      "sha256": "3f0a8c0858237003a95df3ee838decc186dc2ecf06c6a9124b66b5cc8edc31b0",
+      "authorityDigest": "8994aa52fc546c9fe8e1a6a1c86b92b5bb2dfae9680e50d4cde721650609e12a",
+      "at": "2026-11-26T14:31:48.492Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "500b290e39ea5fc48ded2e3678a37cf6d8dce515",
+        "commit": "4eaca729b612eea28c68fa95a03734b6cd42918f",
         "dirty": [
           "M .agent/HANDOFF.md",
-          " D .agent/checkpoints/v2-2026-11-26T11-17-18-820Z-651cfe5c-6ac3-41ff-a8dc-81d1141baf8f.json",
-          " D .agent/checkpoints/v2-2026-11-26T11-17-20-325Z-7380ee13-19e6-43ed-8780-2448cc6127d7.json",
-          " D .agent/checkpoints/v2-2026-11-26T11-17-21-833Z-3abad1c4-4f7b-4ef7-b6d7-586b05b278e7.json",
-          " D .agent/checkpoints/v2-2026-11-26T11-17-23-317Z-919ab935-09d3-4602-93d9-9cb3b36e0062.json",
-          " D .agent/checkpoints/v2-2026-11-26T11-17-24-903Z-b0145581-d763-4923-b058-e2f4bbc8993e.json",
-          " D .agent/checkpoints/v2-2026-11-26T11-18-28-225Z-3f502cf9-4a0f-46e6-b078-30ffe8549c13.json",
+          " D .agent/checkpoints/v2-2026-11-26T12-25-02-452Z-85d59092-03d1-4201-9b3e-07830095ecb9.json",
+          " D .agent/checkpoints/v2-2026-11-26T12-25-07-529Z-f45a2b3b-a79d-4ed8-98d2-7019eb4bab6e.json",
+          " D .agent/checkpoints/v2-2026-11-26T12-25-08-749Z-8113d95e-9bc7-4fef-9ac8-d9694dbacaf6.json",
+          " D .agent/checkpoints/v2-2026-11-26T12-26-01-958Z-80af74e0-5511-464d-b55c-70e301fcbc4c.json",
+          " D .agent/checkpoints/v2-2026-11-26T13-36-15-288Z-0157908c-4ddb-43fa-83d2-e30dddbc68cd.json",
           " M .agent/control.json",
           " M .agent/state.json",
           " M .agent/tasks.json",
@@ -35,16 +34,15 @@
           " M docs/acceptance/clones/local-integration-M4-sync.json",
           " M docs/acceptance/clones/local-integration-M5-tailscale.json",
           " M docs/acceptance/local-integration.json",
-          "?? .agent/checkpoints/v2-2026-11-26T13-53-37-438Z-08454175-5270-4b38-949f-90c25dbbc4b5.json",
-          "?? .agent/checkpoints/v2-2026-11-26T14-06-05-023Z-3b725a7d-39cd-41fb-8f5d-2baa332ef586.json",
-          "?? .agent/checkpoints/v2-2026-11-26T14-06-06-810Z-db73e39b-2386-4ca5-84db-5ffdc2eda3fa.json",
-          "?? .agent/checkpoints/v2-2026-11-26T14-06-08-329Z-184f3899-4a07-4264-8e77-da98dfe1538a.json",
-          "?? .agent/checkpoints/v2-2026-11-26T14-06-09-909Z-3340e895-698a-4e9a-ad13-1d05c7be2de3.json",
-          "?? .agent/checkpoints/v2-2026-11-26T14-06-11-569Z-8162890e-1fd5-4175-9faf-86c6b3aaae64.json",
-          "?? .agent/evidence/5bce3ea3aabfde47f8d4055faabf567664ac36034f4c2135fe7125c845d71cbd.json",
-          "?? .agent/evidence/d075349bcffa7dc594b3cee26ef243f8dae0b58f9f1c33ed0de2c8889e01aeee.json",
-          "?? .agent/evidence/da0af9eac700467fb26bf1b5e264962087c19983df084111923d714f7fdb1ea7.json",
-          "?? .agent/evidence/df5650b0c8db2eef04bbb90fb4c1d91ca31a357944931b89d107b0dd72e96a0a.json"
+          "?? .agent/checkpoints/v2-2026-11-26T14-06-55-334Z-4f04aa0e-d321-4ffb-89c2-f9b1619de15d.json",
+          "?? .agent/checkpoints/v2-2026-11-26T14-31-41-277Z-b67aa1e1-9981-4f7d-86e0-723b66296957.json",
+          "?? .agent/checkpoints/v2-2026-11-26T14-31-43-181Z-2f54b9e7-4830-4f76-a0db-1004bf92f5c8.json",
+          "?? .agent/checkpoints/v2-2026-11-26T14-31-44-800Z-ddf02837-63f0-4996-b41e-541d0e129651.json",
+          "?? .agent/checkpoints/v2-2026-11-26T14-31-46-582Z-901ff41b-2160-4758-9815-99fbe0832606.json",
+          "?? .agent/evidence/17fba348f9b931673c23a07b3dd73c87f853e1a9f6a2ec942e3b0b7e8f17ec92.json",
+          "?? .agent/evidence/ca5aaa9c200daf2ee07eb2ac77b390e51d46f6a3bb2df12f4fc29d4780dc6c69.json",
+          "?? .agent/evidence/e0f6e0e4cd7b001e1f85578d2a84121f0a0656e99e6a94fb74206f5e218ce570.json",
+          "?? .agent/evidence/fafb498d59cfd48d58cdc89248e87310ae34233e58c32beba220c86c99cc588d.json"
         ]
       },
       "sourceFingerprint": "61cd6469c47ecfd6c8b057d2d1e7105bd9dc3f937d5de97d6da58ae08dffa222",
@@ -254,7 +252,7 @@
     "desktop": {
       "repo": "HYJ1817/pi-gui",
       "branch": "feat/mobile-remote-protocol-v1",
-      "commit": "39de96eec81a2bfe09c7effadbeebd1158e04d60",
+      "commit": "fd7b606640fed2605bd4507d191c6e7c995d8107",
       "protocolVersion": 1
     },
     "protocolVersion": 1,
@@ -1080,11 +1078,17 @@
         "role": "independent-security",
         "status": "working",
         "sourceCommit": "5e38181faf169b96ad48b8638b3c06d3a95d8e98"
+      },
+      {
+        "taskId": "node:delegated-task:command%3Amcp%3Acd5f8275-b346-4980-941e-ddfe9f4ea675%3Adelegate-task%3Ab59334b1-1dc4-49bd-a8d1-831dac04e67d",
+        "role": "independent-security",
+        "status": "working",
+        "sourceCommit": "5e38181faf169b96ad48b8638b3c06d3a95d8e98"
       }
     ]
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "efa168f540b1d2d7c05b77a84c07ad8f99470aad3c833a7f38891b9555932052"
+    "digest": "28f10a47805958e12d59908379eb2298cdb4b800b3af9f80044d1cd00716b765"
   }
 }
