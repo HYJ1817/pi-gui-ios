@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 2,
+  "kind": "independent-review",
+  "taskId": "M5-tailscale",
+  "commit": "c1b41d8a0f331fd8907b6788c94da121152bfdff",
+  "sourceFingerprint": "3ce7ede25eebe836f0a1d3820edd7a87c6e624bfc0cac942241f2d47b7766fe5",
+  "scopes": [
+    "app",
+    "control",
+    "native-build",
+    "protocol",
+    "shared",
+    "tests"
+  ],
+  "scopeFingerprint": "91c7e7e2fe026d84ada63a076e44f21506d9a1b938817f44601039acefc709ad",
+  "startedAt": "2026-11-26T18:34:53.572Z",
+  "finishedAt": "2026-11-26T18:34:53.572Z",
+  "passed": true,
+  "details": {
+    "receiptPath": ".agent/evidence/3de75651600a78617081bf8ffc9b0dbe444db5ee3a406d475f66f2bd178a2598.json",
+    "receiptSha256": "3de75651600a78617081bf8ffc9b0dbe444db5ee3a406d475f66f2bd178a2598",
+    "sameRunEvidence": {
+      "receiptPath": ".agent/evidence/3de75651600a78617081bf8ffc9b0dbe444db5ee3a406d475f66f2bd178a2598.json",
+      "receiptSha256": "3de75651600a78617081bf8ffc9b0dbe444db5ee3a406d475f66f2bd178a2598"
+    },
+    "note": "Task/kind binding created at the stated startedAt/finishedAt; these are binding creation timestamps, NOT review execution times. The unmodified actual completed service receipt supplies the original reviewed commit, fingerprint, commands, scope and limitations. This shares one real independent-review result; no review was rerun. Target scopes follow the existing task policy. Validation of this binding does not imply dependency/full-task acceptance."
+  }
+}

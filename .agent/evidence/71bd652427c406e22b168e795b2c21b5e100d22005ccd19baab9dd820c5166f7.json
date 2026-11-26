@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 2,
+  "kind": "integration",
+  "taskId": "M1-remote",
+  "commit": "c1b41d8a0f331fd8907b6788c94da121152bfdff",
+  "sourceFingerprint": "3ce7ede25eebe836f0a1d3820edd7a87c6e624bfc0cac942241f2d47b7766fe5",
+  "scopes": [
+    "control",
+    "protocol",
+    "shared"
+  ],
+  "scopeFingerprint": "3285c0a91b3a1fe03ff1cf748f84e6c58c0e686709c4524a9e2af70ef2809404",
+  "startedAt": "2026-11-26T17:59:43.807Z",
+  "finishedAt": "2026-11-26T18:02:20.268Z",
+  "passed": true,
+  "details": {
+    "command": "node scripts/desktop-remote-verify.mjs",
+    "exitCode": 0,
+    "logPath": "docs/acceptance/logs/8b703715da626e18d3dbb93ae424d02fff69e331423c077892083a054734fd1c.log",
+    "logSha256": "8b703715da626e18d3dbb93ae424d02fff69e331423c077892083a054734fd1c",
+    "sameRunEvidence": {
+      "path": ".agent/evidence/45370ed132c6028733ab38a97e15047404861329b9a72095e630f01bd2ec49ba.json",
+      "sha256": "45370ed132c6028733ab38a97e15047404861329b9a72095e630f01bd2ec49ba"
+    },
+    "note": "Task/kind binding to the single original integration artifact; no command was rerun. Original commit, global fingerprint, command, log, interval and result are unchanged. Scope fields describe this target kind under the existing resolveScopes policy; they do not narrow task policy or imply dependency/full-task acceptance."
+  }
+}

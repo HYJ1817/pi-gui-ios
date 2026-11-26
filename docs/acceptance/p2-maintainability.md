@@ -1,6 +1,8 @@
 # P2 工程整理
 
-本轮仅工程结构、控制层及证据持久化整理；不启动 P3，不修改桌面仓库，不合并默认分支或发布。最终结果在此单一报告追加，避免复制审计手册。
+本轮仅工程结构、控制层及证据持久化整理；不启动 P3，不修改桌面仓库，不合并默认分支或发布。最终结果集中于本报告。
+
+**最终结论：DRAFT / HOLD merge。** 继承的 Expo 版本校验阻塞尚未解决：Doctor 19/20；实际 CI `45874631555/attempt 1` 在 `02185c9` 失败，产物为零。P2 的工程整理、共享结果绑定与独立审查已交付，不代表软件里程碑验收或原生/IPA/真机通过。最终控制层明确 STOP，由父协调者独立读回、推送并创建 blocked draft PR。下文前半部分保留实施历史，最终测量与门禁见末节。
 
 ## 受保护基线
 
@@ -8,7 +10,7 @@
 - 源码完整 CI：`5e38181faf169b96ad48b8638b3c06d3a95d8e98`，https://github.com/HYJ1817/pi-gui-ios/actions/runs/45819300792 ，已核实 success；桌面只读基线 `60d243a24b3ced198bd2e9ccaeb1e66f6129ba7e`。
 - 权威 revision 2286、623 条证据、9 个任务。已验收软件的历史结论属于旧源码；P2 源码变动须正常失效，不能把历史 PASS 视为 P2 PASS。M5 device-network 与 M-1-device 设备验收仍待用户。
 - 跟踪文件（基线工作区原始字节口径）：813 个，55,632,883 bytes。检查点 50 个，25,102,243 bytes；docs/acceptance 416 个，19,172,386 bytes；.agent/evidence 180 个，192,263 bytes。control.json 462,341 bytes，tasks.json 409,548 bytes。最终同时复核 Git blob 口径，避免换行影响误判。
-- 当前权威检查点：`.agent/checkpoints/v2-2026-11-26T17-05-17-988Z-9fd20840-1eec-4a38-a0dc-1a207d9dff4e.json`，SHA256 `b65ea451ae333773f9d2ffe78458f1b30b024dd9c48ee9955d8bbf8b67065ac1`，authorityDigest `9898a0aa8e8ecefa7bf6c5722220318ccbd54d03f1dbe9c8349f9e40b0b47d93`。恢复命令已实际执行且 exit 0，其冗长输出保存在本机会话临时产物，不公开本机路径日志。
+- 基线权威检查点：`.agent/checkpoints/v2-2026-11-26T17-05-17-988Z-9fd20840-1eec-4a38-a0dc-1a207d9dff4e.json`，SHA256 `b65ea451ae333773f9d2ffe78458f1b30b024dd9c48ee9955d8bbf8b67065ac1`，authorityDigest `9898a0aa8e8ecefa7bf6c5722220318ccbd54d03f1dbe9c8349f9e40b0b47d93`。恢复命令已实际执行且 exit 0，其冗长输出保存在本机会话临时产物，不公开本机路径日志。
 - P1 对较早 `4ad785a` 的日志调查不能直接代表最新 5e38181 的日志完整性；本轮重新逐层核查。旧日志、报告与收据不改内容/时间戳/摘要/结论，不公开本机路径或用户数据。
 
 ## 分工与门禁
@@ -25,13 +27,13 @@
 
 不为每次证据导入/代理状态写完整快照，不通过缩小实际依赖范围保住旧证据。连续两次同类修复失败先定位根因。非阻断 nit 不重启全项目验收循环。
 
-### 当前分派（恢复入口）
+### 初始分派（历史，均已终态）
 
 - control delegate：`node:delegated-task:command%3Amcp%3Ae2b2c73f-cc7a-4ea8-aef7-1beb329e3ba1%3Adelegate-task%3A6116e3f9-da00-4535-941c-beda940684bd`。
 - runtime delegate：`node:delegated-task:command%3Amcp%3Ae2b2c73f-cc7a-4ea8-aef7-1beb329e3ba1%3Adelegate-task%3A8b12efaf-ebd3-4db9-83cc-7a164b570b63`。
 - infrastructure audit delegate：`node:delegated-task:command%3Amcp%3Ae2b2c73f-cc7a-4ea8-aef7-1beb329e3ba1%3Adelegate-task%3Abf87ccb8-660b-4373-9c38-fada8a216760`。
 - docs delegate：`node:delegated-task:command%3Amcp%3Ae2b2c73f-cc7a-4ea8-aef7-1beb329e3ba1%3Adelegate-task%3A6a3e1588-ad53-41da-8e10-2542c5921c7f`；仅改指定七份开发文档，控制层新命令待集成时对齐。
-- 服务端完成通知后读取结果，不轮询。下一步：检查各组件提交边界，集成后安排独立审查；集中验收再 push/PR。分支使用 refactor/ 前缀，避免 push 与 PR 创建分别触发全套 Native CI；最终 PR 仍执行原五 Job。
+- 当时按服务端完成通知读取结果，随后核对组件提交边界、集成、集中验证及独立审查。分支采用 refactor/ 前缀。实际五 Job CI 的失败与最终停止边界在末节记录；此历史分派不是继续执行指令。
 - 协调基线提交 `a1a1218`；主工作区仍在 `agent/m-1-bootstrap@e130b69` 且未改动。当前尚无 P2 测试或 CI 通过结论。
 - 三条旧 working 记录真实状态已逐一读取：9081f59c failed；b59334b1 completed、审查结论 FAIL；a5cb4a18 completed、审查结论 FAIL。后两次审查使用旧桌面 commit，历史结论不变，不伪装 PASS。随后 round-10 的结果另有独立记录。
 
@@ -73,4 +75,76 @@ Doctor 实际 19/20，版本建议检查失败：expo 58.0.26→期望 ~58.1.0�
 
 安全审查 PASS、无 Blocker/Important/Nit：receipt `.agent/evidence/9c5a1d140d4539f3113805166c5c2118a9cb05e6221b67fa2ee19760cdd70731.json`；99 项定向测试及 10 项独立对抗用例通过，确认静态安全路径/atomicWrite 防线与基线字节相同，归档 PASS/显式 FAIL/未暂存日志不能满足当前门禁；协议负向及变异校验通过。已知同 OS 用户并发目录替换只能检测而非完全防止，日志筛查仍需人工审查，均不扩张既有保证。
 
-下一步仅处理已登记版本诊断、一次实际五 Job CI、最终新克隆恢复/证据校验及 PR。失效门禁保持失效，设备始终待用户，P2 结束后停止，不自动启动 P3。
+## 最终交付、阻塞与证据边界
+
+### 精确源码与共享绑定
+
+测试/功能/安全原始对象仍绑定 `c1b41d8a0f331fd8907b6788c94da121152bfdff` / global `3ce7ede25eebe836f0a1d3820edd7a87c6e624bfc0cac942241f2d47b7766fe5`。`02185c937bf3bb8a83ade0ed17d59a971ae16cb9` 仅增加 docs/testing.md 两行精确暂存指引；当前 global 为 `628d6b092d8ea9a73e4d5d2c9b6c291c52e83f5aaf777b19dc893a1b8d3800d9`。最终元数据改动相对 02185c9 只在授权目录，45 个 task/kind 的 8 组实际作用域以及 global 与提交源码逐项相同；未改任何 scope 声明或策略。
+
+只新增必要的 29 份小型 wrapper，加上直接使用的 4 份原始 M5 报告，共 33 个当前有效绑定。所有 wrapper 在登记前用 immutableWrite 持久化并暂存确切字节，再经 validateSchema / validateReport，随后一次 mutate 登记。18 个命令绑定共享四份原报告/日志；其中 protocol-contract 42 项与 M4 fault-injection 确为该次完整 `npm test` 的子集，保留真实 command=`npm test`、原始执行时间/commit/global/log，不虚构单独命令。15 个独立绑定共享功能、安全、当前交接三份实际 completed/pass 收据。wrapper 中的 sameRunEvidence/note 说明任务子集与限制；独立 wrapper 的 startedAt/finishedAt 明确只是本次绑定创建时间，不是审查执行时间。没有重复原始日志、重复业务测试或重复审查。
+
+| 真实原始对象 | 内容寻址 SHA256（.agent/evidence/*.json） | 结果/用途 |
+| --- | --- | --- |
+| unit | `05fcd7c6423a9779b0732001c6874eca63ffa64c42bd6dfaa7671d2442811c3c` | npm test 一次，441/441 + stack；共享 unit / protocol-contract / fault-injection |
+| typecheck | `81028456d9a2f5c5fe7f47acdb918ea62e6b85a09a9fdce502c6e94585341b14` | npm run typecheck exit 0 |
+| bundle | `64372ce4f9dc82c2243bb7026837e4050b3c188be195fb440c5addd336b60e82` | npm run export:ios exit 0，1669 modules |
+| integration | `45370ed132c6028733ab38a97e15047404861329b9a72095e630f01bd2ec49ba` | node scripts/desktop-remote-verify.mjs exit 0；桌面合同 33、网关 67 |
+| independent-review | `3de75651600a78617081bf8ffc9b0dbe444db5ee3a406d475f66f2bd178a2598` | c1 功能 PASS，0 Blocker/Important；其旧 all-scope handoff 不重用 |
+| independent-security | `9c5a1d140d4539f3113805166c5c2118a9cb05e6221b67fa2ee19760cdd70731` | c1 安全 PASS，0 Blocker/Important/Nit |
+| independent-handoff | `a7a67111c56eb8e64dfac6d976ebfdb83f9d57989e965f02fcbac011a3621ffe` | 02185c9 的新 GitHub clone PASS；恢复 M-1-infrastructure |
+
+当前 handoff 实际从已发布 GitHub 分支无 hardlink/alternate 克隆，核对 commit/global 与公开 JSON/日志字节，完成损坏权威、dirty 保留、显式恢复、resume 和 check:stack，并用独立 fixture 验证未暂存日志/JSON 的拒绝及精确暂存后的通过。只使用此新收据绑定 all-scope；不把 c1 的旧 handoff 改指纹冒充当前结果。这个收据验证的是 02185c9 的已发布字节及恢复流程，最终 metadata commit 的远端字节仍须父协调者在推送后独立核验。最终整合写入者未登记自己为 completed，也不充当独立验收来源。
+
+### 继承失败与未验证范围
+
+Doctor 原报告 `c57104783647198ae7e347b407983c275cd4ddc486019cf66bb348588b0482d3` 仍 passed=false、exit 1，原始私有输出 withheld，未导入任何 PASS。只读诊断收据 `cb926552d75cf364a1973c8e38c2ee658f34c407209c8798036b6f1c5b76b81a` 确认原基线与候选的 package/lock/config/workflows 相同，当前对两者均报相同版本差异。诊断记录的公开元数据显示 expo 58.1.0 与 glass 58.0.6 于 2026-11-26 发布；这解释当前推荐变化，不能倒推旧 CI 当时返回的服务端值。依赖保持 expo 58.0.26 / expo-glass-effect 58.0.5；未升级、扩忽略名单或绕过检查。
+
+实际唯一 P2 Native CI：[45874631555/attempt 1](https://github.com/HYJ1817/pi-gui-ios/actions/runs/45874631555)，head=`02185c9`，2026-11-26T18:16:46Z 创建、18:19:03Z 终态 **failure**。checks 的 npm test/typecheck 成功，`npx expo install --check` 失败，bundle 跳过；native-build、sim-acceptance、ipa 均 skipped。evidence job 对零输入报 SYNTHETIC_EVIDENCE_REJECTED，未生成 artifact（API total_count=0）。未新增任何 passing CI/Doctor/UI/IPA 报告，未重用旧 IPA 为 P2 验收。最终证据元数据提交使用 `[skip ci]`，不再触发已知失败的原生验证。
+
+公开原始 API 收据保留为：run `a6833cdd2aa28166280f9e1648e917ddf4a356c7cee13b6f608e49ec9ed3b7f9`，jobs `626b8bbacb7fc7037cd26b05ec5e64251d4b01acc06e6d8e281c4875c1f88e91`，artifacts `244563f989470892c537c9a4622920af0d228ee4528f7d00c64a06d6cd95856c`。终态失败经既有 ci CLI 再向 GitHub API 核验后保留在 live authority，不能因整理终态记录而隐藏。旧成功 CI 仅为剩余旧 UI/IPA 诊断候选的历史 provenance，绝非 P2 成功。
+
+### 门禁、守恒与检查点
+
+| 任务 | 当前有效绑定 / requiredEvidence | 保持的状态 | 缺口 |
+| --- | --- | --- | --- |
+| M-1-infrastructure | 6 / 10 | testing | doctor、ci、ui、ipa |
+| M0-architecture | 4 / 4 | testing | 全局继承阻塞仍未解除 |
+| M1-remote | 4 / 4 | testing | 依赖与全局阻塞 |
+| M2-shell | 2 / 3 | testing | ui、依赖与全局阻塞 |
+| M3-core | 4 / 5 | testing | ui、依赖与全局阻塞 |
+| M4-sync | 4 / 4 | testing | 依赖与全局阻塞 |
+| M5-tailscale | 6 / 9 | in_progress | device-network、ci、ipa、依赖与全局阻塞 |
+| M6-distribution | 3 / 4 | testing | ipa、依赖与全局阻塞 |
+| M-1-device | 0 / 2 | pending | device-install、device-upgrade；仅最终用户操作 |
+
+33 个 positive report validation 通过不等于 task gate 通过。现有 gate API 对九个完整任务均返回未通过，含真实阻塞、未完成依赖与上述缺失/过期/失败证据；没有转换里程碑状态。
+
+显式 compactControl 将新增绑定前后 75 个 live candidates 整理为 **42** 个：**33 current-valid + 9 旧诊断候选无效**；历史归档 **614** 个，合计 **656 = 原始 623 + 新绑定 33**。原始 623 个记录按 task 与完整内容、含重复 multiplicity，全部守恒；原报告/收据/日志无一改写。原始 623 的持久化审计仍为精确报告 290、摘要不符 333；其嵌套引用为 tracked-exact 332、missing 38、withheld 6。加入 33 个共享绑定后，总计精确报告 323、摘要不符 333，嵌套 tracked-exact 365、missing 38、withheld 6；这些是引用次数，不是唯一文件数。精确字节不表示当前可用，历史 missing/withheld 也不等于新验收失败或材料已恢复；未将不可得字节补写成通过。
+
+两份摘要绑定历史归档均通过原 schema/摘要核验；新归档为 `b929c1b0b308841a15d0b2a1aad8d1a057445674b6cbbb1090123de46d55c619`。live CI=2（旧 success + 当前 failure）、历史 CI=22，共 24 条记录/23 个唯一 run-attempt；归档后显式恢复的当前 failure 同时保留终态归档副本，原始 22 条全部保留。live delegate=3（实际功能/安全/当前 handoff provenance）、历史 delegate=148，working=0；原始 delegate 身份及 multiplicity 与三项已审查终态修正均保留。
+
+本次最终整合只产生两个有意义的完整检查点：一次显式归档边界、一次最终 STOP 交接；33 次绑定没有逐条建快照。连同父协调者原有检查点，正常保留 **8/8 valid**；原始最终里程碑快照 `v2-2026-11-26T16-27-54-196Z-74ec05c2-cc59-45bb-804e-36f2f361d42f` 与基线 `v2-2026-11-26T17-05-17-988Z-9fd20840-1eec-4a38-a0dc-1a207d9dff4e` 均仍在正常八份内且字节不变。最终交接检查点为 `.agent/checkpoints/v2-2026-11-26T18-36-02-530Z-16574fc1-d842-4bda-83dc-bc5c92ac4559.json`，保存时 HEAD=02185c9；外层/内层摘要及引用历史均已核验。旧检查点只按保留规则从当前树删去，仍可由 Git 找回。
+
+## 最终测量与交付限制
+
+以下统一为 **Git blob / 最终暂存索引** 精确字节，包含本报告、所有小 wrapper 和原始公开收据；不混用 CRLF 工作区字节。报告暂存后重算至固定值，避免本报告自身尺寸造成漂移。旧报告与失败历史保留，因此原始证据目录没有靠删除历史来缩小。
+
+| 对象 | 原基线文件数 | 原基线 bytes | 最终文件数 | 最终 bytes |
+| --- | ---: | ---: | ---: | ---: |
+| 全部跟踪文件 | 813 | 55,632,688 | 840 | 32,244,518 |
+| .agent/checkpoints | 50 | 25,102,243 | 8 | 1,315,622 |
+| docs/acceptance（含日志与本报告） | 416 | 19,172,191 | 430 | 19,344,344 |
+| .agent/evidence | 180 | 192,263 | 229 | 1,259,101 |
+| docs/acceptance/logs（包含在 acceptance 内） | 17 | 140,250 | 30 | 286,597 |
+| .agent/control.json | 1 | 462,341 | 1 | 49,454 |
+| .agent/tasks.json | 1 | 409,548 | 1 | 8,385 |
+| .agent/state.json | 1 | 53,052 | 1 | 6,117 |
+| .agent/HANDOFF.md | 1 | 42,811 | 1 | 5,036 |
+| PROGRESS.md | 1 | 3,216 | 1 | 1,865 |
+| 本报告（基线不存在） | 0 | 0 | 1 | 24,978 |
+
+本次最后整合未重跑产品全测、typecheck、bundle、桌面或 CI；它只验证元数据 allowlist/global/scope、33 个绑定、九个完整 gate、623 条原始记录守恒、历史/检查点/投影与精确暂存字节，以及 git diff --check。首轮只读元数据核查遇到 60 秒工具时限，后续有界本地核查完成；该工具时限不是产品测试失败，也不抹去上述 Doctor/CI 失败。
+
+应用仍是 synthetic runtime，真实配对/会话/消息/live sync/生产接线属于 P3；安全、鉴权、撤销、审批、权限与数据完整性边界没有放宽。package/lock/workflows 与桌面均未改；SideStore 安装/刷新/升级/网络始终待用户最终一次操作。原生编译、Simulator 新图审、新 IPA、最终 metadata 的远端字节尚未在本次收口核验，保持 unverified。既有并发目录替换检测边界和日志需人工审查的限制保留。
+
+回滚按 Git 精确回退本分支 P2 提交或逐文件恢复所需旧 blob；最终 metadata commit 可单独 revert，源码可回看基线 `e130b69`。不 reset/clean/强推、不改历史不可变对象，不以回滚冒充新树验收。下一步仅父协调者读回最终提交、推送核对远端字节并开 **DRAFT / HOLD merge** PR；解决继承依赖版本阻塞须另行授权，P2 到此 STOP，无 P3、依赖升级、合并或发布。

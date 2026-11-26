@@ -1,19 +1,62 @@
 # Agent 交接（生成文件）
 
-revision 2296；权威摘要 42b8e608045e2608acdcd8846d942cf8fd73e54e6e782d03b09e5bd29734f7ed
+revision 2307；权威摘要 9cad49d9a78fb09ebbf27e3dca181e8d5ac7d269a9fe69ff613b72586a43bf11
 
 先读 AGENTS.md / REVIEW.md，执行 node scripts/agent-resume.mjs --remote。
 
 当前 M5-tailscale（M5），预期分支 refactor/p2-maintainability。
 
-下一步：P2 functional/security reviews passed; full tests 441/441, typecheck, iOS bundle and desktop integration passed. Doctor failed a version recommendation check and stays failed; collect registered baseline diagnosis and existing CI install-check impact. Only documentation staging nit is being corrected; do not upgrade or skip checks, do not start P3.
+下一步：STOP: P2 delivered for a blocked DRAFT/HOLD PR. Parent independently reads back the final metadata commit, pushes it, verifies published bytes and opens the draft PR. Inherited Doctor/CI blocker unresolved; native/IPA/device unverified. No P3, dependency changes, check bypass, merge, release or further CI.
 
-阻塞：无已记录阻塞
+阻塞：Inherited Expo dependency validation unresolved: Doctor 19/20 and CI 45874631555/attempt 1 failed; native build, Simulator, UI and new IPA unverified (zero artifacts). Dependency upgrades/check bypass are outside P2.
 
-检查点 .agent/checkpoints/v2-2026-11-26T17-53-10-586Z-d7600362-2170-4dd6-b468-e05e0abf0814.json；HEAD 94ac5c64a037eadd6db03616e647dfbbf9085476。dirty（保存时）：
-无
+检查点 .agent/checkpoints/v2-2026-11-26T18-36-02-530Z-16574fc1-d842-4bda-83dc-bc5c92ac4559.json；HEAD 02185c937bf3bb8a83ade0ed17d59a971ae16cb9。dirty（保存时）：
+- M .agent/HANDOFF.md
+-  D .agent/checkpoints/v2-2026-11-26T16-25-45-637Z-a44a032c-eed8-4f43-86db-e554e7127876.json
+-  D .agent/checkpoints/v2-2026-11-26T16-25-59-972Z-8902147d-49fa-4e69-bfbf-79fe31c43a81.json
+-  M .agent/control.json
+- A  .agent/evidence/09b2e3097760fabf6ede7df6419fdab420a4a8c7c709151e183a57e829d821c8.json
+- A  .agent/evidence/244563f989470892c537c9a4622920af0d228ee4528f7d00c64a06d6cd95856c.json
+- A  .agent/evidence/25d0366f66401d6734b334e6aa1eb190690e5b7a87867333d8df6e9cb0e68d07.json
+- A  .agent/evidence/27721052839332d8ff37139ca4fd3b52c2b61e6d735dbf9a6357e7659446c4f8.json
+- A  .agent/evidence/3637a4094ea6ac0476a36e0393ba5466503fd30547738b4e66a6b3aed131462e.json
+- A  .agent/evidence/3b25907ed0ae508dee9babe873e4b173d4d70e856a489655284129e664c0b53d.json
+- A  .agent/evidence/443305814cae96710b24a6bb5f7386d9cd70ac82f316f2733495bdd98bce1209.json
+- A  .agent/evidence/53a6090afa5e2bcc3a3ddaceabfa743648efa5a30c4e7a8bef734e59eb332810.json
+- A  .agent/evidence/5696d1703c41efb02f9e6c35ce08832440acb307725d82f49a646e957006a55b.json
+- A  .agent/evidence/5b2ef5629d30e905bd611651a4426173a56a07ca03f79496fcff0d48a4ca7431.json
+- A  .agent/evidence/626b8bbacb7fc7037cd26b05ec5e64251d4b01acc06e6d8e281c4875c1f88e91.json
+- A  .agent/evidence/62e0369036138bea4237b22361d83536192648376b759bd218859460f736029f.json
+- A  .agent/evidence/71bd652427c406e22b168e795b2c21b5e100d22005ccd19baab9dd820c5166f7.json
+- A  .agent/evidence/7da7d30e6053f8e9a52203b361da672f19250a1ca17735b9729d4470926372f7.json
+- A  .agent/evidence/7eb4fa747823f60cf184f545af469176a399f452b9d6cd5fa2c33772fa1b3d74.json
+- A  .agent/evidence/8ba2969a9bf4566e88a2a7ee411289fc3f0da65edf67dbfdb2ce96f67c1b2b0a.json
+- A  .agent/evidence/8cd9e82517807fecdc256034ad0a899bd12b9e39fdb9ea92bd2af3d90965d2d4.json
+- A  .agent/evidence/9299980207bb4471beb15ba0c1628c326dc9fd9dd61d9875a41d9a11c8d52454.json
+- A  .agent/evidence/93c070cdb58ebb8216d66d34132f4a253098881bdd69c536f84ea73bcc955c3b.json
+- A  .agent/evidence/96aacf2846c484d260471e5dd5f2504d9fadba414bbf5737c6b5ed2119731ab3.json
+- A  .agent/evidence/9770ed2065f408f996f69b8e914c6fc63657f5c3acc085b38a5330d108a51a57.json
+- A  .agent/evidence/9830b90cd1b5bf6a7e3043b3a7f6b1a756b82f377501fcfab5a0822c8bc004ad.json
+- A  .agent/evidence/9f5ceddfb69ab7b62282a1b07b4ae4425724b4147859ef3772ccc1f910c357f6.json
+- A  .agent/evidence/a6833cdd2aa28166280f9e1648e917ddf4a356c7cee13b6f608e49ec9ed3b7f9.json
+- A  .agent/evidence/a7a67111c56eb8e64dfac6d976ebfdb83f9d57989e965f02fcbac011a3621ffe.json
+- A  .agent/evidence/ab0773a8c9de0486b4a5668d75648671cb1343c315b9747d8324a4928b22bc30.json
+- A  .agent/evidence/ac5d4fcb041ce34706445688b5fab5a42caa9f3f6e108309705362f347f2d4ba.json
+- A  .agent/evidence/b9151d1dda8498a7bd969279a980e7c4e69b05a85794657bc4af119471403c39.json
+- A  .agent/evidence/b929c1b0b308841a15d0b2a1aad8d1a057445674b6cbbb1090123de46d55c619.json
+- A  .agent/evidence/ca4a7471be1c6514066f0ecab291335ab0754cc394b9aefdd71f2df3d0c7a6af.json
+- A  .agent/evidence/cb926552d75cf364a1973c8e38c2ee658f34c407209c8798036b6f1c5b76b81a.json
+- A  .agent/evidence/db2381805cbf865e38d9453d6a28b2524843104a29e30d06d05c5d5608bc74b5.json
+- A  .agent/evidence/eadd3ed555096c19f90893ff0ded25a14c767f916a3446ffa776fa5e96c2934e.json
+- A  .agent/evidence/eea3d6da4c76ae5b0f1fba90b3d2549d2117e65826bae7968ada86ea69408a9d.json
+- A  .agent/evidence/f86de8d6bd0928926b9cefeeff2551f25d20801902f6161c1467c59fdc407c9b.json
+-  M .agent/state.json
+-  M .agent/tasks.json
+-  M PROGRESS.md
+- ?? .agent/checkpoints/v2-2026-11-26T18-25-09-351Z-e04520e7-30a3-403a-848a-26712c1e86a8.json
+- ?? .agent/checkpoints/v2-2026-11-26T18-35-47-889Z-b1724027-985c-4e0d-bd81-d3f2b87d1ef4.json
 
-运行摘要：{"ci":1,"delegates":7,"activeCi":[],"workingDelegates":["node:delegated-task:command%3Amcp%3Ae2b2c73f-cc7a-4ea8-aef7-1beb329e3ba1%3Adelegate-task%3A3e3ec1a8-83ba-4ecd-afb1-bc83d3353a87"],"archives":1}
+运行摘要：{"ci":2,"delegates":3,"activeCi":[],"workingDelegates":[],"archives":2}
 
 历史仅由权威中的 history 摘要引用；投影不复制证据或终态任务。
 

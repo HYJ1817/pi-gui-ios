@@ -1,11 +1,11 @@
 {
   "schemaVersion": 2,
   "kind": "tasks",
-  "revision": 2296,
-  "updatedAt": "2026-11-26T18:14:10.410Z",
+  "revision": 2307,
+  "updatedAt": "2026-11-26T18:36:02.530Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "42b8e608045e2608acdcd8846d942cf8fd73e54e6e782d03b09e5bd29734f7ed",
+    "parentDigest": "9cad49d9a78fb09ebbf27e3dca181e8d5ac7d269a9fe69ff613b72586a43bf11",
     "tasks": [
       {
         "id": "M-1-infrastructure",
@@ -29,13 +29,13 @@
         "updatedAt": "2026-11-26T16:23:17.579Z",
         "evidenceCount": 10,
         "evidenceKinds": [
-          "unit",
-          "typecheck",
-          "bundle",
           "doctor",
           "ui",
           "ipa",
           "ci",
+          "unit",
+          "typecheck",
+          "bundle",
           "independent-review",
           "independent-security",
           "independent-handoff"
@@ -82,9 +82,9 @@
         "evidenceCount": 4,
         "evidenceKinds": [
           "unit",
-          "protocol-contract",
           "independent-review",
-          "independent-security"
+          "independent-security",
+          "protocol-contract"
         ]
       },
       {
@@ -114,8 +114,8 @@
         "evidenceCount": 4,
         "evidenceKinds": [
           "unit",
-          "independent-review",
           "integration",
+          "independent-review",
           "independent-security"
         ]
       },
@@ -144,8 +144,8 @@
         },
         "evidenceCount": 3,
         "evidenceKinds": [
-          "unit",
           "ui",
+          "unit",
           "independent-review"
         ]
       },
@@ -168,10 +168,10 @@
         "updatedAt": "2026-11-26T16:24:34.213Z",
         "evidenceCount": 5,
         "evidenceKinds": [
-          "unit",
           "ui",
-          "independent-review",
+          "unit",
           "integration",
+          "independent-review",
           "independent-security"
         ]
       },
@@ -194,9 +194,9 @@
         "evidenceCount": 4,
         "evidenceKinds": [
           "unit",
-          "independent-review",
+          "integration",
           "fault-injection",
-          "integration"
+          "independent-review"
         ]
       },
       {
@@ -222,14 +222,14 @@
         "updatedAt": "2026-11-25T07:17:37.479Z",
         "evidenceCount": 8,
         "evidenceKinds": [
-          "unit",
-          "typecheck",
-          "bundle",
           "ipa",
           "ci",
-          "independent-review",
           "integration",
-          "independent-security"
+          "independent-review",
+          "independent-security",
+          "unit",
+          "typecheck",
+          "bundle"
         ]
       },
       {
@@ -250,8 +250,8 @@
         "updatedAt": "2026-11-26T16:25:59.839Z",
         "evidenceCount": 4,
         "evidenceKinds": [
-          "unit",
           "ipa",
+          "unit",
           "independent-review",
           "independent-security"
         ]
@@ -260,6 +260,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "5dc1211816e6b0bccf95903fcfa7f16097dff23d4d2de29c9d73c2ce7a56de83"
+    "digest": "73fd5251a0a0dafdcdbf487e6755b6653110f4363efa8111d72ae2be270ea536"
   }
 }
