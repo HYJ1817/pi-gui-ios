@@ -1,0 +1,27 @@
+{
+  "commit": "efbfad7a7f9981f10244ab89277e39699f4cec7e",
+  "details": {
+    "canonicalPath": "docs/acceptance/local-unit.json",
+    "command": "npm test",
+    "exitCode": 0,
+    "logPath": "docs/acceptance/logs/b10e15f59eed8f429147aff1c328c4bdde4c2313a6898e57771a7d148596bd41.log",
+    "logSha256": "b10e15f59eed8f429147aff1c328c4bdde4c2313a6898e57771a7d148596bd41",
+    "sameRunEvidence": "sameRunEvidence: this task shares the canonical local run because the run itself covers the union of all task scopes in one execution; cloned verbatim with only taskId adjusted, never restamped"
+  },
+  "finishedAt": "2026-11-26T08:35:58.001Z",
+  "kind": "unit",
+  "passed": true,
+  "schemaVersion": 2,
+  "scopeFingerprint": "aa0524cc78aa999323c25ed8074256ec9928ab12ae8b4ec93ac6649a8d8031e9",
+  "scopes": [
+    "app",
+    "control",
+    "native-build",
+    "protocol",
+    "shared",
+    "tests"
+  ],
+  "sourceFingerprint": "02cf3a16c30bfef0657966bcba29af34d9908cc0a01a8d9e3f6da0df9be3af3a",
+  "startedAt": "2026-11-26T08:34:52.148Z",
+  "taskId": "M1-remote"
+}

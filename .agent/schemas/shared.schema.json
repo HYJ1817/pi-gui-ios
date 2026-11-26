@@ -208,7 +208,7 @@
         },
         "originalPath": {
           "type": "string",
-          "pattern": "^(docs/acceptance/|\\.agent/evidence/)[^\\]+\\.json$",
+          "pattern": "^(docs/acceptance/|\\.agent/evidence/)[^\\\\]+\\.json$",
           "description": "Provenance: where the imported bytes were read from. The authoritative path is the immutable content-addressed store copy."
         }
       },

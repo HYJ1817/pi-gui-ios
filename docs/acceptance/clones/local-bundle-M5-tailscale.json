@@ -1,0 +1,23 @@
+{
+  "commit": "efbfad7a7f9981f10244ab89277e39699f4cec7e",
+  "details": {
+    "canonicalPath": "docs/acceptance/local-bundle.json",
+    "command": "npm run export:ios",
+    "exitCode": 0,
+    "logPath": "docs/acceptance/logs/cf43be1663490798dffa2f4a1f62f1b213a310525ab09c21dd353093d5ba840f.log",
+    "logSha256": "cf43be1663490798dffa2f4a1f62f1b213a310525ab09c21dd353093d5ba840f",
+    "sameRunEvidence": "sameRunEvidence: this task shares the canonical local run because the run itself covers the union of all task scopes in one execution; cloned verbatim with only taskId adjusted, never restamped"
+  },
+  "finishedAt": "2026-11-26T08:35:01.689Z",
+  "kind": "bundle",
+  "passed": true,
+  "schemaVersion": 2,
+  "scopeFingerprint": "7fcbcb2f79ca04a7ce28ea69950c2b01f1e547373a84266cf838b0c191e2edde",
+  "scopes": [
+    "app",
+    "shared"
+  ],
+  "sourceFingerprint": "02cf3a16c30bfef0657966bcba29af34d9908cc0a01a8d9e3f6da0df9be3af3a",
+  "startedAt": "2026-11-26T08:34:52.159Z",
+  "taskId": "M5-tailscale"
+}
