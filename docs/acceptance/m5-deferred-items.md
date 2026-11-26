@@ -35,19 +35,31 @@ integration rig: bridge events → publish per conversation owner, fill
 and add a production-path integration test that drives a real runtime
 rather than injected harnesses.
 
-## D2. Contract copy drift risk (hygiene)
+## D2. Contract copy drift (P2 repair)
 
-**Facts.** `scripts/lib/remote-protocol-contract.mjs` is *not* byte-identical
-to the desktop `server/remote/protocol.mjs` — the mobile copy is a
-minified-build variant (no JSDoc header, different layout). The functional
-exports are aligned (both suites pass against each copy), but no mechanical
-gate currently compares the two. A silent divergence in either copy would
-split mobile/desktop validation.
+The earlier “aligned exports” conclusion was not a mechanical parity check.
+P2 found and restored two missing mobile guards from desktop
+`60d243a24b3ced198bd2e9ccaeb1e66f6129ba7e`: canonical device `serviceId`
+binding and rejection of ordinary events using reserved ID `stream-reset`.
+Negative/positive controls cover both; historical reports remain unchanged.
 
-**Recovery condition.** Add a normalization-aware copy check (strip
-comments/whitespace, compare token streams) to `tests/remote-contract.test.mjs`
-or the integration suite, and establish the copy-update procedure in the
-desktop contract-change ADR process.
+Offline `tests/remote-contract.test.mjs` now checks the immutable desktop pin
+in `tests/fixtures/remote-protocol-pin.json`. The shared
+`scripts/lib/protocol-copy.mjs` uses installed TypeScript's parser/printer,
+removes comments/source-position formatting, and maps only the two known
+`CONTRACT_URL` literals. Other strings, operators and regexes remain checked;
+JSON remains byte-exact. This is copy-drift detection, not semantic-equivalence
+proof. Integration additionally checks the actual desktop branch/HEAD/clean
+worktree and both source/JSON copies before running its suites.
+
+To update: review the cross-repository contract change and ADR, obtain both
+raw files with `git show` from the trusted desktop commit, and reproduce the
+fixture's raw/normalized hashes with the shared helper. Review its commit,
+normalizer and TypeScript version; never regenerate a failing pin from the
+mobile copy. Run the contract test, `npm test`, and
+`node scripts/desktop-remote-verify.mjs` with `PI_GUI_DESKTOP_WORKTREE` pointing
+to the verified checkout. No desktop changes, dependency upgrade or production
+hookup belongs to this repair.
 
 ## D3. Self-signed certificate lifetime (INFORMATIONAL-1, security round-2)
 

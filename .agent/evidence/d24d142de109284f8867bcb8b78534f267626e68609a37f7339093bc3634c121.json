@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "kind": "control-compaction",
+  "apply": true,
+  "bytes": {
+    "before": {
+      "files": {
+        ".agent/control.json": 45344,
+        ".agent/tasks.json": 8385,
+        ".agent/state.json": 3414,
+        ".agent/HANDOFF.md": 2700,
+        "PROGRESS.md": 1690
+      },
+      "checkpoints": {
+        "count": 8,
+        "bytes": 3611886
+      }
+    },
+    "after": {
+      "files": {
+        ".agent/control.json": 43684,
+        ".agent/tasks.json": 8385,
+        ".agent/state.json": 1938,
+        ".agent/HANDOFF.md": 1266,
+        "PROGRESS.md": 1522
+      },
+      "checkpoints": {
+        "count": 8,
+        "bytes": 3150310
+      }
+    }
+  },
+  "audit": {
+    "records": 623,
+    "totals": {
+      "mismatched-report": 333,
+      "tracked-exact": 332,
+      "exact": 290,
+      "withheld-sensitive-or-unverified": 6,
+      "missing": 38
+    },
+    "reference": {
+      "path": ".agent/evidence/843df42f8f82882104459de7147c87796fcf3612666b6aa5dc723cb4bd951bb4.json",
+      "sha256": "843df42f8f82882104459de7147c87796fcf3612666b6aa5dc723cb4bd951bb4"
+    }
+  },
+  "before": {
+    "evidence": 42,
+    "ci": 1,
+    "delegates": 3
+  },
+  "after": {
+    "evidence": 42,
+    "ci": 1,
+    "delegates": 3
+  },
+  "archive": null,
+  "invalidated": [],
+  "changed": true,
+  "checkpoint": ".agent/checkpoints/v2-2026-11-26T17-44-06-340Z-a912ee8c-5411-4fc8-8717-e398787942dc.json"
+}

@@ -1,7 +1,7 @@
 import { spawnSync } from 'node:child_process';
 import { resolve, dirname } from 'node:path';
 import { existsSync } from 'node:fs';
-import { ROOT, atomicWrite, sourceFingerprint, snapshot, loadControl, digest, createCheckpoint, resolveScopes } from './lib/control.mjs';
+import { ROOT, atomicWrite, sourceFingerprint, snapshot, loadControl, digest, immutableWrite, safeSyntheticLog, resolveScopes } from './lib/control.mjs';
 const kind = process.argv[2];
 const commands = {
   unit: { program: 'npm', args: ['test'], label: 'npm test' },
@@ -35,10 +35,12 @@ const suffix = targetTaskId === loadControl().data.currentTask ? '' : `-${target
 // can never overwrite the log a previous report referenced. Historical
 // report/log pairs remain reconstructible forever.
 const logDigest = digest(output);
-const logPath = 'docs/acceptance/logs/' + logDigest + '.log';
-if (!existsSync(resolve(ROOT, logPath))) atomicWrite(resolve(ROOT, logPath), output);
+// Local diagnostics may contain private paths. They remain ignored unless
+// the synthetic-output policy admits the exact bytes for public evidence.
+const logPath = safeSyntheticLog(Buffer.from(output)) ? immutableWrite(ROOT, Buffer.from(output), 'log').path : '.agent/private-logs/' + logDigest + '.log';
+if (logPath.startsWith('.agent/private-logs/')) atomicWrite(resolve(ROOT, logPath), output);
 const report = { schemaVersion: 2, kind, taskId: targetTaskId, commit, sourceFingerprint: fingerprint, scopes, scopeFingerprint, startedAt, finishedAt: new Date().toISOString(), passed: r.status === 0 && fingerprint === sourceFingerprint(), details: { command: command.label, exitCode: r.status ?? 1, logPath, logSha256: digest(output) } };
 atomicWrite(resolve(ROOT, 'docs/acceptance/local-' + kind + suffix + '.json'), JSON.stringify(report, null, 2) + '\n');
 console.log(output); console.log(JSON.stringify({ kind, passed: report.passed, exitCode: report.details.exitCode, sourceFingerprint: fingerprint, commit }));
-createCheckpoint(ROOT, '实际运行 ' + command.label + '，exit=' + report.details.exitCode);
+console.log('Stage the exact log bytes before importing evidence; private logs are withheld from public acceptance.');
 if (!report.passed) process.exitCode = 1;

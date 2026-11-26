@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 2,
+  "kind": "protocol-contract",
+  "taskId": "M0-architecture",
+  "commit": "c1b41d8a0f331fd8907b6788c94da121152bfdff",
+  "sourceFingerprint": "3ce7ede25eebe836f0a1d3820edd7a87c6e624bfc0cac942241f2d47b7766fe5",
+  "scopes": [
+    "protocol",
+    "shared"
+  ],
+  "scopeFingerprint": "0f7458fc9174bc12306ee199cc8a988cb3fb9f75e7acf4b8fdcb69e41cddcb49",
+  "startedAt": "2026-11-26T17:57:47.396Z",
+  "finishedAt": "2026-11-26T17:59:31.343Z",
+  "passed": true,
+  "details": {
+    "command": "npm test",
+    "exitCode": 0,
+    "logPath": "docs/acceptance/logs/edacbf3e431aecd4d2920cfc343fe935301a702a8ff8392661ca08f42289eaf8.log",
+    "logSha256": "edacbf3e431aecd4d2920cfc343fe935301a702a8ff8392661ca08f42289eaf8",
+    "sameRunEvidence": {
+      "path": ".agent/evidence/05fcd7c6423a9779b0732001c6874eca63ffa64c42bd6dfaa7671d2442811c3c.json",
+      "sha256": "05fcd7c6423a9779b0732001c6874eca63ffa64c42bd6dfaa7671d2442811c3c"
+    },
+    "note": "Task/kind binding to the single original unit artifact; no command was rerun. Original commit, global fingerprint, command, log, interval and result are unchanged. Covers the 42 protocol-contract cases actually included in this full npm test run. Scope fields describe this target kind under the existing resolveScopes policy; they do not narrow task policy or imply dependency/full-task acceptance."
+  }
+}

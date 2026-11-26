@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 2,
+  "kind": "typecheck",
+  "taskId": "M-1-infrastructure",
+  "commit": "c1b41d8a0f331fd8907b6788c94da121152bfdff",
+  "sourceFingerprint": "3ce7ede25eebe836f0a1d3820edd7a87c6e624bfc0cac942241f2d47b7766fe5",
+  "scopes": [
+    "app",
+    "shared"
+  ],
+  "scopeFingerprint": "10a685b1b64d4d6936fe8dc558c68d7ebe18df042347e5d47bca74135cdd2d85",
+  "startedAt": "2026-11-26T17:59:31.767Z",
+  "finishedAt": "2026-11-26T17:59:34.224Z",
+  "passed": true,
+  "details": {
+    "command": "npm run typecheck",
+    "exitCode": 0,
+    "logPath": "docs/acceptance/logs/c3fefe23bd7768210a2aaef41e3a7a9441b1536192ed6a18df85563717628607.log",
+    "logSha256": "c3fefe23bd7768210a2aaef41e3a7a9441b1536192ed6a18df85563717628607",
+    "sameRunEvidence": {
+      "path": ".agent/evidence/81028456d9a2f5c5fe7f47acdb918ea62e6b85a09a9fdce502c6e94585341b14.json",
+      "sha256": "81028456d9a2f5c5fe7f47acdb918ea62e6b85a09a9fdce502c6e94585341b14"
+    },
+    "note": "Task/kind binding to the single original typecheck artifact; no command was rerun. Original commit, global fingerprint, command, log, interval and result are unchanged. Scope fields describe this target kind under the existing resolveScopes policy; they do not narrow task policy or imply dependency/full-task acceptance."
+  }
+}

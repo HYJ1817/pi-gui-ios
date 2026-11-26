@@ -46,6 +46,8 @@ export function validateControl(d) {
   assert(d.tasks.find(t => t.id === d.currentTask).phase === d.phase, 'Current task/phase mismatch');
   for (const ci of d.ci) validateCiRecord(ci);
   assert(new Set(d.ci.map(c => `${c.id}/${c.attempt}`)).size === d.ci.length, 'Duplicate CI attempt');
+  for (const record of d.delegates) assert(record.decision === undefined || record.status === 'completed', 'Review decision requires a terminal completed delegate');
+  assert(new Set((d.history ?? []).map(r => r.path)).size === (d.history ?? []).length, 'Duplicate history reference');
   validateEvidenceScopes(d);
   return d;
 }
@@ -113,7 +115,11 @@ export function atomicWrite(path, content, root = ROOT) {
   }
 }
 export function writeEnvelope(root, path, e) { decode(e, e.kind); atomicWrite(resolve(root, path), `${JSON.stringify(e, null, 2)}\n`, root); }
-export function loadControl(root = ROOT) { return decode(readSafe(root, '.agent/control.json', 'utf8'), 'control'); }
+export function loadControl(root = ROOT) {
+  const control = decode(readSafe(root, '.agent/control.json', 'utf8'), 'control');
+  readHistory(root, control.data); // A missing/tampered archive is never silently lost.
+  return control;
+}
 export function run(program, args, root = ROOT) {
   const r = spawnSync(program, args, { cwd: root, encoding: 'utf8', windowsHide: true, maxBuffer: 32 * 1024 * 1024 });
   return { ok: !r.error && r.status === 0, status: r.status ?? 1, stdout: r.stdout ?? '', stderr: r.stderr ?? r.error?.message ?? '' };
@@ -266,7 +272,35 @@ export function evidencePath(root, path) {
   assert(normalized === path && /^(docs\/acceptance\/|\.agent\/evidence\/)/.test(normalized), 'Evidence path must be canonical and remain in evidence directory');
   return safePath(root, resolve(root, path));
 }
-function checkFile(root, path, sha256) { assert(SHA.test(sha256 ?? ''), 'Missing evidence file digest'); const file = evidencePath(root, path); const bytes = readFileSync(file); assert(digest(bytes) === sha256, 'Evidence file digest mismatch'); return bytes; }
+export function checkFile(root, path, sha256, { tracked = true } = {}) {
+  assert(SHA.test(sha256 ?? ''), 'Missing evidence file digest');
+  const file = evidencePath(root, path), bytes = readFileSync(file);
+  assert(digest(bytes) === sha256, 'Evidence file digest mismatch');
+  const hashName = /^(?:\.agent\/evidence\/|docs\/acceptance\/logs\/)([a-f0-9]{64})\.(?:json|log)$/.exec(path);
+  if (path.startsWith('docs/acceptance/logs/') || path.startsWith('.agent/evidence/')) {
+    assert(hashName && hashName[1] === sha256, 'Immutable evidence filename/hash mismatch');
+  }
+  if (tracked && path.endsWith('.log')) assert(safeSyntheticLog(bytes), 'Log withheld: synthetic/public-byte policy not satisfied');
+  if (tracked) assertTracked(root, path, sha256);
+  return bytes;
+}
+export function assertTracked(root, path, sha256) {
+  const entry = git(['ls-files', '--stage', '-z', '--', path], root);
+  const rows = entry.stdout.split('\0').filter(Boolean);
+  assert(entry.ok && rows.length === 1, 'Evidence artifact must be Git-tracked: ' + path);
+  const match = /^(100644|100755) ([a-f0-9]{40,64}) 0\t(.+)$/.exec(rows[0]);
+  assert(match && match[3] === path, 'Evidence artifact must be an ordinary staged file: ' + path);
+  const blob = spawnSync('git', ['cat-file', 'blob', match[2]], { cwd: root, windowsHide: true, maxBuffer: 64 * 1024 * 1024 });
+  assert(blob.status === 0 && !blob.error && digest(blob.stdout) === sha256, 'Git artifact bytes differ from immutable digest: ' + path);
+}
+export function immutableWrite(root, bytes, extension = 'json') {
+  assert(['json', 'log'].includes(extension), 'Unsupported immutable artifact type');
+  const sha256 = digest(bytes), path = extension === 'log' ? `docs/acceptance/logs/${sha256}.log` : `.agent/evidence/${sha256}.json`;
+  const destination = safePath(root, resolve(root, path), { allowMissing: true });
+  if (existsSync(destination)) assert(digest(readSafe(root, path)) === sha256, 'Evidence store collision: content-addressed path holds different bytes');
+  else atomicWrite(destination, bytes, root);
+  return { path, sha256 };
+}
 function validateCiRecord(ci) {
   validateSchema(ci, 'ci.schema.json');
   assert(ci.url === `https://github.com/HYJ1817/pi-gui-ios/actions/runs/${ci.id}`, 'CI URL/identity mismatch');
@@ -326,7 +360,7 @@ export function validateReport(d, task, report, root = ROOT, context) {
     if (Array.isArray(summary.reports)) assert(new Set(summary.reports.map(r => r.kind)).size === summary.reports.length, 'Duplicate independent result kinds');
     const result = Array.isArray(summary.reports) ? summary.reports.find(r => r.kind === report.kind) : summary;
     assert(result && result.schemaVersion === 1 && result.kind === report.kind && result.decision === 'pass' && result.reviewedCommit === report.commit && result.sourceFingerprint === report.sourceFingerprint && result.unresolvedBlockers === 0 && result.unresolvedImportant === 0, 'Independent review did not pass exact source');
-    assert(d.delegates.some(r => r.taskId === receipt.taskId && r.status === 'completed' && r.sourceCommit === report.commit), 'Independent task provenance missing');
+    assert(d.delegates.some(r => r.taskId === receipt.taskId && r.status === 'completed' && r.decision !== 'fail' && r.sourceCommit === report.commit), 'Independent task provenance missing');
     if (report.kind === 'independent-handoff') {
       assert(result.restoredTask === task.id && Array.isArray(result.commands) && result.commands.some(c => typeof c.command === 'string' && c.command.startsWith('node scripts/agent-resume.mjs') && c.exitCode === 0) && result.commands.some(c => ['npm test', 'npm run typecheck', 'npm run check:stack'].includes(c.command) && c.exitCode === 0), 'No actual independent recovery and follow-on verification');
     }
@@ -377,15 +411,23 @@ export function gate(d, task, root = ROOT, context) {
   }
   return errors;
 }
+export function taskSummary(task) {
+  const { evidence, ...summary } = task;
+  return { ...summary, evidenceCount: evidence.length, evidenceKinds: [...new Set(evidence.map(e => e.kind))] };
+}
+export function runSummary(d) {
+  return { ci: d.ci.length, delegates: d.delegates.length, activeCi: d.ci.filter(c => c.status !== 'completed').map(c => `${c.id}/${c.attempt}`), workingDelegates: d.delegates.filter(r => r.status === 'working').map(r => r.taskId), archives: (d.history ?? []).length };
+}
 function projectionFiles(control) {
   const { revision, updatedAt, data: d } = control, parentDigest = control.integrity.digest;
   const common = { authority: '.agent/control.json', parentDigest };
-  const state = envelope('state', revision, { ...common, phase: d.phase, currentTask: d.currentTask, branch: d.branch, checkpoint: d.checkpoint, blockers: d.blockers, ci: d.ci, desktop: d.desktop, protocolVersion: d.protocolVersion, delegates: d.delegates }, updatedAt);
-  const tasks = envelope('tasks', revision, { ...common, tasks: d.tasks }, updatedAt);
+  const runs = runSummary(d);
+  const state = envelope('state', revision, { ...common, phase: d.phase, currentTask: d.currentTask, branch: d.branch, checkpoint: d.checkpoint, blockers: d.blockers, runs, desktop: d.desktop, protocolVersion: d.protocolVersion }, updatedAt);
+  const tasks = envelope('tasks', revision, { ...common, tasks: d.tasks.map(taskSummary) }, updatedAt);
   decode(state, 'state'); decode(tasks, 'tasks');
   const rows = d.tasks.map(t => `| ${t.id} | ${t.status} | ${t.title} |`).join('\n');
-  const progress = `# 项目进度（生成文件）\n\n权威：.agent/control.json；schema v2；revision ${revision}；${updatedAt}\n\n阶段：${d.phase}；当前：${d.currentTask}；分支：${d.branch}\n\n| 任务 | 状态 | 范围 |\n| --- | --- | --- |\n${rows}\n\n阻塞：${d.blockers.join('；') || '无已记录阻塞'}\n\n检查点：${d.checkpoint?.path ?? '未保存'}；保存时 HEAD：${d.checkpoint?.git.commit ?? '未提交'}\n\nCI：${d.ci.map(c => `${c.id}/${c.attempt} ${c.status}/${c.conclusion ?? 'pending'} @ ${c.head}`).join('；') || '未启动'}\n\n下一步：${d.nextAction}\n\n证据必须由 agent-validate 解析实际结果、核对提交/源码摘要与依赖后才有效。\n`;
-  const handoff = `# Agent 交接（生成文件）\n\nrevision ${revision}；权威摘要 ${parentDigest}\n\n先读 AGENTS.md / REVIEW.md，执行 node scripts/agent-resume.mjs --remote。\n\n当前 ${d.currentTask}（${d.phase}），预期分支 ${d.branch}。\n\n下一步：${d.nextAction}\n\n阻塞：${d.blockers.join('；') || '无已记录阻塞'}\n\n检查点 ${d.checkpoint?.path ?? '未保存'}；HEAD ${d.checkpoint?.git.commit ?? '未提交'}。dirty（保存时）：\n${d.checkpoint?.git.dirty.map(p => `- ${p}`).join('\n') || '无'}\n\nCI：${JSON.stringify(d.ci)}\n\n独立任务：${JSON.stringify(d.delegates)}\n\n桌面 ${d.desktop.repo}@${d.desktop.commit}，协议 ${d.desktop.protocolVersion ?? '未实现'}；移动协议 ${d.protocolVersion}。运行 resume 获取未通过门禁；不沿用聊天总结，不丢弃 dirty 修改。\n`;
+  const progress = `# 项目进度（生成文件）\n\n权威：.agent/control.json；schema v2；revision ${revision}；${updatedAt}\n\n阶段：${d.phase}；当前：${d.currentTask}；分支：${d.branch}\n\n| 任务 | 状态 | 范围 |\n| --- | --- | --- |\n${rows}\n\n阻塞：${d.blockers.join('；') || '无已记录阻塞'}\n\n检查点：${d.checkpoint?.path ?? '未保存'}；保存时 HEAD：${d.checkpoint?.git.commit ?? '未提交'}\n\nCI：${JSON.stringify(runs)}\n\n下一步：${d.nextAction}\n\n证据必须由 agent-validate 解析实际结果、核对提交/源码摘要与依赖后才有效。\n`;
+  const handoff = `# Agent 交接（生成文件）\n\nrevision ${revision}；权威摘要 ${parentDigest}\n\n先读 AGENTS.md / REVIEW.md，执行 node scripts/agent-resume.mjs --remote。\n\n当前 ${d.currentTask}（${d.phase}），预期分支 ${d.branch}。\n\n下一步：${d.nextAction}\n\n阻塞：${d.blockers.join('；') || '无已记录阻塞'}\n\n检查点 ${d.checkpoint?.path ?? '未保存'}；HEAD ${d.checkpoint?.git.commit ?? '未提交'}。dirty（保存时）：\n${d.checkpoint?.git.dirty.map(p => `- ${p}`).join('\n') || '无'}\n\n运行摘要：${JSON.stringify(runs)}\n\n历史仅由权威中的 history 摘要引用；投影不复制证据或终态任务。\n\n桌面 ${d.desktop.repo}@${d.desktop.commit}，协议 ${d.desktop.protocolVersion ?? '未实现'}；移动协议 ${d.protocolVersion}。运行 resume 获取未通过门禁；不沿用聊天总结，不丢弃 dirty 修改。\n`;
   return { '.agent/state.json': JSON.stringify(state, null, 2) + '\n', '.agent/tasks.json': JSON.stringify(tasks, null, 2) + '\n', 'PROGRESS.md': progress, '.agent/HANDOFF.md': handoff };
 }
 export function renderProjections(root, control) { for (const [path, content] of Object.entries(projectionFiles(control))) atomicWrite(resolve(root, path), content, root); }
@@ -405,17 +447,21 @@ export function mutate(root, fn) {
   return withLock(root, () => { const current = loadControl(root); const next = structuredClone(current.data); fn(next, current); validateControl(next); const control = envelope('control', current.revision + 1, next); commitControl(root, control); return control; });
 }
 export function repairProjections(root = ROOT) { return withLock(root, () => { const control = loadControl(root); renderProjections(root, control); return control; }); }
-export const CHECKPOINT_KEEP = 50;
+export const CHECKPOINT_KEEP = 8;
 export function pruneCheckpoints(root, keepPath, keepNames = new Set(), keepCount = CHECKPOINT_KEEP) {
   // Bounded retention: newest `keepCount` v2 snapshots plus any filename still
   // referenced by the live authority (never unlink the recorded checkpoint).
   // Filenames not matching the v2 pattern are never touched.
   const directory = resolve(root, '.agent/checkpoints');
   if (!existsSync(directory)) return [];
+  safePath(root, directory, { leaf: 'directory' });
   const names = readdirSync(directory).filter(name => /^v2-[a-zA-Z0-9_-]+\.json$/.test(name)).sort().reverse();
-  const removable = names.slice(keepCount);
-  const pruned = [];
-  for (const name of removable) {
+  const pruned = []; let valid = 0;
+  for (const name of names) {
+    // Corrupt candidates remain available for diagnosis and do not consume
+    // a slot that should hold a usable full recovery point.
+    try { const point = decode(readSafe(root, '.agent/checkpoints/' + name, 'utf8'), 'checkpoint'); readHistory(root, point.data.control.data); assert(name === point.data.id + '.json', 'Checkpoint identity mismatch'); } catch { continue; }
+    if (++valid <= keepCount) continue;
     const path = '.agent/checkpoints/' + name;
     if (path === keepPath || keepNames.has(name)) continue;
     const full = safePath(root, resolve(root, path));
@@ -431,10 +477,10 @@ export function createCheckpoint(root = ROOT, note = 'incremental checkpoint') {
     writeEnvelope(root, path, point); const bytes = readSafe(root, path); decode(bytes.toString('utf8'), 'checkpoint');
     const next = structuredClone(current.data); next.checkpoint = { id, path, sha256: digest(bytes), authorityDigest: current.integrity.digest, at: now, git: gitState, sourceFingerprint: fingerprint, note };
     const control = envelope('control', current.revision + 1, next, now); commitControl(root, control);
-    // Any checkpoint filename still mentioned inside the live authority
-    // (current reference, evidence provenance) is protected; keep newest N.
-    const referenced = new Set([...JSON.stringify(control.data).matchAll(/\.agent\/checkpoints\/(v2-[a-zA-Z0-9_-]+\.json)/g)].map(m => m[1]));
-    pruneCheckpoints(root, path, referenced);
+    // Only the typed live checkpoint reference is required by recovery.
+    // Embedded predecessor refs and dirty-path prose are historical context:
+    // restore replaces that ref with the explicitly selected full snapshot.
+    pruneCheckpoints(root, path);
     return control;
   });
 }
@@ -442,6 +488,7 @@ export function validateCheckpoint(root, control) {
   const point = control.data.checkpoint; assert(point, 'No persisted checkpoint recorded');
   const bytes = readSafe(root, point.path); assert(digest(bytes) === point.sha256, 'Checkpoint file digest mismatch');
   const saved = decode(bytes.toString('utf8'), 'checkpoint');
+  readHistory(root, saved.data.control.data);
   assert(point.path === `.agent/checkpoints/${point.id}.json` && saved.data.id === point.id && saved.updatedAt === point.at && saved.data.note === point.note && saved.data.control.integrity.digest === point.authorityDigest && saved.data.sourceFingerprint === point.sourceFingerprint && stable(saved.data.git) === stable(point.git), 'Checkpoint/reference mismatch');
   assert(saved.revision < control.revision, 'Checkpoint revision is not earlier than authority reference');
   return saved;
@@ -452,6 +499,7 @@ export function restoreCheckpoint(root, path) {
     const bytes = readSafe(root, path), point = decode(bytes.toString('utf8'), 'checkpoint');
     assert(path === `.agent/checkpoints/${point.data.id}.json`, 'Checkpoint filename/identity mismatch');
     const data = structuredClone(point.data.control.data), actual = snapshot(root);
+    readHistory(root, data);
     assert(actual.branch === data.branch, 'Restore does not switch or reset a mismatched branch');
     let revision = point.revision + 1;
     let authority = null, backup = null;
@@ -467,6 +515,146 @@ export function restoreCheckpoint(root, path) {
     data.nextAction = (authority === null ? '原权威文件缺失，无原文字节可备份；' : '原权威文件已保留本地原文备份；') + '已从显式校验的检查点恢复；先核对 dirty diff、远端和运行中 CI，保留所有源码改动；失效任务已回 testing。';
     const control = envelope('control', revision + 1, data); commitControl(root, control); return { control, backup, authorityWasMissing: authority === null };
   });
+}
+// Immutable history is referenced by the single authority, never hydrated into
+// gate candidates or projections. Old v2 envelopes without history still read.
+export function readHistory(root, d) {
+  return (d.history ?? []).map(ref => {
+    const bytes = checkFile(root, ref.path, ref.sha256, { tracked: false });
+    const archive = JSON.parse(bytes); validateSchema(archive, 'history.schema.json');
+    return archive;
+  });
+}
+export function compactControl(root = ROOT, { apply = false, adoptBranch = false, terminalFailed = [], terminalFail = [] } = {}) {
+  const execute = () => {
+    const current = loadControl(root), d = structuredClone(current.data), actual = snapshot(root);
+    assert(actual.branch === d.branch || adoptBranch, 'Branch mismatch: use explicit --adopt-branch in the managed worktree');
+    if (adoptBranch) d.branch = actual.branch;
+    for (const [suffixes, status, decision] of [[terminalFailed, 'failed', undefined], [terminalFail, 'completed', 'fail']]) for (const suffix of suffixes) {
+      assert(typeof suffix === 'string' && /^[a-f0-9-]{36}$/.test(suffix), 'Supply an exact terminal delegate UUID suffix');
+      const matches = d.delegates.filter(r => r.taskId.endsWith(suffix));
+      assert(matches.length === 1, 'Terminal delegate suffix must identify exactly one record');
+      const record = matches[0];
+      assert(record.status === 'working' || record.status === status, 'Conflicting terminal delegate state');
+      record.status = status; if (decision) record.decision = decision;
+    }
+    const history = { schemaVersion: 1, kind: 'control-history', tasks: [], ci: [], delegates: [] };
+    const ctx = { fingerprint: sourceFingerprint(root), memo: new Map(), fpMemo: new Map() };
+    const ciRefs = new Set(), delegateRefs = new Set();
+    for (const task of d.tasks) {
+      const keep = new Set();
+      for (const kind of new Set(task.evidence.map(e => e.kind).filter(kind => task.requiredEvidence.includes(kind)))) {
+        const candidates = task.evidence.filter(e => e.kind === kind).reverse();
+        // Keep the latest record for diagnosis, plus the newest currently valid
+        // candidate. A later failed import must not erase an older valid gate.
+        keep.add(candidates[0]);
+        for (const record of candidates) {
+          if (record.scopeFingerprint && record.scopeFingerprint !== scopedFingerprint(ctx, root, resolveScopes(task, kind))) continue;
+          try { const report = JSON.parse(checkFile(root, record.path, record.sha256)); assert(report.kind === record.kind && report.commit === record.commit && report.sourceFingerprint === record.sourceFingerprint, 'Restamped evidence'); validateReport(d, task, report, root, ctx); keep.add(record); break; } catch { /* Invalid evidence remains invalid. */ }
+        }
+      }
+      const archived = task.evidence.filter(e => !keep.has(e));
+      if (archived.length) history.tasks.push({ id: task.id, evidence: archived });
+      task.evidence = task.evidence.filter(e => keep.has(e));
+      for (const record of task.evidence) {
+        try {
+          const report = JSON.parse(checkFile(root, record.path, record.sha256, { tracked: false })), details = report.details;
+          if (report.kind === 'ci') ciRefs.add(`${details.ci.id}/${details.ci.attempt}`);
+          if (['ui', 'ipa'].includes(report.kind)) ciRefs.add(`${details.ciId}/${details.attempt}`);
+          if (report.kind.startsWith('independent-')) {
+            const receipt = JSON.parse(checkFile(root, details.receiptPath, details.receiptSha256, { tracked: false }));
+            delegateRefs.add(receipt.taskId);
+          }
+        } catch { /* Missing historical bytes cannot create provenance. */ }
+      }
+    }
+    history.ci = d.ci.filter(c => c.status === 'completed' && !ciRefs.has(`${c.id}/${c.attempt}`));
+    history.delegates = d.delegates.filter(r => r.status !== 'working' && !delegateRefs.has(r.taskId));
+    d.ci = d.ci.filter(c => !history.ci.includes(c));
+    d.delegates = d.delegates.filter(r => !history.delegates.includes(r));
+    const before = { evidence: current.data.tasks.reduce((n, t) => n + t.evidence.length, 0), ci: current.data.ci.length, delegates: current.data.delegates.length };
+    const after = { evidence: d.tasks.reduce((n, t) => n + t.evidence.length, 0), ci: d.ci.length, delegates: d.delegates.length };
+    const archived = history.tasks.length + history.ci.length + history.delegates.length > 0;
+    let reference = null;
+    if (archived) {
+      validateSchema(history, 'history.schema.json');
+      const bytes = Buffer.from(JSON.stringify(history, null, 2) + '\n');
+      reference = { path: `.agent/evidence/${digest(bytes)}.json`, sha256: digest(bytes) };
+      d.history = [...(d.history ?? []), reference];
+      if (apply) immutableWrite(root, bytes);
+    }
+    // No milestone resurrection: invalidate recursively against the actual P2
+    // tree and keep both historical reports and their original conclusions.
+    const invalidated = [];
+    for (const task of d.tasks) if (['accepted', 'completed'].includes(task.status) && gate(d, task, root).length) { task.status = 'testing'; invalidated.push(task.id); }
+    d.nextAction = 'P2 control maintenance: run focused control tests and independent integration/security review; invalid evidence stays invalid. Final device checks remain pending.';
+    const changed = stable(d) !== stable(current.data);
+    if (apply && changed) commitControl(root, envelope('control', current.revision + 1, d));
+    return { before, after, archive: reference, invalidated, changed };
+  };
+  const result = apply ? withLock(root, execute) : execute();
+  if (apply) {
+    const control = loadControl(root); let needsCheckpoint = result.changed;
+    try { const saved = validateCheckpoint(root, control).data.control.data; needsCheckpoint ||= saved.branch !== control.data.branch || stable(saved.history ?? []) !== stable(control.data.history ?? []); } catch { needsCheckpoint = true; }
+    // A retry after interruption between authority and checkpoint persistence
+    // finishes this boundary even when the compaction itself is already done.
+    if (needsCheckpoint) result.checkpoint = createCheckpoint(root, 'Explicit control history compaction; original reports unchanged').data.checkpoint.path;
+  }
+  return result;
+}
+export function reportArtifacts(report) {
+  const d = report.details, refs = [];
+  for (const [path, hash] of [['logPath', 'logSha256'], ['receiptPath', 'receiptSha256'], ['verificationPath', 'verificationSha256'], ['confirmationPath', 'confirmationSha256']]) if (d[path] !== undefined) refs.push({ path: d[path], sha256: d[hash] });
+  for (const image of d.screenshots ?? []) refs.push({ path: image.path, sha256: image.sha256 });
+  return refs;
+}
+export function safeSyntheticLog(bytes) {
+  const text = bytes.toString('utf8');
+  if (!Buffer.from(text).equals(bytes) || !text.length || bytes.length > 8 * 1024 * 1024) return false;
+  if (!/(?:TAP version 13|\btests? \d+|Synthetic fixture test output|pi-gui-mobile@)/.test(text)) return false;
+  // Conservative publication boundary: never rewrite/redact the bytes a report
+  // hashed. Ambiguous output stays local, including ordinary absolute paths.
+  return !/(?:[a-z]:[\\/]|file:\/\/|\/(?:Users|home|tmp|private|var)\/|Bearer\s+\S+|-----BEGIN [^-]*PRIVATE KEY|(?:api[_ -]?key|password|secret|pi_gui_token|oauth[_ -]?token|pairing[_ -]?code|access[_ -]?token)\s*[:=]\s*[^\s,;]+|\b(?:sk|ghp|github_pat)[-_][A-Za-z0-9_]{12,}|[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,})/i.test(text);
+}
+export function auditEvidence(root = ROOT, { recoverFrom, apply = false } = {}) {
+  const control = loadControl(root), groups = [...readHistory(root, control.data).flatMap(a => a.tasks), ...control.data.tasks];
+  const records = [], totals = {}, count = status => { totals[status] = (totals[status] ?? 0) + 1; };
+  for (const task of groups) for (const record of task.evidence) {
+    const row = { taskId: task.id, kind: record.kind, path: record.path, sha256: record.sha256, status: 'unavailable', artifacts: [] };
+    let report;
+    try { report = JSON.parse(checkFile(root, record.path, record.sha256, { tracked: false })); validateSchema(report, 'evidence.schema.json'); assert(report.taskId === task.id && report.kind === record.kind && report.commit === record.commit && report.sourceFingerprint === record.sourceFingerprint, 'Report identity mismatch'); row.status = 'exact'; }
+    catch (error) { row.status = error.code === 'ENOENT' ? 'missing-report' : error.message.includes('digest mismatch') ? 'mismatched-report' : 'invalid-report'; }
+    if (report && row.status === 'exact') for (const ref of reportArtifacts(report)) {
+      if (typeof ref.path !== 'string' || !/^(docs\/acceptance\/|\.agent\/evidence\/)/.test(ref.path) || ref.path.includes('\\') || relative(root, resolve(root, ref.path)).split(sep).join('/') !== ref.path || !SHA.test(ref.sha256 ?? '')) {
+        count('unsafe-reference'); row.artifacts.push({ status: 'unsafe-reference' }); continue;
+      }
+      const artifact = { ...ref, status: 'missing' };
+      try { checkFile(root, ref.path, ref.sha256); artifact.status = 'tracked-exact'; }
+      catch {
+        let bytes;
+        try { bytes = checkFile(root, ref.path, ref.sha256, { tracked: false }); } catch { /* Try explicitly authorized read-only source below. */ }
+        if (!bytes && recoverFrom && typeof ref.path === 'string' && ref.path.endsWith('.log')) {
+          for (const candidate of [ref.path, `docs/acceptance/logs/${ref.sha256}.log`]) {
+            try { const candidateBytes = readSafe(recoverFrom, relative(recoverFrom, evidencePath(recoverFrom, candidate))); if (digest(candidateBytes) === ref.sha256) { bytes = candidateBytes; break; } } catch { /* Missing/unsafe/mismatched bytes are not recoverable. */ }
+          }
+        }
+        if (bytes) {
+          if (!ref.path.endsWith('.log')) artifact.status = 'untracked-or-index-mismatch';
+          else if (!safeSyntheticLog(bytes)) artifact.status = 'withheld-sensitive-or-unverified';
+          else {
+            const path = `docs/acceptance/logs/${ref.sha256}.log`;
+            artifact.status = path === ref.path ? 'safe-log-available' : 'safe-log-alternate-only';
+            if (apply) { immutableWrite(root, bytes, 'log'); artifact.recoveredPath = path; }
+          }
+        }
+      }
+      count(artifact.status); row.artifacts.push(artifact);
+    }
+    count(row.status); records.push(row);
+  }
+  // Paths in the report are repository-relative provenance only. Source root,
+  // raw logs, errors and local environment are deliberately absent.
+  return { schemaVersion: 1, kind: 'evidence-persistence-audit', authorityDigest: control.integrity.digest, records, totals };
 }
 export function transition(d, id, target, root = ROOT) {
   const task = d.tasks.find(t => t.id === id); assert(task, `Unknown task ${id}`);

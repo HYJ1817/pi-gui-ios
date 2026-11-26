@@ -1,44 +1,29 @@
-# Pi GUI Mobile · Agent 执行约定
+# Pi GUI Mobile · Agent 约定
 
-## 产品与授权
+## 范围与授权
 
-原生 iPhone/iPad 客户端，React Native + Expo + TypeScript。按用户追加的技术栈对齐原则，以 T3 Code 当前 main 的实际移动端源码为主要参考；Expo Router 不再是硬约束，优先评估并采用其 React Navigation 方案。逻辑应用名 `pi-gui-mobile`；按用户指定在 `HYJ1817/pi-gui-ios` 仓库开发，不擅自创建或重命名远端仓库。Windows 开发，GitHub 标准 macOS Runner 编译/模拟器验证，SideStore 自签，无付费服务、无 Apple 会员依赖、无自建公网中继。参考 T3 源码，不改参考仓库和 Pi Coding Agent 本体。M-1 必须分析其 package/lockfile、原生模块、导航、状态、消息渲染、动画/手势、键盘、Liquid Glass 和自动化测试；逐项决策唯一记录在 `docs/decisions/technology-stack.md`。UI、导航、动画、手势、原生组件、键盘和消息渲染优先同技术族；差异必须有源码证据、版本/许可证/兼容理由，不机械搬入全部依赖、内部架构或 fork。远程通信、状态和测试可按本项目需要选择，桌面架构与安全边界保持。所有关键选型在实际构建、运行和测试前均为待验证。
+仓库 `HYJ1817/pi-gui-ios`，应用 `pi-gui-mobile`，React Native + Expo + TypeScript。当前为 synthetic runtime，真实配对/会话/消息/live sync 仍属 P3，见 [架构](docs/architecture.md)。以当前任务授权为准，不自行启动 P3 或扩展到桌面。
 
-用户已授权：研究、安装项目依赖、开发分支提交/推送/开发 PR、触发和读取 CI、下载公开安全的测试产物、独立 Agent 审查、阶段通过后自主继续。**未授权**：合并 main、正式发布/推送发布标签、强推、破坏其他分支、修改已有发布、付费、账户登录授权、代操作真机。
+可按授权研究、安装依赖、开发分支提交/推送/PR、运行/读取 CI 和独立审查。未授权 main 合并、正式发布/标签、强推、修改已有发布、付费、账户登录或代操作真机。不改参考仓库与 Pi 本体；桌面修改须有任务授权、先读其规范并用独立 worktree，不碰 `C:/pi-GUI` dirty 工作区。
 
-**真机验收只在所有软件工作、自动化/Simulator/IPA 验证与安全审查完成后，集中一次由用户操作。** 用户将在最终清单中对可用 iPhone/iPad 执行 SideStore 安装、启动、刷新、覆盖升级与网络验收。中间不请求或代操作真机，也不因设备可用性阻塞软件进度；此前设备证据记为 pending/unverified，Simulator/IPA 不得代替真实设备结果。
+Windows 开发、标准 macOS Runner 原生验证、SideStore 自签；无付费服务/Apple 会员/自建公网中继依赖。优先对齐已读 T3 移动源码，差异与版本/许可证/兼容依据只记 [选型记录](docs/decisions/technology-stack.md)，不机械搬依赖/fork。先配好 [工具链](README.md#开发入口)：Node 24.22.1、Ruby 3.3.8、Bundler 2.6.9 及便携 Ruby GEM 环境。
 
-**自主排障与延期：** Agent 对普通环境、工具、Runner 与非核心兼容问题自行处理；同一失败类别最多三次有目标尝试。仍阻塞时保留原始失败事实，记录原因、影响、未验证范围和恢复条件，标记 deferred/unverified 后继续其他软件工作；不得伪造通过或删除失败证据。认证、权限、项目/会话归属、密钥、撤销、审批、隐私和数据完整性属于安全边界，禁止以跳过或放宽断言解决。独立审查工具暂不可用时，可继续默认关闭/隔离的实现与合成测试，但审查缺失必须保留，功能不得启用或验收通过。
+## 恢复与状态
 
-## 每次新会话首先执行
+1. 读本文件、[REVIEW.md](REVIEW.md)，执行 `node scripts/agent-resume.mjs --remote`；检查实际 cwd/分支/HEAD、dirty diff、远端与运行中/失败 CI，不 reset/clean 或覆盖他人修改。
+2. `.agent/control.json` 是**唯一任务/运行状态权威**；`.agent/state.json`、`.agent/tasks.json`、`PROGRESS.md`、`.agent/HANDOFF.md` 是可重建投影，不手改。按恢复输出读相关 ADR/验收记录；[ROADMAP.md](ROADMAP.md) 只规定范围/依赖/门槛。
+3. 优先处理当前已授权任务；重核证据的 commit、摘要与作用域，失效不能沿用聊天中的 PASS。独立 worktree 与权威分支不符时向协调者报告，不为消除诊断改权威或重置源码。
 
-1. 读本文件与 `REVIEW.md`，运行 `node scripts/agent-resume.mjs --remote`。
-2. 读恢复输出指定的文件，至少 `ROADMAP.md`、生成的 `PROGRESS.md`、`.agent/HANDOFF.md`、当前任务相关 ADR 与最新验收记录。
-3. 检查实际分支、dirty diff、最近提交、远端、运行中/失败 CI；不得 reset、clean 或覆盖他人修改。恢复脚本不修复 Git 工作区。schema v2 的检查点必须实际存在并通过外层/内层摘要验证；权威损坏时先检查快照，再用 `node scripts/agent-restore.mjs <已核验的v2快照路径> --apply` 恢复。脚本保留原权威本地备份和 dirty 源码，不切换/重置分支。
-4. 以 `.agent/control.json` 为**唯一任务/运行状态权威**；核验 schema、摘要、检查点及测试证据。`.agent/state.json`、`tasks.json`、`PROGRESS.md`、`HANDOFF.md` 是可重建投影。ROADMAP 只规定范围/依赖/门槛，不手写重复动态状态。
-5. 优先恢复当前未完成任务；证据缺失/摘要不符则回到 testing，不采信上次聊天中的“通过”。仅输入“继续开发”亦执行以上流程。
+恢复默认只读。投影损坏用 `node scripts/agent-resume.mjs --repair-projections`；权威损坏先 `node scripts/agent-resume.mjs --list-checkpoints`，核对候选外层/内层摘要、分支与 dirty diff，再用 `node scripts/agent-restore.mjs VERIFIED_V2_PATH --apply`。保留原权威备份与 dirty 源码，不切换/重置分支。新独立分支确需接管权威时先运行 `node scripts/agent-compact.mjs --adopt-branch` 预览，再显式加 `--apply`；普通子任务不接管。
 
-## 自主执行循环
+## 工作与交接
 
-选依赖已完成的任务 → 保存开始检查点 → 调研/设计 → 实现 → 定向测试与实际运行 → 自动化/视觉验收 → 独立上下文审查 → 修复/回归 → 证据门禁 → accepted/completed → 检查点 → 下一任务。阶段未通过不得启动依赖该阶段的正式业务。非阻断文档/调查可并行推进。
+实现 → 定向检查/实际运行/必要图审 → 独立上下文审查 → 修复回归 → 证据门禁。转换用 `node scripts/agent-task.mjs transition TASK_ID STATUS`，完成前用 `node scripts/agent-validate.mjs --task TASK_ID` 递归复验依赖。证据失效的 accepted/completed 回 testing，依赖未通过不启动依赖业务，不手改状态造通过。
 
-任务状态：pending → in_progress → testing → reviewing → accepted → completed；可转 blocked；blocked 恢复 in_progress/testing；证据失效的 accepted/completed 必须回到 testing。推进时递归复验依赖的真实证据，不能只看上游 completed 字样。`scripts/agent-task.mjs` 管理转换；`agent-validate.mjs` 检查完成门禁，不能凭文字直接改 completed。
+在**有意义的任务转换、重要提交、阻塞/恢复决定和会话交接**保存状态/`node scripts/agent-checkpoint.mjs --note "说明"`，脚本已保存就不重复。证据导入、CI 登记、verify 不自动生成完整快照；保留最近 8 个有效检查点和当前权威引用。历史整理先 `node scripts/agent-compact.mjs` 预览，再按需 `--apply`；不可变归档仅供追溯，不参与门禁。交接包含 HEAD/dirty、CI/任务、检查结果和下一命令；协调者维护权威，限域子任务不越界，不复制进度账本。
 
-任务开始、原子修改、提交、CI 启停、测试/审查、阻塞、ADR、阶段验收后，运行 `node scripts/agent-checkpoint.mjs --note <说明>`。控制层以完整 schema 校验、持锁、fsync、原子 rename 和读回校验更新；检查点先持久化再由权威引用，v2 快照入 Git。摘要不匹配停止并保留损坏文件，不自动丢弃状态。投影撕裂可由权威状态重建；权威损坏从最近有效检查点人工核对恢复。
+同类普通环境/工具/Runner 问题最多三次有目标尝试；仍失败保留原因、影响、未验证范围/恢复条件，记 deferred/unverified，继续不依赖工作。安全/隐私、身份/权限、撤销/审批、数据完整性不降低断言；缺独立审查只能继续默认关闭的隔离准备。
 
-## 安全与仓库隔离
+验证/证据/CI 统一见 [测试](docs/testing.md)，审查见 [REVIEW.md](REVIEW.md)，远程/秘密边界见 [安全](docs/security.md)。UI 要看真实 iOS 渲染；native glass 不支持或 Reduce Transparency 时明确实色回退，不用静态断言代替图审。
 
-- 远程默认关闭，只能本机用户启用。独立远程鉴权边界，绝不把现有本地 HTTP/WebSocket 整体改为 0.0.0.0 或代理公开。
-- 一次性短效配对、每设备身份/凭据/撤销、TLS、请求重放防护、接口/字段白名单、项目/会话归属与权限校验；撤销立即拒绝新请求并断开连接。
-- 不传模型 API Key、OAuth Token、PI_GUI_TOKEN、原始错误/配置/环境变量；不得绕过桌面审批。只用临时 synthetic fixture 测试，不写用户真实会话/设置。
-- 桌面仓库改动前读它的 AGENTS/REVIEW 与相关规范，独立 worktree/分支，记录 commit、协议和依赖；不碰 `C:/pi-GUI` 现有 dirty 工作区。
-- 公开仓库/CI 产物只允许合成测试数据；秘密、私钥、配对码、设备标识、真实日志不上传。CI 不需要模型或 Apple 凭据，不扩大 token 权限。
-- 跨仓库协议不匹配 fail closed。协议变更需 ADR、双方 commit 和集成证据。
-
-## 验证与停止
-
-测试唯一入口 `npm test`；定向子命令可用。用 `node scripts/verify.mjs <unit|typecheck|bundle|doctor>` 生成原始结果/日志/commit/源码树摘要报告，再用 `node scripts/agent-task.mjs evidence <任务ID> <报告相对路径>` 导入；不支持 --passed。报告失败、未提交源码、缺少来源或独立审查原结果不通过时禁止登记为通过。UI 必须审查真实 iOS 渲染图，不能用 DOM/快照断言代替。必须使用真正 native glass；不支持/Reduce Transparency 时明确实色回退。Simulator 成功 ≠ device IPA ≠ SideStore 安装成功。
-
-同类失败三轮仍未解决：停止机械重试，记录根因、日志和阻塞。按用户持续推进指示，对一般环境/工具/Runner/非核心兼容项最多三次有目标尝试，之后可记 deferred/unverified 并继续不依赖工作。不得把跳过的检查写成通过。安全、隐私、身份/权限、撤销、审批及数据完整性不得降低断言；独立审查缺失时可做默认关闭/隔离的准备，不得启用安全敏感功能或声称验收通过。真机只在最终一次集中清单由用户操作；main 合并与正式发布仍需用户明确授权。
-
-退出/额度不足前更新检查点和 HANDOFF：精确 dirty 文件、HEAD、CI run/任务标识、已执行/未执行检查、下一条可执行命令。不能只把状态留在对话。
+所有软件、可行自动化/Simulator/IPA 验证及独立安全审查后，仅由用户集中一次执行 [SideStore/真机清单](docs/acceptance/M-1-device-checklist.md)。中途不请求/代操作真机，不因设备阻塞软件进度；此前 pending/unverified，Simulator/IPA 不能代替安装、刷新、覆盖升级/网络结果，也不授予合并或发布权限。

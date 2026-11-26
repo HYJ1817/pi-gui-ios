@@ -11,24 +11,14 @@
 import { SyntheticCryptoProvider, syntheticGatewayCrypto, syntheticIdentity } from './crypto';
 import { LocalSyntheticGateway, syntheticServiceMaterial, type SandboxDomain } from './sandbox';
 import { TypedRemoteClient } from './client';
-import { EventStreamClient, type StreamTransport } from './events';
-import { ConversationStore } from './store';
+import type { StreamTransport } from './events';
+import { createRemoteRuntime, type RemoteRuntime } from './runtime';
 import { canonicalJson } from './wire';
 import type { DeviceCredentials, EventEnvelope, SignedRequest } from './types';
 
-export interface DemoRuntime {
+export interface DemoRuntime extends RemoteRuntime {
+  readonly mode: 'synthetic';
   gateway: LocalSyntheticGateway;
-  client: TypedRemoteClient;
-  events: EventStreamClient;
-  store: ConversationStore;
-  credentials: DeviceCredentials;
-  /** open the device-level event stream (with optional resume cursor) */
-  openStream: () => void;
-  /** close + reopen (resubscribe path) */
-  reopenStream: () => void;
-  /** recovery after terminal stream death: reload baselines + fresh resubscribe */
-  recoverStream: () => Promise<void>;
-  closeStream: () => void;
 }
 
 const LONG_MESSAGE =
@@ -171,24 +161,6 @@ export function demoRuntime(): DemoRuntime {
     transport: { send: req => gateway.send(req) },
   });
 
-  let storeRef: ConversationStore | null = null;
-  const events = new EventStreamClient({
-    credentials,
-    crypto: deviceCrypto,
-    authorizeResource: ctx => {
-      // Resource authorization mirror: the sandbox grants everything it owns;
-      // a revoked/ungranted projection would answer false here.
-      return ctx.conversationId.startsWith('conversation-') || ctx.conversationId.startsWith('conv_');
-    },
-    onReset: () => { /* reset applied event already rebuilt baselines via store.apply */ },
-    onEvent: applied => { storeRef?.apply(applied); },
-    onStreamError: () => { storeRef?.markStreamError(); },
-    onConnected: () => { storeRef?.markStreamLive(); },
-  });
-
-  const store = new ConversationStore(client, events);
-  storeRef = store;
-
   const streamTransport: StreamTransport = {
     subscribe: (request: SignedRequest, onFrame: (frame: unknown) => void, onClose: (reason: string) => void, onOpen?: () => void) => {
       const sub = gateway.subscribe(credentials, request, onFrame as (f: EventEnvelope) => void);
@@ -199,30 +171,16 @@ export function demoRuntime(): DemoRuntime {
   };
 
   runtime = {
-    gateway, client, events, store, credentials,
-    openStream: () => {
-      events.open(streamTransport, client.buildEventsRequest(events.latestCursor()), events.latestCursor());
-    },
-    /** close + reopen, exercising the resubscribe path. */
-    reopenStream: () => {
-      events.close();
-      events.open(streamTransport, client.buildEventsRequest(events.latestCursor()), events.latestCursor());
-    },
-    /** Recovery after a terminal stream error (ADR-0010 D1): pull fresh
-     *  baselines over the reliable request/response plane, then resubscribe
-     *  FROM THE ATOMIC SNAPSHOT WATERMARK — frames emitted between the
-     *  snapshot and the resubscribe replay out of the server backlog, so the
-     *  recovery window loses nothing. A stale watermark resets cleanly. */
-    recoverStream: async () => {
-      events.close();
-      store.markStreamRecovering();
-      await store.load();
-      if (store.snapshot().lastError) { store.markStreamError(); return; }
-      const watermark = store.latestWatermark();
-      const cursor = watermark?.cursor;
-      events.open(streamTransport, client.buildEventsRequest(cursor), cursor, watermark);
-    },
-    closeStream: () => events.close(),
+    mode: 'synthetic',
+    gateway,
+    ...createRemoteRuntime({
+      client,
+      crypto: deviceCrypto,
+      stream: streamTransport,
+      // Fixture-only policy: these are the IDs owned by the demo gateway.
+      // A native profile must supply its own resource authorization policy.
+      authorizeResource: ctx => ctx.conversationId.startsWith('conversation-') || ctx.conversationId.startsWith('conv_'),
+    }),
   };
 
   runtime.openStream();

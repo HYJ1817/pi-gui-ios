@@ -1,6 +1,6 @@
 import { existsSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { loadControl, decode, readSafe, snapshot, sourceFingerprint, validateCheckpoint, gate, safePath, git } from './control.mjs';
+import { loadControl, decode, readSafe, snapshot, sourceFingerprint, validateCheckpoint, gate, safePath, git, taskSummary, runSummary, readHistory } from './control.mjs';
 export function listCheckpoints(root, limit = 20) {
   const directory = resolve(root, '.agent/checkpoints');
   if (!existsSync(directory)) return [];
@@ -10,6 +10,7 @@ export function listCheckpoints(root, limit = 20) {
     const path = '.agent/checkpoints/' + name;
     try {
       const point = decode(readSafe(root, path, 'utf8'), 'checkpoint');
+      readHistory(root, point.data.control.data);
       if (path !== '.agent/checkpoints/' + point.data.id + '.json') throw new Error('Checkpoint filename/identity mismatch');
       return { path, valid: true, savedAt: point.updatedAt, authorityRevision: point.data.control.revision, phase: point.data.control.data.phase, currentTask: point.data.control.data.currentTask, branch: point.data.git.branch, commit: point.data.git.commit, sourceFingerprint: point.data.sourceFingerprint };
     } catch (error) { return { path, valid: false, error: error.message }; }
@@ -34,5 +35,5 @@ export function inspectRecovery(root) {
   }
   const current = d.tasks.find(t => t.id === d.currentTask), unmetGates = gate(d, current, root, ctx);
   const executableTasks = d.tasks.filter(t => !['completed', 'accepted', 'blocked'].includes(t.status) && t.dependsOn.every(id => { const dep = d.tasks.find(x => x.id === id); return dep.status === 'completed' && gate(d, dep, root, ctx).length === 0; })).map(t => t.id);
-  return { schemaVersion: 2, authorityRevision: control.revision, phase: d.phase, currentTask: current, actualGit, recentCommits: git(['log', '-5', '--oneline'], root).stdout.trim().split(/\r?\n/).filter(Boolean), checkpoint: d.checkpoint, ci: d.ci, delegates: d.delegates, protocol: { mobile: d.protocolVersion, desktop: d.desktop.protocolVersion, compatible: d.protocolVersion === d.desktop.protocolVersion }, warnings, failures, unmetGates, executableTasks, read: ['ROADMAP.md', 'PROGRESS.md', '.agent/HANDOFF.md', 'docs/architecture.md', 'docs/decisions/', 'docs/acceptance/'], nextAction: d.nextAction, commands: ['npm test', 'node scripts/agent-validate.mjs', 'gh run list --branch ' + d.branch + ' --limit 5'] };
+  return { schemaVersion: 2, authorityRevision: control.revision, phase: d.phase, currentTask: taskSummary(current), actualGit, recentCommits: git(['log', '-5', '--oneline'], root).stdout.trim().split(/\r?\n/).filter(Boolean), checkpoint: d.checkpoint, runs: runSummary(d), history: d.history ?? [], protocol: { mobile: d.protocolVersion, desktop: d.desktop.protocolVersion, compatible: d.protocolVersion === d.desktop.protocolVersion }, warnings, failures, unmetGates, executableTasks, read: ['ROADMAP.md', 'PROGRESS.md', '.agent/HANDOFF.md', 'docs/architecture.md', 'docs/decisions/', 'docs/acceptance/'], nextAction: d.nextAction, commands: ['npm test', 'node scripts/agent-validate.mjs', 'gh run list --branch ' + d.branch + ' --limit 5'] };
 }

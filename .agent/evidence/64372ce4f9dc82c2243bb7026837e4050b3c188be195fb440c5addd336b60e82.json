@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 2,
+  "kind": "bundle",
+  "taskId": "M5-tailscale",
+  "commit": "c1b41d8a0f331fd8907b6788c94da121152bfdff",
+  "sourceFingerprint": "3ce7ede25eebe836f0a1d3820edd7a87c6e624bfc0cac942241f2d47b7766fe5",
+  "scopes": [
+    "app",
+    "shared"
+  ],
+  "scopeFingerprint": "10a685b1b64d4d6936fe8dc558c68d7ebe18df042347e5d47bca74135cdd2d85",
+  "startedAt": "2026-11-26T17:59:35.067Z",
+  "finishedAt": "2026-11-26T17:59:39.063Z",
+  "passed": true,
+  "details": {
+    "command": "npm run export:ios",
+    "exitCode": 0,
+    "logPath": "docs/acceptance/logs/11d9e3565d035307966d1ceb4ccd2d154d0696169dfc54678556f234a857eed8.log",
+    "logSha256": "11d9e3565d035307966d1ceb4ccd2d154d0696169dfc54678556f234a857eed8"
+  }
+}

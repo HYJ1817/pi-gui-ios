@@ -1,0 +1,125 @@
+desktop repo      HYJ1817/pi-gui
+expected branch   feat/mobile-remote-protocol-v1
+expected commit   60d243a24b3ced198bd2e9ccaeb1e66f6129ba7e
+protocolVersion   1
+worktree pinned + clean: OK
+normalized copy   b9dbb606c7fa3bc731b5c19032d25c0a5d0c606df2c53c4c2577b00319c95f8b
+contract JSON     4c24021fd588e35ce8ffe25f4eb0c49ace0e42cae2e7116f0e5f0df58c154d9a
+desktop/mobile protocol parity: OK
+
+== remote contract suite: node --test tests/remote-contract.test.mjs ==
+✔ remote v1 contract is frozen v1, HTTPS-only and disabled by default (1.2926ms)
+✔ operation ids, scopes and methods are unique and closed (0.1959ms)
+✔ pair exchange accepts only a short-lived-code payload shape (1.499ms)
+✔ project and session reads accept only opaque ids and empty payloads (0.9862ms)
+✔ runtime creation requires a revision and does not allow classic cwd/path fields (0.5108ms)
+✔ chat send is bounded, revision-bound and not a command proxy (2.0908ms)
+✔ exact signed body bytes and parsed request body must agree (0.2312ms)
+✔ stop uses a typed operation and requires current owner revision (0.224ms)
+✔ approval response is bound to a real opaque request id and closed method/decision (0.3889ms)
+✔ signature canonicalization binds device, service, request identity, path/query, timestamp, nonce and body digest (0.2882ms)
+✔ Ed25519 request signature, device+service binding, skew and atomic replay gate are exercised with synthetic keys (5.9976ms)
+✔ pair proof binds code, displayed name, device key, nonce and service fingerprint (4.3656ms)
+✔ signed operation requests require all device-authentication header shapes (0.3317ms)
+✔ event stream accepts only a pattern-bound cursor and signed device headers (0.2719ms)
+✔ event frames carry generation/cursor/signature, per-event scopes and closed payloads (4.7538ms)
+✔ request envelope rejects unknown version, fields and duplicate transport paths (0.5563ms)
+✔ responses use operation-specific closed projections and never carry raw errors/secrets/paths (0.3918ms)
+✔ device grants and owner recheck gate admission (IDOR / stale owner / substitution) (2.6073ms)
+✔ approval payload enforces the per-method decision/value matrix (0.1009ms)
+✔ approval settlement resolves and consumes a live Pi dialog exactly once (3.3512ms)
+✔ pre-auth failures map to a closed wire code and internal codes never leak (0.1547ms)
+✔ UTF-8 byte limits and duplicate query params are enforced (0.419ms)
+✔ raw transport adapter rejects duplicate names, bad encoding, BOM and reserved literals (0.436ms)
+✔ admission token recheck binds owner, device epoch and project at commit (0.2908ms)
+✔ wire error stage-awareness and closed mapping with own-property lookup (0.062ms)
+✔ zero-UUID sentinel only on uncorrelated unauthorized error; arrays rejected (0.1661ms)
+✔ forbidden values: embedded POSIX/drive paths, credentials; transcript only scans credentials (0.2581ms)
+✔ wireErrorCode pair-stage resolves the closed pairExchange map (0.1099ms)
+✔ forbidden-value boundary matrix: paths and env dumps after any delimiter (0.3716ms)
+✔ raw target charset gate: non-ASCII, DEL, and # rejected before routing (0.1211ms)
+✔ reset occupies its sequence; next frame is reset.sequence+1, no freshSubscribe bypass (0.899ms)
+✔ out-of-scope and network-path vectors per valueScanOutOfScope (0.6928ms)
+✔ quoted-key credentials rejected in metadata AND transcript text (0.2741ms)
+ℹ tests 33
+ℹ suites 0
+ℹ pass 33
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 159.4053
+-- remote contract suite exit=0
+
+== remote gateway e2e: node tests/remote-gateway.cjs ==
+ok   TLS entry is HTTPS-only with a pinned self-signed cert
+ok   service fingerprint is stable across restarts (persisted cert+key)
+ok   grant removal resets the device event stream (authorization_changed)
+ok   unsigned non-pair routes and unknown targets are closed unauthorized
+ok   raw transport rejects duplicate query params and illegal targets before auth
+ok   pair exchange: happy path mints a device and returns a signed response
+ok   pair exchange negatives: bad proof/code/session/fingerprint/headers all fail closed
+ok   signed ops: projects.list/sessions.list filtered by grant; snapshot returns contract shape
+ok   replay: nonce reuse, old epoch, stale timestamp and bad signature all rejected
+ok   scope+grant IDOR: ungranted project/scope fail with closed codes
+ok   chat.send requires ownerRevision; stale revision rejected; idempotent retry
+ok   revocation: new requests unauthorized and live streams are closed
+ok   event stream emits signed contract frames; cursor transitions obey the table
+ok   valid cursor resume replays backlog in the SAME generation (no reset)
+ok   runtime generation roll invalidates cursors (round-3 finding 1)
+ok   owner roll namespaces idempotency: retry after roll dispatches fresh (round-3 finding 2)
+ok   lost registry state cannot replay outcomes across an owner roll (round-4 R4-CORRECTNESS-1)
+ok   full idempotency capacity refuses before dispatch (round-5 finding 1)
+ok   disconnected SSE slots release promptly and permit reconnect (round-5 finding 2)
+ok   round-6: concurrent same-key mutations join instead of double-dispatching (R6-CORRECTNESS-1/I10)
+ok   round-6: concurrent conflicting payload rejected before any second dispatch (I11)
+ok   round-6: overlapping admissions into the final capacity slot (I14)
+ok   round-6: persistence failure after dispatch never re-executes (committed-unknown, I08)
+ok   round-6: dormant ABA return mints a fresh epoch and dispatches fresh (R6-CORRECTNESS-2/I06)
+ok   round-6: subscription generations survive a routine restart (R6-CORRECTNESS-3/S17)
+ok   round-6: service rotation invalidates bindings minted under the old pin (R6-SECURITY-1/D04)
+ok   round-6: replay-state loss requires re-pair, not just a new epoch (R6-SECURITY-2/X01)
+ok   round-6: snapshot obeys the byte window and truncates honestly (R6-CORRECTNESS-4/S43/S44/S45)
+ok   round-6: reserved stream-reset id never enters the journal (R6-NIT-3/S07)
+ok   round-6: oversized events are rejected before any sign operation (R6-NIT-1/S35)
+ok   round-7: queued mutation must not execute after revocation (R7-AUTH-01)
+ok   round-7: exception after effect execution never releases the reservation (R7-IDEMP-02)
+ok   round-7: same-device re-registration preserves the generation floor (R7-GEN-03)
+ok   round-7: floor persistence failure refuses generation allocation (R7-GEN-04)
+ok   round-7: malformed nonce entries force re-pair after restart (R7-REPLAY-05)
+ok   round-8: floor-persistence failure closes every stream even when resets cannot sign (R8-GEN-01)
+ok   round-8: non-canonical nonce aliases force re-pair after restart (R8-REPLAY-02)
+ok   round-8: outcome persistence failure never leaves a replayable success (R8-IDEMP-03)
+ok   round-8: initial timeline floor must persist before the generation is usable (R8-GEN-04)
+ok   round-8: queued mutation must not execute after project substitution (R8-AUTH-05)
+ok   round-9: per-subscriber reset failure closes that stream instead of silent stale delivery (R9-GEN-01)
+ok   round-9: fresh-subscription allocation failure answers an error and retains nothing (R9-GEN-02)
+ok   round-9: reserved stream-reset is never accepted as a create result (R9-CREATE-01)
+ok   round-10: reset-materialization failure closes the stream instead of silent continuation (R10-GEN-01)
+ok   round-10: fresh-subscription initial-timeline failure answers correlated 503, never zero-id 500 (R10-SUBSCRIBE-01)
+ok   round-10: boxed reserved-id create result is refused and can never replay as success (R10-CREATE-01)
+ok   round-11: accessor-poisoned create result never escapes validation into the journal (R11-CREATE-01)
+ok   fs-001: failed registration leaves no memory-active credentials (FS-001 register rollback)
+ok   fs-001: failed revocation still closes streams and stays revoked in memory (FS-001 revoke sticky)
+ok   fsec-005: revocation survives restart via tombstone WAL; retry path is honest; inert tombstone never kills a re-registered instance
+ok   fsec-005-r5: malformed entries inside a readable journal poison the whole journal to unknown — never silently dropped
+ok   fsec-005-r6b: unknown-journal degradation stays memory-only even when unrelated startup corruption persists the file
+ok   fsec-005-r7: re-pair during unknown journal freezes uniformly in memory yet heals with the journal — never a session/restart split
+ok   fsec-005-r8: cross-device rotation survives restart — revoked predecessor never poisons the replacement registration
+ok   fsec-005-r9: truthy non-boolean revocation flags never bypass single-live-binding — malformed shapes forced ineligible in both file orders
+ok   fsec-005b: double write failure is memory-only, honestly flagged, and durable bytes never gain a false annotation
+ok   fsec-005-r4a: unreadable revocation journal at restart never re-authorizes any device (fail-closed, memory-only)
+ok   fsec-005-r4b: unreadable journal blocks append — a prior acknowledged revocation is never overwritten out of existence
+ok   fs-001: failed grant widening rolls back to the durable set (FS-001 grants rollback)
+ok   fs-001: failed nonce consumption rolls back — the nonce is not silently burned (FS-001 nonce rollback)
+ok   fs-002: epoch allocation failure never hands out an undurable epoch; restart cannot double-execute (FS-002)
+ok   fs-003: mandatory cursor reset materialization failure closes the stream (FS-003)
+ok   fs-005: pairing error responses pass the response validator (FS-005)
+ok   fs-004: handler exception logs carry categories, never raw exception text (FS-004)
+ok   fr-001: failed re-registration restores the exact pre-transaction key-index owner (FR-001)
+ok   fr-002: failed nonce persistence restores retention-pruned entries (FR-002)
+ok   production pairing completes: pending -> approve -> same-request retry
+
+remote-gateway: 67/67 passed
+-- remote gateway e2e exit=0
+RESULT: PASS

@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["schemaVersion", "kind", "tasks", "ci", "delegates"],
+  "properties": {
+    "schemaVersion": {"const": 1},
+    "kind": {"const": "control-history"},
+    "tasks": {
+      "type": "array",
+      "items": {
+        "type": "object", "required": ["id", "evidence"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "evidence": {"type": "array", "items": {"$ref": "shared.schema.json#/$defs/evidenceRecord"}}
+        },
+        "additionalProperties": false
+      }
+    },
+    "ci": {"type": "array", "items": {"$ref": "shared.schema.json#/$defs/ci"}},
+    "delegates": {"type": "array", "items": {"$ref": "shared.schema.json#/$defs/delegate"}}
+  },
+  "additionalProperties": false
+}

@@ -88,6 +88,7 @@
           },
           "minItems": 1
         },
+        "history": { "type": "array", "items": {"$ref": "shared.schema.json#/$defs/historyRef"}, "uniqueItems": true },
         "nextAction": {
           "type": "string",
           "minLength": 1
