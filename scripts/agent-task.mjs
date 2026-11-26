@@ -1,4 +1,4 @@
-import { ROOT, mutate, transition, digest, evidencePath, validateReport, readSafe, normalizeCi, run, assert, createCheckpoint, stable } from './lib/control.mjs';
+import { ROOT, mutate, transition, digest, evidencePath, validateReport, readSafe, safePath, atomicWrite, normalizeCi, run, assert, createCheckpoint, stable } from './lib/control.mjs';
 import { validateSchema } from './lib/schema.mjs';
 import { existsSync, mkdirSync, writeFileSync, readFileSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
@@ -25,12 +25,17 @@ if (action === 'transition') {
     // may be a scratch clone or a canonical report path that gets regenerated,
     // but the authority always points at bytes identical to what was imported.
     const storeRel = '.agent/evidence/' + digest(bytes) + '.json';
-    const storeAbs = resolve(ROOT, storeRel);
+    // FSEC-006-R4-001: the content-addressed destination goes through the same
+    // safe-path boundary as every other authoritative write. A Windows
+    // junction or symlink at .agent/evidence (or anywhere in the parent
+    // chain) is rejected BEFORE any byte is written outside the repository,
+    // and existing store entries are read through the protected path so the
+    // collision check cannot be redirected either.
+    const storeAbs = safePath(ROOT, resolve(ROOT, storeRel), { allowMissing: true });
     if (!existsSync(storeAbs)) {
-      mkdirSync(dirname(storeAbs), { recursive: true });
-      writeFileSync(storeAbs, bytes);
+      atomicWrite(storeAbs, bytes, ROOT);
     } else {
-      const existing = readFileSync(storeAbs);
+      const existing = readSafe(ROOT, storeRel);
       assert(digest(existing) === digest(bytes), 'Evidence store collision: content-addressed path holds different bytes');
     }
     const record = { kind: report.kind, path: storeRel, originalPath: value, sha256: digest(bytes), sourceFingerprint: report.sourceFingerprint, commit: report.commit, at: new Date().toISOString() };

@@ -4,7 +4,7 @@ import { mkdtempSync, writeFileSync, readFileSync, existsSync, rmSync, mkdirSync
 import { tmpdir } from 'node:os';
 import { resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
-import { ROOT, envelope, decode, digest, writeEnvelope, loadControl, mutate, snapshot, sourceFingerprint, committedFingerprint, gate, transition, renderProjections, repairProjections, git, evidencePath, validateReport, normalizeCi, createCheckpoint, validateCheckpoint, restoreCheckpoint, atomicWrite, resolveScopes, validateEvidenceScopes, coverageCheck, pruneCheckpoints, CHECKPOINT_KEEP } from '../scripts/lib/control.mjs';
+import { ROOT, envelope, decode, digest, writeEnvelope, loadControl, mutate, snapshot, sourceFingerprint, committedFingerprint, gate, transition, renderProjections, repairProjections, git, evidencePath, validateReport, normalizeCi, createCheckpoint, validateCheckpoint, restoreCheckpoint, atomicWrite, safePath, readSafe, resolveScopes, validateEvidenceScopes, coverageCheck, pruneCheckpoints, CHECKPOINT_KEEP } from '../scripts/lib/control.mjs';
 import { inspectRecovery, listCheckpoints } from '../scripts/lib/recovery.mjs';
 
 function fixture(t, committed = true) {
@@ -333,4 +333,33 @@ test('checkpoint pruning keeps newest N and never unlinks the referenced checkpo
   assert.ok(names.length <= 3 + 1 || names.includes(last.data.checkpoint.id + '.json'));
   assert.ok(existsSync(resolve(root, last.data.checkpoint.path)), 'referenced checkpoint must survive pruning');
   assert.ok(validateCheckpoint(root, loadControl(root)));
+});
+
+test('FSEC-006-R4-001: evidence import rejects Windows junction store before any external write or authority update', t => {
+  // The store destination must go through the safe-path boundary. A junction
+  // at .agent/evidence redirecting outside the repository is rejected — no
+  // byte lands outside, and the authority is never updated.
+  const repo = mkdtempSync(resolve(tmpdir(), 'evj-repo-'));
+  const outside = mkdtempSync(resolve(tmpdir(), 'evj-out-'));
+  t.after(() => { rmSync(repo, { recursive: true, force: true }); rmSync(outside, { recursive: true, force: true }); });
+  mkdirSync(resolve(repo, '.agent'), { recursive: true });
+  symlinkSync(outside, resolve(repo, '.agent', 'evidence'), 'junction');
+  const target = resolve(repo, '.agent', 'evidence', 'x.json');
+  assert.throws(
+    () => atomicWrite(target, Buffer.from('probe'), repo),
+    /Symbolic link|junction|forbidden/i,
+    'junction destination must be rejected before writing');
+  assert.equal(readdirSync(outside).length, 0, 'no byte may land outside the repository');
+  // The existing-store collision read path used by the importer is readSafe —
+  // equally protected by the same safe-path boundary.
+  assert.throws(
+    () => readSafe(repo, '.agent/evidence/x.json'),
+    /Symbolic link|junction|forbidden|escapes/i,
+    'junction read path must be rejected');
+  // And safePath in allowMissing mode (what the importer uses for the write
+  // destination) rejects the junction before anything is created.
+  assert.throws(
+    () => safePath(repo, target, { allowMissing: true }),
+    /Symbolic link|junction|forbidden|escapes/i,
+    'write destination validation must reject the junction');
 });
