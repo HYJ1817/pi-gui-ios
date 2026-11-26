@@ -1,0 +1,67 @@
+{
+  "commit": "5e38181faf169b96ad48b8638b3c06d3a95d8e98",
+  "details": {
+    "attempt": 1,
+    "ciId": "45819300792",
+    "nativeGlassVerified": true,
+    "reviewerContext": "Orchestrator\u4eba\u5de5\u9010\u56fe\u5ba1\u67e5: iphone/ipad x light/dark/accessibility \u516d\u5f20\u771f\u5b9e iOS \u6e32\u67d3\u56fe \u2014 \u4e3b\u9898\u6b63\u786e, glass \u5361\u7247\u539f\u751f\u534a\u900f\u660e\u6750\u8d28\u53ef\u89c1, Dynamic Type \u7f29\u653e\u5de5\u4f5c, iPad split-view \u4fa7\u8fb9\u680f+\u8be6\u60c5\u6b63\u5e38, \u65e0\u6e32\u67d3\u7834\u635f\u6216\u5e03\u5c40\u9519\u8bef",
+    "screenshots": [
+      {
+        "appearance": "light",
+        "device": "iphone",
+        "path": "docs/acceptance/ui-5e38181/iphone-light.png",
+        "reviewed": true,
+        "sha256": "fdea26ae6908e88388fc0a9184ce9e0433735003d4b2dc37c5f59d15c869fb0c"
+      },
+      {
+        "appearance": "dark",
+        "device": "iphone",
+        "path": "docs/acceptance/ui-5e38181/iphone-dark.png",
+        "reviewed": true,
+        "sha256": "c83497c77d4c987751db4cbcb4cf906015ffbf8fa444c8f08d3b2504957d0065"
+      },
+      {
+        "appearance": "accessibility",
+        "device": "iphone",
+        "path": "docs/acceptance/ui-5e38181/iphone-accessibility.png",
+        "reviewed": true,
+        "sha256": "e3d9238197a350b97e6921b9398db707da3411888fc38da706ee799a5acad2b6"
+      },
+      {
+        "appearance": "light",
+        "device": "ipad",
+        "path": "docs/acceptance/ui-5e38181/ipad-light.png",
+        "reviewed": true,
+        "sha256": "9406cca18f89a79fd82597950f60a985e7b8661b393abe9bb4fff595ba263f1b"
+      },
+      {
+        "appearance": "dark",
+        "device": "ipad",
+        "path": "docs/acceptance/ui-5e38181/ipad-dark.png",
+        "reviewed": true,
+        "sha256": "587555f233c6fa1061ec7e060f83edb5f0dc29e2dd4cf2a1181bb0329953f84c"
+      },
+      {
+        "appearance": "accessibility",
+        "device": "ipad",
+        "path": "docs/acceptance/ui-5e38181/ipad-accessibility.png",
+        "reviewed": true,
+        "sha256": "c79223c8070ff2dc27aadd7707f18412f217ff58f73be92cdb29badbeed96e3d"
+      }
+    ],
+    "visualReview": "pass"
+  },
+  "finishedAt": "2026-11-26T13:48:52.000Z",
+  "kind": "ui",
+  "passed": true,
+  "schemaVersion": 2,
+  "scopeFingerprint": "a5ea2bd5fd5a626e628f7e415a6889d295781bc8c8ac16ada04e3995a972247f",
+  "scopes": [
+    "app",
+    "native-build",
+    "shared"
+  ],
+  "sourceFingerprint": "61cd6469c47ecfd6c8b057d2d1e7105bd9dc3f937d5de97d6da58ae08dffa222",
+  "startedAt": "2026-11-26T13:48:52.000Z",
+  "taskId": "M-1-infrastructure"
+}

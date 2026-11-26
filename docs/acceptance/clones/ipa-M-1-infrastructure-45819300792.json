@@ -1,0 +1,23 @@
+{
+  "commit": "5e38181faf169b96ad48b8638b3c06d3a95d8e98",
+  "details": {
+    "archiveSha256": "71147485f788ffb2b7cf84f92f82b53df4a20017c9f2ddf94b5b539ccb67d737",
+    "attempt": 1,
+    "ciId": "45819300792",
+    "verificationPath": "docs/acceptance/ipa-verification-45819300792.json",
+    "verificationSha256": "7a2feed7fd6e1fb8a64e19b356b9b7a306a9597f495677b50066a2827180b6fc"
+  },
+  "finishedAt": "2026-11-26T13:48:52.000Z",
+  "kind": "ipa",
+  "passed": true,
+  "schemaVersion": 2,
+  "scopeFingerprint": "a5ea2bd5fd5a626e628f7e415a6889d295781bc8c8ac16ada04e3995a972247f",
+  "scopes": [
+    "app",
+    "native-build",
+    "shared"
+  ],
+  "sourceFingerprint": "61cd6469c47ecfd6c8b057d2d1e7105bd9dc3f937d5de97d6da58ae08dffa222",
+  "startedAt": "2026-11-26T13:48:52.000Z",
+  "taskId": "M-1-infrastructure"
+}
