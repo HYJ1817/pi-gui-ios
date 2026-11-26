@@ -1,27 +1,27 @@
 {
   "schemaVersion": 2,
   "kind": "state",
-  "revision": 2285,
-  "updatedAt": "2026-11-26T16:27:54.196Z",
+  "revision": 2286,
+  "updatedAt": "2026-11-26T17:05:17.988Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "9898a0aa8e8ecefa7bf6c5722220318ccbd54d03f1dbe9c8349f9e40b0b47d93",
+    "parentDigest": "5efe0b7d74345e18168dd17f6227e684b5eec8873723470af7b9789749f6ca51",
     "phase": "M5",
     "currentTask": "M5-tailscale",
     "branch": "agent/m-1-bootstrap",
     "checkpoint": {
-      "id": "v2-2026-11-26T16-27-54-196Z-74ec05c2-cc59-45bb-804e-36f2f361d42f",
-      "path": ".agent/checkpoints/v2-2026-11-26T16-27-54-196Z-74ec05c2-cc59-45bb-804e-36f2f361d42f.json",
-      "sha256": "be57dc5473e0dd23954fd16f522724b00487633ec89016dd367faff5243a722e",
-      "authorityDigest": "f9916dd21c4de59140d7a51844f35ae7a4ee610cdeae55597c062f938a11ec53",
-      "at": "2026-11-26T16:27:54.196Z",
+      "id": "v2-2026-11-26T17-05-17-988Z-9fd20840-1eec-4a38-a0dc-1a207d9dff4e",
+      "path": ".agent/checkpoints/v2-2026-11-26T17-05-17-988Z-9fd20840-1eec-4a38-a0dc-1a207d9dff4e.json",
+      "sha256": "b65ea451ae333773f9d2ffe78458f1b30b024dd9c48ee9955d8bbf8b67065ac1",
+      "authorityDigest": "9898a0aa8e8ecefa7bf6c5722220318ccbd54d03f1dbe9c8349f9e40b0b47d93",
+      "at": "2026-11-26T17:05:17.988Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "e0ee13b22c03b2e6d37ee94e8875afed26e26aec",
+        "commit": "2e03288dd17ced34d35d5deed628a0202e47ae80",
         "dirty": []
       },
       "sourceFingerprint": "61cd6469c47ecfd6c8b057d2d1e7105bd9dc3f937d5de97d6da58ae08dffa222",
-      "note": "软件面闭合最终态: 8/9 completed; 前沿 = 用户真机清单(device-network/install/upgrade); 树冻结解除"
+      "note": "P1 evidence cleanup merged into agent/m-1-bootstrap"
     },
     "blockers": [],
     "ci": [
@@ -1106,6 +1106,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "8b670422ea2c5364d8c13aedc9935480bcd528cff6bb41a739c24a1a85bc07ac"
+    "digest": "335a460acc28887ca93e2675dac2dfda7f8c8ed78abea29ce1b4dc3bdd639d11"
   }
 }
