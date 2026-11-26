@@ -335,6 +335,49 @@ test('checkpoint pruning keeps newest N and never unlinks the referenced checkpo
   assert.ok(validateCheckpoint(root, loadControl(root)));
 });
 
+test('FSEC-006-R4-001 end-to-end: the real importer CLI refuses a junction store — no external write, no authority update', t => {
+  // Wire-level pin: copy the real scripts + schemas into a synthetic repo,
+  // junction .agent/evidence outside, then run the actual agent-task CLI.
+  const { root } = fixture(t);
+  for (const rel of ['scripts/agent-task.mjs', 'scripts/lib/control.mjs', 'scripts/lib/schema.mjs', 'scripts/lib/recovery.mjs']) {
+    const dest = resolve(root, rel);
+    mkdirSync(resolve(dest, '..'), { recursive: true });
+    writeFileSync(dest, readFileSync(resolve(ROOT, rel)));
+  }
+  const schemaSrc = resolve(ROOT, '.agent/schemas');
+  mkdirSync(resolve(root, '.agent/schemas'), { recursive: true });
+  for (const f of readdirSync(schemaSrc)) writeFileSync(resolve(root, '.agent/schemas', f), readFileSync(resolve(schemaSrc, f)));
+  // Commit the copied scripts: validateReport requires the report fingerprint
+  // to equal the COMMITTED tree fingerprint, and untracked scripts/ files are
+  // part of the worktree fingerprint. Without this commit both versions fail
+  // at validateReport and the pin never reaches the junction logic at all —
+  // exactly the kind of vacuous pin M6-CI-BASELINE-001-TEST-001 warned about.
+  assert.ok(git(['add', 'scripts'], root).ok);
+  assert.ok(git(['-c', 'user.name=Fixture', '-c', 'user.email=fixture@example.invalid', 'commit', '-m', 'scripts'], root).ok);
+  // A valid report the importer would otherwise accept.
+  const logPath = 'docs/acceptance/infra-unit.log';
+  mkdirSync(resolve(root, 'docs/acceptance'), { recursive: true });
+  writeFileSync(resolve(root, logPath), 'Synthetic fixture test output' + String.fromCharCode(10));
+  const report = {
+    schemaVersion: 2, kind: 'unit', taskId: 'infra', commit: snapshot(root).commit,
+    sourceFingerprint: sourceFingerprint(root),
+    startedAt: '2026-11-20T01:00:00.000Z', finishedAt: '2026-11-20T01:00:01.000Z',
+    passed: true,
+    details: { command: 'npm test', exitCode: 0, logPath, logSha256: digest(readFileSync(resolve(root, logPath))) },
+  };
+  writeFileSync(resolve(root, 'docs/acceptance/report.json'), JSON.stringify(report));
+  // Junction .agent/evidence -> outside.
+  const outside = mkdtempSync(resolve(tmpdir(), 'evj2-out-'));
+  t.after(() => rmSync(outside, { recursive: true, force: true }));
+  rmSync(resolve(root, '.agent/evidence'), { recursive: true, force: true });
+  symlinkSync(outside, resolve(root, '.agent/evidence'), 'junction');
+  const controlBefore = readFileSync(resolve(root, '.agent/control.json'), 'utf8');
+  const r = spawnSync(process.execPath, [resolve(root, 'scripts/agent-task.mjs'), 'evidence', 'infra', 'docs/acceptance/report.json'], { cwd: root, encoding: 'utf8' });
+  assert.notEqual(r.status, 0, 'importer must refuse the junction: ' + (r.stdout + r.stderr).slice(0, 200));
+  assert.equal(readdirSync(outside).length, 0, 'no byte may land outside the repository');
+  assert.equal(readFileSync(resolve(root, '.agent/control.json'), 'utf8'), controlBefore, 'authority must remain byte-identical — no evidence reference recorded');
+});
+
 test('FSEC-006-R4-001: evidence import rejects Windows junction store before any external write or authority update', t => {
   // The store destination must go through the safe-path boundary. A junction
   // at .agent/evidence redirecting outside the repository is rejected — no
