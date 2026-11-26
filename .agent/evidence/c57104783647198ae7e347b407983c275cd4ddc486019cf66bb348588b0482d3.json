@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 2,
+  "kind": "doctor",
+  "taskId": "M5-tailscale",
+  "commit": "c1b41d8a0f331fd8907b6788c94da121152bfdff",
+  "sourceFingerprint": "3ce7ede25eebe836f0a1d3820edd7a87c6e624bfc0cac942241f2d47b7766fe5",
+  "scopes": [
+    "app",
+    "shared"
+  ],
+  "scopeFingerprint": "10a685b1b64d4d6936fe8dc558c68d7ebe18df042347e5d47bca74135cdd2d85",
+  "startedAt": "2026-11-26T17:59:39.432Z",
+  "finishedAt": "2026-11-26T17:59:43.641Z",
+  "passed": false,
+  "details": {
+    "command": "node node_modules/expo-doctor/build/index.js",
+    "exitCode": 1,
+    "logPath": ".agent/private-logs/be1ea5d8b7b8d6a05baa9a6ec35a93f1f7b1dd14fda396ac156470a894358e11.log",
+    "logSha256": "be1ea5d8b7b8d6a05baa9a6ec35a93f1f7b1dd14fda396ac156470a894358e11"
+  }
+}

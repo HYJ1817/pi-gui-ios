@@ -1,19 +1,19 @@
 # Agent 交接（生成文件）
 
-revision 2293；权威摘要 3cacecb80de2611f7300ff8fe9d774101d4183971488d782a681ffb76c1cf6d7
+revision 2296；权威摘要 42b8e608045e2608acdcd8846d942cf8fd73e54e6e782d03b09e5bd29734f7ed
 
 先读 AGENTS.md / REVIEW.md，执行 node scripts/agent-resume.mjs --remote。
 
 当前 M5-tailscale（M5），预期分支 refactor/p2-maintainability。
 
-下一步：P2 candidate assembled on refactor/p2-maintainability: independent functional/security reviews, consolidated tests/typecheck/bundle/desktop parity and fresh-clone recovery are next; then one five-job native CI and PR. See docs/acceptance/p2-maintainability.md. Do not start P3; device checks remain pending.
+下一步：P2 functional/security reviews passed; full tests 441/441, typecheck, iOS bundle and desktop integration passed. Doctor failed a version recommendation check and stays failed; collect registered baseline diagnosis and existing CI install-check impact. Only documentation staging nit is being corrected; do not upgrade or skip checks, do not start P3.
 
 阻塞：无已记录阻塞
 
 检查点 .agent/checkpoints/v2-2026-11-26T17-53-10-586Z-d7600362-2170-4dd6-b468-e05e0abf0814.json；HEAD 94ac5c64a037eadd6db03616e647dfbbf9085476。dirty（保存时）：
 无
 
-运行摘要：{"ci":1,"delegates":3,"activeCi":[],"workingDelegates":[],"archives":1}
+运行摘要：{"ci":1,"delegates":7,"activeCi":[],"workingDelegates":["node:delegated-task:command%3Amcp%3Ae2b2c73f-cc7a-4ea8-aef7-1beb329e3ba1%3Adelegate-task%3A3e3ec1a8-83ba-4ecd-afb1-bc83d3353a87"],"archives":1}
 
 历史仅由权威中的 history 摘要引用；投影不复制证据或终态任务。
 

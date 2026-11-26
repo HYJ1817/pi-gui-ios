@@ -43,6 +43,8 @@ node scripts/verify.mjs unit "$TASK_ID"
 # 报告文件名：当前任务为 local-unit.json，其他任务附加 -<TASK_ID>
 git add -- "$PUBLIC_LOG"
 node scripts/agent-task.mjs evidence "$TASK_ID" "$REPORT"
+# IMPORTED_REPORT 指向刚导入、摘要等于 REPORT 原始字节的 .agent/evidence/<sha256>.json
+git add -- "$IMPORTED_REPORT"
 node scripts/agent-validate.mjs --task "$TASK_ID"
 ```
 

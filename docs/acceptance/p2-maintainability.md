@@ -63,4 +63,14 @@ Git blob 精确口径基线：813 文件、55,632,688 bytes；docs/acceptance 41
 
 协议：`4aac86e3df4c92dbe972f6605eec7c2ac379f630` 已集成为 `08cbe41`；42 项合同测试、6 个直接行为对照及 copy/JSON/工作区负向用例通过，两处行为 pin 均验证旧实现失败。固定 normalized hash 为 `b9dbb606c7fa3bc731b5c19032d25c0a5d0c606df2c53c4c2577b00319c95f8b`；它使用清除 source positions 的正式 normalizer，与审计探索值不同，未把探索输出冒充验收。集成时精简 D2 说明，并移除桌面验证成功输出中无必要的本机绝对路径；桌面源码未改。
 
-下一步：候选源码冻结后，并行独立功能/安全审查及统一测试/类型/bundle/真实桌面协议验证；从全新 clone 验证正常恢复、损坏恢复、dirty 保留与嵌套证据。测试原文可共享，任务绑定与每个门禁保持独立。仅在源码合齐、审查/本地检查通过后触发一次原五 Job CI；如源码需修复则如实重验，不把旧产物当新源码证据。
+## 集中验证与独立审查
+
+候选 `c1b41d8a0f331fd8907b6788c94da121152bfdff` 的 global sourceFingerprint 为 `3ce7ede25eebe836f0a1d3820edd7a87c6e624bfc0cac942241f2d47b7766fe5`。一次 canonical npm test：441 passed、0 failed/skip；typecheck exit 0，iOS bundle exit 0（1669 modules）；实际固定桌面合同 33/33、网关 67/67，桌面与原始 dirty 工作区均未改。四份成功原始报告及日志按原摘要保存于内容寻址目录，共享测试输出不等于共享任务通过条件。
+
+Doctor 实际 19/20，版本建议检查失败：expo 58.0.26→期望 ~58.1.0，expo-glass-effect 58.0.5→期望 ~58.0.6。整体请求的验证集合因此仍为 FAIL；原始失败报告 `.agent/evidence/c57104783647198ae7e347b407983c275cd4ddc486019cf66bb348588b0482d3.json` 保留，含本机路径的输出留本地。未升级依赖、扩展忽略名单、重跑制造通过或导入失败证据。已另派只读诊断核对原基线和 CI install --check 的实际影响。
+
+功能审查与真实交接 PASS：原始 receipt `.agent/evidence/3de75651600a78617081bf8ffc9b0dbe444db5ee3a406d475f66f2bd178a2598.json`；99/99 定向测试，独立无 hardlink 克隆实际完成权威损坏/显式恢复/dirty 文件字节保留及 check:stack。记录守恒核查按历史 multiplicity 计数，确认 623 条证据、22 条 CI、145 条 delegate 均保留。唯一非阻断项是文档漏暂存新导入 JSON，现仅补这两行；不为此重复业务测试。该 meta 文档变化不改变 unit/业务/安全既有作用域；原 c1 交接 all-scope 记录仍绑定原源码，不冒充新文档树的门禁。
+
+安全审查 PASS、无 Blocker/Important/Nit：receipt `.agent/evidence/9c5a1d140d4539f3113805166c5c2118a9cb05e6221b67fa2ee19760cdd70731.json`；99 项定向测试及 10 项独立对抗用例通过，确认静态安全路径/atomicWrite 防线与基线字节相同，归档 PASS/显式 FAIL/未暂存日志不能满足当前门禁；协议负向及变异校验通过。已知同 OS 用户并发目录替换只能检测而非完全防止，日志筛查仍需人工审查，均不扩张既有保证。
+
+下一步仅处理已登记版本诊断、一次实际五 Job CI、最终新克隆恢复/证据校验及 PR。失效门禁保持失效，设备始终待用户，P2 结束后停止，不自动启动 P3。

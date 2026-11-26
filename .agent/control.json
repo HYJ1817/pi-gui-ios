@@ -1,8 +1,8 @@
 {
   "schemaVersion": 2,
   "kind": "control",
-  "revision": 2293,
-  "updatedAt": "2026-11-26T17:53:10.586Z",
+  "revision": 2296,
+  "updatedAt": "2026-11-26T18:14:10.410Z",
   "data": {
     "phase": "M5",
     "currentTask": "M5-tailscale",
@@ -915,7 +915,7 @@
       "sourceFingerprint": "3ce7ede25eebe836f0a1d3820edd7a87c6e624bfc0cac942241f2d47b7766fe5",
       "note": "P2 assembled source 94ac5c6 before independent review; production remains synthetic"
     },
-    "nextAction": "P2 candidate assembled on refactor/p2-maintainability: independent functional/security reviews, consolidated tests/typecheck/bundle/desktop parity and fresh-clone recovery are next; then one five-job native CI and PR. See docs/acceptance/p2-maintainability.md. Do not start P3; device checks remain pending.",
+    "nextAction": "P2 functional/security reviews passed; full tests 441/441, typecheck, iOS bundle and desktop integration passed. Doctor failed a version recommendation check and stays failed; collect registered baseline diagnosis and existing CI install-check impact. Only documentation staging nit is being corrected; do not upgrade or skip checks, do not start P3.",
     "delegates": [
       {
         "taskId": "node:delegated-task:command%3Amcp%3Acd5f8275-b346-4980-941e-ddfe9f4ea675%3Adelegate-task%3A00427e58-6ac1-412c-bad8-c14f26fd09be",
@@ -934,6 +934,33 @@
         "role": "independent-handoff",
         "status": "completed",
         "sourceCommit": "5e38181faf169b96ad48b8638b3c06d3a95d8e98"
+      },
+      {
+        "taskId": "node:delegated-task:command%3Amcp%3Ae2b2c73f-cc7a-4ea8-aef7-1beb329e3ba1%3Adelegate-task%3A975eb736-f26d-456f-8020-a6481432db15",
+        "role": "independent-review",
+        "status": "completed",
+        "sourceCommit": "c1b41d8a0f331fd8907b6788c94da121152bfdff",
+        "decision": "pass"
+      },
+      {
+        "taskId": "node:delegated-task:command%3Amcp%3Ae2b2c73f-cc7a-4ea8-aef7-1beb329e3ba1%3Adelegate-task%3A69a1d423-2a46-49c3-8640-c31b6d88cc36",
+        "role": "independent-security",
+        "status": "completed",
+        "sourceCommit": "c1b41d8a0f331fd8907b6788c94da121152bfdff",
+        "decision": "pass"
+      },
+      {
+        "taskId": "node:delegated-task:command%3Amcp%3Ae2b2c73f-cc7a-4ea8-aef7-1beb329e3ba1%3Adelegate-task%3A32ca3601-33bb-4d7e-a3e2-02b6617452f0",
+        "role": "verification",
+        "status": "completed",
+        "sourceCommit": "c1b41d8a0f331fd8907b6788c94da121152bfdff",
+        "decision": "fail"
+      },
+      {
+        "taskId": "node:delegated-task:command%3Amcp%3Ae2b2c73f-cc7a-4ea8-aef7-1beb329e3ba1%3Adelegate-task%3A3e3ec1a8-83ba-4ecd-afb1-bc83d3353a87",
+        "role": "diagnosis",
+        "status": "working",
+        "sourceCommit": "c1b41d8a0f331fd8907b6788c94da121152bfdff"
       }
     ],
     "history": [
@@ -945,6 +972,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "3cacecb80de2611f7300ff8fe9d774101d4183971488d782a681ffb76c1cf6d7"
+    "digest": "42b8e608045e2608acdcd8846d942cf8fd73e54e6e782d03b09e5bd29734f7ed"
   }
 }
