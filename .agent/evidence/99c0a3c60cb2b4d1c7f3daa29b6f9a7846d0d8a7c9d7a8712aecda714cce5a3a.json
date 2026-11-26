@@ -1,0 +1,25 @@
+{
+  "commit": "5092a6d707339da5888b44b94edd0bc5b8760021",
+  "details": {
+    "canonicalPath": "docs/acceptance/local-fault-injection.json",
+    "command": "node --test tests/m4-fault-injection.test.mjs",
+    "exitCode": 0,
+    "logPath": "docs/acceptance/logs/88d5dfa372bc918b2c0a050b833c38f310e7a3ce039dd9bd8a5f8e5ed5e287c9.log",
+    "logSha256": "88d5dfa372bc918b2c0a050b833c38f310e7a3ce039dd9bd8a5f8e5ed5e287c9",
+    "sameRunEvidence": "sameRunEvidence: this task shares the canonical local run because the run itself covers the union of all task scopes in one execution; cloned verbatim with only taskId adjusted, never restamped"
+  },
+  "finishedAt": "2026-11-26T11:14:20.781Z",
+  "kind": "fault-injection",
+  "passed": true,
+  "schemaVersion": 2,
+  "scopeFingerprint": "f5648dbecf7e63fa2d94a9a4075fef62dd926e2e86ab4d6984616794186563e7",
+  "scopes": [
+    "app",
+    "protocol",
+    "shared",
+    "tests"
+  ],
+  "sourceFingerprint": "2eb7a85e0802ffbddab5fc9c44ce13ee8e2cec9638114083482ed48e931aef82",
+  "startedAt": "2026-11-26T11:14:16.345Z",
+  "taskId": "M4-sync"
+}

@@ -1,0 +1,21 @@
+{
+  "commit": "34a8b16a536932fe89592145de3ab3c23f2ca850",
+  "details": {
+    "note": "One independent verification run certifies the current tree as a whole (round-4 closure review covering M6-CI-BASELINE-001-TEST-001 closure plus re-verification of the invariants every milestone depends on). Cloned verbatim per task \u2014 not an independent per-task run.",
+    "receiptPath": "docs/acceptance/receipt-review-b109fc69.json",
+    "receiptSha256": "e4b533dfe8978768f31a74f81ae3237eb867a0767a5ee854fcd420dc03d89f36",
+    "sameRunEvidence": "docs/acceptance/receipt-review-b109fc69.json"
+  },
+  "finishedAt": "2026-11-26T10:32:25.000Z",
+  "kind": "independent-review",
+  "passed": true,
+  "schemaVersion": 2,
+  "scopeFingerprint": "0caf7e6055a2b054363e8f9d4a0ffe5a759cf55ce24ec036a31cdb11e878c64c",
+  "scopes": [
+    "protocol",
+    "shared"
+  ],
+  "sourceFingerprint": "1ee9ed69a57ae899f46abf8fa6ca39375b2fbc2c4ac496f538222872a711700c",
+  "startedAt": "2026-11-26T10:32:25.000Z",
+  "taskId": "M0-architecture"
+}

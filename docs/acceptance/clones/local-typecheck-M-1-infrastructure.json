@@ -1,5 +1,5 @@
 {
-  "commit": "34a8b16a536932fe89592145de3ab3c23f2ca850",
+  "commit": "5092a6d707339da5888b44b94edd0bc5b8760021",
   "details": {
     "canonicalPath": "docs/acceptance/local-typecheck.json",
     "command": "npm run typecheck",
@@ -8,7 +8,7 @@
     "logSha256": "c3fefe23bd7768210a2aaef41e3a7a9441b1536192ed6a18df85563717628607",
     "sameRunEvidence": "sameRunEvidence: this task shares the canonical local run because the run itself covers the union of all task scopes in one execution; cloned verbatim with only taskId adjusted, never restamped"
   },
-  "finishedAt": "2026-11-26T10:15:10.816Z",
+  "finishedAt": "2026-11-26T11:14:26.968Z",
   "kind": "typecheck",
   "passed": true,
   "schemaVersion": 2,
@@ -17,7 +17,7 @@
     "app",
     "shared"
   ],
-  "sourceFingerprint": "1ee9ed69a57ae899f46abf8fa6ca39375b2fbc2c4ac496f538222872a711700c",
-  "startedAt": "2026-11-26T10:14:48.605Z",
+  "sourceFingerprint": "2eb7a85e0802ffbddab5fc9c44ce13ee8e2cec9638114083482ed48e931aef82",
+  "startedAt": "2026-11-26T11:14:16.190Z",
   "taskId": "M-1-infrastructure"
 }

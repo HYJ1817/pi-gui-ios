@@ -2,15 +2,15 @@
   "schemaVersion": 2,
   "kind": "doctor",
   "taskId": "M4-sync",
-  "commit": "34a8b16a536932fe89592145de3ab3c23f2ca850",
-  "sourceFingerprint": "1ee9ed69a57ae899f46abf8fa6ca39375b2fbc2c4ac496f538222872a711700c",
+  "commit": "5092a6d707339da5888b44b94edd0bc5b8760021",
+  "sourceFingerprint": "2eb7a85e0802ffbddab5fc9c44ce13ee8e2cec9638114083482ed48e931aef82",
   "scopes": [
     "app",
     "shared"
   ],
   "scopeFingerprint": "7fcbcb2f79ca04a7ce28ea69950c2b01f1e547373a84266cf838b0c191e2edde",
-  "startedAt": "2026-11-26T10:14:48.660Z",
-  "finishedAt": "2026-11-26T10:15:10.210Z",
+  "startedAt": "2026-11-26T11:14:16.249Z",
+  "finishedAt": "2026-11-26T11:14:27.985Z",
   "passed": true,
   "details": {
     "command": "node node_modules/expo-doctor/build/index.js",

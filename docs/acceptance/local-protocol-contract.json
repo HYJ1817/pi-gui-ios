@@ -2,20 +2,20 @@
   "schemaVersion": 2,
   "kind": "protocol-contract",
   "taskId": "M4-sync",
-  "commit": "34a8b16a536932fe89592145de3ab3c23f2ca850",
-  "sourceFingerprint": "1ee9ed69a57ae899f46abf8fa6ca39375b2fbc2c4ac496f538222872a711700c",
+  "commit": "5092a6d707339da5888b44b94edd0bc5b8760021",
+  "sourceFingerprint": "2eb7a85e0802ffbddab5fc9c44ce13ee8e2cec9638114083482ed48e931aef82",
   "scopes": [
     "protocol",
     "shared"
   ],
   "scopeFingerprint": "0caf7e6055a2b054363e8f9d4a0ffe5a759cf55ce24ec036a31cdb11e878c64c",
-  "startedAt": "2026-11-26T10:14:48.698Z",
-  "finishedAt": "2026-11-26T10:14:49.962Z",
+  "startedAt": "2026-11-26T11:14:16.293Z",
+  "finishedAt": "2026-11-26T11:14:17.637Z",
   "passed": true,
   "details": {
     "command": "node --test tests/remote-contract.test.mjs",
     "exitCode": 0,
-    "logPath": "docs/acceptance/logs/3ab5f880fe3ad4d9ccd20a2821af90d9aaca87882d925f0ed123f796a77feada.log",
-    "logSha256": "3ab5f880fe3ad4d9ccd20a2821af90d9aaca87882d925f0ed123f796a77feada"
+    "logPath": "docs/acceptance/logs/730e7704a0e5b70b1c1cff33de4d5fd08cc91451635e8c65bca2291484df22e8.log",
+    "logSha256": "730e7704a0e5b70b1c1cff33de4d5fd08cc91451635e8c65bca2291484df22e8"
   }
 }

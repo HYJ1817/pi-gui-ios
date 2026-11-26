@@ -1,0 +1,23 @@
+{
+  "commit": "5092a6d707339da5888b44b94edd0bc5b8760021",
+  "details": {
+    "canonicalPath": "docs/acceptance/local-bundle.json",
+    "command": "npm run export:ios",
+    "exitCode": 0,
+    "logPath": "docs/acceptance/logs/1c12414490221b7449cb36c1b68d4262f2bee5892b70c71a7f7470212619cc48.log",
+    "logSha256": "1c12414490221b7449cb36c1b68d4262f2bee5892b70c71a7f7470212619cc48",
+    "sameRunEvidence": "sameRunEvidence: this task shares the canonical local run because the run itself covers the union of all task scopes in one execution; cloned verbatim with only taskId adjusted, never restamped"
+  },
+  "finishedAt": "2026-11-26T11:14:26.861Z",
+  "kind": "bundle",
+  "passed": true,
+  "schemaVersion": 2,
+  "scopeFingerprint": "7fcbcb2f79ca04a7ce28ea69950c2b01f1e547373a84266cf838b0c191e2edde",
+  "scopes": [
+    "app",
+    "shared"
+  ],
+  "sourceFingerprint": "2eb7a85e0802ffbddab5fc9c44ce13ee8e2cec9638114083482ed48e931aef82",
+  "startedAt": "2026-11-26T11:14:16.213Z",
+  "taskId": "M-1-infrastructure"
+}
