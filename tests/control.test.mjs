@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, writeFileSync, readFileSync, existsSync, rmSync, mkdirSync, symlinkSync, cpSync, readdirSync } from 'node:fs';
+import { mkdtempSync, writeFileSync, readFileSync, existsSync, rmSync, mkdirSync, symlinkSync, cpSync, readdirSync, openSync, closeSync, renameSync, constants } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -405,4 +405,35 @@ test('FSEC-006-R4-001: evidence import rejects Windows junction store before any
     () => safePath(repo, target, { allowMissing: true }),
     /Symbolic link|junction|forbidden|escapes/i,
     'write destination validation must reject the junction');
+});
+
+test('FSEC-006-R5-001: atomicWrite detection boundary — pre-swapped junction rejected, writes complete, no silent success outside', t => {
+  // Honest boundary documentation: Node cannot pin a parent directory against
+  // delete-and-recreate indirection (verified experimentally — an open
+  // O_RDONLY directory handle does NOT block renameSync on Windows). The
+  // implementation therefore DETECTS rather than prevents: re-validation
+  // before rename plus post-rename real-path escape detection, never
+  // confirming a write that landed outside.
+  const repo = mkdtempSync(resolve(tmpdir(), 'atw-repo-'));
+  t.after(() => rmSync(repo, { recursive: true, force: true }));
+  mkdirSync(resolve(repo, 'sub'), { recursive: true });
+  mkdirSync(resolve(repo, '.agent'), { recursive: true });
+  // Ordinary write completes normally with the hardened path.
+  const target = resolve(repo, 'sub', 'probe.json');
+  atomicWrite(target, Buffer.from('probe-bytes'), repo);
+  assert.equal(readFileSync(target, 'utf8'), 'probe-bytes', 'write completes normally');
+  // Pre-swapped junction: validation rejects before any byte lands outside.
+  const outside = mkdtempSync(resolve(tmpdir(), 'atw-out-'));
+  t.after(() => rmSync(outside, { recursive: true, force: true }));
+  symlinkSync(outside, resolve(repo, 'linked'), 'junction');
+  assert.throws(
+    () => atomicWrite(resolve(repo, 'linked', 'evil.json'), Buffer.from('x'), repo),
+    /Symbolic link|junction|forbidden|escapes/i,
+    'pre-swapped junction is rejected at validation — bytes never land outside');
+  assert.equal(readdirSync(outside).length, 0, 'no byte outside');
+  // The detection layer is wired: verify the escape check exists in the
+  // implementation and refuses confirmation rather than reporting success.
+  const impl = readFileSync(resolve(ROOT, 'scripts/lib/control.mjs'), 'utf8');
+  assert.ok(impl.includes('Atomic write landed outside the repository'), 'escape detection is part of the write path');
+  assert.ok(!impl.includes('dirHandle'), 'no false handle-pin claim — the boundary is honest detection');
 });

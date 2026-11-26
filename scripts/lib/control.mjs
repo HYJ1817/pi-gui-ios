@@ -73,12 +73,44 @@ export function atomicWrite(path, content, root = ROOT) {
   mkdirSync(dirname(path), { recursive: true }); safePath(root, dirname(path), { leaf: 'directory' });
   const tmp = `${path}.tmp-${process.pid}-${randomUUID()}`;
   let fd;
+  // FSEC-006-R5-001: validation-to-rename is not atomic at the path level,
+  // and Node provides no primitive that pins a parent directory against
+  // delete-and-recreate indirection (experimentally verified: an open
+  // O_RDONLY directory handle does NOT block renameSync on Windows — libuv
+  // opens with share flags). The honest boundary is therefore DETECTION,
+  // not prevention:
+  //   1. re-validate immediately before rename — shrinks the window to the
+  //      final syscall pair;
+  //   2. post-rename escape detection — the landed file's real path must
+  //      stay inside the repository's real root. A swap that redirects the
+  //      write outside is caught here and reported as failure instead of
+  //      being confirmed as a successful authoritative write. Bytes that
+  //      escaped are unlinked best-effort; the operation never silently
+  //      succeeds.
+  //   3. byte-content verification through the protected read path.
+  // Residual risk (documented, accepted): a swap that lands the bytes
+  // outside AND is reverted before detection completes can evade detection
+  // for that single write. Closing it fully requires OS-level directory
+  // locking beyond what Node exposes — the control plane's threat model
+  // (single-operator local machine, no concurrent adversarial process) does
+  // not justify a native addon for it.
   try {
     fd = openSync(tmp, constants.O_WRONLY | constants.O_CREAT | constants.O_EXCL | (constants.O_NOFOLLOW ?? 0), 0o600);
     writeFileSync(fd, content); fsyncSync(fd); closeSync(fd); fd = undefined;
     safePath(root, path, { allowMissing: true }); renameSync(tmp, path);
+    if (existsSync(path)) {
+      const realTarget = realpathSync.native(path);
+      const realRoot = realpathSync.native(resolve(root));
+      if (!within(realRoot, realTarget)) {
+        try { unlinkSync(path); } catch { /* best-effort cleanup */ }
+        throw new Error('Atomic write landed outside the repository — refusing to confirm');
+      }
+    }
     assert(digest(readSafe(root, relative(root, path))) === digest(content), 'Atomic write verification failed');
-  } finally { if (fd !== undefined) closeSync(fd); if (existsSync(tmp)) unlinkSync(tmp); }
+  } finally {
+    if (fd !== undefined) closeSync(fd);
+    if (existsSync(tmp)) unlinkSync(tmp);
+  }
 }
 export function writeEnvelope(root, path, e) { decode(e, e.kind); atomicWrite(resolve(root, path), `${JSON.stringify(e, null, 2)}\n`, root); }
 export function loadControl(root = ROOT) { return decode(readSafe(root, '.agent/control.json', 'utf8'), 'control'); }
