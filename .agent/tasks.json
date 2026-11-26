@@ -1,17 +1,17 @@
 {
   "schemaVersion": 2,
   "kind": "tasks",
-  "revision": 2233,
-  "updatedAt": "2026-11-26T16:13:22.846Z",
+  "revision": 2282,
+  "updatedAt": "2026-11-26T16:25:59.972Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "adc1ad8bdbf16c3d6e333bae4e6d807d984ebe77515022e0dc65005ba6108fb2",
+    "parentDigest": "a8c6cef7f3ff68bb53667276db42527a4211c7f50de6181ee3c38745146a9d23",
     "tasks": [
       {
         "id": "M-1-infrastructure",
         "phase": "M-1",
         "title": "恢复控制层、Windows 原生探针、macOS/Simulator/Maestro/unsigned IPA 验证",
-        "status": "testing",
+        "status": "completed",
         "dependsOn": [],
         "requiredEvidence": [
           "unit",
@@ -1807,9 +1807,22 @@
               "tests"
             ],
             "scopeFingerprint": "cdd60b8215f05518a869b7d2840ee0d19ef8650c0fe455620aba8140fef0f43f"
+          },
+          {
+            "kind": "independent-handoff",
+            "path": ".agent/evidence/009a2f131f0a9f777e5fbc31b5ffefc6a6563ad402891bd26916d0b6fd7d49cd.json",
+            "originalPath": "docs/acceptance/clones/independent-handoff-M-1-infrastructure-final.json",
+            "sha256": "009a2f131f0a9f777e5fbc31b5ffefc6a6563ad402891bd26916d0b6fd7d49cd",
+            "sourceFingerprint": "61cd6469c47ecfd6c8b057d2d1e7105bd9dc3f937d5de97d6da58ae08dffa222",
+            "commit": "5e38181faf169b96ad48b8638b3c06d3a95d8e98",
+            "at": "2026-11-26T16:21:23.898Z",
+            "scopes": [
+              "all"
+            ],
+            "scopeFingerprint": "61cd6469c47ecfd6c8b057d2d1e7105bd9dc3f937d5de97d6da58ae08dffa222"
           }
         ],
-        "updatedAt": "2026-11-25T07:17:28.394Z"
+        "updatedAt": "2026-11-26T16:23:17.579Z"
       },
       {
         "id": "M-1-device",
@@ -1830,7 +1843,7 @@
         "id": "M0-architecture",
         "phase": "M0",
         "title": "冻结架构、协议和安全模型",
-        "status": "testing",
+        "status": "completed",
         "dependsOn": [],
         "requiredEvidence": [
           "unit",
@@ -2892,7 +2905,7 @@
             "scopeFingerprint": "0caf7e6055a2b054363e8f9d4a0ffe5a759cf55ce24ec036a31cdb11e878c64c"
           }
         ],
-        "updatedAt": "2026-11-26T07:50:20.653Z",
+        "updatedAt": "2026-11-26T16:23:30.513Z",
         "evidenceScopes": {
           "independent-review": [
             "protocol"
@@ -2906,7 +2919,7 @@
         "id": "M1-remote",
         "phase": "M1",
         "title": "桌面远程授权、配对、撤销",
-        "status": "testing",
+        "status": "completed",
         "dependsOn": [
           "M0-architecture"
         ],
@@ -4012,7 +4025,7 @@
             "scopeFingerprint": "0caf7e6055a2b054363e8f9d4a0ffe5a759cf55ce24ec036a31cdb11e878c64c"
           }
         ],
-        "updatedAt": "2026-11-26T07:50:21.492Z",
+        "updatedAt": "2026-11-26T16:23:46.870Z",
         "evidenceScopes": {
           "independent-review": [
             "protocol"
@@ -4026,7 +4039,7 @@
         "id": "M2-shell",
         "phase": "M2",
         "title": "原生设计系统与 iPad 导航布局",
-        "status": "testing",
+        "status": "completed",
         "dependsOn": [
           "M1-remote"
         ],
@@ -4745,7 +4758,7 @@
             "scopeFingerprint": "7fcbcb2f79ca04a7ce28ea69950c2b01f1e547373a84266cf838b0c191e2edde"
           }
         ],
-        "updatedAt": "2026-11-26T07:50:22.335Z",
+        "updatedAt": "2026-11-26T16:24:09.011Z",
         "evidenceScopes": {
           "independent-review": [
             "app"
@@ -4759,7 +4772,7 @@
         "id": "M3-core",
         "phase": "M3",
         "title": "会话、消息、任务、模型、工具及审批",
-        "status": "testing",
+        "status": "completed",
         "dependsOn": [
           "M2-shell"
         ],
@@ -5914,13 +5927,13 @@
             "scopeFingerprint": "cdd60b8215f05518a869b7d2840ee0d19ef8650c0fe455620aba8140fef0f43f"
           }
         ],
-        "updatedAt": "2026-11-26T07:50:23.275Z"
+        "updatedAt": "2026-11-26T16:24:34.213Z"
       },
       {
         "id": "M4-sync",
         "phase": "M4",
         "title": "实时同步、断线补发、多设备一致性",
-        "status": "testing",
+        "status": "completed",
         "dependsOn": [
           "M3-core"
         ],
@@ -7100,7 +7113,7 @@
             "scopeFingerprint": "c019a4f063b6725f457356fc41faaed0f524736c1f48b06aeb4e6eed68baeb36"
           }
         ],
-        "updatedAt": "2026-11-26T07:50:24.171Z"
+        "updatedAt": "2026-11-26T16:25:02.666Z"
       },
       {
         "id": "M5-tailscale",
@@ -8459,7 +8472,7 @@
         "id": "M6-distribution",
         "phase": "M6",
         "title": "IPA、版本检测、SideStore 源与发布候选",
-        "status": "pending",
+        "status": "completed",
         "dependsOn": [
           "M4-sync"
         ],
@@ -8749,12 +8762,13 @@
             ],
             "scopeFingerprint": "cdd60b8215f05518a869b7d2840ee0d19ef8650c0fe455620aba8140fef0f43f"
           }
-        ]
+        ],
+        "updatedAt": "2026-11-26T16:25:59.839Z"
       }
     ]
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "3551b270e378c7a22afcd6e7ec546b47d825bcea6d13f3bab252d064cb296603"
+    "digest": "5b8aef1ccd0186434236c38cf2ab35075124193879b3e87f8bdad062d6cd186b"
   }
 }

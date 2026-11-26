@@ -1,0 +1,20 @@
+{
+  "commit": "5e38181faf169b96ad48b8638b3c06d3a95d8e98",
+  "details": {
+    "note": "Final independent handoff verification \u2014 fresh-operator recovery, suite reproducibility, control integrity, documentation accuracy all verified green with zero divergences.",
+    "receiptPath": "docs/acceptance/receipt-handoff-26e718f1.json",
+    "receiptSha256": "6e0265f1f0a4b6388b5efe5da59aa8c57793f64e9192311ce7b79d5a41c73cb1",
+    "sameRunEvidence": "docs/acceptance/receipt-handoff-26e718f1.json"
+  },
+  "finishedAt": "2026-11-26T16:21:22.000Z",
+  "kind": "independent-handoff",
+  "passed": true,
+  "schemaVersion": 2,
+  "scopeFingerprint": "61cd6469c47ecfd6c8b057d2d1e7105bd9dc3f937d5de97d6da58ae08dffa222",
+  "scopes": [
+    "all"
+  ],
+  "sourceFingerprint": "61cd6469c47ecfd6c8b057d2d1e7105bd9dc3f937d5de97d6da58ae08dffa222",
+  "startedAt": "2026-11-26T16:21:22.000Z",
+  "taskId": "M-1-infrastructure"
+}
