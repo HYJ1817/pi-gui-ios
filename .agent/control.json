@@ -1,8 +1,8 @@
 {
   "schemaVersion": 2,
   "kind": "control",
-  "revision": 2284,
-  "updatedAt": "2026-11-26T16:27:27.402Z",
+  "revision": 2285,
+  "updatedAt": "2026-11-26T16:27:54.196Z",
   "data": {
     "phase": "M5",
     "currentTask": "M5-tailscale",
@@ -8976,18 +8976,18 @@
       }
     ],
     "checkpoint": {
-      "id": "v2-2026-11-26T16-26-56-518Z-239c7494-6fc9-4f34-9e11-41d701cc8e59",
-      "path": ".agent/checkpoints/v2-2026-11-26T16-26-56-518Z-239c7494-6fc9-4f34-9e11-41d701cc8e59.json",
-      "sha256": "df5c9217f937b21071e369e0e9b956d04ba16541c4739bc4976a3f901c9ad236",
-      "authorityDigest": "a8c6cef7f3ff68bb53667276db42527a4211c7f50de6181ee3c38745146a9d23",
-      "at": "2026-11-26T16:26:56.518Z",
+      "id": "v2-2026-11-26T16-27-54-196Z-74ec05c2-cc59-45bb-804e-36f2f361d42f",
+      "path": ".agent/checkpoints/v2-2026-11-26T16-27-54-196Z-74ec05c2-cc59-45bb-804e-36f2f361d42f.json",
+      "sha256": "be57dc5473e0dd23954fd16f522724b00487633ec89016dd367faff5243a722e",
+      "authorityDigest": "f9916dd21c4de59140d7a51844f35ae7a4ee610cdeae55597c062f938a11ec53",
+      "at": "2026-11-26T16:27:54.196Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "f5a70b92627a54c95604e7ff99643a7e4b49dfd1",
+        "commit": "e0ee13b22c03b2e6d37ee94e8875afed26e26aec",
         "dirty": []
       },
       "sourceFingerprint": "61cd6469c47ecfd6c8b057d2d1e7105bd9dc3f937d5de97d6da58ae08dffa222",
-      "note": "软件面闭合: 8/9 completed, 证据链全闭合, handoff PASS; 树冻结解除 — 用户可以整理仓库"
+      "note": "软件面闭合最终态: 8/9 completed; 前沿 = 用户真机清单(device-network/install/upgrade); 树冻结解除"
     },
     "nextAction": "软件面闭合完成。用户整理解锁；剩余设计内事项: M5-tailscale device-network + M-1-device install/upgrade — 等待用户最终真机集中验收清单(SideStore 安装/启动/刷新/覆盖升级/网络)。",
     "delegates": [
@@ -9865,6 +9865,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "f9916dd21c4de59140d7a51844f35ae7a4ee610cdeae55597c062f938a11ec53"
+    "digest": "9898a0aa8e8ecefa7bf6c5722220318ccbd54d03f1dbe9c8349f9e40b0b47d93"
   }
 }
