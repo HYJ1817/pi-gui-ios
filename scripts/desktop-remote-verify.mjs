@@ -63,7 +63,8 @@ function main() {
   console.log(`expected branch   ${desktop.branch}`);
   console.log(`expected commit   ${desktop.commit}`);
   console.log(`protocolVersion   ${desktop.protocolVersion}`);
-  console.log(`worktree          ${worktree}`);
+  // The verified repository/commit are sufficient public provenance; keep the
+  // machine-local checkout path out of an otherwise publishable success log.
   verifyDesktopWorktree(worktree, desktop);
   console.log('worktree pinned + clean: OK');
   const parity = verifyProtocolParity(worktree);

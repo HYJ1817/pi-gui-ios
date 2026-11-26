@@ -1,8 +1,8 @@
 # 项目进度（生成文件）
 
-权威：.agent/control.json；schema v2；revision 2289；2026-11-26T17:38:13.673Z
+权威：.agent/control.json；schema v2；revision 2292；2026-11-26T17:52:05.828Z
 
-阶段：M5；当前：M5-tailscale；分支：t3/e5c9d15e
+阶段：M5；当前：M5-tailscale；分支：refactor/p2-maintainability
 
 | 任务 | 状态 | 范围 |
 | --- | --- | --- |
@@ -18,10 +18,10 @@
 
 阻塞：无已记录阻塞
 
-检查点：.agent/checkpoints/v2-2026-11-26T17-34-41-020Z-d1fb16fa-985b-47e8-91d3-bbb17caf6b7b.json；保存时 HEAD：e130b692b01fff904f08cdd92eb70bd7deb74d1c
+检查点：.agent/checkpoints/v2-2026-11-26T17-44-06-340Z-a912ee8c-5411-4fc8-8717-e398787942dc.json；保存时 HEAD：512fde80ea91360eff05cabd07a4076384fe8f41
 
 CI：{"ci":1,"delegates":3,"activeCi":[],"workingDelegates":[],"archives":1}
 
-下一步：P2 control component: focused control suite 50/50 passed. Parent integrates runtime/protocol/docs on refactor/p2-maintainability, then runs consolidated validation and independent security review. Rebind authority explicitly with node scripts/agent-compact.mjs --apply --adopt-branch. Historical gates remain invalid; final device checks pending.
+下一步：P2 candidate assembled on refactor/p2-maintainability: independent functional/security reviews, consolidated tests/typecheck/bundle/desktop parity and fresh-clone recovery are next; then one five-job native CI and PR. See docs/acceptance/p2-maintainability.md. Do not start P3; device checks remain pending.
 
 证据必须由 agent-validate 解析实际结果、核对提交/源码摘要与依赖后才有效。

@@ -14,13 +14,13 @@ Windows 开发、标准 macOS Runner 原生验证、SideStore 自签；无付费
 2. `.agent/control.json` 是**唯一任务/运行状态权威**；`.agent/state.json`、`.agent/tasks.json`、`PROGRESS.md`、`.agent/HANDOFF.md` 是可重建投影，不手改。按恢复输出读相关 ADR/验收记录；[ROADMAP.md](ROADMAP.md) 只规定范围/依赖/门槛。
 3. 优先处理当前已授权任务；重核证据的 commit、摘要与作用域，失效不能沿用聊天中的 PASS。独立 worktree 与权威分支不符时向协调者报告，不为消除诊断改权威或重置源码。
 
-恢复默认只读。投影损坏用 `node scripts/agent-resume.mjs --repair-projections`；权威损坏先 `node scripts/agent-resume.mjs --list-checkpoints`，核对候选外层/内层摘要、分支与 dirty diff，再用 `node scripts/agent-restore.mjs VERIFIED_V2_PATH --apply`。保留原权威备份与 dirty 源码，不切换/重置分支。
+恢复默认只读。投影损坏用 `node scripts/agent-resume.mjs --repair-projections`；权威损坏先 `node scripts/agent-resume.mjs --list-checkpoints`，核对候选外层/内层摘要、分支与 dirty diff，再用 `node scripts/agent-restore.mjs VERIFIED_V2_PATH --apply`。保留原权威备份与 dirty 源码，不切换/重置分支。新独立分支确需接管权威时先运行 `node scripts/agent-compact.mjs --adopt-branch` 预览，再显式加 `--apply`；普通子任务不接管。
 
 ## 工作与交接
 
 实现 → 定向检查/实际运行/必要图审 → 独立上下文审查 → 修复回归 → 证据门禁。转换用 `node scripts/agent-task.mjs transition TASK_ID STATUS`，完成前用 `node scripts/agent-validate.mjs --task TASK_ID` 递归复验依赖。证据失效的 accepted/completed 回 testing，依赖未通过不启动依赖业务，不手改状态造通过。
 
-在**有意义的任务转换、重要提交、阻塞/恢复决定和会话交接**保存状态/`node scripts/agent-checkpoint.mjs --note "说明"`，脚本已保存就不重复；无需每次原子编辑/证据导入另做快照。交接包含 HEAD/dirty 文件、CI/任务标识、已执行/未执行检查、阻塞与下一条命令。协调者维护权威，限域子任务不越界，不另建进度账本或复制历史运行清单。
+在**有意义的任务转换、重要提交、阻塞/恢复决定和会话交接**保存状态/`node scripts/agent-checkpoint.mjs --note "说明"`，脚本已保存就不重复。证据导入、CI 登记、verify 不自动生成完整快照；保留最近 8 个有效检查点和当前权威引用。历史整理先 `node scripts/agent-compact.mjs` 预览，再按需 `--apply`；不可变归档仅供追溯，不参与门禁。交接包含 HEAD/dirty、CI/任务、检查结果和下一命令；协调者维护权威，限域子任务不越界，不复制进度账本。
 
 同类普通环境/工具/Runner 问题最多三次有目标尝试；仍失败保留原因、影响、未验证范围/恢复条件，记 deferred/unverified，继续不依赖工作。安全/隐私、身份/权限、撤销/审批、数据完整性不降低断言；缺独立审查只能继续默认关闭的隔离准备。
 

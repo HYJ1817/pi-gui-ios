@@ -38,14 +38,21 @@ gh workflow run native-infrastructure.yml --ref "$BRANCH" -f stage=sim -f app_ru
 源码已提交且确需验收时，令 `TASK_ID` 为权威当前任务，使用现有入口：
 
 ```bash
-node scripts/verify.mjs unit
-node scripts/agent-task.mjs evidence "$TASK_ID" docs/acceptance/local-unit.json
+node scripts/verify.mjs unit "$TASK_ID"
+# 检查报告引用的确切日志；PUBLIC_LOG 只指向已审查的内容寻址合成日志
+# 报告文件名：当前任务为 local-unit.json，其他任务附加 -<TASK_ID>
+git add -- "$PUBLIC_LOG"
+node scripts/agent-task.mjs evidence "$TASK_ID" "$REPORT"
 node scripts/agent-validate.mjs --task "$TASK_ID"
 ```
 
 其他本地 kind 有 `typecheck`、`bundle`、`doctor`。`integration` 访问指定桌面工作区，仅在授权范围内运行。
 
-报告按 [evidence schema](../.agent/schemas/evidence.schema.json) 保存命令/时间/exit、commit、源码/作用域指纹和日志摘要。导入报告存 `.agent/evidence/<sha256>.json`，日志内容寻址于 `docs/acceptance/logs/`。**内容寻址不等于脱敏**：现有 verify 会先保存进程原始输出；审查路径/元数据前不提交或导入，只有可公开合成证据能入库。CI 的 `collect-evidence.py` / `merge-evidence.py` 仅接纳闭合白名单，原始构建日志/模拟器清单留在 runner 私有临时目录，不整目录上传。
+报告按 [evidence schema](../.agent/schemas/evidence.schema.json) 保存命令/时间/exit、commit、源码/作用域指纹和日志摘要。导入报告存 `.agent/evidence/<sha256>.json`；可公开日志仅用 `docs/acceptance/logs/<sha256>.log`，保留原始字节、不做换行转换。verify 对未通过合成输出检查的原文存入忽略目录 `.agent/private-logs/`；命令成功不代表这些材料可导入或公开。先核对 `REPORT` 和 `PUBLIC_LOG` 的实际路径、内容与摘要，再暂存确切日志；导入/门禁还核对日志、receipt、verification、截图等嵌套产物的 Git 索引字节。不得强加敏感/未验证日志、重算历史摘要或把不可恢复历史记为通过。
+
+**内容寻址不等于脱敏**，输出筛查保守且不能替代内容审查。`node scripts/agent-compact.mjs` 默认只读，审计现有报告/嵌套依赖并预览整理；`--apply` 将不参与门禁的历史存入同一内容寻址目录，由权威摘要引用，保留最新诊断与仍有效的门禁候选。归档不恢复成有效证据；投影仅保留摘要。历史原日志只可用显式 `--recover-logs-from` 从只读来源找回相同字节；缺失或敏感材料保持缺口，不改报告。
+
+CI 的 `collect-evidence.py` / `merge-evidence.py` 仅接纳闭合白名单，原始构建日志/模拟器清单留在 runner 私有临时目录，不整目录上传。
 
 不覆盖被引用字节、不改历史失败/指纹、不用 `--passed`；敏感原始材料留私有位置，公开派生报告另用身份/摘要并说明缺口。门禁复验依赖/当前作用域，CI 绑定精确 workflow/run/attempt/head/结果，独立审查读取原收据；旧 PASS 不自动成为新树或 P3 PASS。恢复/路径/安全回归按变更范围运行，审查见 [REVIEW.md](../REVIEW.md)。
 
