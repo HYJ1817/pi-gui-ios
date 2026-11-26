@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "kind": "integration",
   "taskId": "M4-sync",
-  "commit": "5e38181faf169b96ad48b8638b3c06d3a95d8e98",
+  "commit": "500b290e39ea5fc48ded2e3678a37cf6d8dce515",
   "sourceFingerprint": "61cd6469c47ecfd6c8b057d2d1e7105bd9dc3f937d5de97d6da58ae08dffa222",
   "scopes": [
     "control",
@@ -10,13 +10,13 @@
     "shared"
   ],
   "scopeFingerprint": "c019a4f063b6725f457356fc41faaed0f524736c1f48b06aeb4e6eed68baeb36",
-  "startedAt": "2026-11-26T13:33:39.356Z",
-  "finishedAt": "2026-11-26T13:36:15.066Z",
+  "startedAt": "2026-11-26T14:03:28.637Z",
+  "finishedAt": "2026-11-26T14:06:04.672Z",
   "passed": true,
   "details": {
     "command": "node scripts/desktop-remote-verify.mjs",
     "exitCode": 0,
-    "logPath": "docs/acceptance/logs/239dbd6684c1eae4a2e9afb79439e5eb0c0db0edabdf5cfa95c2bb461d1ca903.log",
-    "logSha256": "239dbd6684c1eae4a2e9afb79439e5eb0c0db0edabdf5cfa95c2bb461d1ca903"
+    "logPath": "docs/acceptance/logs/6edaf51440c7dfbcc153e67f5cc4399b38d7cdea869d1a4c4d0c56ac328468f6.log",
+    "logSha256": "6edaf51440c7dfbcc153e67f5cc4399b38d7cdea869d1a4c4d0c56ac328468f6"
   }
 }

@@ -1,11 +1,11 @@
 {
   "schemaVersion": 2,
   "kind": "tasks",
-  "revision": 2159,
-  "updatedAt": "2026-11-26T13:53:23.073Z",
+  "revision": 2173,
+  "updatedAt": "2026-11-26T14:06:50.526Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "7480f472b0767ad65019bf4442e180e12ae1e40efabbfece32f0ef942732281a",
+    "parentDigest": "04b259ca4021b016b00eabef5a8d060735b56847c7b64dde8ef2fb3e0c20e703",
     "tasks": [
       {
         "id": "M-1-infrastructure",
@@ -3904,6 +3904,21 @@
               "shared"
             ],
             "scopeFingerprint": "0caf7e6055a2b054363e8f9d4a0ffe5a759cf55ce24ec036a31cdb11e878c64c"
+          },
+          {
+            "kind": "integration",
+            "path": ".agent/evidence/5bce3ea3aabfde47f8d4055faabf567664ac36034f4c2135fe7125c845d71cbd.json",
+            "originalPath": "docs/acceptance/clones/local-integration-M1-remote.json",
+            "sha256": "5bce3ea3aabfde47f8d4055faabf567664ac36034f4c2135fe7125c845d71cbd",
+            "sourceFingerprint": "61cd6469c47ecfd6c8b057d2d1e7105bd9dc3f937d5de97d6da58ae08dffa222",
+            "commit": "500b290e39ea5fc48ded2e3678a37cf6d8dce515",
+            "at": "2026-11-26T14:06:06.683Z",
+            "scopes": [
+              "control",
+              "protocol",
+              "shared"
+            ],
+            "scopeFingerprint": "c019a4f063b6725f457356fc41faaed0f524736c1f48b06aeb4e6eed68baeb36"
           }
         ],
         "updatedAt": "2026-11-26T07:50:21.492Z",
@@ -5728,6 +5743,21 @@
               "tests"
             ],
             "scopeFingerprint": "cdd60b8215f05518a869b7d2840ee0d19ef8650c0fe455620aba8140fef0f43f"
+          },
+          {
+            "kind": "integration",
+            "path": ".agent/evidence/d075349bcffa7dc594b3cee26ef243f8dae0b58f9f1c33ed0de2c8889e01aeee.json",
+            "originalPath": "docs/acceptance/clones/local-integration-M3-core.json",
+            "sha256": "d075349bcffa7dc594b3cee26ef243f8dae0b58f9f1c33ed0de2c8889e01aeee",
+            "sourceFingerprint": "61cd6469c47ecfd6c8b057d2d1e7105bd9dc3f937d5de97d6da58ae08dffa222",
+            "commit": "500b290e39ea5fc48ded2e3678a37cf6d8dce515",
+            "at": "2026-11-26T14:06:08.204Z",
+            "scopes": [
+              "control",
+              "protocol",
+              "shared"
+            ],
+            "scopeFingerprint": "c019a4f063b6725f457356fc41faaed0f524736c1f48b06aeb4e6eed68baeb36"
           }
         ],
         "updatedAt": "2026-11-26T07:50:23.275Z"
@@ -6838,6 +6868,37 @@
               "tests"
             ],
             "scopeFingerprint": "cdd60b8215f05518a869b7d2840ee0d19ef8650c0fe455620aba8140fef0f43f"
+          },
+          {
+            "kind": "integration",
+            "path": ".agent/evidence/da0af9eac700467fb26bf1b5e264962087c19983df084111923d714f7fdb1ea7.json",
+            "originalPath": "docs/acceptance/clones/local-integration-M4-sync.json",
+            "sha256": "da0af9eac700467fb26bf1b5e264962087c19983df084111923d714f7fdb1ea7",
+            "sourceFingerprint": "61cd6469c47ecfd6c8b057d2d1e7105bd9dc3f937d5de97d6da58ae08dffa222",
+            "commit": "500b290e39ea5fc48ded2e3678a37cf6d8dce515",
+            "at": "2026-11-26T14:06:09.775Z",
+            "scopes": [
+              "control",
+              "protocol",
+              "shared"
+            ],
+            "scopeFingerprint": "c019a4f063b6725f457356fc41faaed0f524736c1f48b06aeb4e6eed68baeb36"
+          },
+          {
+            "kind": "fault-injection",
+            "path": ".agent/evidence/4aa89f6157699baef0e5a65eccd08381003cbcfc66bb8f36fae2f38a7579c4a6.json",
+            "originalPath": "docs/acceptance/clones/local-fault-injection-M4-sync.json",
+            "sha256": "4aa89f6157699baef0e5a65eccd08381003cbcfc66bb8f36fae2f38a7579c4a6",
+            "sourceFingerprint": "61cd6469c47ecfd6c8b057d2d1e7105bd9dc3f937d5de97d6da58ae08dffa222",
+            "commit": "5e38181faf169b96ad48b8638b3c06d3a95d8e98",
+            "at": "2026-11-26T14:06:11.409Z",
+            "scopes": [
+              "app",
+              "protocol",
+              "shared",
+              "tests"
+            ],
+            "scopeFingerprint": "05f2838733e146ab31d3dadc64dad086a43d3bfcf51cf6149a40aa1669249d4e"
           }
         ],
         "updatedAt": "2026-11-26T07:50:24.171Z"
@@ -8113,6 +8174,21 @@
               "tests"
             ],
             "scopeFingerprint": "cdd60b8215f05518a869b7d2840ee0d19ef8650c0fe455620aba8140fef0f43f"
+          },
+          {
+            "kind": "integration",
+            "path": ".agent/evidence/df5650b0c8db2eef04bbb90fb4c1d91ca31a357944931b89d107b0dd72e96a0a.json",
+            "originalPath": "docs/acceptance/clones/local-integration-M5-tailscale.json",
+            "sha256": "df5650b0c8db2eef04bbb90fb4c1d91ca31a357944931b89d107b0dd72e96a0a",
+            "sourceFingerprint": "61cd6469c47ecfd6c8b057d2d1e7105bd9dc3f937d5de97d6da58ae08dffa222",
+            "commit": "500b290e39ea5fc48ded2e3678a37cf6d8dce515",
+            "at": "2026-11-26T14:06:12.988Z",
+            "scopes": [
+              "control",
+              "protocol",
+              "shared"
+            ],
+            "scopeFingerprint": "c019a4f063b6725f457356fc41faaed0f524736c1f48b06aeb4e6eed68baeb36"
           }
         ],
         "updatedAt": "2026-11-25T07:17:37.479Z"
@@ -8399,6 +8475,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "2a35b8299b7038f612bec1f88a5bc5b58e17bd255442a175bd669bfefbe6bae5"
+    "digest": "425d88b2c57259c57328bf570bf341e4f9b0f233fae3bb9706d79783f6d60cff"
   }
 }
