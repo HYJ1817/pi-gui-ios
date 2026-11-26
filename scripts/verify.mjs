@@ -30,7 +30,13 @@ const args = command.program === 'npm' ? [npmCli, ...command.args] : command.arg
 const r = spawnSync(process.execPath, args, { cwd: ROOT, shell: false, encoding: 'utf8', windowsHide: true, maxBuffer: 32 * 1024 * 1024, env: { ...process.env, CI: '1', EXPO_NO_TELEMETRY: '1' } });
 const output = (r.stdout ?? '') + (r.stderr ?? '') + (r.error?.message ?? '');
 const suffix = targetTaskId === loadControl().data.currentTask ? '' : `-${targetTaskId}`;
-const logPath = 'docs/acceptance/local-' + kind + suffix + '-output.txt'; atomicWrite(resolve(ROOT, logPath), output);
+// FSEC-006 evidence immutability: the output log is content-addressed. Two
+// runs producing identical bytes share one immutable file; differing bytes
+// can never overwrite the log a previous report referenced. Historical
+// report/log pairs remain reconstructible forever.
+const logDigest = digest(output);
+const logPath = 'docs/acceptance/logs/' + logDigest + '.log';
+if (!existsSync(resolve(ROOT, logPath))) atomicWrite(resolve(ROOT, logPath), output);
 const report = { schemaVersion: 2, kind, taskId: targetTaskId, commit, sourceFingerprint: fingerprint, scopes, scopeFingerprint, startedAt, finishedAt: new Date().toISOString(), passed: r.status === 0 && fingerprint === sourceFingerprint(), details: { command: command.label, exitCode: r.status ?? 1, logPath, logSha256: digest(output) } };
 atomicWrite(resolve(ROOT, 'docs/acceptance/local-' + kind + suffix + '.json'), JSON.stringify(report, null, 2) + '\n');
 console.log(output); console.log(JSON.stringify({ kind, passed: report.passed, exitCode: report.details.exitCode, sourceFingerprint: fingerprint, commit }));

@@ -363,15 +363,22 @@ jobs:
           IPA_SHA="$(shasum -a 256 artifacts/ipa/PiGUIMobile-unsigned.ipa | awk '{print $1}')"
           IPA_SIZE="$(stat -f%z artifacts/ipa/PiGUIMobile-unsigned.ipa)"
           TAG="v$(python3 -c "import json;print(json.load(open('artifacts/distribution/version-report.json'))['ipaVersion'])")+build$(python3 -c "import json;print(json.load(open('artifacts/distribution/version-report.json'))['ipaBuildNumber'])")"
-          # 2. Upgrade compatibility structural verification. Until the first
-          #    authorized release exists there is no committed baseline, so the
-          #    pipeline exercises the checker against a synthetic one-build-older
-          #    baseline derived from THIS run's verified reports — proving the
-          #    wiring executes end-to-end. Genuine regression detection across
-          #    real releases is covered by the unit suite's paired fixtures and
-          #    activates automatically once a baseline lands in the repo.
-          python3 -c "import json,sys; report=json.load(open('artifacts/distribution/version-report.json')); report['ipaBuildNumber']=report['ipaBuildNumber']-1; json.dump(report, open('$RUNNER_TEMP/baseline-version.json','w'))"
-          python3 scripts/ci/upgrade-compat.py "$RUNNER_TEMP/baseline-version.json" artifacts/distribution/version-report.json artifacts/ipa/verification.json artifacts/ipa/verification.json artifacts/distribution/upgrade-compat.json
+          # 2. Upgrade compatibility structural verification. Two honest modes:
+          #    - COMMITTED BASELINE (docs/acceptance/distribution/baseline-*.json,
+          #      written only as part of an authorized release): the real
+          #      comparison runs and its result gates the draft.
+          #    - FIRST RELEASE (no baseline committed): no comparison exists
+          #      to run. The sentinel report says exactly that — kind
+          #      distribution-upgrade-compat-absent, code NO_BASELINE_FIRST_RELEASE
+          #      — and the release draft records upgradeBaseline:none-first-release
+          #      in its notes rather than claiming compatibility was verified.
+          #    Deriving a synthetic baseline from the candidate itself (the
+          #    previous behavior) proved nothing and was removed.
+          if [ -f docs/acceptance/distribution/baseline-version.json ] && [ -f docs/acceptance/distribution/baseline-verify.json ]; then
+            python3 scripts/ci/upgrade-compat.py docs/acceptance/distribution/baseline-version.json artifacts/distribution/version-report.json docs/acceptance/distribution/baseline-verify.json artifacts/ipa/verification.json artifacts/distribution/upgrade-compat.json
+          else
+            python3 -c "import json; json.dump({'schemaVersion': 2, 'kind': 'distribution-upgrade-compat-absent', 'passed': True, 'code': 'NO_BASELINE_FIRST_RELEASE', 'violations': [], 'scope': 'structural-automation-only', 'deviceSemantics': 'no prior release exists; upgrade compatibility is not applicable to a first release', 'bindings': {}}, open('artifacts/distribution/upgrade-compat.json', 'w'), indent=2, sort_keys=True)"
+          fi
           # 3. SideStore source draft — artifact-only, never published.
           python3 scripts/ci/sidestore-source.py "$(python3 -c "import json;print(json.load(open('artifacts/distribution/version-report.json'))['ipaVersion'])")" "$(python3 -c "import json;print(json.load(open('artifacts/distribution/version-report.json'))['ipaBuildNumber'])")" "$IPA_SHA" "$IPA_SIZE" "$TAG" artifacts/distribution/sidestore-source.json
           # 4. Release draft — bound to exactly the verified bytes.

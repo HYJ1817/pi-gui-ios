@@ -32,11 +32,28 @@ def generate(version, build_number, sha256, size_bytes, tag, asset_name):
         errors.append('SHA256_FORMAT')
     if not (isinstance(size_bytes, int) and size_bytes > 0):
         errors.append('SIZE_FORMAT')
-    if not (isinstance(tag, str) and tag.strip() == tag and len(tag) >= 1 and ' ' not in tag):
+    # FSEC-004: the tag becomes a URL path segment. Anything that can escape
+    # the intended GitHub release-download path — separators, dot segments,
+    # control characters, query/fragment delimiters, whitespace — is invalid.
+    # Canonical grammar: the exact tag release-draft derives, nothing else.
+    import re as _re
+    expected_tag = f"v{version}+build{build_number}" if not errors else None
+    tag_valid = (isinstance(tag, str) and 1 <= len(tag) <= 64
+                 and _re.fullmatch(r'v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\+build[1-9][0-9]*', tag or '') is not None
+                 and tag == expected_tag)
+    if not tag_valid:
         errors.append('TAG_FORMAT')
     if errors:
         return {'passed': False, 'violations': errors, 'source': None}
     download = f'https://github.com/{REPO}/releases/download/{tag}/{asset_name}'
+    # Completed-URL validation: the URL must parse to exactly the intended
+    # host and path — defence in depth behind the tag grammar.
+    import urllib.parse as _up
+    parsed = _up.urlsplit(download)
+    if not (parsed.scheme == 'https' and parsed.netloc == 'github.com'
+            and parsed.path == f'/{REPO}/releases/download/{tag}/{asset_name}'
+            and not parsed.query and not parsed.fragment):
+        errors.append('URL_ESCAPE')
     source = {
         'name': 'Pi GUI Mobile (unsigned, self-signed distribution)',
         'identifier': SOURCE_ID,

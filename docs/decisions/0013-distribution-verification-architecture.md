@@ -32,3 +32,14 @@ ipa job 在 `IPA_VERIFIED` 之后增加 M6 步骤，产出五件分发工件随 
 ## 测试
 
 `tests/m6-distribution.test.mjs`（14 例）覆盖：版本一致/版本漂移/build 漂移/格式非法/bundle-id 冒充/单调性拒绝/版本回退/身份漂移/输入非 passed 全部失败关闭/哈希绑定断裂拒绝/SideStore 形状与诚实权限声明/草案装订端到端。另已对真实 CI 产物（run 45759600894, build 1, ~10.9MB unsigned IPA）执行完整端到端链验证通过。
+
+## 安全加固轮（2026-11-26 最终安全/功能审查 FSEC-001..004 + functional 4I）
+
+首轮独立审查发现六个 important，全部修复：
+
+- **FSEC-001 有界解析与净化失败**：zip 元数据（条目数/单文件/总量/压缩比）在任何解压字节产生之前校验；清单读取上限 1 MiB、压缩比上限 100；plist/JSON 容器类型先验证后使用；数字只接受 ASCII 十进制（`str.isdigit` 接受 Unicode 数字，正是此类工具必须拒绝的输入）；一切失败转固定码报告——traceback、输入值、文件路径绝不进入输出。
+- **FSEC-002 端到端链绑定**：版本报告携带被检 IPA 的 `ipaSha256`；release-draft 验证 ipa↔verify↔version↔compat↔sidestore 全链同 digest，版本/build/tag/下载 URL/包身份精确一致。任何文档张冠李戴即 `*_HASH_BINDING`/`SOURCE_VERSION_BINDING`/`SOURCE_URL_BINDING`/`IDENTITY_BINDING` 硬失败。compat 报告的 `bindings` 记录它实际比较了什么。
+- **FSEC-003 严格 schema**：`isinstance(True, int)` 为 True 是 Python 陷阱——build 号显式拒绝 bool；缺失字段不是"相等"而是 schema 违规；verify 报告必须 IPA_VERIFIED + 有效 sha256 + 非空合法 bundle id + 精确 ['arm64']。
+- **FSEC-004 canonical tag 语法**：tag 必须精确匹配 `v<semver>+build<n>` 且等于由本批输入派生的 tag——遍历/换行/query/fragment/分隔符/不一致全部拒绝；完成后的 URL 再经 urlsplit 校验主机与路径。
+- **CI 基线诚实化**：合成基线（候选减一）被移除——它不证明任何东西。两种诚实模式：`docs/acceptance/distribution/baseline-*.json` 存在时跑真实比较；否则哨兵报告 `NO_BASELINE_FIRST_RELEASE`，草案 notes 明确"not applicable — first release"，绝不声称未曾运行的验证。
+- **FSEC-006 证据不可变性**（控制面级）：verify.mjs 输出日志改内容寻址 `docs/acceptance/logs/<sha>.log`；agent-task evidence 导入时把报告字节复制进 `.agent/evidence/<sha256>.json` 内容寻址存储后才记录路径——权威引用的字节永不因后续重建被覆盖。历史失效引用在 `docs/acceptance/evidence-immutability.md` 如实记账。

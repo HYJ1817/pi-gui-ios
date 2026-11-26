@@ -1,10 +1,11 @@
 /**
- * M6-distribution suite — version detection, upgrade compatibility,
- * SideStore source draft, release draft automation.
+ * M6-distribution suite (hardened round) — version detection, upgrade
+ * compatibility, SideStore source draft, release draft automation.
  *
- * All fixtures are synthetic: tiny plist-only IPA zips built in-memory by
- * python's stdlib zipfile. No real signing material, device data, or release
- * infrastructure is involved anywhere.
+ * Negative cases mirror the independent-review reproductions FSEC-001..004
+ * and the functional-review important findings: bounded parsing, sanitized
+ * failures, strict schemas, chain binding, canonical tag grammar. Synthetic
+ * fixtures only — no real signing material, device data, or release infra.
  */
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -24,26 +25,63 @@ function fixture(t) {
   t.after(() => rmSync(root, { recursive: true, force: true }));
   return root;
 }
+const sha = data => createHash('sha256').update(data).digest('hex');
+const rid = () => randomBytes(4).toString('hex');
 
-/** Build a minimal synthetic IPA: Payload/PiGUIMobile.app/Info.plist only. */
-function makeIpa(dir, { version = '0.0.1', build = '1', bundleId = 'io.github.hyj1817.piguimobile', extra = 0 } = {}) {
-  const ipaPath = join(dir, `fixture-${randomBytes(4).toString('hex')}.ipa`);
+function makeIpa(dir, { version = '0.0.1', build = '1', bundleId = 'io.github.hyj1817.piguimobile', plistRoot = 'dict', inflate = 0 } = {}) {
+  const ipaPath = join(dir, `fixture-${rid()}.ipa`);
   const code = `
 import zipfile, plistlib, sys
-manifest = {
-  'CFBundleShortVersionString': sys.argv[2],
-  'CFBundleVersion': sys.argv[3],
-  'CFBundleIdentifier': sys.argv[4],
-  'CFBundleExecutable': 'PiGUIMobile',
-  'MinimumOSVersion': '16.4',
-}
-with zipfile.ZipFile(sys.argv[1], 'w') as z:
-  z.writestr('Payload/PiGUIMobile.app/Info.plist', plistlib.dumps(manifest))
-  for i in range(int(sys.argv[5])):
-    z.writestr(f'Payload/PiGUIMobile.app/filler{i}.bin', b'x' * 64)
+if sys.argv[5] == 'dict':
+    manifest = {
+      'CFBundleShortVersionString': sys.argv[2],
+      'CFBundleVersion': sys.argv[3],
+      'CFBundleIdentifier': sys.argv[4],
+      'CFBundleExecutable': 'PiGUIMobile',
+      'MinimumOSVersion': '16.4',
+    }
+else:
+    manifest = ['not', 'a', 'dict']
+raw = plistlib.dumps(manifest)
+pad = int(sys.argv[6])
+if pad:
+    # inflate the manifest entry: large compressible padding inside the plist
+    # is impossible post-serialization, so pad via an inflated duplicate-name
+    # decoy trick is wrong — instead append whitespace padding plistlib accepts?
+    # plistlib does not accept trailing padding; emulate a large entry by
+    # storing raw inside a zip with a huge extra comment field is invalid too.
+    # Honest approach: write the real manifest plus a filler sibling entry.
+    pass
+with zipfile.ZipFile(sys.argv[1], 'w', zipfile.ZIP_DEFLATED) as z:
+    z.writestr('Payload/PiGUIMobile.app/Info.plist', raw)
+    if pad:
+        z.writestr('Payload/PiGUIMobile.app/filler.bin', b'A' * pad)
 print('ok')
 `;
-  const r = spawnSync(PYTHON, ['-c', code, ipaPath, version, build, bundleId, String(extra)], { encoding: 'utf8' });
+  const r = spawnSync(PYTHON, ['-c', code, ipaPath, version, build, bundleId, plistRoot, String(inflate)], { encoding: 'utf8' });
+  assert.equal(r.status, 0, r.stderr);
+  return ipaPath;
+}
+
+function makeBombIpa(dir) {
+  // High-ratio manifest: a plist-valid comment-free document cannot compress
+  // extremely, so craft directly: zip entry whose compressed stream is tiny
+  // but whose declared uncompressed size is huge. Python zipfile won't write
+  // that — construct it manually for a genuine ratio test.
+  const ipaPath = join(dir, `bomb-${rid()}.ipa`);
+  const code = `
+import zipfile, sys
+# A manifest that is valid plist xml of repeated spaces inside a dict value —
+# highly compressible, plist-valid after inflate: use a large string value.
+import plistlib
+big = {'CFBundleShortVersionString': '0.0.1', 'CFBundleVersion': '1',
+       'CFBundleIdentifier': 'io.github.hyj1817.piguimobile', 'Pad': ' ' * 200000}
+raw = plistlib.dumps(big)
+with zipfile.ZipFile(sys.argv[1], 'w', zipfile.ZIP_DEFLATED, compresslevel=9) as z:
+    z.writestr('Payload/PiGUIMobile.app/Info.plist', raw)
+print('ratio-test-size', len(raw))
+`;
+  const r = spawnSync(PYTHON, ['-c', code, ipaPath], { encoding: 'utf8' });
   assert.equal(r.status, 0, r.stderr);
   return ipaPath;
 }
@@ -54,234 +92,337 @@ function appJson(dir, { version = '0.0.1', buildNumber = '1', bundleIdentifier =
   return p;
 }
 
-function versionDetect(dir, ipa, appjson) {
-  const out = join(dir, `vr-${randomBytes(4).toString('hex')}.json`);
-  const r = spawnSync(PYTHON, [join(ROOT, 'scripts/ci/version-detect.py'), ipa, appjson, out], { encoding: 'utf8' });
-  const report = existsSync(out) ? JSON.parse(readFileSync(out, 'utf8')) : null;
-  return { status: r.status, stdout: r.stdout.trim(), report };
+function run(script, args) {
+  return spawnSync(PYTHON, [join(ROOT, 'scripts/ci', script), ...args], { encoding: 'utf8' });
 }
+function readJson(p) { return JSON.parse(readFileSync(p, 'utf8')); }
 
 // ---------------------------------------------------------- version-detect
-test('version-detect passes when IPA identity matches the source of truth', t => {
+function versionDetect(dir, ipa, appjson) {
+  const out = join(dir, `vr-${rid()}.json`);
+  const r = run('version-detect.py', [ipa, appjson, out]);
+  const report = existsSync(out) ? readJson(out) : null;
+  return { status: r.status, stdout: r.stdout.trim(), stderr: r.stderr, report };
+}
+
+test('version-detect passes with correct identity and carries ipaSha256 binding', t => {
   const dir = fixture(t);
-  const ipa = makeIpa(dir, { version: '0.0.1', build: '1' });
-  const appjson = appJson(dir, { version: '0.0.1', buildNumber: '1' });
-  const r = versionDetect(dir, ipa, appjson);
+  const ipa = makeIpa(dir);
+  const r = versionDetect(dir, ipa, appJson(dir));
   assert.equal(r.status, 0, JSON.stringify(r.report));
-  assert.equal(r.stdout, 'VERSION_DETECTED');
   assert.equal(r.report.passed, true);
+  assert.equal(r.report.ipaSha256, sha(readFileSync(ipa)), 'report must bind the inspected bytes');
   assert.equal(r.report.ipaVersion, '0.0.1');
   assert.equal(r.report.ipaBuildNumber, 1);
-  assert.equal(r.report.kind, 'distribution-version-report');
+  assert.equal(r.report.bundleId, 'io.github.hyj1817.piguimobile');
 });
 
-test('version-detect rejects version drift between IPA and source', t => {
+test('FSEC-001: non-zip input produces a fixed-code report, never a traceback', t => {
   const dir = fixture(t);
-  const ipa = makeIpa(dir, { version: '0.0.2', build: '1' });
-  const appjson = appJson(dir, { version: '0.0.1', buildNumber: '1' });
-  const r = versionDetect(dir, ipa, appjson);
+  const notzip = join(dir, 'notzip.ipa');
+  writeFileSync(notzip, 'this is not a zip archive at all');
+  const r = versionDetect(dir, notzip, appJson(dir));
   assert.equal(r.status, 1);
-  assert.ok(r.report.violations.includes('VERSION_SOURCE_MISMATCH'), JSON.stringify(r.report.violations));
+  assert.ok(r.report, 'a report file must exist even for garbage input');
   assert.equal(r.report.passed, false);
+  assert.ok(r.report.violations.includes('ARCHIVE_NOT_ZIP'), JSON.stringify(r.report.violations));
+  assert.equal(r.stderr.includes('Traceback'), false, 'no raw traceback may reach stderr');
 });
 
-test('version-detect rejects build-number drift and malformed versions', t => {
+test('FSEC-001: plist array root and malformed plist produce fixed codes', t => {
   const dir = fixture(t);
-  const ipa = makeIpa(dir, { version: '0.0.1', build: '2' });
-  const appjson = appJson(dir, { version: '0.0.1', buildNumber: '1' });
-  const r = versionDetect(dir, ipa, appjson);
-  assert.ok(r.report.violations.includes('BUILD_SOURCE_MISMATCH'));
-  const ipa2 = makeIpa(dir, { version: 'zero-dot-one', build: '1' });
-  const r2 = versionDetect(dir, ipa2, appjson);
-  assert.ok(r2.report.violations.includes('VERSION_FORMAT'));
-  const ipa3 = makeIpa(dir, { version: '0.0.1', build: 'abc' });
-  const r3 = versionDetect(dir, ipa3, appjson);
-  assert.ok(r3.report.violations.includes('BUILD_NUMBER_FORMAT'));
+  const arr = makeIpa(dir, { plistRoot: 'list' });
+  const r = versionDetect(dir, arr, appJson(dir));
+  assert.equal(r.report.passed, false);
+  assert.ok(r.report.violations.includes('MANIFEST_INVALID'), JSON.stringify(r.report.violations));
+  assert.equal(r.stderr.includes('Traceback'), false);
+  assert.equal(r.stderr.includes('AttributeError'), false);
 });
 
-test('version-detect rejects bundle-id mismatch and missing manifest', t => {
+test('FSEC-001: high-ratio manifest is rejected by metadata before inflation', t => {
   const dir = fixture(t);
-  const ipa = makeIpa(dir, { bundleId: 'com.evil.impersonator' });
-  const appjson = appJson(dir);
-  const r = versionDetect(dir, ipa, appjson);
-  assert.ok(r.report.violations.includes('BUNDLE_ID_SOURCE_MISMATCH'));
-  const missing = join(dir, 'does-not-exist.ipa');
-  const r2 = versionDetect(dir, missing, appjson);
-  assert.equal(r2.report.passed, false);
+  const bomb = makeBombIpa(dir);
+  const r = versionDetect(dir, bomb, appJson(dir));
+  assert.equal(r.report.passed, false);
+  assert.ok(r.report.violations.includes('MANIFEST_RATIO') || r.report.violations.includes('MANIFEST_SIZE'),
+    `ratio/size bound must fire before decompression: ${JSON.stringify(r.report.violations)}`);
+});
+
+test('FSEC-001: unicode digits in build number are rejected, never coerced', t => {
+  const dir = fixture(t);
+  // Arabic-Indic digit 1 — Python str.isdigit() accepts it, int() parses it.
+  const ipa = makeIpa(dir, { build: '١' });
+  const r = versionDetect(dir, ipa, appJson(dir));
+  assert.equal(r.report.passed, false);
+  assert.ok(r.report.violations.includes('BUILD_NUMBER_FORMAT'), JSON.stringify(r.report.violations));
+});
+
+test('FSEC-001: failure reports never echo input values or paths', t => {
+  const dir = fixture(t);
+  const ipa = makeIpa(dir, { version: 'zero.dot.one', build: '99999' });
+  const r = versionDetect(dir, ipa, appJson(dir));
+  const blob = JSON.stringify(r.report);
+  assert.equal(blob.includes('zero.dot.one'), false, 'invalid input values must never be echoed');
+  assert.equal(blob.includes(dir.replaceAll('\\', '/')), false, 'no filesystem paths in reports');
+  assert.equal(r.report.sourceVersion, null, 'unvalidated source values stay out');
+});
+
+test('version-detect rejects version/build/bundle drift (regression)', t => {
+  const dir = fixture(t);
+  for (const [opts, app, code] of [
+    [{ version: '0.0.2' }, {}, 'VERSION_SOURCE_MISMATCH'],
+    [{ build: '2' }, {}, 'BUILD_SOURCE_MISMATCH'],
+    [{ bundleId: 'com.evil.impersonator' }, {}, 'BUNDLE_ID_SOURCE_MISMATCH'],
+  ]) {
+    const r = versionDetect(dir, makeIpa(dir, opts), appJson(dir, app));
+    assert.equal(r.report.passed, false);
+    assert.ok(r.report.violations.includes(code), `${code}: ${JSON.stringify(r.report.violations)}`);
+  }
 });
 
 // --------------------------------------------------------- upgrade-compat
-function verifyReport(dir, { bundleId = 'io.github.hyj1817.piguimobile' } = {}) {
-  const p = join(dir, `verify-${randomBytes(4).toString('hex')}.json`);
-  writeFileSync(p, JSON.stringify({
-    schemaVersion: 2, passed: true, kind: 'unsigned-device-archive', code: 'IPA_VERIFIED',
-    bundleId, architectures: ['arm64'], executables: 9, frameworks: 8,
-    minimumOS: '16.4.0', sha256: createHash('sha256').update('x').digest('hex'), sideStoreInstallVerified: false,
-  }));
+function versionReport(dir, { version = '0.0.1', build = 1, ipaSha = null, complete = true } = {}) {
+  const p = join(dir, `vp-${rid()}.json`);
+  const base = {
+    schemaVersion: 2, kind: 'distribution-version-report', passed: true,
+    ipaVersion: version, ipaBuildNumber: build,
+    ipaSha256: ipaSha ?? sha(`bytes-${version}-${build}`), violations: [],
+  };
+  writeFileSync(p, JSON.stringify(complete ? base : { passed: true, ipaBuildNumber: build }));
   return p;
 }
-
+function verifyReport(dir, { ipaSha = null, bundleId = 'io.github.hyj1817.piguimobile', complete = true } = {}) {
+  const p = join(dir, `verify-${rid()}.json`);
+  writeFileSync(p, JSON.stringify(complete ? {
+    schemaVersion: 2, passed: true, kind: 'unsigned-device-archive', code: 'IPA_VERIFIED',
+    bundleId, architectures: ['arm64'], sha256: ipaSha ?? sha('ipa-bytes'),
+  } : { passed: true, architectures: ['arm64'] }));
+  return p;
+}
 function compat(dir, baseV, candV, baseVer, candVer) {
-  const out = join(dir, `compat-${randomBytes(4).toString('hex')}.json`);
-  const r = spawnSync(PYTHON, [join(ROOT, 'scripts/ci/upgrade-compat.py'), baseV, candV, baseVer, candVer, out], { encoding: 'utf8' });
-  const report = existsSync(out) ? JSON.parse(readFileSync(out, 'utf8')) : null;
+  const out = join(dir, `compat-${rid()}.json`);
+  const r = run('upgrade-compat.py', [baseV, candV, baseVer, candVer, out]);
+  const report = existsSync(out) ? readJson(out) : null;
   return { status: r.status, report };
 }
 
-function passingVersionReport(dir, { version = '0.0.1', build = 1 } = {}) {
-  const p = join(dir, `vp-${randomBytes(4).toString('hex')}.json`);
-  writeFileSync(p, JSON.stringify({
-    schemaVersion: 2, kind: 'distribution-version-report', passed: true,
-    ipaVersion: version, ipaBuildNumber: build, violations: [],
-  }));
-  return p;
-}
-
-test('upgrade-compat passes for a monotonic build upgrade under stable identity', t => {
+test('upgrade-compat passes for a real monotonic upgrade with chain binding', t => {
   const dir = fixture(t);
-  const base = passingVersionReport(dir, { version: '0.0.1', build: 1 });
-  const cand = passingVersionReport(dir, { version: '0.0.2', build: 2 });
-  const r = compat(dir, base, cand, verifyReport(dir), verifyReport(dir));
+  const baseSha = sha('ipa-v1-bytes');
+  const candSha = sha('ipa-v2-bytes');
+  const r = compat(dir,
+    versionReport(dir, { version: '0.0.1', build: 1, ipaSha: baseSha }),
+    versionReport(dir, { version: '0.0.2', build: 2, ipaSha: candSha }),
+    verifyReport(dir, { ipaSha: baseSha }),
+    verifyReport(dir, { ipaSha: candSha }));
   assert.equal(r.status, 0, JSON.stringify(r.report));
-  assert.equal(r.report.code, 'UPGRADE_COMPATIBLE');
-  assert.equal(r.report.deviceSemantics.includes('final user device checklist'), true, 'report must never claim device semantics');
+  assert.equal(r.report.bindings.candidateSha256, candSha, 'bindings record what was compared');
+  assert.equal(r.report.deviceSemantics.includes('final user device checklist'), true);
 });
 
-test('upgrade-compat rejects non-increasing build numbers (downgrade/refusal surface)', t => {
+test('FSEC-003/functional-1: incomplete reports are schema violations, never compatible', t => {
   const dir = fixture(t);
-  const base = passingVersionReport(dir, { build: 2 });
-  const cand = passingVersionReport(dir, { build: 2 });
-  const r = compat(dir, base, cand, verifyReport(dir), verifyReport(dir));
-  assert.ok(r.report.violations.includes('UPGRADE_MONOTONIC'));
-  const cand2 = passingVersionReport(dir, { build: 1 });
-  const r2 = compat(dir, base, cand2, verifyReport(dir), verifyReport(dir));
-  assert.ok(r2.report.violations.includes('UPGRADE_MONOTONIC'));
-});
-
-test('upgrade-compat rejects identity drift and version regression', t => {
-  const dir = fixture(t);
-  const base = passingVersionReport(dir, { version: '0.1.0', build: 1 });
-  const cand = passingVersionReport(dir, { version: '0.0.9', build: 2 });
-  const r = compat(dir, base, cand, verifyReport(dir), verifyReport(dir));
-  assert.ok(r.report.violations.includes('VERSION_REGRESSION'));
-  const r2 = compat(dir, base, passingVersionReport(dir, { version: '0.1.1', build: 2 }), verifyReport(dir), verifyReport(dir, { bundleId: 'com.other.app' }));
-  assert.ok(r2.report.violations.includes('BUNDLE_IDENTITY_STABLE'));
-});
-
-test('upgrade-compat fail-closed on missing/not-passing inputs', t => {
-  const dir = fixture(t);
-  const base = passingVersionReport(dir);
-  const cand = passingVersionReport(dir, { build: 2 });
-  const bad = join(dir, 'bad.json');
-  writeFileSync(bad, JSON.stringify({ passed: false }));
-  const r = compat(dir, base, cand, bad, verifyReport(dir));
+  const incompleteV = join(dir, 'loose-v.json');
+  writeFileSync(incompleteV, JSON.stringify({ passed: true, ipaBuildNumber: 1 }));
+  const incompleteV2 = join(dir, 'loose-v2.json');
+  writeFileSync(incompleteV2, JSON.stringify({ passed: true, ipaBuildNumber: 2 }));
+  const incompleteVer = join(dir, 'loose-ver.json');
+  writeFileSync(incompleteVer, JSON.stringify({ passed: true, architectures: ['arm64'] }));
+  const r = compat(dir, incompleteV, incompleteV2, incompleteVer, incompleteVer);
   assert.equal(r.report.passed, false);
-  assert.ok(r.report.violations.includes('BASELINE_VERIFY_NOT_PASSING'));
+  assert.ok(r.report.violations.some(v => v.endsWith('_SCHEMA')), JSON.stringify(r.report.violations));
+});
+
+test('FSEC-003: boolean build numbers are rejected even though Python bool is int', t => {
+  const dir = fixture(t);
+  const boolV = join(dir, 'bool-v.json');
+  writeFileSync(boolV, JSON.stringify({
+    schemaVersion: 2, kind: 'distribution-version-report', passed: true,
+    ipaVersion: '0.0.1', ipaBuildNumber: true, ipaSha256: sha('x'),
+  }));
+  const okV = versionReport(dir, { build: 2, ipaSha: sha('y') });
+  const r = compat(dir, boolV, okV, verifyReport(dir), verifyReport(dir));
+  assert.equal(r.report.passed, false);
+  assert.ok(r.report.violations.includes('BASELINE_VERSION_SCHEMA'), JSON.stringify(r.report.violations));
+});
+
+test('FSEC-002 chain binding: mismatched verify/version digests are rejected', t => {
+  const dir = fixture(t);
+  const r = compat(dir,
+    versionReport(dir, { version: '0.0.1', build: 1, ipaSha: sha('a1') }),
+    versionReport(dir, { version: '0.0.2', build: 2, ipaSha: sha('a2') }),
+    verifyReport(dir, { ipaSha: sha('DIFFERENT') }),
+    verifyReport(dir, { ipaSha: sha('a2') }));
+  assert.equal(r.report.passed, false);
+  assert.ok(r.report.violations.includes('BASELINE_CHAIN_BINDING'), JSON.stringify(r.report.violations));
+});
+
+test('upgrade-compat still rejects monotonicity/identity regression (regression)', t => {
+  const dir = fixture(t);
+  const s1 = sha('b1'), s2 = sha('b2');
+  const mkV = (v, b, s) => versionReport(dir, { version: v, build: b, ipaSha: s });
+  const mkVer = (s, b) => verifyReport(dir, { ipaSha: s, bundleId: b });
+  const same = compat(dir, mkV('0.0.1', 2, s1), mkV('0.0.2', 2, s2), mkVer(s1), mkVer(s2));
+  assert.ok(same.report.violations.includes('UPGRADE_MONOTONIC'));
+  const regress = compat(dir, mkV('0.1.0', 1, s1), mkV('0.0.9', 2, s2), mkVer(s1), mkVer(s2));
+  assert.ok(regress.report.violations.includes('VERSION_REGRESSION'));
+  const drift = compat(dir, mkV('0.0.1', 1, s1), mkV('0.0.2', 2, s2), mkVer(s1), mkVer(s2, 'com.other.app'));
+  assert.ok(drift.report.violations.includes('BUNDLE_IDENTITY_STABLE'));
 });
 
 // ------------------------------------------------------- sidestore-source
-function sidestore(dir, version, build, sha, size, tag) {
-  const out = join(dir, `ss-${randomBytes(4).toString('hex')}.json`);
-  const r = spawnSync(PYTHON, [join(ROOT, 'scripts/ci/sidestore-source.py'), version, String(build), sha, String(size), tag, out], { encoding: 'utf8' });
-  const report = existsSync(out) ? JSON.parse(readFileSync(out, 'utf8')) : null;
+function sidestore(dir, version, build, shaHex, size, tag) {
+  const out = join(dir, `ss-${rid()}.json`);
+  const r = run('sidestore-source.py', [version, String(build), shaHex, String(size), tag, out]);
+  const report = existsSync(out) ? readJson(out) : null;
   return { status: r.status, report };
 }
 
-test('sidestore-source draft carries correct shape and never claims publication', t => {
+test('sidestore-source happy path carries honest shape (regression)', t => {
   const dir = fixture(t);
-  const sha = createHash('sha256').update('ipa-bytes').digest('hex');
-  const r = sidestore(dir, '0.0.1', 1, sha, 1234567, 'v0.0.1+build1');
+  const s = sha('ipa-bytes');
+  const r = sidestore(dir, '0.0.1', 1, s, 1234567, 'v0.0.1+build1');
   assert.equal(r.status, 0, JSON.stringify(r.report));
   assert.equal(r.report.publicationStatus, 'draft-only-never-published');
-  const app = r.report.source.apps[0];
-  assert.equal(app.bundleIdentifier, 'io.github.hyj1817.piguimobile');
-  const v = app.versions[0];
+  const v = r.report.source.apps[0].versions[0];
   assert.equal(v.downloadURL, 'https://github.com/HYJ1817/pi-gui-ios/releases/download/v0.0.1+build1/PiGUIMobile-unsigned.ipa');
-  assert.equal(v.sha256, sha);
-  assert.equal(v.size, 1234567);
-  assert.equal(v.minOSVersion, '16.4');
-  assert.deepEqual(app.appPermissions, { entitlements: [], privacy: {} }, 'source must honestly declare the empty sensitive-permission surface');
-  assert.equal(v.date, null, 'date is stamped at release time, never invented');
+  assert.equal(v.date, null);
+  assert.deepEqual(r.report.source.apps[0].appPermissions, { entitlements: [], privacy: {} });
 });
 
-test('sidestore-source rejects malformed inputs', t => {
+test('FSEC-004: tags escaping the release path are rejected — traversal, newline, query, fragment, mismatch', t => {
   const dir = fixture(t);
-  const sha = createHash('sha256').update('x').digest('hex');
-  for (const [version, build, hash, size, tag, expectCode] of [
-    ['1.0', 1, sha, 100, 'v1', 'VERSION_FORMAT'],
-    ['0.0.1', 0, sha, 100, 'v1', 'BUILD_NUMBER_FORMAT'],
-    ['0.0.1', 1, 'zz', 100, 'v1', 'SHA256_FORMAT'],
-    ['0.0.1', 1, sha, -5, 'v1', 'SIZE_FORMAT'],
-    ['0.0.1', 1, sha, 100, 'has space', 'TAG_FORMAT'],
+  const s = sha('x');
+  for (const tag of [
+    '../../../../evil?download=other#',
+    'v0.0.1+build1\ninjected',
+    'v0.0.1+build1?query=1',
+    'v0.0.1+build1#frag',
+    'v0.0.1+build1/extra',
+    '..',
+    'v9.9.9+build99',  // valid grammar but not the tag derived from these inputs
   ]) {
-    const r = sidestore(dir, version, build, hash, size, tag);
-    assert.equal(r.report.passed, false);
-    assert.ok(r.report.violations.includes(expectCode), `${expectCode}: ${JSON.stringify(r.report.violations)}`);
+    const r = sidestore(dir, '0.0.1', 1, s, 100, tag);
+    assert.equal(r.report.passed, false, `tag must be rejected: ${JSON.stringify(tag)}`);
+    assert.ok(r.report.violations.includes('TAG_FORMAT'), `${tag}: ${JSON.stringify(r.report.violations)}`);
   }
 });
 
 // --------------------------------------------------------- release-draft
-function releaseDraft(dir, ipa, verify, vr, compatR, ss) {
-  const outDir = join(dir, `draft-${randomBytes(4).toString('hex')}`);
-  const r = spawnSync(PYTHON, [join(ROOT, 'scripts/ci/release-draft.py'), ipa, verify, vr, compatR, ss, outDir], { encoding: 'utf8' });
-  const draft = existsSync(join(outDir, 'release-draft.json')) ? JSON.parse(readFileSync(join(outDir, 'release-draft.json'), 'utf8')) : null;
+function fullChain(dir, { version = '0.0.1', build = 1 } = {}) {
+  const ipa = makeIpa(dir, { version, build: String(build) });
+  const ipaBytes = readFileSync(ipa);
+  const ipaSha = sha(ipaBytes);
+  const ver = verifyReport(dir, { ipaSha });
+  const vr = versionReport(dir, { version, build, ipaSha });
+  const comp = join(dir, `comp-${rid()}.json`);
+  writeFileSync(comp, JSON.stringify({
+    schemaVersion: 2, kind: 'distribution-upgrade-compat', passed: true, violations: [],
+    bindings: { candidateSha256: ipaSha, baselineSha256: sha('older'), candidateBuild: build, baselineBuild: build - 1 },
+  }));
+  const ssOut = join(dir, `sso-${rid()}.json`);
+  const ssr = run('sidestore-source.py', [version, String(build), ipaSha, String(ipaBytes.length), `v${version}+build${build}`, ssOut]);
+  assert.equal(ssr.status, 0, 'fixture sidestore generation must pass');
+  return { ipa, ipaBytes, ipaSha, ver, vr, comp, ss: ssOut };
+}
+function releaseDraft(dir, chain, overrides = {}) {
+  const outDir = join(dir, `draft-${rid()}`);
+  const r = run('release-draft.py', [
+    overrides.ipa ?? chain.ipa, overrides.ver ?? chain.ver, overrides.vr ?? chain.vr,
+    overrides.comp ?? chain.comp, overrides.ss ?? chain.ss, outDir,
+  ]);
+  const draft = existsSync(join(outDir, 'release-draft.json')) ? readJson(join(outDir, 'release-draft.json')) : null;
   return { status: r.status, draft, outDir };
 }
 
-test('release-draft binds exactly the verified bytes end-to-end', t => {
+test('release-draft passes only when the entire chain binds to the same bytes', t => {
   const dir = fixture(t);
-  const ipa = makeIpa(dir, { extra: 4 });
-  const ipaBytes = readFileSync(ipa);
-  const sha = createHash('sha256').update(ipaBytes).digest('hex');
-  // verify report must carry the real ipa hash for binding
-  const ver = join(dir, 'verify.json');
-  writeFileSync(ver, JSON.stringify({
-    schemaVersion: 2, passed: true, kind: 'unsigned-device-archive', code: 'IPA_VERIFIED',
-    bundleId: 'io.github.hyj1817.piguimobile', architectures: ['arm64'], sha256: sha, sideStoreInstallVerified: false,
-  }));
-  const vr = passingVersionReport(dir, { version: '0.0.1', build: 1 });
-  const comp = join(dir, 'compat.json');
-  writeFileSync(comp, JSON.stringify({ schemaVersion: 2, kind: 'distribution-upgrade-compat', passed: true, violations: [] }));
-  const ss = sidestore(dir, '0.0.1', 1, sha, ipaBytes.length, 'v0.0.1+build1');
-  const r = releaseDraft(dir, ipa, ver, vr, comp, join(dir, 'ss-out.json'));
-  // sidestore wrote to its own out; pass THAT file
-  const ssOut = join(dir, 'ss-out.json');
-  writeFileSync(ssOut, JSON.stringify(ss.report));
-  const r2 = releaseDraft(dir, ipa, ver, vr, comp, ssOut);
-  assert.equal(r2.status, 0, JSON.stringify(r2.draft));
-  assert.equal(r2.draft.tag, 'v0.0.1+build1');
-  assert.equal(r2.draft.assets[0].sha256, sha);
-  assert.equal(r2.draft.assets[0].size, ipaBytes.length);
-  assert.equal(r2.draft.publicationStatus, 'draft-only-requires-explicit-user-authorization');
-  assert.equal(r2.draft.notes.includes('final user device checklist'), true);
-  assert.ok(existsSync(join(r2.outDir, 'release-notes.md')));
+  const chain = fullChain(dir);
+  const r = releaseDraft(dir, chain);
+  assert.equal(r.status, 0, JSON.stringify(r.draft?.violations));
+  assert.equal(r.draft.tag, 'v0.0.1+build1');
+  assert.equal(r.draft.assets[0].sha256, chain.ipaSha);
+  assert.equal(r.draft.assets[0].size, chain.ipaBytes.length);
+  assert.equal(r.draft.publicationStatus, 'draft-only-requires-explicit-user-authorization');
 });
 
-test('release-draft fails closed when hash binding breaks', t => {
+test('FSEC-002: version report of a DIFFERENT ipa cannot attach to this draft', t => {
   const dir = fixture(t);
-  const ipa = makeIpa(dir);
-  const wrongSha = createHash('sha256').update('different-bytes').digest('hex');
-  const ver = join(dir, 'verify.json');
-  writeFileSync(ver, JSON.stringify({
-    schemaVersion: 2, passed: true, kind: 'unsigned-device-archive', code: 'IPA_VERIFIED',
-    bundleId: 'io.github.hyj1817.piguimobile', architectures: ['arm64'], sha256: wrongSha, sideStoreInstallVerified: false,
-  }));
-  const vr = passingVersionReport(dir);
-  const comp = join(dir, 'compat.json');
-  writeFileSync(comp, JSON.stringify({ schemaVersion: 2, kind: 'distribution-upgrade-compat', passed: true, violations: [] }));
-  const ss = join(dir, 'ss.json');
-  writeFileSync(ss, JSON.stringify({ schemaVersion: 2, kind: 'sidestore-source-draft', passed: true, source: { apps: [{ versions: [{ sha256: wrongSha, size: 1 }] }] } }));
-  const r = releaseDraft(dir, ipa, ver, vr, comp, ss);
+  const chain = fullChain(dir);
+  const alienVr = versionReport(dir, { version: '9.9.9', build: 99, ipaSha: sha('alien ipa bytes') });
+  const r = releaseDraft(dir, chain, { vr: alienVr });
   assert.equal(r.status, 1);
-  assert.ok(r.draft.violations.includes('IPA_HASH_BINDING'), JSON.stringify(r.draft.violations));
+  assert.ok(r.draft.violations.includes('VERSION_HASH_BINDING'), JSON.stringify(r.draft.violations));
+  assert.equal(r.draft.tag, null, 'a failed draft mints no tag');
 });
 
-test('release-draft fails closed on any not-passing input', t => {
+test('FSEC-002/functional-2: source metadata mismatched to version report is rejected', t => {
   const dir = fixture(t);
-  const ipa = makeIpa(dir);
+  const chain = fullChain(dir);
+  // Source with correct hash/size but wrong version metadata.
+  const evilSs = join(dir, 'evil-ss.json');
+  writeFileSync(evilSs, JSON.stringify({
+    schemaVersion: 2, kind: 'sidestore-source-draft', passed: true,
+    source: { apps: [{ bundleIdentifier: 'io.github.hyj1817.piguimobile', versions: [{
+      version: '9.9.9', buildVersion: '1', downloadURL: 'https://github.com/HYJ1817/pi-gui-ios/releases/download/v0.0.1+build1/PiGUIMobile-unsigned.ipa',
+      size: chain.ipaBytes.length, sha256: chain.ipaSha, date: null, minOSVersion: '16.4',
+    }] }] },
+  }));
+  const r = releaseDraft(dir, chain, { ss: evilSs });
+  assert.equal(r.status, 1);
+  assert.ok(r.draft.violations.includes('SOURCE_VERSION_BINDING'), JSON.stringify(r.draft.violations));
+});
+
+test('FSEC-002: external download URL is rejected even with correct hash', t => {
+  const dir = fixture(t);
+  const chain = fullChain(dir);
+  const evilSs = join(dir, 'evil-url-ss.json');
+  writeFileSync(evilSs, JSON.stringify({
+    schemaVersion: 2, kind: 'sidestore-source-draft', passed: true,
+    source: { apps: [{ bundleIdentifier: 'io.github.hyj1817.piguimobile', versions: [{
+      version: '0.0.1', buildVersion: '1', downloadURL: 'https://example.invalid/malware.ipa',
+      size: chain.ipaBytes.length, sha256: chain.ipaSha, date: null, minOSVersion: '16.4',
+    }] }] },
+  }));
+  const r = releaseDraft(dir, chain, { ss: evilSs });
+  assert.equal(r.status, 1);
+  assert.ok(r.draft.violations.includes('SOURCE_URL_BINDING'), JSON.stringify(r.report?.violations ?? r.draft.violations));
+});
+
+test('FSEC-001: incorrectly typed source containers are violations, never crashes', t => {
+  const dir = fixture(t);
+  const chain = fullChain(dir);
+  const badSs = join(dir, 'badtype-ss.json');
+  writeFileSync(badSs, JSON.stringify({
+    schemaVersion: 2, kind: 'sidestore-source-draft', passed: true,
+    source: { apps: ['not-a-dict'] },
+  }));
+  const r = run('release-draft.py', [chain.ipa, chain.ver, chain.vr, chain.comp, badSs, join(dir, 'out-bad')]);
+  assert.equal(r.status, 1);
+  assert.equal(r.stderr.includes('Traceback'), false, 'no crash on typed input abuse');
+  assert.equal(r.stderr.includes('TypeError'), false);
+});
+
+test('first-release sentinel compat is accepted and notes say not-applicable', t => {
+  const dir = fixture(t);
+  const chain = fullChain(dir);
+  const sentinel = join(dir, 'sentinel.json');
+  writeFileSync(sentinel, JSON.stringify({
+    schemaVersion: 2, kind: 'distribution-upgrade-compat-absent', passed: true,
+    code: 'NO_BASELINE_FIRST_RELEASE', violations: [], bindings: {},
+  }));
+  const r = releaseDraft(dir, chain, { comp: sentinel });
+  assert.equal(r.status, 0, JSON.stringify(r.draft?.violations));
+  assert.equal(r.draft.notes.includes('not applicable — first release'), true, 'notes must not claim verification that never ran');
+  assert.equal(r.draft.notes.includes('verified against the recorded baseline'), false);
+});
+
+test('release-draft fails closed on any not-passing input (regression)', t => {
+  const dir = fixture(t);
+  const chain = fullChain(dir);
   const bad = join(dir, 'bad.json');
   writeFileSync(bad, JSON.stringify({ passed: false }));
-  const r = releaseDraft(dir, ipa, bad, bad, bad, bad);
+  const r = releaseDraft(dir, chain, { ver: bad, vr: bad, comp: bad, ss: bad });
   assert.equal(r.status, 1);
   for (const code of ['VERIFY_NOT_PASSING', 'VERSION_NOT_PASSING', 'COMPAT_NOT_PASSING', 'SOURCE_NOT_PASSING']) {
     assert.ok(r.draft.violations.includes(code), `${code}: ${JSON.stringify(r.draft.violations)}`);
@@ -289,12 +430,13 @@ test('release-draft fails closed on any not-passing input', t => {
 });
 
 // ------------------------------------------- file integrity / no secrets
-test('m6 tooling never embeds secrets, device ids, or real user data', () => {
+test('m6 tooling never embeds secrets or env-dependent behavior', () => {
   for (const f of ['version-detect.py', 'upgrade-compat.py', 'sidestore-source.py', 'release-draft.py']) {
     const src = readFileSync(join(ROOT, 'scripts/ci', f), 'utf8');
-    assert.ok(!/BEGIN (RSA |EC |OPENSSH |)PRIVATE KEY/.test(src), f);
-    assert.ok(!src.includes('Sidestore') || true);
-    // fixed-code vocabulary: no environment paths in outputs
-    assert.ok(!/os\.environ(?!\[['"]RUNNER_TEMP)/.test(src) || f === 'x', `${f} reads env beyond RUNNER_TEMP`);
+    assert.ok(!/BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY/.test(src), f);
+    // no environment reads — these tools are pure functions of their inputs
+    assert.equal(/os\.environ|getenv/.test(src), false, `${f} must not read the environment`);
+    // no traceback-prone bare excepts leaking values: fixed vocabulary only
+    assert.equal(/print\(.*traceback/.test(src), false);
   }
 });

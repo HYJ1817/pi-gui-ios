@@ -1,32 +1,33 @@
 #!/usr/bin/env python3
-"""M6-distribution: upgrade/downgrade/revocation compatibility verification.
+"""M6-distribution: upgrade/downgrade compatibility verification (hardened).
 
-Automated structural verification — NOT a device test. SideStore refresh,
-overwrite-install and revocation behavior on real hardware belongs to the
-final M-1-device user checklist (ADR-0006); what CAN be verified in automation
-is the distribution-relevant structure:
+Automated structural verification — NOT a device test. Real SideStore
+refresh/overwrite behavior belongs to the final user device checklist.
 
-  UPGRADE_MONOTONIC     — buildNumber strictly increases across the releases
-                          being compared (iOS treats non-increasing CFBundleVersion
-                          as a downgrade/refusal surface for overwrite installs)
-  BUNDLE_IDENTITY_STABLE — bundle identifier unchanged: overwrite install is
-                          only possible under identical identity
-  PERMISSION_REGRESSION  — a candidate must never declare sensitive permission
-                          usage that the baseline did not (silent widening)
-  ARCHITECTURE_STABLE    — arm64 device slice present in both
-  REVOCATION_SURFACE     — revocation of the signing identity invalidates the
-                          install at iOS level; the structural correlate we can
-                          assert offline is that the archive is UNSIGNED as
-                          distributed (re-signing is the user's own act), and
-                          version metadata is intact so a revoked install
-                          re-installing from the same source is distinguishable
-
-Input: pairs of version reports (baseline + candidate) produced by
-version-detect.py, plus the verification.json of both IPAs. Output:
-upgrade-compat.json — fixed codes only.
+FSEC-003 hardening — strict input validation, nothing is optional:
+  - Version reports must be complete exact-schema `distribution-version-report`
+    documents: schemaVersion 2, exact kind, passed true, canonical semver
+    string, STRICT integer build number (Python bool is an int subclass —
+    isinstance(True, int) is True, so booleans are rejected explicitly),
+    valid 64-hex ipaSha256.
+  - Verification reports must be complete `unsigned-device-archive` documents
+    with code IPA_VERIFIED, valid sha256, nonempty bundle identity, and the
+    exact ['arm64'] architecture list.
+  - Chain binding: the candidate verification report's sha256 must equal the
+    candidate version report's ipaSha256 — the same digest must describe the
+    bytes both reports inspected (same for baseline). The binding is recorded
+    in the output so release-draft can verify it was checked.
+  - Absent keys are never 'equal': two missing bundle identifiers is a
+    violation, not a match.
 """
 import json
+import re
 import sys
+
+SEMVER_RE = re.compile(r'(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)')
+HEX64 = re.compile(r'[0-9a-f]{64}')
+BUNDLE_RE = re.compile(r'[A-Za-z0-9.-]{3,128}')
+SHA256_HEX_LEN = 64
 
 
 class Invalid(Exception):
@@ -35,39 +36,75 @@ class Invalid(Exception):
         super().__init__(' '.join(self.codes))
 
 
-def load_report(path, kind):
+def strict_int(value, low=1, high=2**31 - 1):
+    """Integers only — booleans are int subclass instances and must not pass."""
+    if isinstance(value, bool) or not isinstance(value, int):
+        return None
+    return value if low <= value <= high else None
+
+
+def load_json(path):
     try:
-        report = json.load(open(path, encoding='utf8'))
-    except (OSError, json.JSONDecodeError):
-        raise Invalid(kind + '_UNREADABLE')
-    if not isinstance(report, dict) or report.get('passed') is not True:
-        raise Invalid(kind + '_NOT_PASSING')
-    return report
+        with open(path, encoding='utf8') as stream:
+            data = json.load(stream)
+    except (OSError, json.JSONDecodeError, UnicodeDecodeError):
+        return None
+    return data if isinstance(data, dict) else None
 
 
-def compare(baseline_version, candidate_version, baseline_verify, candidate_verify):
+def validate_version_report(report, prefix):
+    if report is None:
+        raise Invalid(prefix + '_UNREADABLE')
+    if report.get('schemaVersion') != 2 or report.get('kind') != 'distribution-version-report':
+        raise Invalid(prefix + '_SCHEMA')
+    if report.get('passed') is not True:
+        raise Invalid(prefix + '_NOT_PASSING')
+    version = report.get('ipaVersion')
+    if not (isinstance(version, str) and SEMVER_RE.fullmatch(version)):
+        raise Invalid(prefix + '_SCHEMA')
+    build = strict_int(report.get('ipaBuildNumber'))
+    if build is None:
+        raise Invalid(prefix + '_SCHEMA')
+    sha = report.get('ipaSha256')
+    if not (isinstance(sha, str) and len(sha) == SHA256_HEX_LEN and HEX64.fullmatch(sha)):
+        raise Invalid(prefix + '_SCHEMA')
+    return {'version': version, 'build': build, 'sha256': sha,
+            'semver': tuple(int(p) for p in version.split('.'))}
+
+
+def validate_verify_report(report, prefix):
+    if report is None:
+        raise Invalid(prefix + '_UNREADABLE')
+    if report.get('schemaVersion') != 2 or report.get('kind') != 'unsigned-device-archive':
+        raise Invalid(prefix + '_SCHEMA')
+    if report.get('passed') is not True or report.get('code') != 'IPA_VERIFIED':
+        raise Invalid(prefix + '_NOT_PASSING')
+    sha = report.get('sha256')
+    if not (isinstance(sha, str) and len(sha) == SHA256_HEX_LEN and HEX64.fullmatch(sha)):
+        raise Invalid(prefix + '_SCHEMA')
+    bundle = report.get('bundleId')
+    if not (isinstance(bundle, str) and BUNDLE_RE.fullmatch(bundle)):
+        raise Invalid(prefix + '_SCHEMA')
+    if report.get('architectures') != ['arm64']:
+        raise Invalid(prefix + '_SCHEMA')
+    return {'sha256': sha, 'bundleId': bundle}
+
+
+def compare(base_v, cand_v, base_ver, cand_ver):
     violations = []
-    base_build = baseline_version.get('ipaBuildNumber')
-    cand_build = candidate_version.get('ipaBuildNumber')
-    if not (isinstance(base_build, int) and isinstance(cand_build, int)):
-        violations.append('BUILD_NUMBER_MISSING')
-    elif cand_build <= base_build:
+    if cand_v['build'] <= base_v['build']:
         violations.append('UPGRADE_MONOTONIC')
-    base_semver = baseline_version.get('ipaVersion')
-    cand_semver = candidate_version.get('ipaVersion')
-    if base_semver and cand_semver:
-        try:
-            key = lambda v: tuple(int(p) for p in v.split('.'))
-            if key(cand_semver) < key(base_semver):
-                violations.append('VERSION_REGRESSION')
-        except (ValueError, AttributeError):
-            violations.append('VERSION_FORMAT')
-    # Identity stability across the pair.
-    if baseline_verify.get('bundleId') != candidate_verify.get('bundleId'):
+    if cand_v['semver'] < base_v['semver']:
+        violations.append('VERSION_REGRESSION')
+    if base_ver['bundleId'] != cand_ver['bundleId']:
         violations.append('BUNDLE_IDENTITY_STABLE')
-    for label, verify in (('baseline', baseline_verify), ('candidate', candidate_verify)):
-        if verify.get('architectures') != ['arm64']:
-            violations.append('ARCHITECTURE_STABLE')
+    # Chain binding: each version report must describe exactly the bytes its
+    # companion verification report inspected. Same-digest equality is the
+    # only meaningful offline binding between the two documents.
+    if base_v['sha256'] != base_ver['sha256']:
+        violations.append('BASELINE_CHAIN_BINDING')
+    if cand_v['sha256'] != cand_ver['sha256']:
+        violations.append('CANDIDATE_CHAIN_BINDING')
     return list(dict.fromkeys(violations))
 
 
@@ -75,12 +112,20 @@ def main(argv):
     if len(argv) != 6:
         print('usage: upgrade-compat.py <base-version.json> <cand-version.json> <base-verify.json> <cand-verify.json> <out.json>')
         return 2
+    violations = []
+    bindings = {}
     try:
-        base_v = load_report(argv[1], 'BASELINE_VERSION')
-        cand_v = load_report(argv[2], 'CANDIDATE_VERSION')
-        base_ver = load_report(argv[3], 'BASELINE_VERIFY')
-        cand_ver = load_report(argv[4], 'CANDIDATE_VERIFY')
+        base_v = validate_version_report(load_json(argv[1]), 'BASELINE_VERSION')
+        cand_v = validate_version_report(load_json(argv[2]), 'CANDIDATE_VERSION')
+        base_ver = validate_verify_report(load_json(argv[3]), 'BASELINE_VERIFY')
+        cand_ver = validate_verify_report(load_json(argv[4]), 'CANDIDATE_VERIFY')
         violations = compare(base_v, cand_v, base_ver, cand_ver)
+        bindings = {
+            'baselineSha256': base_v['sha256'],
+            'candidateSha256': cand_v['sha256'],
+            'baselineBuild': base_v['build'],
+            'candidateBuild': cand_v['build'],
+        }
     except Invalid as error:
         violations = error.codes
     report = {
@@ -89,11 +134,16 @@ def main(argv):
         'passed': not violations,
         'code': 'UPGRADE_COMPATIBLE' if not violations else 'UPGRADE_INCOMPATIBLE',
         'violations': violations[:16],
+        'bindings': bindings,
         'scope': 'structural-automation-only',
         'deviceSemantics': 'SideStore refresh/overwrite/revoke behavior is verified by the final user device checklist, never by this report',
     }
-    with open(argv[5], 'w', encoding='utf8', newline='\n') as stream:
-        stream.write(json.dumps(report, indent=2, sort_keys=True) + '\n')
+    try:
+        with open(argv[5], 'w', encoding='utf8', newline='\n') as stream:
+            stream.write(json.dumps(report, indent=2, sort_keys=True) + '\n')
+    except OSError:
+        print('REPORT_UNWRITABLE')
+        return 1
     print(report['code'])
     return 0 if report['passed'] else 1
 
