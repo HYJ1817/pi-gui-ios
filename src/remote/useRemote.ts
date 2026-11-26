@@ -3,13 +3,13 @@
  * useSyncExternalStore, and kicks off the synthetic loop's initial load.
  */
 import { useEffect, useSyncExternalStore } from 'react';
-import { demoRuntime } from './demo';
+import { demoRuntime, type DemoRuntime } from './demo';
 import type { StoreState } from './store';
 
 let loadStarted = false;
 
 export function useRemote(): { state: StoreState } {
-  const runtime = demoRuntime();
+  const runtime = remoteRuntime();
   useEffect(() => {
     if (loadStarted) return;
     loadStarted = true;
@@ -24,4 +24,6 @@ export function useRemote(): { state: StoreState } {
   return { state };
 }
 
-export function remoteRuntime() { return demoRuntime(); }
+/** App composition root: deliberately synthetic. Native transport/profile
+ * activation is separate and is never selected by this binding. */
+export function remoteRuntime(): DemoRuntime { return demoRuntime(); }
