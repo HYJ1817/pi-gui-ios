@@ -440,3 +440,22 @@ test('m6 tooling never embeds secrets or env-dependent behavior', () => {
     assert.equal(/print\(.*traceback/.test(src), false);
   }
 });
+
+// ------------------------------------------- M6-CI-BASELINE-001 regression
+test('M6-CI-BASELINE-001: workflow treats partial baseline as hard failure, never sentinel', () => {
+  const workflow = readFileSync(join(ROOT, '.github/workflows/native-infrastructure.yml'), 'utf8');
+  // The three-state structure must exist: both/neither/exactly-one.
+  assert.ok(workflow.includes('PARTIAL_BASELINE_REJECTED'), 'partial baseline must hard-fail');
+  assert.ok(/elif \[ "\$HAS_V" = 0 \] && \[ "\$HAS_R" = 0 \]/.test(workflow), 'sentinel only when neither exists');
+  assert.ok(/if \[ "\$HAS_V" = 1 \] && \[ "\$HAS_R" = 1 \]/.test(workflow), 'real comparison only when both exist');
+  // Simulate the branch decision logic in isolation for all four states.
+  const decide = (hasV, hasR) => {
+    if (hasV && hasR) return 'compare';
+    if (!hasV && !hasR) return 'sentinel';
+    return 'reject';
+  };
+  assert.equal(decide(true, true), 'compare');
+  assert.equal(decide(false, false), 'sentinel');
+  assert.equal(decide(true, false), 'reject', 'version-only partial must never reach the sentinel');
+  assert.equal(decide(false, true), 'reject', 'verify-only partial must never reach the sentinel');
+});

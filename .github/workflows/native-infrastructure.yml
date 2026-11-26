@@ -374,10 +374,21 @@ jobs:
           #      in its notes rather than claiming compatibility was verified.
           #    Deriving a synthetic baseline from the candidate itself (the
           #    previous behavior) proved nothing and was removed.
-          if [ -f docs/acceptance/distribution/baseline-version.json ] && [ -f docs/acceptance/distribution/baseline-verify.json ]; then
+          # M6-CI-BASELINE-001: three honest states, never a silent skip.
+          #   both present  -> real comparison
+          #   neither       -> first-release sentinel
+          #   exactly one   -> corrupt/incomplete baseline: hard failure,
+          #                    never masquerade as a first release
+          HAS_V=0; HAS_R=0
+          [ -f docs/acceptance/distribution/baseline-version.json ] && HAS_V=1 || true
+          [ -f docs/acceptance/distribution/baseline-verify.json ] && HAS_R=1 || true
+          if [ "$HAS_V" = 1 ] && [ "$HAS_R" = 1 ]; then
             python3 scripts/ci/upgrade-compat.py docs/acceptance/distribution/baseline-version.json artifacts/distribution/version-report.json docs/acceptance/distribution/baseline-verify.json artifacts/ipa/verification.json artifacts/distribution/upgrade-compat.json
-          else
+          elif [ "$HAS_V" = 0 ] && [ "$HAS_R" = 0 ]; then
             python3 -c "import json; json.dump({'schemaVersion': 2, 'kind': 'distribution-upgrade-compat-absent', 'passed': True, 'code': 'NO_BASELINE_FIRST_RELEASE', 'violations': [], 'scope': 'structural-automation-only', 'deviceSemantics': 'no prior release exists; upgrade compatibility is not applicable to a first release', 'bindings': {}}, open('artifacts/distribution/upgrade-compat.json', 'w'), indent=2, sort_keys=True)"
+          else
+            echo "PARTIAL_BASELINE_REJECTED: exactly one baseline file exists — the pair is incomplete, refusing to skip compatibility verification" >&2
+            exit 1
           fi
           # 3. SideStore source draft — artifact-only, never published.
           python3 scripts/ci/sidestore-source.py "$(python3 -c "import json;print(json.load(open('artifacts/distribution/version-report.json'))['ipaVersion'])")" "$(python3 -c "import json;print(json.load(open('artifacts/distribution/version-report.json'))['ipaBuildNumber'])")" "$IPA_SHA" "$IPA_SIZE" "$TAG" artifacts/distribution/sidestore-source.json
