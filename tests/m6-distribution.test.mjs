@@ -9,7 +9,7 @@
  */
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, writeFileSync, readFileSync, rmSync, existsSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync, existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { resolve, join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -442,20 +442,86 @@ test('m6 tooling never embeds secrets or env-dependent behavior', () => {
 });
 
 // ------------------------------------------- M6-CI-BASELINE-001 regression
-test('M6-CI-BASELINE-001: workflow treats partial baseline as hard failure, never sentinel', () => {
-  const workflow = readFileSync(join(ROOT, '.github/workflows/native-infrastructure.yml'), 'utf8');
-  // The three-state structure must exist: both/neither/exactly-one.
-  assert.ok(workflow.includes('PARTIAL_BASELINE_REJECTED'), 'partial baseline must hard-fail');
-  assert.ok(/elif \[ "\$HAS_V" = 0 \] && \[ "\$HAS_R" = 0 \]/.test(workflow), 'sentinel only when neither exists');
-  assert.ok(/if \[ "\$HAS_V" = 1 \] && \[ "\$HAS_R" = 1 \]/.test(workflow), 'real comparison only when both exist');
-  // Simulate the branch decision logic in isolation for all four states.
-  const decide = (hasV, hasR) => {
-    if (hasV && hasR) return 'compare';
-    if (!hasV && !hasR) return 'sentinel';
-    return 'reject';
+// Behavior-level pins: the test executes the REAL driver against fixture
+// directories — never a hard-coded mirror of the decision logic.
+
+function baselineDir(dir, { version = false, verify = false } = {}) {
+  const bdir = join(dir, `baseline-${rid()}`);
+  mkdirSync(bdir, { recursive: true });
+  if (version) writeFileSync(join(bdir, 'baseline-version.json'), JSON.stringify({
+    schemaVersion: 2, kind: 'distribution-version-report', passed: true,
+    ipaVersion: '0.0.1', ipaBuildNumber: 1, ipaSha256: sha('baseline-bytes'), violations: [],
+  }));
+  if (verify) writeFileSync(join(bdir, 'baseline-verify.json'), JSON.stringify({
+    schemaVersion: 2, passed: true, kind: 'unsigned-device-archive', code: 'IPA_VERIFIED',
+    bundleId: 'io.github.hyj1817.piguimobile', architectures: ['arm64'], sha256: sha('baseline-bytes'),
+  }));
+  return bdir;
+}
+
+function driver(dir, baseline, candV, candVer) {
+  const out = join(dir, `compat-out-${rid()}.json`);
+  const r = run('baseline-compat.py', [baseline, candV, candVer, out]);
+  return {
+    status: r.status,
+    stdout: r.stdout.trim(),
+    stderr: r.stderr,
+    out,
+    report: existsSync(out) ? readJson(out) : null,
   };
-  assert.equal(decide(true, true), 'compare');
-  assert.equal(decide(false, false), 'sentinel');
-  assert.equal(decide(true, false), 'reject', 'version-only partial must never reach the sentinel');
-  assert.equal(decide(false, true), 'reject', 'verify-only partial must never reach the sentinel');
+}
+
+test('M6-CI-BASELINE-001: exactly-one baseline file hard-fails and writes NO sentinel', t => {
+  const dir = fixture(t);
+  const candSha = sha('cand-bytes');
+  const candV = versionReport(dir, { version: '0.0.2', build: 2, ipaSha: candSha });
+  const candVer = verifyReport(dir, { ipaSha: candSha });
+  for (const which of ['version-only', 'verify-only']) {
+    const baseline = baselineDir(dir, which === 'version-only' ? { version: true } : { verify: true });
+    const r = driver(dir, baseline, candV, candVer);
+    assert.equal(r.status, 1, `${which}: partial baseline must exit nonzero`);
+    assert.equal(r.stdout, 'REJECTED', `${which}: driver reports the rejected state`);
+    assert.ok(r.stderr.includes('PARTIAL_BASELINE_REJECTED'), `${which}: stderr carries the fixed code`);
+    assert.equal(r.report, null, `${which}: no output report may be written — especially not a sentinel`);
+  }
+});
+
+test('M6-CI-BASELINE-001: neither baseline file writes exactly the first-release sentinel', t => {
+  const dir = fixture(t);
+  const candSha = sha('cand-bytes');
+  const candV = versionReport(dir, { version: '0.0.1', build: 1, ipaSha: candSha });
+  const candVer = verifyReport(dir, { ipaSha: candSha });
+  const baseline = baselineDir(dir, {});
+  const r = driver(dir, baseline, candV, candVer);
+  assert.equal(r.status, 0);
+  assert.equal(r.stdout, 'SENTINEL');
+  assert.equal(r.report.kind, 'distribution-upgrade-compat-absent');
+  assert.equal(r.report.code, 'NO_BASELINE_FIRST_RELEASE');
+  assert.equal(r.report.passed, true);
+});
+
+test('M6-CI-BASELINE-001: complete baseline runs the real comparison end-to-end', t => {
+  const dir = fixture(t);
+  const baseSha = sha('baseline-bytes');
+  const candSha = sha('cand-bytes');
+  const candV = versionReport(dir, { version: '0.0.2', build: 2, ipaSha: candSha });
+  const candVer = verifyReport(dir, { ipaSha: candSha });
+  const baseline = baselineDir(dir, { version: true, verify: true });
+  const r = driver(dir, baseline, candV, candVer);
+  assert.equal(r.status, 0, r.stderr);
+  assert.equal(r.stdout, 'COMPARE');
+  assert.equal(r.report.kind, 'distribution-upgrade-compat');
+  assert.equal(r.report.passed, true, 'monotonic upgrade of a real pair passes');
+  assert.equal(r.report.bindings.candidateSha256, candSha);
+  // And a regression inside the pair must fail through the same path.
+  const regressionV = versionReport(dir, { version: '0.0.1', build: 1, ipaSha: candSha });
+  const r2 = driver(dir, baseline, regressionV, candVer);
+  assert.equal(r2.status, 1, 'non-monotonic candidate fails through the compare path');
+  assert.equal(r2.report.passed, false);
+});
+
+test('M6-CI-BASELINE-001: workflow delegates to the executable driver', () => {
+  const workflow = readFileSync(join(ROOT, '.github/workflows/native-infrastructure.yml'), 'utf8');
+  assert.ok(workflow.includes('scripts/ci/baseline-compat.py'), 'workflow must invoke the driver');
+  assert.equal(/elif |HAS_V=/.test(workflow), false, 'branch logic must not be mirrored in shell — it lives in the executable');
 });
