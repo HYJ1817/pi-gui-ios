@@ -202,7 +202,13 @@ export class EventStreamClient {
     const message = buildEventFrameMessage(frame, this.credentials.deviceId, this.credentials.serviceId);
     if (message === null || !this.crypto.verify(this.credentials.servicePublicKey, frame.frameSignature, message)) return this.drop('frame_signature_invalid');
     const requiredScope = EVENT_SCOPE[frame.event];
-    if (!this.credentials.grantedScopes.includes(requiredScope)) return this.drop('scope_denied');
+    // ADR-0012 / FS-006: scope denial is authorization failure — the contract
+    // acceptance rule ("dropped and the stream reset") applies to it exactly
+    // as to resource denial. Client-side the reset is terminal death: a
+    // silent drop would let later frames apply while an unauthorized frame
+    // went unaccounted, corrupting ordering. Recovery resubscribes through
+    // the snapshot watermark path, same as every terminal death.
+    if (!this.credentials.grantedScopes.includes(requiredScope)) return this.fatal('scope_denied');
     if (frame.event === 'reset') {
       if (this.position !== undefined && !(frame.streamGeneration > this.position.streamGeneration)) return this.drop('sequence_gap');
       const position: Position = { streamGeneration: frame.streamGeneration, sequence: frame.sequence };

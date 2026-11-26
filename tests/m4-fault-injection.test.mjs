@@ -891,3 +891,62 @@ test('regression recovery recollects mixed generations and stops after bounded a
   assert.equal(r.store.snapshot().lastError, 'sequence_gap');
   assert.equal(r.store.snapshot().stream.state, 'dead');
 });
+
+test('regression scope-denied stream frames are terminal — never recoverable-by-ignoring (FS-006)', async t => {
+  // The final security review's FS-006: a frame the device is not authorized
+  // to receive is an authorization-boundary violation by the SERVER. Treating
+  // it as a recoverable transport fault means the client keeps consuming a
+  // stream whose authorization the server already violated — and a transient
+  // reconnect could mask the violation. It must be terminal: the stream dies
+  // and frames beyond the violation never apply.
+  const { M, gateway } = setup(t, domain());
+  // Register WITHOUT chat.send — the store does not authorize chat traffic.
+  const device = edKeypair();
+  const deviceCrypto = nodeCrypto(device);
+  const credentials = gateway.registerDevice({
+    devicePublicKey: device.publicKeyRaw,
+    grantedScopes: ['projects.read', 'sessions.read'],
+    grants: [PROJECT],
+    expiresAt: new Date(Date.now() + 3600_000).toISOString(),
+  });
+  const client = new M.client.TypedRemoteClient({ credentials, crypto: deviceCrypto, transport: { send: req => gateway.send(req) } });
+  const store = new M.store.ConversationStore(client, null);
+  const events = new M.events.EventStreamClient({
+    credentials, crypto: deviceCrypto,
+    authorizeResource: () => true,
+    onReset: () => {},
+    onEvent: a => store.apply(a),
+    onStreamError: () => store.markStreamError(),
+  });
+  const stream = {
+    subscribe: (request, onFrame, onClose) => {
+      const sub = gateway.subscribe(credentials, request, onFrame);
+      if (!sub.ok) { onClose(String(sub.response.status)); return { close: () => {} }; }
+      return sub;
+    },
+  };
+  await store.load();
+  events.open(stream, client.buildEventsRequest(), undefined);
+  // Server violates the boundary: delivers an approvals-scoped frame to a
+  // device without approvals.read. The sandbox filters scope server-side by
+  // construction, so the defect being pinned — a server-side filtering fault
+  // letting an unauthorized frame onto the wire — is emulated through the
+  // test-only seam of overriding the filter: the frame then arrives exactly
+  // as it would in production under such a fault, and the CLIENT-side
+  // contract check is the last line of defense under test here.
+  const conv = gateway.domain.conversations.find(c => c.conversationId === CONV);
+  const originalFilter = gateway.eventAuthorized.bind(gateway);
+  gateway.eventAuthorized = () => true;
+  gateway.emit(conv.owner, 'approval.pending', conv, { requestId: 'req_violation_001', method: 'confirm', title: 'synthetic violation probe', message: 'probe', options: [] });
+  gateway.eventAuthorized = originalFilter;
+  await new Promise(resolve => setTimeout(resolve, 60));
+  assert.equal(events.streamError(), 'scope_denied', 'scope violation must be terminal — the stream dies immediately');
+  // Nothing beyond the violation ever applies — and no reconnect-without-
+  // recovery can resurrect the stream (fatal is sticky, not retryable).
+  conv.messages.push({ messageId: 'msg_after_death', role: 'assistant', text: 'post-violation' });
+  conv.ownerRevision += 1;
+  gateway.emit(conv.owner, 'message.append', conv, { messageId: 'msg_after_death', role: 'assistant', text: 'post-violation' });
+  await new Promise(resolve => setTimeout(resolve, 60));
+  assert.equal(store.conversation(CONV).messages.filter(m => m.text === 'post-violation').length, 0, 'a terminal-dead stream applies nothing further');
+});
+
