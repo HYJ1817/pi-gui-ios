@@ -1,0 +1,41 @@
+✔ remote v1 contract is frozen v1, HTTPS-only and disabled by default (1.4294ms)
+✔ operation ids, scopes and methods are unique and closed (0.2411ms)
+✔ pair exchange accepts only a short-lived-code payload shape (1.7542ms)
+✔ project and session reads accept only opaque ids and empty payloads (2.2177ms)
+✔ runtime creation requires a revision and does not allow classic cwd/path fields (0.9438ms)
+✔ chat send is bounded, revision-bound and not a command proxy (3.5684ms)
+✔ exact signed body bytes and parsed request body must agree (0.6049ms)
+✔ stop uses a typed operation and requires current owner revision (0.6843ms)
+✔ approval response is bound to a real opaque request id and closed method/decision (0.8696ms)
+✔ signature canonicalization binds device, service, request identity, path/query, timestamp, nonce and body digest (0.6606ms)
+✔ Ed25519 request signature, device+service binding, skew and atomic replay gate are exercised with synthetic keys (9.5171ms)
+✔ pair proof binds code, displayed name, device key, nonce and service fingerprint (6.6227ms)
+✔ signed operation requests require all device-authentication header shapes (0.6314ms)
+✔ event stream accepts only a pattern-bound cursor and signed device headers (0.6568ms)
+✔ event frames carry generation/cursor/signature, per-event scopes and closed payloads (9.385ms)
+✔ request envelope rejects unknown version, fields and duplicate transport paths (1.1939ms)
+✔ responses use operation-specific closed projections and never carry raw errors/secrets/paths (0.8504ms)
+✔ device grants and owner recheck gate admission (IDOR / stale owner / substitution) (6.0026ms)
+✔ approval payload enforces the per-method decision/value matrix (0.3457ms)
+✔ approval settlement resolves and consumes a live Pi dialog exactly once (4.5703ms)
+✔ pre-auth failures map to a closed wire code and internal codes never leak (0.2157ms)
+✔ UTF-8 byte limits and duplicate query params are enforced (0.7463ms)
+✔ raw transport adapter rejects duplicate names, bad encoding, BOM and reserved literals (0.6974ms)
+✔ admission token recheck binds owner, device epoch and project at commit (0.4565ms)
+✔ wire error stage-awareness and closed mapping with own-property lookup (0.0902ms)
+✔ zero-UUID sentinel only on uncorrelated unauthorized error; arrays rejected (0.2633ms)
+✔ forbidden values: embedded POSIX/drive paths, credentials; transcript only scans credentials (0.3754ms)
+✔ wireErrorCode pair-stage resolves the closed pairExchange map (0.1731ms)
+✔ forbidden-value boundary matrix: paths and env dumps after any delimiter (0.6711ms)
+✔ raw target charset gate: non-ASCII, DEL, and # rejected before routing (0.2333ms)
+✔ reset occupies its sequence; next frame is reset.sequence+1, no freshSubscribe bypass (1.6882ms)
+✔ out-of-scope and network-path vectors per valueScanOutOfScope (1.2556ms)
+✔ quoted-key credentials rejected in metadata AND transcript text (0.4504ms)
+ℹ tests 33
+ℹ suites 0
+ℹ pass 33
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 251.6977
