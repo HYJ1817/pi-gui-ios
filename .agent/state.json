@@ -1,58 +1,27 @@
 {
   "schemaVersion": 2,
   "kind": "state",
-  "revision": 2224,
-  "updatedAt": "2026-11-26T15:45:00.864Z",
+  "revision": 2226,
+  "updatedAt": "2026-11-26T15:45:55.660Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "f2ce1f09a00f547b5de6739eaf2ca17b466f12a32c120c2a7493b5090e3513f4",
+    "parentDigest": "df550b99af3486a49bff9d4fcfe206e2df39a0dc36a51ba652fb65e861655328",
     "phase": "M4",
     "currentTask": "M4-sync",
     "branch": "agent/m-1-bootstrap",
     "checkpoint": {
-      "id": "v2-2026-11-26T15-45-00-864Z-4a4ded6f-27da-4703-8cc3-ac3122dbcab3",
-      "path": ".agent/checkpoints/v2-2026-11-26T15-45-00-864Z-4a4ded6f-27da-4703-8cc3-ac3122dbcab3.json",
-      "sha256": "779dc131b4b38e5fbabf092744e5467afb116e74e5f5a1e088b8424eceed9a20",
-      "authorityDigest": "de5209173442c65651ecbf692058b6875aa7ff59560ae0c73663c1be696f99c0",
-      "at": "2026-11-26T15:45:00.864Z",
+      "id": "v2-2026-11-26T15-45-16-566Z-3fbb80c2-0d49-4cc8-909c-b0496362bd8a",
+      "path": ".agent/checkpoints/v2-2026-11-26T15-45-16-566Z-3fbb80c2-0d49-4cc8-909c-b0496362bd8a.json",
+      "sha256": "ee3c6b89baa0b45d4ac135b0126abfaa259048be3a4eacc31e8699a45346b3d4",
+      "authorityDigest": "f2ce1f09a00f547b5de6739eaf2ca17b466f12a32c120c2a7493b5090e3513f4",
+      "at": "2026-11-26T15:45:16.566Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "e7d85ae8efe7afee2f82f9bc8a21f987ba94e208",
-        "dirty": [
-          "M .agent/HANDOFF.md",
-          " D .agent/checkpoints/v2-2026-11-26T13-36-56-778Z-78997e28-e88f-4588-8bb0-77aacd65fe1a.json",
-          " D .agent/checkpoints/v2-2026-11-26T13-36-58-263Z-39b08c65-3599-4fe7-8a15-4eef78848d55.json",
-          " D .agent/checkpoints/v2-2026-11-26T13-36-59-681Z-bbbf41fe-ee76-4784-a5b6-1b1108c37881.json",
-          " D .agent/checkpoints/v2-2026-11-26T13-37-01-159Z-7f5bd127-8c1a-427d-a678-a686d1e4d75c.json",
-          " D .agent/checkpoints/v2-2026-11-26T13-37-02-823Z-4b2c0584-53c3-4853-829a-4f2e9cf3bf17.json",
-          " D .agent/checkpoints/v2-2026-11-26T13-37-59-435Z-5f3e4514-4557-4c79-9d5b-88f6ae70bc36.json",
-          " M .agent/control.json",
-          " M .agent/state.json",
-          " M .agent/tasks.json",
-          " M PROGRESS.md",
-          "?? .agent/checkpoints/v2-2026-11-26T15-31-03-072Z-8e3eb9b5-4bf6-4963-90e1-a6850841dd2a.json",
-          "?? .agent/checkpoints/v2-2026-11-26T15-44-51-229Z-07d9fecf-1aa1-465c-89c6-787256c5a3bb.json",
-          "?? .agent/checkpoints/v2-2026-11-26T15-44-53-045Z-28181b9d-3900-4ff6-ba78-3c489f3fd16c.json",
-          "?? .agent/checkpoints/v2-2026-11-26T15-44-54-934Z-d3a25222-7741-4203-b127-fea2f28edbd3.json",
-          "?? .agent/checkpoints/v2-2026-11-26T15-44-56-882Z-9c296a2c-951e-4d59-a81c-762f290fe471.json",
-          "?? .agent/checkpoints/v2-2026-11-26T15-44-58-874Z-92723062-0f2b-45db-8f6a-fd6bf8bf799d.json",
-          "?? .agent/evidence/3f9fd0140b63412275636ec4658eddd1bbc55968466329fde650a001489c8e2e.json",
-          "?? .agent/evidence/85979467b8f88b143de9fd7bfeba1c0c8fd50cbdd23e5b29e901a4f8ba363493.json",
-          "?? .agent/evidence/bfc298fee178a9490cf8f34a04a5399ed535773ff1547867fc2bf7184d3495e4.json",
-          "?? .agent/evidence/c7c1fdd625fca1b848ca1902d8e63b179f236aa3ce165fdd60931e09889a073a.json",
-          "?? .agent/evidence/cfb977c2af84f5d53cae31e8d2b48cc2839731408f8a85a4c1d3036fff8252b4.json",
-          "?? .agent/evidence/fb7641cb6e31cf85add28254485eba0267c4ca33b4ade28be02f751c9a2eb8e0.json",
-          "?? docs/acceptance/clones/independent-security-M-1-infrastructure-round10.json",
-          "?? docs/acceptance/clones/independent-security-M0-architecture-round10.json",
-          "?? docs/acceptance/clones/independent-security-M1-remote-round10.json",
-          "?? docs/acceptance/clones/independent-security-M3-core-round10.json",
-          "?? docs/acceptance/clones/independent-security-M5-tailscale-round10.json",
-          "?? docs/acceptance/clones/independent-security-M6-distribution-round10.json",
-          "?? docs/acceptance/receipt-security-5f7904d2.json"
-        ]
+        "commit": "f296bc4edb147104a56f6141c58e325b252c7d4a",
+        "dirty": []
       },
       "sourceFingerprint": "61cd6469c47ecfd6c8b057d2d1e7105bd9dc3f937d5de97d6da58ae08dffa222",
-      "note": "agent-task evidence M6-distribution"
+      "note": "独立审查双PASS闭合: review 8/8 + security 6/6 全部导入; 启动handoff最终验证(收尾最后一步)"
     },
     "blockers": [],
     "ci": [
@@ -1102,11 +1071,17 @@
         "role": "independent-security",
         "status": "completed",
         "sourceCommit": "5e38181faf169b96ad48b8638b3c06d3a95d8e98"
+      },
+      {
+        "taskId": "node:delegated-task:command%3Amcp%3Acd5f8275-b346-4980-941e-ddfe9f4ea675%3Adelegate-task%3Aaff2421a-ac30-43f2-bfd8-cf649a850f5a",
+        "role": "independent-handoff",
+        "status": "working",
+        "sourceCommit": "5e38181faf169b96ad48b8638b3c06d3a95d8e98"
       }
     ]
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "fcd3d1e0ab8f20d6dcb6dcff16fe54f40e96a29aae49b62cac6cae70b92b2638"
+    "digest": "32248a52db63229ea4ee2c564fa8f48cf28ad7b96bc4f2ae806c6bee5259d37d"
   }
 }
