@@ -1,0 +1,21 @@
+{
+  "commit": "5e38181faf169b96ad48b8638b3c06d3a95d8e98",
+  "details": {
+    "note": "One independent verification run certifies the current tree as a whole (round-10 security closure covering journal durability, rotation lifecycle, flag validation, evidence store, distribution validation and baseline logic \u2014 the invariants every milestone depends on). Cloned verbatim per task \u2014 not an independent per-task run.",
+    "receiptPath": "docs/acceptance/receipt-security-5f7904d2.json",
+    "receiptSha256": "6dbae69fe1974ec37c7ff87775c4a099b08dc0afd5cb293581e50783aaf60abe",
+    "sameRunEvidence": "docs/acceptance/receipt-security-5f7904d2.json"
+  },
+  "finishedAt": "2026-11-26T15:44:49.000Z",
+  "kind": "independent-security",
+  "passed": true,
+  "schemaVersion": 2,
+  "scopeFingerprint": "0caf7e6055a2b054363e8f9d4a0ffe5a759cf55ce24ec036a31cdb11e878c64c",
+  "scopes": [
+    "protocol",
+    "shared"
+  ],
+  "sourceFingerprint": "61cd6469c47ecfd6c8b057d2d1e7105bd9dc3f937d5de97d6da58ae08dffa222",
+  "startedAt": "2026-11-26T15:44:49.000Z",
+  "taskId": "M1-remote"
+}

@@ -1,50 +1,58 @@
 {
   "schemaVersion": 2,
   "kind": "state",
-  "revision": 2210,
-  "updatedAt": "2026-11-26T15:30:58.558Z",
+  "revision": 2224,
+  "updatedAt": "2026-11-26T15:45:00.864Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "ea950834082d49a8fbe5008ede14d70b92a43fae93bb2ddba61cfd08d91761c5",
+    "parentDigest": "f2ce1f09a00f547b5de6739eaf2ca17b466f12a32c120c2a7493b5090e3513f4",
     "phase": "M4",
     "currentTask": "M4-sync",
     "branch": "agent/m-1-bootstrap",
     "checkpoint": {
-      "id": "v2-2026-11-26T15-30-10-143Z-65bbb2aa-e1cc-4041-98b4-017aad32b607",
-      "path": ".agent/checkpoints/v2-2026-11-26T15-30-10-143Z-65bbb2aa-e1cc-4041-98b4-017aad32b607.json",
-      "sha256": "1ab8febeb281109e7adaa7dc7b6c8cdb7ec1e809a0ed2603561111e06901b3e8",
-      "authorityDigest": "dd56cdfacf77b61bb34b5f4cc1b985b50faf2dda517cfd01680a98f1e7ccb8f2",
-      "at": "2026-11-26T15:30:10.143Z",
+      "id": "v2-2026-11-26T15-45-00-864Z-4a4ded6f-27da-4703-8cc3-ac3122dbcab3",
+      "path": ".agent/checkpoints/v2-2026-11-26T15-45-00-864Z-4a4ded6f-27da-4703-8cc3-ac3122dbcab3.json",
+      "sha256": "779dc131b4b38e5fbabf092744e5467afb116e74e5f5a1e088b8424eceed9a20",
+      "authorityDigest": "de5209173442c65651ecbf692058b6875aa7ff59560ae0c73663c1be696f99c0",
+      "at": "2026-11-26T15:45:00.864Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "99be4cbd33e2c9cb79bb713b2ea7c77a46b04249",
+        "commit": "e7d85ae8efe7afee2f82f9bc8a21f987ba94e208",
         "dirty": [
           "M .agent/HANDOFF.md",
-          " D .agent/checkpoints/v2-2026-11-26T13-36-48-821Z-aae01d3d-dbf6-4ed9-bbee-2e0f65d5415b.json",
-          " D .agent/checkpoints/v2-2026-11-26T13-36-50-246Z-adcc0329-7a54-425d-a4fc-21f84496febe.json",
-          " D .agent/checkpoints/v2-2026-11-26T13-36-51-921Z-d420dddc-3cbd-4007-8b56-0c6630e287ba.json",
-          " D .agent/checkpoints/v2-2026-11-26T13-36-53-391Z-4700058e-b104-4d75-86de-38f1802d68a9.json",
+          " D .agent/checkpoints/v2-2026-11-26T13-36-56-778Z-78997e28-e88f-4588-8bb0-77aacd65fe1a.json",
+          " D .agent/checkpoints/v2-2026-11-26T13-36-58-263Z-39b08c65-3599-4fe7-8a15-4eef78848d55.json",
+          " D .agent/checkpoints/v2-2026-11-26T13-36-59-681Z-bbbf41fe-ee76-4784-a5b6-1b1108c37881.json",
+          " D .agent/checkpoints/v2-2026-11-26T13-37-01-159Z-7f5bd127-8c1a-427d-a678-a686d1e4d75c.json",
+          " D .agent/checkpoints/v2-2026-11-26T13-37-02-823Z-4b2c0584-53c3-4853-829a-4f2e9cf3bf17.json",
+          " D .agent/checkpoints/v2-2026-11-26T13-37-59-435Z-5f3e4514-4557-4c79-9d5b-88f6ae70bc36.json",
           " M .agent/control.json",
           " M .agent/state.json",
           " M .agent/tasks.json",
           " M PROGRESS.md",
-          " M docs/acceptance/clones/local-integration-M1-remote.json",
-          " M docs/acceptance/clones/local-integration-M3-core.json",
-          " M docs/acceptance/clones/local-integration-M4-sync.json",
-          " M docs/acceptance/clones/local-integration-M5-tailscale.json",
-          " M docs/acceptance/local-integration.json",
-          "?? .agent/checkpoints/v2-2026-11-26T15-30-03-980Z-a064a717-35d8-4fc8-badc-5dd96e37a361.json",
-          "?? .agent/checkpoints/v2-2026-11-26T15-30-05-612Z-e52be5e4-42c0-4b72-a788-a22fbb0943cd.json",
-          "?? .agent/checkpoints/v2-2026-11-26T15-30-07-133Z-e1e86183-d997-42d0-922d-d3bfbadc477b.json",
-          "?? .agent/checkpoints/v2-2026-11-26T15-30-08-627Z-2a49bf4f-e857-495d-89ed-3e71fbc158a3.json",
-          "?? .agent/evidence/234079ccf655ee90ae7370f99f1daa1417bc3aa7d0965c3d4b45ac017c41e2de.json",
-          "?? .agent/evidence/245141d9bba46111d42873ffaf6525698df108c88d487d9cf2107feaf60dfd21.json",
-          "?? .agent/evidence/24b09db4b2b40a9b9f175aab037991bec4bccebd3a28420ef9bc399727e5d116.json",
-          "?? .agent/evidence/f19863cae782822ddc173c77e9b838473c5040abebdb4d3baf1fb8c4af1368cf.json"
+          "?? .agent/checkpoints/v2-2026-11-26T15-31-03-072Z-8e3eb9b5-4bf6-4963-90e1-a6850841dd2a.json",
+          "?? .agent/checkpoints/v2-2026-11-26T15-44-51-229Z-07d9fecf-1aa1-465c-89c6-787256c5a3bb.json",
+          "?? .agent/checkpoints/v2-2026-11-26T15-44-53-045Z-28181b9d-3900-4ff6-ba78-3c489f3fd16c.json",
+          "?? .agent/checkpoints/v2-2026-11-26T15-44-54-934Z-d3a25222-7741-4203-b127-fea2f28edbd3.json",
+          "?? .agent/checkpoints/v2-2026-11-26T15-44-56-882Z-9c296a2c-951e-4d59-a81c-762f290fe471.json",
+          "?? .agent/checkpoints/v2-2026-11-26T15-44-58-874Z-92723062-0f2b-45db-8f6a-fd6bf8bf799d.json",
+          "?? .agent/evidence/3f9fd0140b63412275636ec4658eddd1bbc55968466329fde650a001489c8e2e.json",
+          "?? .agent/evidence/85979467b8f88b143de9fd7bfeba1c0c8fd50cbdd23e5b29e901a4f8ba363493.json",
+          "?? .agent/evidence/bfc298fee178a9490cf8f34a04a5399ed535773ff1547867fc2bf7184d3495e4.json",
+          "?? .agent/evidence/c7c1fdd625fca1b848ca1902d8e63b179f236aa3ce165fdd60931e09889a073a.json",
+          "?? .agent/evidence/cfb977c2af84f5d53cae31e8d2b48cc2839731408f8a85a4c1d3036fff8252b4.json",
+          "?? .agent/evidence/fb7641cb6e31cf85add28254485eba0267c4ca33b4ade28be02f751c9a2eb8e0.json",
+          "?? docs/acceptance/clones/independent-security-M-1-infrastructure-round10.json",
+          "?? docs/acceptance/clones/independent-security-M0-architecture-round10.json",
+          "?? docs/acceptance/clones/independent-security-M1-remote-round10.json",
+          "?? docs/acceptance/clones/independent-security-M3-core-round10.json",
+          "?? docs/acceptance/clones/independent-security-M5-tailscale-round10.json",
+          "?? docs/acceptance/clones/independent-security-M6-distribution-round10.json",
+          "?? docs/acceptance/receipt-security-5f7904d2.json"
         ]
       },
       "sourceFingerprint": "61cd6469c47ecfd6c8b057d2d1e7105bd9dc3f937d5de97d6da58ae08dffa222",
-      "note": "agent-task evidence M5-tailscale"
+      "note": "agent-task evidence M6-distribution"
     },
     "blockers": [],
     "ci": [
@@ -1092,13 +1100,13 @@
       {
         "taskId": "node:delegated-task:command%3Amcp%3Acd5f8275-b346-4980-941e-ddfe9f4ea675%3Adelegate-task%3A5f7904d2-8549-4415-a902-8e6d8c474e58",
         "role": "independent-security",
-        "status": "working",
+        "status": "completed",
         "sourceCommit": "5e38181faf169b96ad48b8638b3c06d3a95d8e98"
       }
     ]
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "6bb4c63ba5c181a8eed288d0b33e9789815668ced026a395a26fb9d386c368e2"
+    "digest": "fcd3d1e0ab8f20d6dcb6dcff16fe54f40e96a29aae49b62cac6cae70b92b2638"
   }
 }
