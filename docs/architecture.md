@@ -1,9 +1,23 @@
-# 架构工作稿
+# 架构
 
-应用 pi-gui-mobile 位于用户指定 HYJ1817/pi-gui-ios 仓库。M-1 只有离线技术探针，不连接桌面、不读取真实会话。React Native + Expo；已按用户第14条迁移至 T3 同族 React Navigation 静态入口，并接入必要的 UniWind/菜单/手势/动画/键盘探针；Windows迁移检查不替代尚待完成的原生运行验证；原生 GlassView 只用于操作 chrome，正文采用系统实色表面。Windows 编译 JS/类型检查，GitHub 标准 macOS 编译 Simulator 和 device arm64。
+## 当前运行路径
 
-目标：移动视图 → 类型化 remote client → TLS/独立远程网关 → 桌面现有领域服务 → Pi RPC（不改本体）。网关必须按操作/字段白名单投影，不能通用代理现有 HTTP、shell、文件系统、凭据服务。
+`App.tsx` 安装手势/安全区/键盘 provider，解析 Reduce Transparency 后挂载 React Navigation。iPhone 用 native stack；iPad 用原生 Split，由系统处理紧凑尺寸折叠。`GlassSurface` 仅在系统支持且未开启 Reduce Transparency 时使用 `GlassView`，否则实色回退。
 
-T3 完整研究基线 068332c603ce5ca40ad5a96a09cffa34ebd05dff，继续时已复核当前main 285558eb1053d17f59ea8ecdf7c57999e92381f8，13项核心选型未变，差异见 technology-stack.md 与增量证据；早期 ccc1feb15572c422fbdce26ba6077b91459cfd47 仅保留为历史证据；桌面基线 af0432a0bc3b04c717a63ede3cc457e859401833。研究记录见 source-research.md。远程协议 v1 已随 M0 冻结（`docs/contracts/remote-v1.json` status `frozen-v1`）；冻结的是合同与设计边界，不表示远程实现完成或可启用——远程入口保持默认关闭直至 M1+安全审查。负责人要求将真机安装/刷新/覆盖升级合并到全部软件工作完成后的一次最终清单，并自主处理或如实延期普通中间问题；约束见 `AGENTS.md` 与 `docs/acceptance/owner-waiver-m0-design-progression.md`。M0 design-only 预研可在 M-1 blocked 时继续，但不代表 M-1 完成、M0 已验收或可提前启用远程业务。草案见 `docs/decisions/0005-remote-protocol-v1-proposal.md`。
+`src/remote/useRemote.ts` 是显式 synthetic binding。`demo.ts` 保留 fixtures、合成配对和 `mode: 'synthetic'` singleton；`runtime.ts` 的 cold factory 从显式 client/crypto/stream/authorization 组装 `ConversationStore`、`EventStreamClient` 及流生命周期，构造不连接，demo 组合根才打开进程内网关事件流。项目/会话、消息、审批、快照/游标、重连均为合成演练。消息是有界文本列表，未安装的 Markdown/代码渲染候选不算交付。
 
-状态/恢复层：control.json 单一权威、SHA256 完整性信封、版本化 schema、原子写入、派生投影、Git/源码指纹、证据/检查点关联。见 decisions/0001-persistent-control.md。
+`src/remote/native-port.ts`、`native.ts` 与 `modules/pi-gui-remote` 准备了显式启用的 Apple Network/Security/CryptoKit、HTTPS/SSE、Keychain/私钥边界。App/Settings 尚无生产配对或连接入口。**真实配对、真实 sessions/messages 和 live sync 仍属 P3 接线**，模块存在/合成通过不代表可用。
+
+## 边界与源码入口
+
+| 范围 | 入口 |
+| --- | --- |
+| 页面、导航、设计 | `src/screens/`、`src/navigation/`、`src/components/`、`src/design/` |
+| 客户端、状态、事件与装配 | `src/remote/`：`runtime.ts` 负责 cold composition；`demo.ts` 保留合成实现 |
+| 未接入 App 的原生连接边界 | `modules/pi-gui-remote/ios/` |
+| 远程合同 | [remote-v1.json](contracts/remote-v1.json)；协议校验和双仓库集成测试 |
+| 原生依赖与 CI | `native/`、`scripts/ci/`、`.github/workflows/`，见 [构建](releasing.md) / [测试](testing.md) |
+
+目标真实链路是移动视图 → typed remote client → TLS/独立远程网关 → 桌面领域服务 → Pi RPC；不得把现有 localhost 后端、shell 或文件系统变成通用代理。协议、身份、权限及审批边界见 [安全模型](security.md)。
+
+恢复控制层独立于 App：`.agent/control.json` 是唯一任务/运行状态权威，其余为投影，命令见 [AGENTS.md](../AGENTS.md)。[选型记录](decisions/technology-stack.md) 保留技术依据；历史 ADR/阶段文字按对应源码提交与证据阅读，不作当前能力/进度声明。
