@@ -205,6 +205,11 @@
         "scopeFingerprint": {
           "type": "string",
           "pattern": "^[a-f0-9]{64}$"
+        },
+        "originalPath": {
+          "type": "string",
+          "pattern": "^(docs/acceptance/|\\.agent/evidence/)[^\\]+\\.json$",
+          "description": "Provenance: where the imported bytes were read from. The authoritative path is the immutable content-addressed store copy."
         }
       },
       "additionalProperties": false
