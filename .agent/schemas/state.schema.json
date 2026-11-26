@@ -19,10 +19,8 @@
         "branch",
         "protocolVersion",
         "desktop",
-        "ci",
         "blockers",
-        "checkpoint",
-        "delegates"
+        "checkpoint"
       ],
       "properties": {
         "authority": {
@@ -82,6 +80,7 @@
             }
           ]
         },
+        "runs": {"$ref": "shared.schema.json#/$defs/runSummary"},
         "delegates": {
           "type": "array",
           "items": {

@@ -4,7 +4,7 @@ import { mkdtempSync, writeFileSync, readFileSync, existsSync, rmSync, mkdirSync
 import { tmpdir } from 'node:os';
 import { resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
-import { ROOT, envelope, decode, digest, writeEnvelope, loadControl, mutate, snapshot, sourceFingerprint, committedFingerprint, gate, transition, renderProjections, repairProjections, git, evidencePath, validateReport, normalizeCi, createCheckpoint, validateCheckpoint, restoreCheckpoint, atomicWrite, safePath, readSafe, resolveScopes, validateEvidenceScopes, coverageCheck, pruneCheckpoints, CHECKPOINT_KEEP } from '../scripts/lib/control.mjs';
+import { ROOT, envelope, decode, digest, writeEnvelope, loadControl, mutate, snapshot, sourceFingerprint, committedFingerprint, gate, transition, renderProjections, repairProjections, git, evidencePath, validateReport, normalizeCi, createCheckpoint, validateCheckpoint, restoreCheckpoint, atomicWrite, safePath, readSafe, resolveScopes, validateEvidenceScopes, coverageCheck, pruneCheckpoints, CHECKPOINT_KEEP, compactControl, readHistory, immutableWrite, checkFile, safeSyntheticLog, auditEvidence } from '../scripts/lib/control.mjs';
 import { inspectRecovery, listCheckpoints } from '../scripts/lib/recovery.mjs';
 
 function fixture(t, committed = true) {
@@ -17,11 +17,12 @@ function fixture(t, committed = true) {
   const e = envelope('control', 1, d); writeEnvelope(root, '.agent/control.json', e); renderProjections(root, e);
   return { root, d };
 }
+function track(root, ...paths) { assert.ok(git(['-c', 'core.autocrlf=false', 'add', '-f', '--', ...paths], root).ok); }
 function proof(root, d, { task = d.tasks[0], kind = 'unit', passed = true, exitCode = 0, commit = snapshot(root).commit } = {}) {
   mkdirSync(resolve(root, 'docs/acceptance'), { recursive: true });
   const logPath = 'docs/acceptance/' + task.id + '-' + kind + '.log'; writeFileSync(resolve(root, logPath), 'Synthetic fixture test output\n');
   const report = { schemaVersion: 2, kind, taskId: task.id, commit, sourceFingerprint: sourceFingerprint(root), startedAt: '2026-11-20T01:00:00.000Z', finishedAt: '2026-11-20T01:00:01.000Z', passed, details: { command: 'npm test', exitCode, logPath, logSha256: digest(readFileSync(resolve(root, logPath))) } };
-  const path = 'docs/acceptance/' + task.id + '-' + kind + '.json'; writeFileSync(resolve(root, path), JSON.stringify(report));
+  const path = 'docs/acceptance/' + task.id + '-' + kind + '.json'; writeFileSync(resolve(root, path), JSON.stringify(report)); track(root, logPath, path);
   task.evidence.push({ kind, path, sha256: digest(readFileSync(resolve(root, path))), sourceFingerprint: report.sourceFingerprint, commit, at: report.finishedAt });
   return { report, path };
 }
@@ -177,7 +178,7 @@ test('CI success must match the exact imported API receipt, workflow, head and a
   d.tasks[0].requiredEvidence = ['ci']; const { report } = proof(root, d, { kind: 'ci' });
   const raw = { id: 123, head_sha: commit, run_attempt: 1, path: '.github/workflows/native-infrastructure.yml', status: 'completed', conclusion: 'success', html_url: 'https://github.com/HYJ1817/pi-gui-ios/actions/runs/123', repository: { full_name: 'HYJ1817/pi-gui-ios' } };
   d.ci = [normalizeCi(raw)]; const receiptPath = 'docs/acceptance/ci-api.json';
-  writeFileSync(resolve(root, receiptPath), JSON.stringify(raw));
+  writeFileSync(resolve(root, receiptPath), JSON.stringify(raw)); track(root, receiptPath);
   report.details = { ci: d.ci[0], receiptPath, receiptSha256: digest(readFileSync(resolve(root, receiptPath))) };
   assert.ok(validateReport(d, d.tasks[0], report, root));
   report.details.ci = { ...d.ci[0], attempt: 2 }; assert.throws(() => validateReport(d, d.tasks[0], report, root), /identity|attempt/);
@@ -188,12 +189,12 @@ test('a completed independent task with a failing original result cannot become 
   const { report } = proof(root, d, { kind });
   const result = { schemaVersion: 1, kind, decision: 'pass', reviewedCommit: commit, sourceFingerprint: sourceFingerprint(root), unresolvedBlockers: 0, unresolvedImportant: 0 };
   const receipt = { taskId: 'fixture-independent-task', latestTerminalStatus: 'completed', executedModel: 'fixture-model', summary: JSON.stringify(result) };
-  const receiptPath = 'docs/acceptance/review-receipt.json'; writeFileSync(resolve(root, receiptPath), JSON.stringify(receipt));
+  const receiptPath = 'docs/acceptance/review-receipt.json'; writeFileSync(resolve(root, receiptPath), JSON.stringify(receipt)); track(root, receiptPath);
   d.delegates = [{ taskId: receipt.taskId, role: 'security-review', status: 'completed', sourceCommit: commit }];
   report.details = { receiptPath, receiptSha256: digest(readFileSync(resolve(root, receiptPath))) };
   assert.ok(validateReport(d, d.tasks[0], report, root));
   result.decision = 'fail'; result.unresolvedBlockers = 3; receipt.summary = JSON.stringify(result);
-  writeFileSync(resolve(root, receiptPath), JSON.stringify(receipt)); report.details.receiptSha256 = digest(readFileSync(resolve(root, receiptPath)));
+  writeFileSync(resolve(root, receiptPath), JSON.stringify(receipt)); track(root, receiptPath); report.details.receiptSha256 = digest(readFileSync(resolve(root, receiptPath)));
   assert.throws(() => validateReport(d, d.tasks[0], report, root), /did not pass/);
 });
 test('explicit separate review and handoff results are checked independently in one fresh-context receipt', t => {
@@ -202,7 +203,7 @@ test('explicit separate review and handoff results are checked independently in 
   const base = { schemaVersion: 1, decision: 'pass', reviewedCommit: commit, sourceFingerprint: sourceFingerprint(root), unresolvedBlockers: 0, unresolvedImportant: 0 };
   const results = [{ ...base, kind: 'independent-review' }, { ...base, kind: 'independent-handoff', restoredTask: 'infra', commands: [{ command: 'node scripts/agent-resume.mjs --remote', exitCode: 0 }, { command: 'npm test', exitCode: 0 }] }];
   const receipt = { taskId: 'fixture-combined-review', latestTerminalStatus: 'completed', executedModel: 'fixture-model', summary: JSON.stringify({ reports: results }) };
-  const receiptPath = 'docs/acceptance/combined-review.json'; const save = () => { writeFileSync(resolve(root, receiptPath), JSON.stringify(receipt)); report.details = { receiptPath, receiptSha256: digest(readFileSync(resolve(root, receiptPath))) }; };
+  const receiptPath = 'docs/acceptance/combined-review.json'; const save = () => { writeFileSync(resolve(root, receiptPath), JSON.stringify(receipt)); track(root, receiptPath); report.details = { receiptPath, receiptSha256: digest(readFileSync(resolve(root, receiptPath))) }; };
   d.delegates = [{ taskId: receipt.taskId, role: 'functional-and-handoff', status: 'completed', sourceCommit: commit }]; save();
   assert.ok(validateReport(d, d.tasks[0], report, root));
   report.kind = 'independent-handoff'; assert.ok(validateReport(d, d.tasks[0], report, root));
@@ -215,7 +216,7 @@ test('IPA evidence must identify the hash-bound verified final archive, not only
   const { root, d } = fixture(t), commit = snapshot(root).commit; d.tasks[0].requiredEvidence = ['ipa']; const { report } = proof(root, d, { kind: 'ipa' });
   d.ci = [{ id: '123', head: commit, workflow: '.github/workflows/native-infrastructure.yml', attempt: 1, status: 'completed', conclusion: 'success', url: 'https://github.com/HYJ1817/pi-gui-ios/actions/runs/123' }];
   const verification = { schemaVersion: 2, passed: true, kind: 'unsigned-device-archive', code: 'IPA_VERIFIED', platform: 'iOS', architectures: ['arm64'], executables: 2, frameworks: 1, sideStoreInstallVerified: false, sha256: 'a'.repeat(64) };
-  const verificationPath = 'docs/acceptance/ipa-verification.json'; const save = () => { writeFileSync(resolve(root, verificationPath), JSON.stringify(verification)); report.details = { ciId: '123', attempt: 1, archiveSha256: 'a'.repeat(64), verificationPath, verificationSha256: digest(readFileSync(resolve(root, verificationPath))) }; };
+  const verificationPath = 'docs/acceptance/ipa-verification.json'; const save = () => { writeFileSync(resolve(root, verificationPath), JSON.stringify(verification)); track(root, verificationPath); report.details = { ciId: '123', attempt: 1, archiveSha256: 'a'.repeat(64), verificationPath, verificationSha256: digest(readFileSync(resolve(root, verificationPath))) }; };
   save(); assert.ok(validateReport(d, d.tasks[0], report, root));
   verification.kind = 'unsigned-device-directory'; save(); assert.throws(() => validateReport(d, d.tasks[0], report, root), /final device IPA/);
   verification.kind = 'unsigned-device-archive'; verification.sha256 = 'b'.repeat(64); save(); assert.throws(() => validateReport(d, d.tasks[0], report, root), /archive\/hash/);
@@ -335,6 +336,135 @@ test('checkpoint pruning keeps newest N and never unlinks the referenced checkpo
   assert.ok(validateCheckpoint(root, loadControl(root)));
 });
 
+test('compaction preserves a valid gate behind a newer failure and archives history without hydration', t => {
+  const { root, d } = fixture(t);
+  for (let i = 0; i < 4; i++) {
+    const { report } = proof(root, d, { passed: i !== 3 });
+    report.startedAt = `2026-11-20T01:00:0${i}.000Z`; report.finishedAt = '2026-11-20T01:00:09.000Z';
+    const ref = immutableWrite(root, Buffer.from(JSON.stringify(report))); track(root, ref.path);
+    Object.assign(d.tasks[0].evidence.at(-1), ref);
+  }
+  d.delegates.push({ taskId: 'old-failed-review', role: 'review', status: 'completed', decision: 'fail', sourceCommit: snapshot(root).commit });
+  mutate(root, next => Object.assign(next, d));
+  assert.deepEqual(gate(d, d.tasks[0], root), []);
+  const dryBytes = readFileSync(resolve(root, '.agent/control.json'));
+  assert.equal(compactControl(root).after.evidence, 2);
+  assert.deepEqual(readFileSync(resolve(root, '.agent/control.json')), dryBytes);
+  const result = compactControl(root, { apply: true }), compacted = loadControl(root);
+  assert.equal(result.after.evidence, 2); assert.deepEqual(gate(compacted.data, compacted.data.tasks[0], root), []);
+  const history = readHistory(root, compacted.data);
+  assert.equal(history[0].tasks[0].evidence.length, 2); assert.equal(history[0].delegates[0].decision, 'fail');
+  assert.equal(compacted.data.delegates.length, 0);
+  const tasks = decode(readSafe(root, '.agent/tasks.json', 'utf8'), 'tasks').data.tasks;
+  assert.equal(tasks[0].evidence, undefined); assert.equal(tasks[0].evidenceCount, 2);
+  const recovery = inspectRecovery(root);
+  assert.equal(recovery.currentTask.evidence, undefined); assert.equal(recovery.delegates, undefined);
+  const second = compactControl(root, { apply: true }); assert.equal(second.changed, false);
+  assert.equal(loadControl(root).data.history.length, 1);
+  mutate(root, next => { next.tasks[0].evidence = [next.tasks[0].evidence.at(-1)]; });
+  const onlyFailure = loadControl(root).data;
+  assert.ok(gate(onlyFailure, onlyFailure.tasks[0], root).length, 'archived passing history is never a gate candidate');
+});
+
+test('compacted history survives clone/handoff and dirty restore; corruption is rejected', t => {
+  const { root, d } = fixture(t); proof(root, d); d.tasks[0].evidence.push(structuredClone(d.tasks[0].evidence[0]));
+  mutate(root, next => Object.assign(next, d)); compactControl(root, { apply: true });
+  const point = loadControl(root).data.checkpoint;
+  for (const path of ['.gitattributes', '.agent/evidence/.gitattributes', 'docs/acceptance/logs/.gitattributes']) { mkdirSync(resolve(root, path, '..'), { recursive: true }); cpSync(resolve(ROOT, path), resolve(root, path)); }
+  const log = immutableWrite(root, Buffer.from('TAP version 13\r\n# tests 1\r\n'), 'log');
+  track(root, '.gitattributes', '.agent', 'PROGRESS.md', 'docs/acceptance');
+  assert.ok(git(['-c', 'user.name=Fixture', '-c', 'user.email=fixture@example.invalid', 'commit', '-m', 'compacted fixture'], root).ok);
+  const clone = root + '-clone'; t.after(() => rmSync(clone, { recursive: true, force: true }));
+  assert.ok(git(['clone', '--quiet', root, clone], root).ok);
+  assert.equal(readHistory(clone, loadControl(clone).data)[0].tasks[0].evidence.length, 1);
+  assert.ok(checkFile(clone, log.path, log.sha256));
+  assert.ok(validateCheckpoint(clone, loadControl(clone)));
+  writeFileSync(resolve(clone, 'source.ts'), 'dirty clone code'); writeFileSync(resolve(clone, '.agent/control.json'), '{corrupt');
+  restoreCheckpoint(clone, point.path); assert.equal(readFileSync(resolve(clone, 'source.ts'), 'utf8'), 'dirty clone code');
+  const ref = loadControl(clone).data.history[0]; writeFileSync(resolve(clone, ref.path), '{}');
+  assert.throws(() => loadControl(clone), /digest mismatch/);
+  assert.equal(listCheckpoints(clone).find(c => c.path === point.path).valid, false);
+  const before = readFileSync(resolve(clone, '.agent/control.json'));
+  assert.throws(() => restoreCheckpoint(clone, point.path), /digest mismatch/);
+  assert.deepEqual(readFileSync(resolve(clone, '.agent/control.json')), before);
+});
+
+test('interruption after immutable archive persistence leaves the old authority usable', t => {
+  const { root } = fixture(t), before = readSafe(root, '.agent/control.json');
+  const archive = { schemaVersion: 1, kind: 'control-history', tasks: [], ci: [], delegates: [] };
+  const bytes = Buffer.from(JSON.stringify(archive)), path = '.agent/evidence/' + digest(bytes) + '.json';
+  mkdirSync(resolve(root, '.agent/evidence'));
+  const child = spawnSync(process.execPath, ['--input-type=module', '-e', 'import fs from "node:fs"; const fd = fs.openSync(process.argv[1], "wx"); fs.writeFileSync(fd, process.argv[2]); fs.fsyncSync(fd); fs.closeSync(fd); process.exit(77);', resolve(root, path), bytes.toString()]);
+  assert.equal(child.status, 77); assert.deepEqual(readSafe(root, '.agent/control.json'), before);
+  assert.equal(loadControl(root).data.history, undefined);
+});
+
+test('eight valid checkpoints survive rotation; dirty-path text does not pin an old snapshot', t => {
+  const { root } = fixture(t), first = createCheckpoint(root, 'first');
+  mutate(root, d => { d.nextAction = 'Incidental deleted path ' + first.data.checkpoint.path; });
+  for (let i = 0; i < CHECKPOINT_KEEP + 2; i++) createCheckpoint(root, 'bounded-' + i);
+  assert.equal(existsSync(resolve(root, first.data.checkpoint.path)), false);
+  writeFileSync(resolve(root, '.agent/checkpoints/v2-zz-corrupt.json'), '{broken');
+  createCheckpoint(root, 'newest');
+  const candidates = listCheckpoints(root); assert.equal(candidates.filter(c => c.valid).length, 8);
+  assert.equal(candidates.filter(c => !c.valid).length, 1);
+});
+
+test('nested artifacts must be tracked with exact bytes and immutable basenames', t => {
+  const { root, d } = fixture(t); const { report } = proof(root, d);
+  git(['rm', '--cached', '-f', '--', report.details.logPath], root);
+  assert.throws(() => validateReport(d, d.tasks[0], report, root), /Git-tracked/);
+  track(root, report.details.logPath);
+  const ref = immutableWrite(root, Buffer.from('Synthetic fixture test output\r\n'), 'log');
+  track(root, ref.path); assert.ok(checkFile(root, ref.path, ref.sha256));
+  writeFileSync(resolve(root, ref.path), 'changed exact bytes');
+  assert.throws(() => checkFile(root, ref.path, ref.sha256), /digest mismatch/);
+  const wrong = 'docs/acceptance/logs/' + 'a'.repeat(64) + '.log';
+  writeFileSync(resolve(root, wrong), 'Synthetic fixture test output');
+  assert.throws(() => checkFile(root, wrong, digest('Synthetic fixture test output'), { tracked: false }), /filename\/hash/);
+});
+
+test('latest-record audit recovers only exact safe synthetic logs and never changes source bytes', t => {
+  const { root, d } = fixture(t), source = mkdtempSync(resolve(tmpdir(), 'control-log-source-'));
+  t.after(() => rmSync(source, { recursive: true, force: true }));
+  mkdirSync(resolve(source, 'docs/acceptance/logs'), { recursive: true });
+  const logs = ['TAP version 13\n# tests 1\n# pass 1\n', 'TAP version 13\nC:/Users/private/example.ts\n', 'TAP version 13\nBearer sensitive-fixture-token\n'];
+  for (let i = 0; i < logs.length; i++) {
+    const { report } = proof(root, d), sha256 = digest(logs[i]), path = `docs/acceptance/logs/${sha256}.log`;
+    writeFileSync(resolve(source, path), logs[i]);
+    report.details.logPath = path; report.details.logSha256 = sha256;
+    const ref = immutableWrite(root, Buffer.from(JSON.stringify(report))); Object.assign(d.tasks[0].evidence.at(-1), ref);
+  }
+  mutate(root, next => Object.assign(next, d));
+  const audit = auditEvidence(root, { recoverFrom: source, apply: true });
+  assert.equal(audit.records.length, 3); assert.equal(audit.totals['safe-log-available'], 1);
+  assert.equal(audit.totals['withheld-sensitive-or-unverified'], 2);
+  assert.equal(readdirSync(resolve(root, 'docs/acceptance/logs')).length, 1);
+  assert.equal(readFileSync(resolve(source, `docs/acceptance/logs/${digest(logs[0])}.log`), 'utf8'), logs[0]);
+  assert.equal(JSON.stringify(audit).includes('C:/Users'), false);
+  const rerun = auditEvidence(root, { recoverFrom: source }); assert.equal(rerun.records.length, 3);
+  for (const text of ['test 1\napi_key=synthetic-secret\n', 'TAP version 13\n/home/example/file\n', 'ordinary unverified output']) assert.equal(safeSyntheticLog(Buffer.from(text)), false);
+});
+
+test('hash log allowlist excludes arbitrary logs and nested paths', t => {
+  const { root } = fixture(t);
+  writeFileSync(resolve(root, '.gitignore'), readFileSync(resolve(ROOT, '.gitignore')));
+  const base = 'docs/acceptance/logs/', hash = 'a'.repeat(64);
+  assert.equal(git(['check-ignore', '--no-index', base + hash + '.log'], root).ok, false);
+  for (const path of [base + 'private.log', base + hash + '.txt', base + hash.slice(1) + '.log', base + 'nested/' + hash + '.log', '.agent/private-logs/' + hash + '.log']) assert.equal(git(['check-ignore', '--no-index', path], root).ok, true, path);
+});
+
+test('explicit terminal reconciliation preserves FAIL and never silently adopts a branch', t => {
+  const { root } = fixture(t), id = 'b59334b1-1dc4-49bd-a8d1-831dac04e67d';
+  mutate(root, d => { d.delegates = [{ taskId: 'prefix:' + id, role: 'security', status: 'working', sourceCommit: snapshot(root).commit }]; });
+  assert.ok(git(['switch', '-c', 'agent/isolated'], root).ok);
+  assert.throws(() => compactControl(root), /Branch mismatch/);
+  compactControl(root, { apply: true, adoptBranch: true, terminalFail: [id] });
+  const control = loadControl(root), record = readHistory(root, control.data)[0].delegates[0];
+  assert.equal(record.status, 'completed'); assert.equal(record.decision, 'fail');
+  assert.equal(control.data.branch, 'agent/isolated'); assert.equal(control.data.delegates.length, 0);
+});
+
 test('FSEC-006-R4-001 end-to-end: the real importer CLI refuses a junction store — no external write, no authority update', t => {
   // Wire-level pin: copy the real scripts + schemas into a synthetic repo,
   // junction .agent/evidence outside, then run the actual agent-task CLI.
@@ -365,7 +495,12 @@ test('FSEC-006-R4-001 end-to-end: the real importer CLI refuses a junction store
     passed: true,
     details: { command: 'npm test', exitCode: 0, logPath, logSha256: digest(readFileSync(resolve(root, logPath))) },
   };
-  writeFileSync(resolve(root, 'docs/acceptance/report.json'), JSON.stringify(report));
+  writeFileSync(resolve(root, 'docs/acceptance/report.json'), JSON.stringify(report)); track(root, logPath);
+  // A successful importer run proves the pin reaches the storage boundary.
+  const positive = spawnSync(process.execPath, [resolve(root, 'scripts/agent-task.mjs'), 'evidence', 'infra', 'docs/acceptance/report.json'], { cwd: root, encoding: 'utf8' });
+  assert.equal(positive.status, 0, positive.stderr);
+  assert.equal(loadControl(root).data.tasks[0].evidence.length, 1);
+  assert.equal(loadControl(root).data.checkpoint, null, 'evidence events do not create full checkpoints');
   // Junction .agent/evidence -> outside.
   const outside = mkdtempSync(resolve(tmpdir(), 'evj2-out-'));
   t.after(() => rmSync(outside, { recursive: true, force: true }));

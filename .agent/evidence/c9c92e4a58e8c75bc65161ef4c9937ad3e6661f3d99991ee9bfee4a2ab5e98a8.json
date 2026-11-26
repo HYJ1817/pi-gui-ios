@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "kind": "control-compaction",
+  "apply": true,
+  "bytes": {
+    "before": {
+      "files": {
+        ".agent/control.json": 462341,
+        ".agent/tasks.json": 409548,
+        ".agent/state.json": 53052,
+        ".agent/HANDOFF.md": 42811,
+        "PROGRESS.md": 3216
+      },
+      "checkpoints": {
+        "count": 50,
+        "bytes": 25102243
+      }
+    },
+    "after": {
+      "files": {
+        ".agent/control.json": 45160,
+        ".agent/tasks.json": 8385,
+        ".agent/state.json": 3414,
+        ".agent/HANDOFF.md": 2516,
+        "PROGRESS.md": 1506
+      },
+      "checkpoints": {
+        "count": 8,
+        "bytes": 3611886
+      }
+    }
+  },
+  "audit": {
+    "records": 623,
+    "totals": {
+      "mismatched-report": 333,
+      "tracked-exact": 307,
+      "exact": 290,
+      "withheld-sensitive-or-unverified": 42,
+      "safe-log-available": 25,
+      "missing": 2
+    },
+    "reference": {
+      "path": ".agent/evidence/6d4e07bfcdf6f339d31d1078863f9a9883a4cd1de58681f2786699a129228128.json",
+      "sha256": "6d4e07bfcdf6f339d31d1078863f9a9883a4cd1de58681f2786699a129228128"
+    }
+  },
+  "before": {
+    "evidence": 623,
+    "ci": 22,
+    "delegates": 145
+  },
+  "after": {
+    "evidence": 42,
+    "ci": 1,
+    "delegates": 3
+  },
+  "archive": {
+    "path": ".agent/evidence/bba521290f2fd935e8af3692b226366494c4b54e74463e8aad81708e81cc5e98.json",
+    "sha256": "bba521290f2fd935e8af3692b226366494c4b54e74463e8aad81708e81cc5e98"
+  },
+  "invalidated": [
+    "M-1-infrastructure",
+    "M0-architecture",
+    "M1-remote",
+    "M2-shell",
+    "M3-core",
+    "M4-sync",
+    "M6-distribution"
+  ],
+  "changed": true,
+  "checkpoint": ".agent/checkpoints/v2-2026-11-26T17-34-41-020Z-d1fb16fa-985b-47e8-91d3-bbb17caf6b7b.json"
+}

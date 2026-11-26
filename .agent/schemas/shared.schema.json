@@ -1,6 +1,42 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$defs": {
+    "historyRef": {
+      "type": "object", "required": ["path", "sha256"],
+      "properties": {
+        "path": {"type": "string", "pattern": "^\\.agent/evidence/[a-f0-9]{64}\\.json$"},
+        "sha256": {"$ref": "#/$defs/sha"}
+      },
+      "additionalProperties": false
+    },
+    "runSummary": {
+      "type": "object", "required": ["ci", "delegates", "activeCi", "workingDelegates", "archives"],
+      "properties": {
+        "ci": {"type": "integer", "minimum": 0},
+        "delegates": {"type": "integer", "minimum": 0},
+        "activeCi": {"type": "array", "items": {"type": "string"}},
+        "workingDelegates": {"type": "array", "items": {"type": "string"}},
+        "archives": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "taskSummary": {
+      "type": "object", "required": ["id", "phase", "title", "status", "dependsOn", "requiredEvidence", "acceptance", "evidenceCount", "evidenceKinds"],
+      "properties": {
+        "id": {"$ref": "#/$defs/task/properties/id"},
+        "phase": {"$ref": "#/$defs/task/properties/phase"},
+        "title": {"$ref": "#/$defs/task/properties/title"},
+        "status": {"$ref": "#/$defs/task/properties/status"},
+        "dependsOn": {"$ref": "#/$defs/task/properties/dependsOn"},
+        "requiredEvidence": {"$ref": "#/$defs/task/properties/requiredEvidence"},
+        "acceptance": {"$ref": "#/$defs/task/properties/acceptance"},
+        "updatedAt": {"$ref": "#/$defs/date"},
+        "evidenceScopes": {"$ref": "#/$defs/task/properties/evidenceScopes"},
+        "evidenceCount": {"type": "integer", "minimum": 0},
+        "evidenceKinds": {"type": "array", "items": {"$ref": "#/$defs/evidenceRecord/properties/kind"}, "uniqueItems": true}
+      },
+      "additionalProperties": false
+    },
     "sha": {
       "type": "string",
       "pattern": "^[a-f0-9]{64}$"
@@ -242,7 +278,8 @@
         "sourceCommit": {
           "type": "string",
           "pattern": "^[a-f0-9]{40}$"
-        }
+        },
+        "decision": { "enum": ["pass", "fail"] }
       },
       "additionalProperties": false
     },

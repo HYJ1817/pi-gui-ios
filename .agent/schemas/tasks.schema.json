@@ -27,7 +27,7 @@
         "tasks": {
           "type": "array",
           "items": {
-            "$ref": "shared.schema.json#/$defs/task"
+            "anyOf": [{"$ref": "shared.schema.json#/$defs/task"}, {"$ref": "shared.schema.json#/$defs/taskSummary"}]
           },
           "minItems": 1
         }

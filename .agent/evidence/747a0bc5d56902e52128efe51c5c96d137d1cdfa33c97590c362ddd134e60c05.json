@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "kind": "targeted-control-validation",
+  "command": "npm exec --offline --call=\"node --test tests/control.test.mjs\"",
+  "runtime": "v24.22.1",
+  "exitCode": 0,
+  "tests": 50,
+  "passed": 50,
+  "failed": 0,
+  "sourceFingerprint": "90bb57d55712c0b2980f32358f61a05d388dd3197e55987c56151b84f7acba80",
+  "gateEvidence": false,
+  "log": {
+    "path": "docs/acceptance/logs/f47433234bfab2b9485141929e7fbdecfa1070838df83fa89da3d625d6182a54.log",
+    "sha256": "f47433234bfab2b9485141929e7fbdecfa1070838df83fa89da3d625d6182a54"
+  },
+  "earlierRuns": [
+    {
+      "passed": 49,
+      "failed": 1,
+      "reason": "Clone changed content-addressed JSON line endings"
+    },
+    {
+      "passed": 49,
+      "failed": 1,
+      "reason": "Clone fixture omitted repository checkpoint line-ending attributes"
+    }
+  ],
+  "migrationCommand": "node scripts/agent-compact.mjs --apply --adopt-branch",
+  "recoveryCommands": [
+    "node scripts/agent-resume.mjs --list-checkpoints",
+    "node scripts/agent-restore.mjs <verified-v2-checkpoint-path> --apply",
+    "node scripts/agent-resume.mjs --repair-projections"
+  ],
+  "migrationSummary": ".agent/evidence/c9c92e4a58e8c75bc65161ef4c9937ad3e6661f3d99991ee9bfee4a2ab5e98a8.json",
+  "limits": [
+    "Historical reports unchanged; superseded records do not satisfy gates",
+    "Conservative log policy may withhold benign bytes",
+    "Independent integration/security review belongs to parent; Native CI not run"
+  ]
+}

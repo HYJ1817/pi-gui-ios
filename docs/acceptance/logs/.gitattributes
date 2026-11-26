@@ -1,0 +1,2 @@
+# A report hashes original output bytes, including any CRLF sequences.
+*.log -text
