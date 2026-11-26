@@ -1,6 +1,6 @@
 # 项目进度（生成文件）
 
-权威：.agent/control.json；schema v2；revision 2292；2026-11-26T17:52:05.828Z
+权威：.agent/control.json；schema v2；revision 2293；2026-11-26T17:53:10.586Z
 
 阶段：M5；当前：M5-tailscale；分支：refactor/p2-maintainability
 
@@ -18,7 +18,7 @@
 
 阻塞：无已记录阻塞
 
-检查点：.agent/checkpoints/v2-2026-11-26T17-44-06-340Z-a912ee8c-5411-4fc8-8717-e398787942dc.json；保存时 HEAD：512fde80ea91360eff05cabd07a4076384fe8f41
+检查点：.agent/checkpoints/v2-2026-11-26T17-53-10-586Z-d7600362-2170-4dd6-b468-e05e0abf0814.json；保存时 HEAD：94ac5c64a037eadd6db03616e647dfbbf9085476
 
 CI：{"ci":1,"delegates":3,"activeCi":[],"workingDelegates":[],"archives":1}
 

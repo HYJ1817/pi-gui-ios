@@ -1,6 +1,6 @@
 # Agent 交接（生成文件）
 
-revision 2292；权威摘要 97009e05ebb85b84e64628ee069cc62f19b300b26eb3087df7a81e9b46fa9fda
+revision 2293；权威摘要 3cacecb80de2611f7300ff8fe9d774101d4183971488d782a681ffb76c1cf6d7
 
 先读 AGENTS.md / REVIEW.md，执行 node scripts/agent-resume.mjs --remote。
 
@@ -10,14 +10,8 @@ revision 2292；权威摘要 97009e05ebb85b84e64628ee069cc62f19b300b26eb3087df7a
 
 阻塞：无已记录阻塞
 
-检查点 .agent/checkpoints/v2-2026-11-26T17-44-06-340Z-a912ee8c-5411-4fc8-8717-e398787942dc.json；HEAD 512fde80ea91360eff05cabd07a4076384fe8f41。dirty（保存时）：
-- M .agent/HANDOFF.md
--  M .agent/control.json
--  M .agent/state.json
--  M .agent/tasks.json
--  M PROGRESS.md
--  M docs/acceptance/p2-maintainability.md
-- ?? .agent/evidence/843df42f8f82882104459de7147c87796fcf3612666b6aa5dc723cb4bd951bb4.json
+检查点 .agent/checkpoints/v2-2026-11-26T17-53-10-586Z-d7600362-2170-4dd6-b468-e05e0abf0814.json；HEAD 94ac5c64a037eadd6db03616e647dfbbf9085476。dirty（保存时）：
+无
 
 运行摘要：{"ci":1,"delegates":3,"activeCi":[],"workingDelegates":[],"archives":1}
 

@@ -1,8 +1,8 @@
 {
   "schemaVersion": 2,
   "kind": "control",
-  "revision": 2292,
-  "updatedAt": "2026-11-26T17:52:05.828Z",
+  "revision": 2293,
+  "updatedAt": "2026-11-26T17:53:10.586Z",
   "data": {
     "phase": "M5",
     "currentTask": "M5-tailscale",
@@ -902,26 +902,18 @@
       }
     ],
     "checkpoint": {
-      "id": "v2-2026-11-26T17-44-06-340Z-a912ee8c-5411-4fc8-8717-e398787942dc",
-      "path": ".agent/checkpoints/v2-2026-11-26T17-44-06-340Z-a912ee8c-5411-4fc8-8717-e398787942dc.json",
-      "sha256": "f474de17110a9e7aff9590084ab17e4dd2523670695050fe57379572ab0d93b4",
-      "authorityDigest": "10c097da17d17b8c410d2f794138bd0039cd7e3318f02ceec0f16e0d687e27a9",
-      "at": "2026-11-26T17:44:06.340Z",
+      "id": "v2-2026-11-26T17-53-10-586Z-d7600362-2170-4dd6-b468-e05e0abf0814",
+      "path": ".agent/checkpoints/v2-2026-11-26T17-53-10-586Z-d7600362-2170-4dd6-b468-e05e0abf0814.json",
+      "sha256": "7524b859e15c3ebdba29e52ab66c3a656bf9d1b12e05ca088dbc0c9b40542249",
+      "authorityDigest": "97009e05ebb85b84e64628ee069cc62f19b300b26eb3087df7a81e9b46fa9fda",
+      "at": "2026-11-26T17:53:10.586Z",
       "git": {
         "branch": "refactor/p2-maintainability",
-        "commit": "512fde80ea91360eff05cabd07a4076384fe8f41",
-        "dirty": [
-          "M .agent/HANDOFF.md",
-          " M .agent/control.json",
-          " M .agent/state.json",
-          " M .agent/tasks.json",
-          " M PROGRESS.md",
-          " M docs/acceptance/p2-maintainability.md",
-          "?? .agent/evidence/843df42f8f82882104459de7147c87796fcf3612666b6aa5dc723cb4bd951bb4.json"
-        ]
+        "commit": "94ac5c64a037eadd6db03616e647dfbbf9085476",
+        "dirty": []
       },
-      "sourceFingerprint": "50cfd564edd127361c77f9fff8f87eb359bcc60ea74ea412d108b98b1ff8b6bc",
-      "note": "Explicit control history compaction; original reports unchanged"
+      "sourceFingerprint": "3ce7ede25eebe836f0a1d3820edd7a87c6e624bfc0cac942241f2d47b7766fe5",
+      "note": "P2 assembled source 94ac5c6 before independent review; production remains synthetic"
     },
     "nextAction": "P2 candidate assembled on refactor/p2-maintainability: independent functional/security reviews, consolidated tests/typecheck/bundle/desktop parity and fresh-clone recovery are next; then one five-job native CI and PR. See docs/acceptance/p2-maintainability.md. Do not start P3; device checks remain pending.",
     "delegates": [
@@ -953,6 +945,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "97009e05ebb85b84e64628ee069cc62f19b300b26eb3087df7a81e9b46fa9fda"
+    "digest": "3cacecb80de2611f7300ff8fe9d774101d4183971488d782a681ffb76c1cf6d7"
   }
 }
