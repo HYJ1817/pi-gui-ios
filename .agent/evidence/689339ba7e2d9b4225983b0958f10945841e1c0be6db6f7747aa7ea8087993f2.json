@@ -1,0 +1,23 @@
+{
+  "commit": "aa2a601a18902e951e3e8b2b1f5c9836e5c66c92",
+  "details": {
+    "canonicalPath": "docs/acceptance/local-typecheck.json",
+    "command": "npm run typecheck",
+    "exitCode": 0,
+    "logPath": "docs/acceptance/logs/c3fefe23bd7768210a2aaef41e3a7a9441b1536192ed6a18df85563717628607.log",
+    "logSha256": "c3fefe23bd7768210a2aaef41e3a7a9441b1536192ed6a18df85563717628607",
+    "sameRunEvidence": "sameRunEvidence: this task shares the canonical local run because the run itself covers the union of all task scopes in one execution; cloned verbatim with only taskId adjusted, never restamped"
+  },
+  "finishedAt": "2026-11-26T09:30:30.710Z",
+  "kind": "typecheck",
+  "passed": true,
+  "schemaVersion": 2,
+  "scopeFingerprint": "7fcbcb2f79ca04a7ce28ea69950c2b01f1e547373a84266cf838b0c191e2edde",
+  "scopes": [
+    "app",
+    "shared"
+  ],
+  "sourceFingerprint": "7e89369062b8cb4a05481399121d004bbd0b1901d30780e560ee9ceaea6f3e79",
+  "startedAt": "2026-11-26T09:30:19.963Z",
+  "taskId": "M5-tailscale"
+}

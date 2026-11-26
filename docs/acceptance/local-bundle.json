@@ -2,20 +2,20 @@
   "schemaVersion": 2,
   "kind": "bundle",
   "taskId": "M4-sync",
-  "commit": "d861d4a3a382539ed700a5b5d5b3a2fb6333acf8",
-  "sourceFingerprint": "ab64383f7e4315f4127f19399df5d497349ec60819c059cb15141a10cd5f8a16",
+  "commit": "34a8b16a536932fe89592145de3ab3c23f2ca850",
+  "sourceFingerprint": "1ee9ed69a57ae899f46abf8fa6ca39375b2fbc2c4ac496f538222872a711700c",
   "scopes": [
     "app",
     "shared"
   ],
   "scopeFingerprint": "7fcbcb2f79ca04a7ce28ea69950c2b01f1e547373a84266cf838b0c191e2edde",
-  "startedAt": "2026-11-26T08:47:38.541Z",
-  "finishedAt": "2026-11-26T08:47:47.556Z",
+  "startedAt": "2026-11-26T10:14:48.644Z",
+  "finishedAt": "2026-11-26T10:15:10.450Z",
   "passed": true,
   "details": {
     "command": "npm run export:ios",
     "exitCode": 0,
-    "logPath": "docs/acceptance/logs/1b7c3ed3f159d4051a403eb6f50b59358a5c58954fb3243441c40e4f37dd71fc.log",
-    "logSha256": "1b7c3ed3f159d4051a403eb6f50b59358a5c58954fb3243441c40e4f37dd71fc"
+    "logPath": "docs/acceptance/logs/be03f3a57cbe243ea5ff0dff7dca73f40c98306880c259c3e152d0a2f6a54d9f.log",
+    "logSha256": "be03f3a57cbe243ea5ff0dff7dca73f40c98306880c259c3e152d0a2f6a54d9f"
   }
 }

@@ -2,22 +2,22 @@
   "schemaVersion": 2,
   "kind": "fault-injection",
   "taskId": "M4-sync",
-  "commit": "d861d4a3a382539ed700a5b5d5b3a2fb6333acf8",
-  "sourceFingerprint": "ab64383f7e4315f4127f19399df5d497349ec60819c059cb15141a10cd5f8a16",
+  "commit": "34a8b16a536932fe89592145de3ab3c23f2ca850",
+  "sourceFingerprint": "1ee9ed69a57ae899f46abf8fa6ca39375b2fbc2c4ac496f538222872a711700c",
   "scopes": [
     "app",
     "protocol",
     "shared",
     "tests"
   ],
-  "scopeFingerprint": "445b0b1e10000ec674c4addd70a1a6a984f4dbef294d8f5149b559a2d2cf649c",
-  "startedAt": "2026-11-26T08:47:38.662Z",
-  "finishedAt": "2026-11-26T08:47:43.258Z",
+  "scopeFingerprint": "a992bff6beef1adfb2964894e6163c63ab92242d80bebb153bba28b0c8dd0403",
+  "startedAt": "2026-11-26T10:14:48.771Z",
+  "finishedAt": "2026-11-26T10:14:53.188Z",
   "passed": true,
   "details": {
     "command": "node --test tests/m4-fault-injection.test.mjs",
     "exitCode": 0,
-    "logPath": "docs/acceptance/logs/095800e04e9ab17099e14c54bb72d54de4156e704792420280f16d371e13080a.log",
-    "logSha256": "095800e04e9ab17099e14c54bb72d54de4156e704792420280f16d371e13080a"
+    "logPath": "docs/acceptance/logs/598039ce06b0eb97419ef3595641bb62bbcb21c2c11fca068e4762a209d475f9.log",
+    "logSha256": "598039ce06b0eb97419ef3595641bb62bbcb21c2c11fca068e4762a209d475f9"
   }
 }

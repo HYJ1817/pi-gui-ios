@@ -2,15 +2,15 @@
   "schemaVersion": 2,
   "kind": "typecheck",
   "taskId": "M4-sync",
-  "commit": "d861d4a3a382539ed700a5b5d5b3a2fb6333acf8",
-  "sourceFingerprint": "ab64383f7e4315f4127f19399df5d497349ec60819c059cb15141a10cd5f8a16",
+  "commit": "34a8b16a536932fe89592145de3ab3c23f2ca850",
+  "sourceFingerprint": "1ee9ed69a57ae899f46abf8fa6ca39375b2fbc2c4ac496f538222872a711700c",
   "scopes": [
     "app",
     "shared"
   ],
   "scopeFingerprint": "7fcbcb2f79ca04a7ce28ea69950c2b01f1e547373a84266cf838b0c191e2edde",
-  "startedAt": "2026-11-26T08:47:38.517Z",
-  "finishedAt": "2026-11-26T08:47:46.884Z",
+  "startedAt": "2026-11-26T10:14:48.605Z",
+  "finishedAt": "2026-11-26T10:15:10.816Z",
   "passed": true,
   "details": {
     "command": "npm run typecheck",
