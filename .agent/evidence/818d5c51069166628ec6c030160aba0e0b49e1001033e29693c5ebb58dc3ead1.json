@@ -1,0 +1,24 @@
+{
+  "commit": "eaaabe826769de686d8760d8256c5d781bc2150f",
+  "details": {
+    "canonicalPath": "docs/acceptance/local-integration.json",
+    "command": "node scripts/desktop-remote-verify.mjs",
+    "exitCode": 0,
+    "logPath": "docs/acceptance/logs/34ceeaae887190d81a7185a30985a73efc1634594e52895b639052105aa254a0.log",
+    "logSha256": "34ceeaae887190d81a7185a30985a73efc1634594e52895b639052105aa254a0",
+    "sameRunEvidence": "sameRunEvidence: this task shares the canonical local run because the run itself covers the union of all task scopes in one execution; cloned verbatim with only taskId adjusted, never restamped"
+  },
+  "finishedAt": "2026-11-26T08:44:02.478Z",
+  "kind": "integration",
+  "passed": true,
+  "schemaVersion": 2,
+  "scopeFingerprint": "d293bd1d99a83c84c8eebcd083473d6b91a87c896298b4a4593070faa91195c4",
+  "scopes": [
+    "control",
+    "protocol",
+    "shared"
+  ],
+  "sourceFingerprint": "5ff86ff402317da3fa3c375544c75c047930681200cf8a0dab69c8cf12ff90e0",
+  "startedAt": "2026-11-26T08:41:23.717Z",
+  "taskId": "M4-sync"
+}

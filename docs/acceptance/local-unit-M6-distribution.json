@@ -1,0 +1,27 @@
+{
+  "commit": "25a7a869a619917543809ac30e75b8d3b6c8cae9",
+  "details": {
+    "canonicalPath": "docs/acceptance/local-unit.json",
+    "command": "npm test",
+    "exitCode": 0,
+    "logPath": "docs/acceptance/local-unit-output.txt",
+    "logSha256": "f9191345f18c773e6c1d8198f05c355de2a9f7e94096eb1bfb893f72e85ef797",
+    "sameRunEvidence": "sameRunEvidence: this task shares the canonical local-unit run because the run itself covers the union of all task scopes in one execution; cloned verbatim with only taskId/scope adjusted, never restamped"
+  },
+  "finishedAt": "2026-11-26T07:24:30.210Z",
+  "kind": "unit",
+  "passed": true,
+  "schemaVersion": 2,
+  "scopeFingerprint": "f5cd2d20466a2543f272da9b41224e8bd50a71b5a3725fdf074743b5175dd0b1",
+  "scopes": [
+    "app",
+    "control",
+    "native-build",
+    "protocol",
+    "shared",
+    "tests"
+  ],
+  "sourceFingerprint": "ce6f19918bbd73492255919a73de2de74d2d6938dd2aa90a61277161da825ebc",
+  "startedAt": "2026-11-26T07:23:26.678Z",
+  "taskId": "M6-distribution"
+}

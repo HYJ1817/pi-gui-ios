@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 2,
+  "taskId": "M3-core",
+  "kind": "independent-review",
+  "commit": "13c56d4baa96cb7e19f57bb08f6f71ab9e31becf",
+  "sourceFingerprint": "ef6183b5da1c1ee78e494d22bf568600f6d6e289efbf98f5dbb6b9ea1ec5399d",
+  "scopes": [
+    "app",
+    "control",
+    "native-build",
+    "protocol",
+    "shared",
+    "tests"
+  ],
+  "scopeFingerprint": "3c48e637970d5420e76db2ee6434e00e7a6e522f004726737c2abc2616949470",
+  "startedAt": "2026-11-26T06:50:00.000Z",
+  "finishedAt": "2026-11-26T06:50:00.000Z",
+  "passed": true,
+  "details": {
+    "receiptPath": "docs/acceptance/security-round3-receipt.json",
+    "receiptSha256": "fdf003d894150632f1de0d35c5b73f37cc4dcf35561853eac1882093a9fc295c",
+    "sameRunEvidence": "docs/acceptance/security-round3-receipt.json",
+    "note": "Round-3 closure verification (delegate 88b695bb, xingchi sol-max thinking max): all round-1/2 findings durably closed (FS-001..006 + FR-001/002 + FS-R2-001), zero unresolved blockers/importants, regression audit pass over 04178bbf..05684aec. Cloned verbatim — one independent run covers every task because the union evidence scope spans them all."
+  }
+}

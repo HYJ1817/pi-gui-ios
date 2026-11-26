@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 2,
+  "taskId": "M-1-infrastructure",
+  "kind": "independent-handoff",
+  "commit": "afcc2b1d5258e7b394901f47d6f9debef77b4d14",
+  "sourceFingerprint": "a4e4b5737bee2b1c6396b030133624cbc5a60043d1a05fc30c757f78e6e8dacb",
+  "scopes": [
+    "all"
+  ],
+  "scopeFingerprint": "a4e4b5737bee2b1c6396b030133624cbc5a60043d1a05fc30c757f78e6e8dacb",
+  "startedAt": "2026-11-26T05:00:00.000Z",
+  "finishedAt": "2026-11-26T05:00:00.000Z",
+  "passed": true,
+  "details": {
+    "receiptPath": "docs/acceptance/handoff-round2-receipt.json",
+    "receiptSha256": "4c2876d09357ff67b7b75eeead66fad15ce0cc9650123d07c4ebbb099dff15d4",
+    "sameRunEvidence": "docs/acceptance/handoff-round2-receipt.json",
+    "note": "Round-2 independent handoff verification (delegate 43484780): fresh-clone cold resume exit 0, npm test 387/387, typecheck/check:stack pass, frontier truthful, M6 dependency coherence confirmed. Round-1 FAIL findings H-001/H-002 remediated before this run."
+  }
+}

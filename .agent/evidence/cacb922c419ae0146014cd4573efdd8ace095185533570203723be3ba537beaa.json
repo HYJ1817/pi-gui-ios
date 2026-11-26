@@ -1,0 +1,27 @@
+{
+  "commit": "eaaabe826769de686d8760d8256c5d781bc2150f",
+  "details": {
+    "canonicalPath": "docs/acceptance/local-unit.json",
+    "command": "npm test",
+    "exitCode": 0,
+    "logPath": "docs/acceptance/logs/f608f204fbeb64571b728ba6e3e20e57883c5e68cf4568fbef4932ee7bbf534f.log",
+    "logSha256": "f608f204fbeb64571b728ba6e3e20e57883c5e68cf4568fbef4932ee7bbf534f",
+    "sameRunEvidence": "sameRunEvidence: this task shares the canonical local run because the run itself covers the union of all task scopes in one execution; cloned verbatim with only taskId adjusted, never restamped"
+  },
+  "finishedAt": "2026-11-26T08:42:25.700Z",
+  "kind": "unit",
+  "passed": true,
+  "schemaVersion": 2,
+  "scopeFingerprint": "486ccd1350fc7dc38fdf58dc82e983680778c1b890a2cb02bc0f34d526ba3468",
+  "scopes": [
+    "app",
+    "control",
+    "native-build",
+    "protocol",
+    "shared",
+    "tests"
+  ],
+  "sourceFingerprint": "5ff86ff402317da3fa3c375544c75c047930681200cf8a0dab69c8cf12ff90e0",
+  "startedAt": "2026-11-26T08:41:23.592Z",
+  "taskId": "M4-sync"
+}

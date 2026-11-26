@@ -1,21 +1,23 @@
 {
-  "schemaVersion": 2,
+  "commit": "25a7a869a619917543809ac30e75b8d3b6c8cae9",
+  "details": {
+    "canonicalPath": "docs/acceptance/local-doctor.json",
+    "command": "node node_modules/expo-doctor/build/index.js",
+    "exitCode": 0,
+    "logPath": "docs/acceptance/local-doctor-output.txt",
+    "logSha256": "ab39d6a58873a0d1151d2a625641a5db22b312df3276b2c2ab3d03a3e9dbe4e1",
+    "sameRunEvidence": "sameRunEvidence: this task shares the canonical local-doctor run because the run itself covers the union of all task scopes in one execution; cloned verbatim with only taskId/scope adjusted, never restamped"
+  },
+  "finishedAt": "2026-11-26T07:23:38.660Z",
   "kind": "doctor",
-  "taskId": "M-1-infrastructure",
-  "commit": "88b9d84afe96747d6f3b43404f4d354a68f1d563",
-  "sourceFingerprint": "e78af94c071aee6ee08b59c41df2ae4beea5dee2e6567ca11215854e33215907",
+  "passed": true,
+  "schemaVersion": 2,
+  "scopeFingerprint": "7fcbcb2f79ca04a7ce28ea69950c2b01f1e547373a84266cf838b0c191e2edde",
   "scopes": [
     "app",
     "shared"
   ],
-  "scopeFingerprint": "bb25dc49cc0322a3b9822a102b2a1e5a230204fb4db5d88035f53a40eaa23dec",
-  "startedAt": "2026-11-25T15:54:04.984Z",
-  "finishedAt": "2026-11-25T15:54:09.124Z",
-  "passed": true,
-  "details": {
-    "command": "node node_modules/expo-doctor/build/index.js",
-    "exitCode": 0,
-    "logPath": "docs/acceptance/local-doctor-output.txt",
-    "logSha256": "ab39d6a58873a0d1151d2a625641a5db22b312df3276b2c2ab3d03a3e9dbe4e1"
-  }
+  "sourceFingerprint": "ce6f19918bbd73492255919a73de2de74d2d6938dd2aa90a61277161da825ebc",
+  "startedAt": "2026-11-26T07:23:26.724Z",
+  "taskId": "M-1-infrastructure"
 }

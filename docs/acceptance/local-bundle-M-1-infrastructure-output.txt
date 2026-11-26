@@ -4,7 +4,7 @@
 
 Starting Metro Bundler
 
-iOS Bundled 1453ms index.ts (1688 modules)
+iOS Bundled 1612ms index.ts (1689 modules)
 
 › Assets (16):
 node_modules\@react-navigation\elements\lib\module\assets\back-icon-mask.png (653B)
@@ -14,7 +14,7 @@ node_modules\@react-navigation\elements\lib\module\assets\close-icon.png (4 vari
 node_modules\@react-navigation\elements\lib\module\assets\search-icon.png (3 variations | 582B)
 
 › ios bundles (1):
-_expo/static/js/ios/index-1acea1ae610dd0a1c83f87c0c841ae23.js (2.6MB)
+_expo/static/js/ios/index-92136f744049867cb3ff025a1324694e.js (2.6MB)
 
 › web bundles (1):
 _expo/static/css/global-d41d8cd98f00b204e9800998ecf8427e.css (0B)

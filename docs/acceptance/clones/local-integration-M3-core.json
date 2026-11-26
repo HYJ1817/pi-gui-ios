@@ -1,24 +1,24 @@
 {
-  "commit": "efbfad7a7f9981f10244ab89277e39699f4cec7e",
+  "commit": "d861d4a3a382539ed700a5b5d5b3a2fb6333acf8",
   "details": {
     "canonicalPath": "docs/acceptance/local-integration.json",
     "command": "node scripts/desktop-remote-verify.mjs",
     "exitCode": 0,
-    "logPath": "docs/acceptance/logs/4d08111b690519a6ce732d4086471dea64cacfd648af3c2e1c89e28ab9691b3e.log",
-    "logSha256": "4d08111b690519a6ce732d4086471dea64cacfd648af3c2e1c89e28ab9691b3e",
+    "logPath": "docs/acceptance/logs/c343f7a15b28ca7909404ba4bd63a0a7f48b9ec19057058ae2c2a950a5347c4c.log",
+    "logSha256": "c343f7a15b28ca7909404ba4bd63a0a7f48b9ec19057058ae2c2a950a5347c4c",
     "sameRunEvidence": "sameRunEvidence: this task shares the canonical local run because the run itself covers the union of all task scopes in one execution; cloned verbatim with only taskId adjusted, never restamped"
   },
-  "finishedAt": "2026-11-26T08:38:34.370Z",
+  "finishedAt": "2026-11-26T08:50:17.239Z",
   "kind": "integration",
   "passed": true,
   "schemaVersion": 2,
-  "scopeFingerprint": "63b5b63dbdc2f5c0c5978f4de94a0c24f03138894abd01351e831bc91905591d",
+  "scopeFingerprint": "d1e44980d37f8158ceb2d2ae3222b7db0753c27aa8dc4ea833c3c0f77cd26635",
   "scopes": [
     "control",
     "protocol",
     "shared"
   ],
-  "sourceFingerprint": "02cf3a16c30bfef0657966bcba29af34d9908cc0a01a8d9e3f6da0df9be3af3a",
-  "startedAt": "2026-11-26T08:35:58.907Z",
+  "sourceFingerprint": "ab64383f7e4315f4127f19399df5d497349ec60819c059cb15141a10cd5f8a16",
+  "startedAt": "2026-11-26T08:47:38.635Z",
   "taskId": "M3-core"
 }

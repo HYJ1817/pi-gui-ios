@@ -1,21 +1,23 @@
 {
-  "schemaVersion": 2,
+  "commit": "25a7a869a619917543809ac30e75b8d3b6c8cae9",
+  "details": {
+    "canonicalPath": "docs/acceptance/local-typecheck.json",
+    "command": "npm run typecheck",
+    "exitCode": 0,
+    "logPath": "docs/acceptance/local-typecheck-output.txt",
+    "logSha256": "c3fefe23bd7768210a2aaef41e3a7a9441b1536192ed6a18df85563717628607",
+    "sameRunEvidence": "sameRunEvidence: this task shares the canonical local-typecheck run because the run itself covers the union of all task scopes in one execution; cloned verbatim with only taskId/scope adjusted, never restamped"
+  },
+  "finishedAt": "2026-11-26T07:23:34.735Z",
   "kind": "typecheck",
-  "taskId": "M1-remote",
-  "commit": "20efb3bc35df42a8dbab725d76f7583fe89ae60f",
-  "sourceFingerprint": "4f85b14a506459c459c466a16f120b4aeca356a7a5a27edce6b6a615bd589dda",
+  "passed": true,
+  "schemaVersion": 2,
+  "scopeFingerprint": "7fcbcb2f79ca04a7ce28ea69950c2b01f1e547373a84266cf838b0c191e2edde",
   "scopes": [
     "app",
     "shared"
   ],
-  "scopeFingerprint": "c4a8d18fb78f41661da16ff60b8131a6776edb4e41d5f36a55bf9fbf796c5a43",
-  "startedAt": "2026-11-25T14:52:30.337Z",
-  "finishedAt": "2026-11-25T14:52:34.259Z",
-  "passed": true,
-  "details": {
-    "command": "npm run typecheck",
-    "exitCode": 0,
-    "logPath": "docs/acceptance/local-typecheck-output.txt",
-    "logSha256": "c3fefe23bd7768210a2aaef41e3a7a9441b1536192ed6a18df85563717628607"
-  }
+  "sourceFingerprint": "ce6f19918bbd73492255919a73de2de74d2d6938dd2aa90a61277161da825ebc",
+  "startedAt": "2026-11-26T07:23:26.684Z",
+  "taskId": "M1-remote"
 }

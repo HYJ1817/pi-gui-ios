@@ -1,21 +1,21 @@
 {
   "schemaVersion": 2,
   "kind": "typecheck",
-  "taskId": "M5-tailscale",
-  "commit": "88b9d84afe96747d6f3b43404f4d354a68f1d563",
-  "sourceFingerprint": "e78af94c071aee6ee08b59c41df2ae4beea5dee2e6567ca11215854e33215907",
+  "taskId": "M4-sync",
+  "commit": "d861d4a3a382539ed700a5b5d5b3a2fb6333acf8",
+  "sourceFingerprint": "ab64383f7e4315f4127f19399df5d497349ec60819c059cb15141a10cd5f8a16",
   "scopes": [
     "app",
     "shared"
   ],
-  "scopeFingerprint": "bb25dc49cc0322a3b9822a102b2a1e5a230204fb4db5d88035f53a40eaa23dec",
-  "startedAt": "2026-11-25T15:53:54.481Z",
-  "finishedAt": "2026-11-25T15:53:57.929Z",
+  "scopeFingerprint": "7fcbcb2f79ca04a7ce28ea69950c2b01f1e547373a84266cf838b0c191e2edde",
+  "startedAt": "2026-11-26T08:47:38.517Z",
+  "finishedAt": "2026-11-26T08:47:46.884Z",
   "passed": true,
   "details": {
     "command": "npm run typecheck",
     "exitCode": 0,
-    "logPath": "docs/acceptance/local-typecheck-output.txt",
+    "logPath": "docs/acceptance/logs/c3fefe23bd7768210a2aaef41e3a7a9441b1536192ed6a18df85563717628607.log",
     "logSha256": "c3fefe23bd7768210a2aaef41e3a7a9441b1536192ed6a18df85563717628607"
   }
 }

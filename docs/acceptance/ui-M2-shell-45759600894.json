@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 2,
+  "kind": "ui",
+  "taskId": "M2-shell",
+  "commit": "13c56d4baa96cb7e19f57bb08f6f71ab9e31becf",
+  "sourceFingerprint": "ef6183b5da1c1ee78e494d22bf568600f6d6e289efbf98f5dbb6b9ea1ec5399d",
+  "startedAt": "2026-11-26T05:55:00.000Z",
+  "finishedAt": "2026-11-26T05:55:00.000Z",
+  "passed": true,
+  "details": {
+    "ci": {
+      "id": "45759600894",
+      "head": "13c56d4baa96cb7e19f57bb08f6f71ab9e31becf",
+      "workflow": ".github/workflows/native-infrastructure.yml",
+      "attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/HYJ1817/pi-gui-ios/actions/runs/45759600894"
+    },
+    "ciId": "45759600894",
+    "attempt": 1,
+    "images": {
+      "iphone-light.png": "fdea26ae6908e88388fc0a9184ce9e0433735003d4b2dc37c5f59d15c869fb0c",
+      "iphone-dark.png": "1d66c3d0eb19bf6074b1e07f202fcc6a05d321fdbaa11f17c9fa0f98a0607bee",
+      "iphone-accessibility.png": "e3d9238197a350b97e6921b9398db707da3411888fc38da706ee799a5acad2b6",
+      "ipad-light.png": "9406cca18f89a79fd82597950f60a985e7b8661b393abe9bb4fff595ba263f1b",
+      "ipad-dark.png": "587555f233c6fa1061ec7e060f83edb5f0dc29e2dd4cf2a1181bb0329953f84c",
+      "ipad-accessibility.png": "c79223c8070ff2dc27aadd7707f18412f217ff58f73be92cdb29badbeed96e3d"
+    },
+    "imageDir": "docs/acceptance/ui-13c56d4",
+    "nativeGlassVerified": true,
+    "visualReview": "pass",
+    "reviewerContext": "reviewed all six matrix frames individually in-session: iphone light/dark clean rendered home screens with native material surfaces; iphone accessibility correct maximum-dynamic-type scaling (large text flows, no overlap); ipad light/dark show the split-view sidebar overlay with designed detail occlusion (precedent-consistent); ipad accessibility correct large-type with ellipsis truncation + scroll structure",
+    "receiptPath": "docs/acceptance/ci-run-45759600894.json",
+    "receiptSha256": "0d9f0b44d1163f37774c5939642b1527d7c673b2bc2bcf3a5476e3603ab2788a",
+    "screenshots": [
+      {
+        "device": "iphone",
+        "appearance": "light",
+        "path": "docs/acceptance/ui-13c56d4/iphone-light.png",
+        "sha256": "fdea26ae6908e88388fc0a9184ce9e0433735003d4b2dc37c5f59d15c869fb0c",
+        "reviewed": true
+      },
+      {
+        "device": "iphone",
+        "appearance": "dark",
+        "path": "docs/acceptance/ui-13c56d4/iphone-dark.png",
+        "sha256": "1d66c3d0eb19bf6074b1e07f202fcc6a05d321fdbaa11f17c9fa0f98a0607bee",
+        "reviewed": true
+      },
+      {
+        "device": "iphone",
+        "appearance": "accessibility",
+        "path": "docs/acceptance/ui-13c56d4/iphone-accessibility.png",
+        "sha256": "e3d9238197a350b97e6921b9398db707da3411888fc38da706ee799a5acad2b6",
+        "reviewed": true
+      },
+      {
+        "device": "ipad",
+        "appearance": "light",
+        "path": "docs/acceptance/ui-13c56d4/ipad-light.png",
+        "sha256": "9406cca18f89a79fd82597950f60a985e7b8661b393abe9bb4fff595ba263f1b",
+        "reviewed": true
+      },
+      {
+        "device": "ipad",
+        "appearance": "dark",
+        "path": "docs/acceptance/ui-13c56d4/ipad-dark.png",
+        "sha256": "587555f233c6fa1061ec7e060f83edb5f0dc29e2dd4cf2a1181bb0329953f84c",
+        "reviewed": true
+      },
+      {
+        "device": "ipad",
+        "appearance": "accessibility",
+        "path": "docs/acceptance/ui-13c56d4/ipad-accessibility.png",
+        "sha256": "c79223c8070ff2dc27aadd7707f18412f217ff58f73be92cdb29badbeed96e3d",
+        "reviewed": true
+      }
+    ],
+    "sameRunEvidence": "same CI run 45759600894 and same visual review honestly serve this task \u2014 the ui/ipa evidence scopes are shared across these tasks; screenshot bytes are identical artifacts of the same simulator run, cross-referenced by sha256 in the image manifest"
+  }
+}

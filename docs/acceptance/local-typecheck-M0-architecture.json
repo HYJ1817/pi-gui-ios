@@ -2,20 +2,21 @@
   "schemaVersion": 2,
   "kind": "typecheck",
   "taskId": "M0-architecture",
-  "commit": "20efb3bc35df42a8dbab725d76f7583fe89ae60f",
-  "sourceFingerprint": "4f85b14a506459c459c466a16f120b4aeca356a7a5a27edce6b6a615bd589dda",
+  "commit": "13c56d4baa96cb7e19f57bb08f6f71ab9e31becf",
+  "sourceFingerprint": "ef6183b5da1c1ee78e494d22bf568600f6d6e289efbf98f5dbb6b9ea1ec5399d",
   "scopes": [
     "app",
     "shared"
   ],
-  "scopeFingerprint": "c4a8d18fb78f41661da16ff60b8131a6776edb4e41d5f36a55bf9fbf796c5a43",
-  "startedAt": "2026-11-25T14:52:30.337Z",
-  "finishedAt": "2026-11-25T14:52:34.259Z",
+  "scopeFingerprint": "7fcbcb2f79ca04a7ce28ea69950c2b01f1e547373a84266cf838b0c191e2edde",
+  "startedAt": "2026-11-26T05:13:34.420Z",
+  "finishedAt": "2026-11-26T05:13:38.177Z",
   "passed": true,
   "details": {
     "command": "npm run typecheck",
     "exitCode": 0,
     "logPath": "docs/acceptance/local-typecheck-output.txt",
-    "logSha256": "c3fefe23bd7768210a2aaef41e3a7a9441b1536192ed6a18df85563717628607"
+    "logSha256": "c3fefe23bd7768210a2aaef41e3a7a9441b1536192ed6a18df85563717628607",
+    "sameRunEvidence": "cloned from M5-tailscale: identical verification run covers this task because the evidence kind scope spans the union of both tasks; log at docs/acceptance/local-typecheck-output.txt is the original unaltered output"
   }
 }

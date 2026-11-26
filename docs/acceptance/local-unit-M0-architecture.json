@@ -1,9 +1,18 @@
 {
-  "schemaVersion": 2,
+  "commit": "25a7a869a619917543809ac30e75b8d3b6c8cae9",
+  "details": {
+    "canonicalPath": "docs/acceptance/local-unit.json",
+    "command": "npm test",
+    "exitCode": 0,
+    "logPath": "docs/acceptance/local-unit-output.txt",
+    "logSha256": "f9191345f18c773e6c1d8198f05c355de2a9f7e94096eb1bfb893f72e85ef797",
+    "sameRunEvidence": "sameRunEvidence: this task shares the canonical local-unit run because the run itself covers the union of all task scopes in one execution; cloned verbatim with only taskId/scope adjusted, never restamped"
+  },
+  "finishedAt": "2026-11-26T07:24:30.210Z",
   "kind": "unit",
-  "taskId": "M0-architecture",
-  "commit": "88b9d84afe96747d6f3b43404f4d354a68f1d563",
-  "sourceFingerprint": "e78af94c071aee6ee08b59c41df2ae4beea5dee2e6567ca11215854e33215907",
+  "passed": true,
+  "schemaVersion": 2,
+  "scopeFingerprint": "f5cd2d20466a2543f272da9b41224e8bd50a71b5a3725fdf074743b5175dd0b1",
   "scopes": [
     "app",
     "control",
@@ -12,14 +21,7 @@
     "shared",
     "tests"
   ],
-  "scopeFingerprint": "0a32dd9eaacaa8603903b52c5d71ff8cc73d879b457d7a3597a1b1724ea8f553",
-  "startedAt": "2026-11-25T15:52:50.843Z",
-  "finishedAt": "2026-11-25T15:53:53.669Z",
-  "passed": true,
-  "details": {
-    "command": "npm test",
-    "exitCode": 0,
-    "logPath": "docs/acceptance/local-unit-output.txt",
-    "logSha256": "818298155a696543beeb71a27accdabdc7e27b02449812752b259a4c2ec12612"
-  }
+  "sourceFingerprint": "ce6f19918bbd73492255919a73de2de74d2d6938dd2aa90a61277161da825ebc",
+  "startedAt": "2026-11-26T07:23:26.678Z",
+  "taskId": "M0-architecture"
 }
