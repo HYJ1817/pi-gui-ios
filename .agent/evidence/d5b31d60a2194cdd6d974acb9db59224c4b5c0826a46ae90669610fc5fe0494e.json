@@ -1,0 +1,23 @@
+{
+  "commit": "5e38181faf169b96ad48b8638b3c06d3a95d8e98",
+  "details": {
+    "canonicalPath": "docs/acceptance/local-doctor.json",
+    "command": "node node_modules/expo-doctor/build/index.js",
+    "exitCode": 0,
+    "logPath": "docs/acceptance/logs/ab39d6a58873a0d1151d2a625641a5db22b312df3276b2c2ab3d03a3e9dbe4e1.log",
+    "logSha256": "ab39d6a58873a0d1151d2a625641a5db22b312df3276b2c2ab3d03a3e9dbe4e1",
+    "sameRunEvidence": "sameRunEvidence: this task shares the canonical local run because the run itself covers the union of all task scopes in one execution; cloned verbatim with only taskId adjusted, never restamped"
+  },
+  "finishedAt": "2026-11-26T12:25:08.310Z",
+  "kind": "doctor",
+  "passed": true,
+  "schemaVersion": 2,
+  "scopeFingerprint": "7fcbcb2f79ca04a7ce28ea69950c2b01f1e547373a84266cf838b0c191e2edde",
+  "scopes": [
+    "app",
+    "shared"
+  ],
+  "sourceFingerprint": "61cd6469c47ecfd6c8b057d2d1e7105bd9dc3f937d5de97d6da58ae08dffa222",
+  "startedAt": "2026-11-26T12:24:56.172Z",
+  "taskId": "M-1-infrastructure"
+}

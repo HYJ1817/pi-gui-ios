@@ -1,14 +1,14 @@
 {
-  "commit": "5092a6d707339da5888b44b94edd0bc5b8760021",
+  "commit": "5e38181faf169b96ad48b8638b3c06d3a95d8e98",
   "details": {
     "canonicalPath": "docs/acceptance/local-protocol-contract.json",
     "command": "node --test tests/remote-contract.test.mjs",
     "exitCode": 0,
-    "logPath": "docs/acceptance/logs/730e7704a0e5b70b1c1cff33de4d5fd08cc91451635e8c65bca2291484df22e8.log",
-    "logSha256": "730e7704a0e5b70b1c1cff33de4d5fd08cc91451635e8c65bca2291484df22e8",
+    "logPath": "docs/acceptance/logs/f0517549e881070ef38434577418aca084ef082fb3ad645fe52bc1c3b86b677a.log",
+    "logSha256": "f0517549e881070ef38434577418aca084ef082fb3ad645fe52bc1c3b86b677a",
     "sameRunEvidence": "sameRunEvidence: this task shares the canonical local run because the run itself covers the union of all task scopes in one execution; cloned verbatim with only taskId adjusted, never restamped"
   },
-  "finishedAt": "2026-11-26T11:14:17.637Z",
+  "finishedAt": "2026-11-26T12:24:57.684Z",
   "kind": "protocol-contract",
   "passed": true,
   "schemaVersion": 2,
@@ -17,7 +17,7 @@
     "protocol",
     "shared"
   ],
-  "sourceFingerprint": "2eb7a85e0802ffbddab5fc9c44ce13ee8e2cec9638114083482ed48e931aef82",
-  "startedAt": "2026-11-26T11:14:16.293Z",
+  "sourceFingerprint": "61cd6469c47ecfd6c8b057d2d1e7105bd9dc3f937d5de97d6da58ae08dffa222",
+  "startedAt": "2026-11-26T12:24:56.221Z",
   "taskId": "M0-architecture"
 }
