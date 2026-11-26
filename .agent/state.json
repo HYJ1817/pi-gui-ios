@@ -1,52 +1,36 @@
 {
   "schemaVersion": 2,
   "kind": "state",
-  "revision": 2185,
-  "updatedAt": "2026-11-26T14:32:35.895Z",
+  "revision": 2188,
+  "updatedAt": "2026-11-26T14:58:14.828Z",
   "data": {
     "authority": ".agent/control.json",
-    "parentDigest": "dc178a4f77fffb4664a74f71945922bb57416fa34c6cac043da7bb4c9d925d2e",
+    "parentDigest": "730b3b8e7eac63bc38073c5c8e38a8ca770c8f2e7ccac340d346aaff019ec9ae",
     "phase": "M4",
     "currentTask": "M4-sync",
     "branch": "agent/m-1-bootstrap",
     "checkpoint": {
-      "id": "v2-2026-11-26T14-31-48-492Z-0c89ab09-473d-47ef-bdee-b562710ddf72",
-      "path": ".agent/checkpoints/v2-2026-11-26T14-31-48-492Z-0c89ab09-473d-47ef-bdee-b562710ddf72.json",
-      "sha256": "3f0a8c0858237003a95df3ee838decc186dc2ecf06c6a9124b66b5cc8edc31b0",
-      "authorityDigest": "8994aa52fc546c9fe8e1a6a1c86b92b5bb2dfae9680e50d4cde721650609e12a",
-      "at": "2026-11-26T14:31:48.492Z",
+      "id": "v2-2026-11-26T14-58-13-800Z-26eb4820-bcaa-41c5-b21d-8d1ddf01684d",
+      "path": ".agent/checkpoints/v2-2026-11-26T14-58-13-800Z-26eb4820-bcaa-41c5-b21d-8d1ddf01684d.json",
+      "sha256": "18c868574d2b73851aec1fd2c56ddb27a232173cc7ca6a53a06c2b1ead96fcb5",
+      "authorityDigest": "2e6f5130b4e75ffa4dced473b1ac0f8f946b08ed6b7d80352e243d0a10d2e7f3",
+      "at": "2026-11-26T14:58:13.800Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "4eaca729b612eea28c68fa95a03734b6cd42918f",
+        "commit": "e51811d5b9e6adb112c9afd798e3755198020a19",
         "dirty": [
           "M .agent/HANDOFF.md",
-          " D .agent/checkpoints/v2-2026-11-26T12-25-02-452Z-85d59092-03d1-4201-9b3e-07830095ecb9.json",
-          " D .agent/checkpoints/v2-2026-11-26T12-25-07-529Z-f45a2b3b-a79d-4ed8-98d2-7019eb4bab6e.json",
-          " D .agent/checkpoints/v2-2026-11-26T12-25-08-749Z-8113d95e-9bc7-4fef-9ac8-d9694dbacaf6.json",
-          " D .agent/checkpoints/v2-2026-11-26T12-26-01-958Z-80af74e0-5511-464d-b55c-70e301fcbc4c.json",
-          " D .agent/checkpoints/v2-2026-11-26T13-36-15-288Z-0157908c-4ddb-43fa-83d2-e30dddbc68cd.json",
+          " D .agent/checkpoints/v2-2026-11-26T13-36-36-347Z-e9c7853c-fab0-42b4-bc18-fa2053b9eef6.json",
           " M .agent/control.json",
           " M .agent/state.json",
           " M .agent/tasks.json",
           " M PROGRESS.md",
-          " M docs/acceptance/clones/local-integration-M1-remote.json",
-          " M docs/acceptance/clones/local-integration-M3-core.json",
-          " M docs/acceptance/clones/local-integration-M4-sync.json",
-          " M docs/acceptance/clones/local-integration-M5-tailscale.json",
           " M docs/acceptance/local-integration.json",
-          "?? .agent/checkpoints/v2-2026-11-26T14-06-55-334Z-4f04aa0e-d321-4ffb-89c2-f9b1619de15d.json",
-          "?? .agent/checkpoints/v2-2026-11-26T14-31-41-277Z-b67aa1e1-9981-4f7d-86e0-723b66296957.json",
-          "?? .agent/checkpoints/v2-2026-11-26T14-31-43-181Z-2f54b9e7-4830-4f76-a0db-1004bf92f5c8.json",
-          "?? .agent/checkpoints/v2-2026-11-26T14-31-44-800Z-ddf02837-63f0-4996-b41e-541d0e129651.json",
-          "?? .agent/checkpoints/v2-2026-11-26T14-31-46-582Z-901ff41b-2160-4758-9815-99fbe0832606.json",
-          "?? .agent/evidence/17fba348f9b931673c23a07b3dd73c87f853e1a9f6a2ec942e3b0b7e8f17ec92.json",
-          "?? .agent/evidence/ca5aaa9c200daf2ee07eb2ac77b390e51d46f6a3bb2df12f4fc29d4780dc6c69.json",
-          "?? .agent/evidence/e0f6e0e4cd7b001e1f85578d2a84121f0a0656e99e6a94fb74206f5e218ce570.json",
-          "?? .agent/evidence/fafb498d59cfd48d58cdc89248e87310ae34233e58c32beba220c86c99cc588d.json"
+          "?? .agent/checkpoints/v2-2026-11-26T14-32-40-731Z-55999d6d-e891-46fd-9a96-e1c1abacb766.json"
         ]
       },
       "sourceFingerprint": "61cd6469c47ecfd6c8b057d2d1e7105bd9dc3f937d5de97d6da58ae08dffa222",
-      "note": "agent-task evidence M5-tailscale"
+      "note": "实际运行 node scripts/desktop-remote-verify.mjs，exit=1"
     },
     "blockers": [],
     "ci": [
@@ -252,7 +236,7 @@
     "desktop": {
       "repo": "HYJ1817/pi-gui",
       "branch": "feat/mobile-remote-protocol-v1",
-      "commit": "fd7b606640fed2605bd4507d191c6e7c995d8107",
+      "commit": "34f5f92e47c4ccfe88b1e8e5a741e2e4c33158e1",
       "protocolVersion": 1
     },
     "protocolVersion": 1,
@@ -1089,6 +1073,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "28f10a47805958e12d59908379eb2298cdb4b800b3af9f80044d1cd00716b765"
+    "digest": "1f378bde693651056b08928b7bed3edbc1c05d8b7945cd200366dba47dd3eb72"
   }
 }
