@@ -1,0 +1,33 @@
+✔ fault 1 reorder: out-of-order delivery never applies out of order; recovery converges (1444.8829ms)
+✔ fault 2 duplicate: duplicated delivery is exactly-once in the store (9.6659ms)
+✔ fault 3 drop: dropped frames trip the death machine; watermark recovery restores everything (45.4408ms)
+✔ fault 4 forged: unsigned/tampered/replayed-forged frames never apply (8.0443ms)
+✔ fault 5 reconnect: close+resume with cursor replays the gap exactly once (15.2472ms)
+✔ fault 6 slow client: backlog overflow expires the cursor; reset rebuild converges (223.0701ms)
+✔ fault 7 revoke: mid-stream revocation delivers one reset then stops all frames (15.5033ms)
+✔ fault 8 restart: gateway restart over the same domain — stale cursor resets, rebuild converges (102.0606ms)
+✔ fault 9 dual device: concurrent mutations + independent reconnects converge identically (55.2949ms)
+✔ unit chunk-append: progressive frames merge into one bubble ending in the full text (13.1369ms)
+✔ unit watermark atomicity: resuming from a snapshot watermark loses nothing and duplicates nothing (9.4734ms)
+✔ unit owner-epoch idempotency: same-epoch retry hits; rolled epoch is a fresh key (4.4851ms)
+✔ unit backlog eviction never produces a real gap: resumed clients always hit reset-or-replay (107.5567ms)
+✔ regression co-subscription isolation: a reset for subscription A never perturbs subscription B (11.9989ms)
+✔ regression rewind-with-divergent-payload: replayed sequence carrying different effects fails signature, never the silent-drop path (8.1715ms)
+✔ regression cross-incarnation cursor: forged and pre-restart cursors are foreign, never silently accepted (28.7258ms)
+✔ regression grant revoke/re-grant: window mutations are recovered, never silently diverged (266.5898ms)
+✔ regression static scope filtering: device without approvals.read never holes its stream (B1) (15.7964ms)
+✔ regression multi-project filtering: never-granted project events never hole the stream (B1) (102.0959ms)
+✔ regression re-pair transition: cursors minted before re-pair never validate as continuous (B-NEW-1) (105.2647ms)
+✔ regression revoke→re-pair: mutations in the revoked window resurface via snapshot rebuild, never silently lost (B-NEW-1) (113.948ms)
+✔ regression multi-conversation recovery replays from the oldest baseline without regressing newer snapshots (6.4693ms)
+✔ regression session-list and approval failures prevent successful baseline recovery (2.353ms)
+✔ regression recovery recollects mixed generations and stops after bounded authorization churn (11.0235ms)
+✔ regression scope-denied stream frames are terminal — never recoverable-by-ignoring (FS-006) (170.5439ms)
+ℹ tests 25
+ℹ suites 0
+ℹ pass 25
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3120.9949
