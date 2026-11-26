@@ -1,8 +1,8 @@
 {
   "schemaVersion": 2,
   "kind": "control",
-  "revision": 2198,
-  "updatedAt": "2026-11-26T15:02:26.252Z",
+  "revision": 2200,
+  "updatedAt": "2026-11-26T15:27:27.139Z",
   "data": {
     "phase": "M4",
     "currentTask": "M4-sync",
@@ -11,7 +11,7 @@
     "desktop": {
       "repo": "HYJ1817/pi-gui",
       "branch": "feat/mobile-remote-protocol-v1",
-      "commit": "34f5f92e47c4ccfe88b1e8e5a741e2e4c33158e1",
+      "commit": "60d243a24b3ced198bd2e9ccaeb1e66f6129ba7e",
       "protocolVersion": 1
     },
     "ci": [
@@ -8802,41 +8802,18 @@
       }
     ],
     "checkpoint": {
-      "id": "v2-2026-11-26T15-01-14-219Z-8d09df91-24d4-4f74-91d8-2f55fa7cd791",
-      "path": ".agent/checkpoints/v2-2026-11-26T15-01-14-219Z-8d09df91-24d4-4f74-91d8-2f55fa7cd791.json",
-      "sha256": "ef3b8c3c0ed2c7306f13a68402269fbb93a6a97cdccc9fe74f48851d1ca91fea",
-      "authorityDigest": "4021fe71fb5ebfbb09d66248e22c3f5cd785f42b7755127b6e487d473cf3129f",
-      "at": "2026-11-26T15:01:14.219Z",
+      "id": "v2-2026-11-26T15-02-31-266Z-443dfad5-e7c1-493a-afd9-5abfb6dffd73",
+      "path": ".agent/checkpoints/v2-2026-11-26T15-02-31-266Z-443dfad5-e7c1-493a-afd9-5abfb6dffd73.json",
+      "sha256": "f9b5c06368832e6bb9229308b8d1890d533fdc4f2c356f97d186389535a1640b",
+      "authorityDigest": "ad1fc5c6ad7080b345d8b8b10a06693bd119ebe4297e578b906155cb73a8d158",
+      "at": "2026-11-26T15:02:31.266Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "ec62b94c1a069399d663ff4205889539f5798119",
-        "dirty": [
-          "M .agent/HANDOFF.md",
-          " D .agent/checkpoints/v2-2026-11-26T13-36-39-345Z-a2040a5f-88d9-45dd-8b69-be90462eb25b.json",
-          " D .agent/checkpoints/v2-2026-11-26T13-36-41-060Z-e4237db1-a184-43ab-833f-df10b823146d.json",
-          " D .agent/checkpoints/v2-2026-11-26T13-36-42-525Z-d1cdb376-8368-449c-b61a-f0af74e21d23.json",
-          " D .agent/checkpoints/v2-2026-11-26T13-36-44-083Z-df906c00-dc36-4235-aac4-40e0036146da.json",
-          " M .agent/control.json",
-          " M .agent/state.json",
-          " M .agent/tasks.json",
-          " M PROGRESS.md",
-          " M docs/acceptance/clones/local-integration-M1-remote.json",
-          " M docs/acceptance/clones/local-integration-M3-core.json",
-          " M docs/acceptance/clones/local-integration-M4-sync.json",
-          " M docs/acceptance/clones/local-integration-M5-tailscale.json",
-          " M docs/acceptance/local-integration.json",
-          "?? .agent/checkpoints/v2-2026-11-26T15-01-07-266Z-27025f70-ee91-425b-a467-0b5c5df396de.json",
-          "?? .agent/checkpoints/v2-2026-11-26T15-01-09-298Z-2c587224-3b9f-464d-ac4d-377a477af06c.json",
-          "?? .agent/checkpoints/v2-2026-11-26T15-01-11-060Z-79393a56-80ea-4e0a-9e43-a28e5888eb64.json",
-          "?? .agent/checkpoints/v2-2026-11-26T15-01-12-643Z-32eb0f96-3fbc-46c1-a505-48dfe5e89723.json",
-          "?? .agent/evidence/35515b29f0346a9ca189d182460aeb3537b901c328ae0907ec5beac352c047aa.json",
-          "?? .agent/evidence/902818aee553d9ba3aeccb047fd60ad7ec5308bd6dfaaa3a86b073177348e25d.json",
-          "?? .agent/evidence/ea26a5c6db98fdb8bc70b1fa6a921f543f610e6e3cb47d5c52262e8fa95a181b.json",
-          "?? .agent/evidence/ff9f3780154048d4331866f31f18eed5cc5d1585724dd61498c6e9172c26c6f3.json"
-        ]
+        "commit": "30844841e81cbe0fc2f296992eede4de71e27cd9",
+        "dirty": []
       },
       "sourceFingerprint": "61cd6469c47ecfd6c8b057d2d1e7105bd9dc3f937d5de97d6da58ae08dffa222",
-      "note": "agent-task evidence M5-tailscale"
+      "note": "round-9: FSEC-005-R8-001修复(rotation索引排除revoked前任,pin parent FAIL); 安全a5cb4a18在飞; 回包PASS后→security证据×7任务→handoff最终验证→validate/transitions→解锁"
     },
     "nextAction": "round-7 security 9081f59c 回包 PASS 后: receipt+report→independent-security×7任务→handoff最终验证delegate→validate M-1/M0..M6依赖序→transitions→通知用户整理解锁",
     "delegates": [
@@ -9678,6 +9655,6 @@
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "ad1fc5c6ad7080b345d8b8b10a06693bd119ebe4297e578b906155cb73a8d158"
+    "digest": "8245865c1f6b58a3d20c564e030d5a2bc93a1fff91ac1d65754a0fe7d5fc0761"
   }
 }
