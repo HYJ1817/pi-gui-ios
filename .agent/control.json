@@ -1,8 +1,8 @@
 {
   "schemaVersion": 2,
   "kind": "control",
-  "revision": 2227,
-  "updatedAt": "2026-11-26T15:58:58.306Z",
+  "revision": 2229,
+  "updatedAt": "2026-11-26T16:01:01.272Z",
   "data": {
     "phase": "M4",
     "currentTask": "M4-sync",
@@ -8962,18 +8962,20 @@
       }
     ],
     "checkpoint": {
-      "id": "v2-2026-11-26T15-45-16-566Z-3fbb80c2-0d49-4cc8-909c-b0496362bd8a",
-      "path": ".agent/checkpoints/v2-2026-11-26T15-45-16-566Z-3fbb80c2-0d49-4cc8-909c-b0496362bd8a.json",
-      "sha256": "ee3c6b89baa0b45d4ac135b0126abfaa259048be3a4eacc31e8699a45346b3d4",
-      "authorityDigest": "f2ce1f09a00f547b5de6739eaf2ca17b466f12a32c120c2a7493b5090e3513f4",
-      "at": "2026-11-26T15:45:16.566Z",
+      "id": "v2-2026-11-26T15-59-02-268Z-500ddae2-1246-48bd-b90b-0671bb0f3891",
+      "path": ".agent/checkpoints/v2-2026-11-26T15-59-02-268Z-500ddae2-1246-48bd-b90b-0671bb0f3891.json",
+      "sha256": "6e040c2cf2f47f9ee2b825d6a2b3ec459dc3b01ed8a31a4d715c9032ac3e3f5e",
+      "authorityDigest": "29d3bfd96a68dd498410d15fc6252a5a4e130481808b37e137daa3294e9c54f6",
+      "at": "2026-11-26T15:59:02.268Z",
       "git": {
         "branch": "agent/m-1-bootstrap",
-        "commit": "f296bc4edb147104a56f6141c58e325b252c7d4a",
-        "dirty": []
+        "commit": "0dd43c33bc576c4021df29a9fc0790eee517afaa",
+        "dirty": [
+          "M PROGRESS.md"
+        ]
       },
       "sourceFingerprint": "61cd6469c47ecfd6c8b057d2d1e7105bd9dc3f937d5de97d6da58ae08dffa222",
-      "note": "独立审查双PASS闭合: review 8/8 + security 6/6 全部导入; 启动handoff最终验证(收尾最后一步)"
+      "note": "handoff round-2在飞5bb7109e(HF-001 PROGRESS同步已修,HF-002契约已补全字段); 回包PASS后validate/transitions/解锁"
     },
     "nextAction": "handoff aff2421a 回包 PASS 后: receipt+report→independent-handoff evidence(M-1-infrastructure)→validate M-1/M0..M6 依赖序→transitions(M5/device 设计内 pending)→通知用户整理解锁",
     "delegates": [
@@ -9828,11 +9830,17 @@
         "role": "independent-handoff",
         "status": "working",
         "sourceCommit": "5e38181faf169b96ad48b8638b3c06d3a95d8e98"
+      },
+      {
+        "taskId": "node:delegated-task:command%3Amcp%3Acd5f8275-b346-4980-941e-ddfe9f4ea675%3Adelegate-task%3Ae36f01ce-1776-43ae-9c90-43c588d4f8d9",
+        "role": "independent-handoff",
+        "status": "working",
+        "sourceCommit": "5e38181faf169b96ad48b8638b3c06d3a95d8e98"
       }
     ]
   },
   "integrity": {
     "algorithm": "sha256",
-    "digest": "29d3bfd96a68dd498410d15fc6252a5a4e130481808b37e137daa3294e9c54f6"
+    "digest": "94f5c3ff1b1858c6d314e287735f8f0341fd46030b75994f985390c919f0f4fb"
   }
 }
