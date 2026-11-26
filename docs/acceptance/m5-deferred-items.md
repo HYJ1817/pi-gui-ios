@@ -35,19 +35,75 @@ integration rig: bridge events → publish per conversation owner, fill
 and add a production-path integration test that drives a real runtime
 rather than injected harnesses.
 
-## D2. Contract copy drift risk (hygiene)
+## D2. Contract copy drift risk (hygiene; P2 repair)
 
-**Facts.** `scripts/lib/remote-protocol-contract.mjs` is *not* byte-identical
-to the desktop `server/remote/protocol.mjs` — the mobile copy is a
-minified-build variant (no JSDoc header, different layout). The functional
-exports are aligned (both suites pass against each copy), but no mechanical
-gate currently compares the two. A silent divergence in either copy would
-split mobile/desktop validation.
+**Historical finding.** The earlier record described different formatting
+and inferred aligned exports from passing suites. That was not a mechanical
+parity guarantee. P2 inspection of desktop `HYJ1817/pi-gui` at
+`60d243a24b3ced198bd2e9ccaeb1e66f6129ba7e` found two missing mobile guards:
+a device binding must carry the canonical `serviceId` derived from the
+trusted service fingerprint, and an ordinary event envelope must reject
+`conversationId: 'stream-reset'`. Prior reports and their conclusions remain
+historical; this repair does not restamp their evidence.
 
-**Recovery condition.** Add a normalization-aware copy check (strip
-comments/whitespace, compare token streams) to `tests/remote-contract.test.mjs`
-or the integration suite, and establish the copy-update procedure in the
-desktop contract-change ADR process.
+**P2 repair.** The mobile validator now matches those exact desktop guards,
+including validation order and the `service_identity_invalid` / `unauthorized`
+request failure. Synthetic request fixtures carry the current service ID;
+negative tests cover missing/old bindings without consuming a nonce, and
+a correctly shaped/signed ordinary frame with the reserved ID. Valid current
+bindings, ordinary conversation IDs and reset frames are positive controls.
+The cohesive contract file and protocol capabilities remain intact.
+
+**Copy gate.** Canonical offline `npm test` includes
+`tests/remote-contract.test.mjs`, which compares the mobile copy's normalized
+SHA256 and the contract JSON's byte SHA256 to
+`tests/fixtures/remote-protocol-pin.json`. There is no network fetch or
+full desktop source fixture. The shared `scripts/lib/protocol-copy.mjs`
+uses the installed TypeScript 6.0.3 parser/printer with `removeComments`,
+LF output and synthesized source positions (so incidental line breaks do
+not affect the digest). Only the two known string literals in
+`const CONTRACT_URL = new URL(..., import.meta.url)` map to the desktop
+`'./contract-v1.json'` location. Unknown paths/syntax fail closed; operators,
+other strings and regexes are retained. This is a normalized-copy guard,
+not a claim of general semantic equivalence. Mutation tests accept
+comments/formatting but detect operator, string, regex and either missing
+guard. Contract JSON comparison deliberately remains byte-exact.
+
+The immutable pin was independently derived from `git show` of the exact
+desktop commit above:
+
+- `server/remote/protocol.mjs` byte SHA256:
+  `02ab15771127374c2574af5692ea5d5e90f4b7e56ea5ff9c76a412c99f384c58`.
+- `typescript-printer-synthesized-v1` normalized SHA256:
+  `b9dbb606c7fa3bc731b5c19032d25c0a5d0c606df2c53c4c2577b00319c95f8b`.
+- `server/remote/contract-v1.json` byte SHA256 (also the mobile JSON):
+  `4c24021fd588e35ce8ffe25f4eb0c49ace0e42cae2e7116f0e5f0df58c154d9a`.
+
+The audit's exploratory normalized digest (`0ac6fa408abbff4e646a51cfe8d3949131f2d743ee4f5e46b712f91a84e07e7b`)
+is not reused as this helper's pin: normalization settings are part of the
+pin and must be reproducible. `scripts/desktop-remote-verify.mjs` first
+checks the registered desktop repo/commit against the fixture, verifies its
+worktree branch/HEAD/cleanliness, then runs both actual source copies through
+the same helper and compares both JSON files before running desktop suites.
+Offline synthetic worktrees exercise the preflight and copy/JSON failures.
+
+**Update procedure.** For an intentional contract change, review both
+repositories and the existing contract-change ADR together. Obtain a trusted
+full desktop commit; verify its branch, HEAD and clean status, then read
+`git show <commit>:server/remote/protocol.mjs` and
+`git show <commit>:server/remote/contract-v1.json` as raw bytes. Reconcile the
+mobile validator/JSON and regressions as one change. From those desktop
+bytes compute `sha256(bytes)` and
+`protocolCopySha256(protocolBytes.toString('utf8'))` using the shared helper;
+review the fixture's commit, byte hashes, normalized hash, normalizer ID and
+TypeScript version explicitly. Never regenerate expectations from the mobile
+copy or silently replace the pin on a test failure. A TypeScript upgrade
+also requires reviewing/reproducing the normalized pin from that desktop
+commit. Align the registered desktop pin through its normal owner, then run
+`node --test tests/remote-contract.test.mjs`, canonical `npm test`, and
+`node scripts/desktop-remote-verify.mjs` against that verified desktop
+worktree (`PI_GUI_DESKTOP_WORKTREE` selects it). This seam's focused tests
+are not new full-suite, Native CI, production-hookup or device evidence.
 
 ## D3. Self-signed certificate lifetime (INFORMATIONAL-1, security round-2)
 

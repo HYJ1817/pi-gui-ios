@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "desktop": {
+    "repo": "HYJ1817/pi-gui",
+    "commit": "60d243a24b3ced198bd2e9ccaeb1e66f6129ba7e",
+    "protocolPath": "server/remote/protocol.mjs",
+    "protocolSha256": "02ab15771127374c2574af5692ea5d5e90f4b7e56ea5ff9c76a412c99f384c58",
+    "contractPath": "server/remote/contract-v1.json",
+    "contractSha256": "4c24021fd588e35ce8ffe25f4eb0c49ace0e42cae2e7116f0e5f0df58c154d9a"
+  },
+  "normalizer": "typescript-printer-synthesized-v1",
+  "typescript": "6.0.3",
+  "normalizedSha256": "b9dbb606c7fa3bc731b5c19032d25c0a5d0c606df2c53c4c2577b00319c95f8b"
+}

@@ -1,8 +1,17 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash, generateKeyPairSync, sign } from 'node:crypto';
+import { execFileSync } from 'node:child_process';
+import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { dirname, join } from 'node:path';
+import { PROTOCOL_COPY_NORMALIZER, PROTOCOL_COPY_TYPESCRIPT, normalizeProtocolCopy, protocolCopySha256 } from '../scripts/lib/protocol-copy.mjs';
+import { verifyDesktopWorktree, verifyProtocolParity } from '../scripts/desktop-remote-verify.mjs';
 import { REMOTE_V1, acceptEventFrame, authorizePairExchange, authorizeRemoteOperation, buildEventFrameMessage, buildPairProofMessage, buildSignatureMessage, commitAdmission, filterGrantedResources, requiredEventScope, settleApproval, validateApprovalPayload, validateEventEnvelope, validatePairExchange, validatePairExchangeResponse, validateRawTarget, validateRemoteRequest, validateRemoteResponse, verifyPairExchangeProof, verifyPairExchangeResponse, verifyRemoteSignature, wireErrorCode } from '../scripts/lib/remote-protocol-contract.mjs';
 
+const pin=JSON.parse(readFileSync(new URL('./fixtures/remote-protocol-pin.json',import.meta.url),'utf8'));
+const protocolSource=readFileSync(new URL('../scripts/lib/remote-protocol-contract.mjs',import.meta.url),'utf8');
+const contractBytes=readFileSync(new URL('../docs/contracts/remote-v1.json',import.meta.url));
 const id='4b1f3561-33e1-4aa1-8a54-8dc176cd5367';
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
 function testKeyPair() {
@@ -60,6 +69,84 @@ function replaceBody(base,body) {
   const rawBody=canonicalJson(body);
   return {...base,headers:{...base.headers,'x-pi-remote-body-sha256':hash(rawBody)},rawBody,body};
 }
+
+test('offline protocol copy and contract JSON match the immutable desktop pin',()=>{
+  assert.equal(pin.schemaVersion,1);
+  assert.equal(PROTOCOL_COPY_NORMALIZER,pin.normalizer);
+  assert.equal(PROTOCOL_COPY_TYPESCRIPT,pin.typescript);
+  assert.equal(protocolCopySha256(protocolSource),pin.normalizedSha256);
+  assert.equal(hash(contractBytes),pin.desktop.contractSha256);
+});
+
+function replaceOnce(source,before,after) {
+  assert.ok(source.includes(before),`mutation target exists: ${before}`);
+  assert.equal(source.indexOf(before),source.lastIndexOf(before),'mutation target is unique');
+  return source.replace(before,after);
+}
+
+test('protocol normalization accepts comments, formatting and only the known CONTRACT_URL mapping',()=>{
+  const formatted=replaceOnce(protocolSource,
+    'const MAX_JSON_DEPTH = REMOTE_V1.limits?.maxJsonDepth ?? 16;',
+    '/* synthetic format probe */\nconst MAX_JSON_DEPTH\n = REMOTE_V1.limits?.maxJsonDepth\n ?? 16;\n\n');
+  const desktopLayout=replaceOnce(formatted,"'../../docs/contracts/remote-v1.json'","'./contract-v1.json'");
+  assert.equal(protocolCopySha256(desktopLayout),pin.normalizedSha256);
+  assert.equal(normalizeProtocolCopy(normalizeProtocolCopy(protocolSource)),normalizeProtocolCopy(protocolSource));
+  assert.throws(()=>normalizeProtocolCopy(replaceOnce(protocolSource,"'../../docs/contracts/remote-v1.json'","'./unknown.json'")),/unexpected CONTRACT_URL/);
+  assert.throws(()=>normalizeProtocolCopy('const CONTRACT_URL = ;'),/invalid JavaScript/);
+  assert.throws(()=>normalizeProtocolCopy('const another = 1;'),/exactly one known CONTRACT_URL/);
+  const base="const CONTRACT_URL = new URL('./contract-v1.json', import.meta.url);\nconst other = './contract-v1.json';";
+  assert.notEqual(normalizeProtocolCopy(base),normalizeProtocolCopy(base.replace("const other = './contract-v1.json'","const other = '../../docs/contracts/remote-v1.json'")));
+  const literals=base+"\nconst words = 'two words'; const pattern = /two words/g;";
+  assert.notEqual(normalizeProtocolCopy(literals),normalizeProtocolCopy(literals.replace("'two words'","'twowords'")),'string whitespace is significant');
+  assert.notEqual(normalizeProtocolCopy(literals),normalizeProtocolCopy(literals.replace('/two words/g','/twowords/g')),'regex whitespace is significant');
+});
+
+const bindingGuard="if(device.serviceId!==canonicalId)return {ok:false,code:'service_identity_invalid',wire:'unauthorized'};";
+const reservedGuard="if(event.event!=='reset'&&event.conversationId==='stream-reset')return false;";
+for(const [label,before,after] of [
+  ['operator','if(expiryMs<=nowMs)','if(expiryMs<nowMs)'],
+  ['string',bindingGuard,bindingGuard.replace("'service_identity_invalid'","'different_identity_error'")],
+  ['regex','const OPAQUE_ID = /^[A-Za-z0-9_-]{8,128}$/;','const OPAQUE_ID = /^[A-Za-z0-9_-]{7,128}$/;'],
+  ['missing service binding guard',bindingGuard,''],
+  ['missing reserved event id guard',reservedGuard,''],
+]) {
+  test(`offline drift pin rejects ${label} mutation`,()=>{
+    assert.equal(protocolCopySha256(protocolSource),pin.normalizedSha256,'positive control');
+    assert.notEqual(protocolCopySha256(replaceOnce(protocolSource,before,after)),pin.normalizedSha256);
+  });
+}
+
+test('integration preflight rejects unpinned/dirty worktrees and protocol/JSON drift with offline synthetics',t=>{
+  const worktree=mkdtempSync(join(tmpdir(),'protocol-copy-'));
+  t.after(()=>rmSync(worktree,{recursive:true,force:true}));
+  const sourcePath=join(worktree,pin.desktop.protocolPath),contractPath=join(worktree,pin.desktop.contractPath);
+  mkdirSync(dirname(sourcePath),{recursive:true});
+  const source=replaceOnce(protocolSource,"'../../docs/contracts/remote-v1.json'","'./contract-v1.json'");
+  writeFileSync(sourcePath,source);
+  writeFileSync(contractPath,contractBytes);
+  const git=args=>execFileSync('git',args,{cwd:worktree,encoding:'utf8',windowsHide:true});
+  git(['init','--quiet','--initial-branch=protocol-fixture']);
+  git(['-c','core.autocrlf=false','add','.']);
+  git(['-c','user.name=Protocol Fixture','-c','user.email=protocol@example.invalid','-c','commit.gpgsign=false',
+    '-c',`core.hooksPath=${join(worktree,'no-hooks')}`,'commit','--quiet','-m','Synthetic protocol fixture']);
+  const desktop={branch:'protocol-fixture',commit:git(['rev-parse','HEAD']).trim()};
+  assert.doesNotThrow(()=>verifyDesktopWorktree(worktree,desktop));
+  assert.deepEqual(verifyProtocolParity(worktree),{normalizedSha256:pin.normalizedSha256,contractSha256:pin.desktop.contractSha256});
+  assert.throws(()=>verifyDesktopWorktree(worktree,{...desktop,branch:'wrong-branch'}),/branch mismatch/);
+  assert.throws(()=>verifyDesktopWorktree(worktree,{...desktop,commit:'0'.repeat(40)}),/HEAD mismatch/);
+  assert.throws(()=>verifyDesktopWorktree(join(worktree,'missing'),desktop),/git branch --show-current failed/);
+  writeFileSync(sourcePath,source+'\n// harmless comment\n');
+  assert.doesNotThrow(()=>verifyProtocolParity(worktree));
+  assert.throws(()=>verifyDesktopWorktree(worktree,desktop),/worktree not clean/);
+  writeFileSync(sourcePath,replaceOnce(source,bindingGuard,''));
+  assert.throws(()=>verifyProtocolParity(worktree),/desktop normalized protocol copy drift/);
+  writeFileSync(sourcePath,source);
+  writeFileSync(contractPath,Buffer.concat([contractBytes,Buffer.from('\n')]));
+  assert.throws(()=>verifyProtocolParity(worktree),/desktop contract JSON drift/);
+  writeFileSync(contractPath,contractBytes);
+  writeFileSync(join(worktree,'unexpected.txt'),'synthetic');
+  assert.throws(()=>verifyDesktopWorktree(worktree,desktop),/worktree not clean/);
+});
 
 test('remote v1 contract is frozen v1, HTTPS-only and disabled by default',()=>{
   assert.equal(REMOTE_V1.contractVersion,1);
@@ -170,7 +257,7 @@ test('Ed25519 request signature, device+service binding, skew and atomic replay 
   const valid=signedRequest(unsigned,pair,nonce,timestamp);
   let consumed=0;
   const consumeNonce=(device,seenNonce,at)=>{assert.equal(device,'device_abc12345');assert.equal(seenNonce,nonce);assert.equal(at,Number(timestamp));consumed++;return consumed===1;};
-  const device={deviceId:'device_abc12345',devicePublicKey:pair.publicKeyRaw,grantedScopes:['chat.send'],active:true,replayEpoch:1,expiresAt:new Date(Number(timestamp)+3600000).toISOString()};
+  const device={deviceId:'device_abc12345',serviceId:SERVICE_ID,devicePublicKey:pair.publicKeyRaw,grantedScopes:['chat.send'],active:true,replayEpoch:1,expiresAt:new Date(Number(timestamp)+3600000).toISOString()};
   const verification={request:valid,device,serviceId:SERVICE_ID,serviceFingerprint:SERVICE_FP,nowMs:Number(timestamp),consumeNonce};
   const first=verifyRemoteSignature(verification);
   assert.equal(first.ok,true); assert.equal(first.operation,'chat.send'); assert.equal(first.scope,'chat.send'); assert.equal(first.deviceId,'device_abc12345'); assert.equal(consumed,1);
@@ -202,6 +289,29 @@ test('Ed25519 request signature, device+service binding, skew and atomic replay 
   assert.equal(verifyRemoteSignature({...verification,device:{...device,grantedScopes:['projects.read']}}).code,'scope_denied');
   // non-finite now fails closed
   assert.equal(verifyRemoteSignature({...verification,nowMs:NaN}).code,'signature_expired');
+});
+
+test('request authentication rejects wrong or missing device service binding before nonce consumption',()=>{
+  const pair=testKeyPair();
+  const timestamp='1795273200000';
+  const unsigned=request('chat.send','/remote/v1/conversations/conversation_12345678/messages',{clientMessageId:id,text:'synthetic only'},{ownerRevision:7});
+  const signed=signedRequest(unsigned,pair,Buffer.alloc(32,7).toString('base64url'),timestamp);
+  const device={deviceId:'device_abc12345',serviceId:SERVICE_ID,devicePublicKey:pair.publicKeyRaw,grantedScopes:['chat.send'],active:true,replayEpoch:1,expiresAt:new Date(Number(timestamp)+3600000).toISOString()};
+  let consumed=0;
+  const args={request:signed,device,serviceFingerprint:SERVICE_FP,nowMs:Number(timestamp),consumeNonce:()=>{consumed++;return true;}};
+  // Caller serviceId is optional: the authoritative fingerprint derives it.
+  assert.equal(verifyRemoteSignature(args).ok,true);
+  assert.equal(verifyRemoteSignature({...args,serviceId:SERVICE_ID}).ok,true);
+  assert.equal(consumed,2);
+  consumed=0;
+  const missing={...device};delete missing.serviceId;
+  for(const invalid of [missing,{...device,serviceId:'svc-'+hash('old synthetic certificate').slice(0,16)},{...device,serviceId:null},{...device,serviceId:''}]) {
+    assert.deepEqual(verifyRemoteSignature({...args,device:invalid}),{ok:false,code:'service_identity_invalid',wire:'unauthorized'});
+  }
+  assert.equal(consumed,0);
+  // Preserve desktop validation order, including its existing epoch rejection.
+  assert.equal(verifyRemoteSignature({...args,device:{...missing,replayEpoch:2}}).code,'signature_invalid');
+  assert.equal(verifyRemoteSignature({...args,device:{...missing,active:false}}).code,'device_inactive');
 });
 
 test('pair proof binds code, displayed name, device key, nonce and service fingerprint',()=>{
@@ -325,9 +435,10 @@ test('event frames carry generation/cursor/signature, per-event scopes and close
   assert.equal(validateEventEnvelope({...reset,payload:{reason:'unexpected'}}),false);
   // reset establishes the new expected position; not subject to prior sequence
   assert.equal(acceptEventFrame({event:reset,deviceId:'device_abc12345',serviceId:SERVICE_ID,desktopPublicKey:desktop.publicKeyRaw,deviceScopes:['sessions.read']}).lastAcceptedPosition.streamGeneration,1);
-  // 'stream-reset' reserved in ordinary frames (signature verified over its own conversationId first)
+  // The structural validator must reject the reserved id even before acceptance.
   const badReset={...base,conversationId:'stream-reset'};
   badReset.frameSignature=sign(null,Buffer.from(buildEventFrameMessage(badReset,'device_abc12345',SERVICE_ID),'utf8'),desktop.privateKey).toString('base64url');
+  assert.equal(validateEventEnvelope(badReset),false);
   assert.equal(acceptEventFrame({event:badReset,deviceId:'device_abc12345',serviceId:SERVICE_ID,desktopPublicKey:desktop.publicKeyRaw,deviceScopes:['sessions.read'],expectedStreamGeneration:1,expectedSequence:1}).code,'frame_invalid');
   // owner-filtered replay: a frame for an ungranted conversation fails authorizeResource
   assert.equal(acceptEventFrame({...ctx,authorizeResource:ctx0=>ctx0.conversationId!=='conversation_12345678'}).code,'unknown_resource');
@@ -366,7 +477,7 @@ test('responses use operation-specific closed projections and never carry raw er
 
 test('device grants and owner recheck gate admission (IDOR / stale owner / substitution)',()=>{
   const pair=testKeyPair();
-  const device={deviceId:'device_abc12345',devicePublicKey:pair.publicKeyRaw,grantedScopes:['sessions.read','chat.send'],active:true,replayEpoch:1,expiresAt:new Date(Date.now()+3600000).toISOString(),grants:{'project_12345678':true}};
+  const device={deviceId:'device_abc12345',serviceId:SERVICE_ID,devicePublicKey:pair.publicKeyRaw,grantedScopes:['sessions.read','chat.send'],active:true,replayEpoch:1,expiresAt:new Date(Date.now()+3600000).toISOString(),grants:{'project_12345678':true}};
   const ts=Date.now().toString();
   const ownedConvo='conversation_12345678';
   const send=(path,ownerRev=3)=>signedRequest(request('chat.send',path,{clientMessageId:id,text:'x'},{ownerRevision:ownerRev}),pair,Buffer.alloc(32,10).toString('base64url'),ts);
@@ -407,7 +518,7 @@ test('approval payload enforces the per-method decision/value matrix',()=>{
 test('approval settlement resolves and consumes a live Pi dialog exactly once',()=>{
   const pair=testKeyPair();
   const reqId='req_pending_01';
-  const device={deviceId:'device_abc12345',devicePublicKey:pair.publicKeyRaw,grantedScopes:['approvals.respond'],active:true,replayEpoch:1,expiresAt:new Date(Date.now()+3600000).toISOString(),grants:{'project_12345678':true}};
+  const device={deviceId:'device_abc12345',serviceId:SERVICE_ID,devicePublicKey:pair.publicKeyRaw,grantedScopes:['approvals.respond'],active:true,replayEpoch:1,expiresAt:new Date(Date.now()+3600000).toISOString(),grants:{'project_12345678':true}};
   const ts=Date.now().toString();
   const respond=(method='confirm',decision='allow',value)=>signedRequest(request('approvals.respond',`/remote/v1/conversations/conversation_12345678/approvals/${reqId}/respond`,{method,decision,...(value===undefined?{}:{value})},{ownerRevision:5}),pair,Buffer.alloc(32,14).toString('base64url'),ts);
   const owner={current:true,revision:5,epoch:9,namespace:'runtime',identity:'rt-1',projectId:'project_12345678',conversationId:'conversation_12345678',dialogId:reqId};
@@ -443,7 +554,7 @@ test('pre-auth failures map to a closed wire code and internal codes never leak'
 
 test('UTF-8 byte limits and duplicate query params are enforced',()=>{
   const pair=testKeyPair();
-  const device={deviceId:'device_abc12345',devicePublicKey:pair.publicKeyRaw,grantedScopes:['chat.send'],active:true};
+  const device={deviceId:'device_abc12345',serviceId:SERVICE_ID,devicePublicKey:pair.publicKeyRaw,grantedScopes:['chat.send'],active:true};
   // multibyte text at/over byte limit
   const heavy='\u4e2d'.repeat(Math.ceil(REMOTE_V1.limits.maxTranscriptSerializedBytes/3));
   const over=request('chat.send','/remote/v1/conversations/conversation_12345678/messages',{clientMessageId:id,text:heavy},{ownerRevision:1});
@@ -471,7 +582,7 @@ test('raw transport adapter rejects duplicate names, bad encoding, BOM and reser
 });
 
 test('admission token recheck binds owner, device epoch and project at commit',()=>{
-  const device={deviceId:'device_abc12345',devicePublicKey:'k',active:true,replayEpoch:1,expiresAt:new Date(Date.now()+3600000).toISOString(),grantedScopes:['chat.send'],grants:{project_12345678:true}};
+  const device={deviceId:'device_abc12345',serviceId:SERVICE_ID,devicePublicKey:'k',active:true,replayEpoch:1,expiresAt:new Date(Date.now()+3600000).toISOString(),grantedScopes:['chat.send'],grants:{project_12345678:true}};
   const owner={current:true,revision:3,epoch:9,projectId:'project_12345678',namespace:'runtime',identity:'rt-1',conversationId:'conversation_12345678'};
   const token={deviceId:'device_abc12345',replayEpoch:1,scope:'chat.send',ownerEpoch:9,ownerRevision:3,projectId:'project_12345678',resourceId:'conversation_12345678',requestId:id,issuedAtMs:Date.now()};
   assert.equal(commitAdmission({admissionToken:token,device,resolveOwner:()=>owner}).ok,true);
