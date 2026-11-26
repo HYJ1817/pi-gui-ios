@@ -370,12 +370,7 @@ jobs:
           #    wiring executes end-to-end. Genuine regression detection across
           #    real releases is covered by the unit suite's paired fixtures and
           #    activates automatically once a baseline lands in the repo.
-          python3 - "$RUNNER_TEMP/baseline-version.json" <<'EOF'
-          import json, sys
-          report = json.load(open('artifacts/distribution/version-report.json'))
-          report['ipaBuildNumber'] = report['ipaBuildNumber'] - 1
-          json.dump(report, open(sys.argv[1], 'w'))
-EOF
+          python3 -c "import json,sys; report=json.load(open('artifacts/distribution/version-report.json')); report['ipaBuildNumber']=report['ipaBuildNumber']-1; json.dump(report, open('$RUNNER_TEMP/baseline-version.json','w'))"
           python3 scripts/ci/upgrade-compat.py "$RUNNER_TEMP/baseline-version.json" artifacts/distribution/version-report.json artifacts/ipa/verification.json artifacts/ipa/verification.json artifacts/distribution/upgrade-compat.json
           # 3. SideStore source draft — artifact-only, never published.
           python3 scripts/ci/sidestore-source.py "$(python3 -c "import json;print(json.load(open('artifacts/distribution/version-report.json'))['ipaVersion'])")" "$(python3 -c "import json;print(json.load(open('artifacts/distribution/version-report.json'))['ipaBuildNumber'])")" "$IPA_SHA" "$IPA_SIZE" "$TAG" artifacts/distribution/sidestore-source.json
